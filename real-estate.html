@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Estate — AllSeattle</title>
+<meta name="description" content="Homes for sale and rentals across Seattle neighborhoods.">
+<link rel="icon" type="image/svg+xml" href="img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/footer.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/real-estate.css">
+</head>
+<body data-page-type="inner" data-page="real-estate">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="real-estate-top" class="ad-slot-top"></div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Homes and Rentals</span>
+          <h1>Seattle Real Estate</h1>
+        </div>
+        <a href="pricing.html" class="btn">List a Property</a>
+      </div>
+
+      <div class="realty-layout">
+        <aside class="realty-filters">
+          <button class="realty-filters-toggle" id="realty-filters-toggle" type="button" aria-expanded="false" aria-controls="realty-filters-body">Filters</button>
+          <div class="realty-filters-body" id="realty-filters-body">
+            <div class="field"><label for="f-deal">Type</label><select id="f-deal"></select></div>
+            <div class="field"><label for="f-price">Max price</label><select id="f-price"></select></div>
+            <div class="field"><label for="f-beds">Min bedrooms</label><select id="f-beds"></select></div>
+            <div class="field"><label for="f-hood">Neighborhood</label><select id="f-hood"></select></div>
+            <div class="field"><label for="f-sort">Sort by</label><select id="f-sort"></select></div>
+            <button class="btn btn-outline btn-sm btn-block" id="f-reset" type="button">Reset filters</button>
+          </div>
+          <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="real-estate-side-1"></div>
+          <div class="ad-desktop-slot" data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="real-estate-side-2"></div>
+        </aside>
+        <div class="realty-results">
+          <p class="result-count" id="realty-count"></p>
+          <div class="grid realty-grid" id="realty-grid"></div>
+        </div>
+      </div>
+
+      <div class="mobile-footer-ads" id="mobile-footer-ads"></div>
+
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script type="module" src="js/partials.js"></script>
+<script type="module" src="js/banner-ads.js"></script>
+<script type="module" src="js/pages/real-estate.js"></script>
+</body>
+</html>

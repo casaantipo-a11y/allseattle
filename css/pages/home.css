@@ -23,12 +23,6 @@
   min-width: 0;
 }
 
-.ad-slot-top {
-  margin-bottom: var(--space-6);
-  display: flex;
-  justify-content: center;
-}
-
 .ad-slot-bottom {
   margin-top: var(--space-6);
   display: flex;

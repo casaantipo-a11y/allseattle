@@ -1,5 +1,6 @@
 import { SOCIAL_ICONS, NAV_ICONS, UI_ICONS, logoLockupMarkup } from "./logo.js";
 import { markActiveNav } from "./nav-active.js";
+import { weatherHeaderLine } from "./mock-data/weather.js";
 
 // partials.js always lives at "<site root>/js/partials.js", so this resolves
 // to the site root regardless of deployment subpath (localhost, GitHub
@@ -14,19 +15,20 @@ const NAV_LINKS = [
   { key: "auto", label: "Auto", href: `${SITE_ROOT}auto/index.html`, icon: NAV_ICONS.auto },
 ];
 
-// Inert placeholders. They sit in their own second row under the real links
-// rather than sharing a row with them, which is what buys the first row
-// enough space to keep full-size touch targets at desktop widths.
-const NAV_DISABLED = [
-  "Jobs", "Events", "Shopping", "Entertainment",
-  "Weather", "Real Estate", "City Map", "Q&A",
+// The eight smaller sections. They sit in their own second row under the
+// primary links rather than sharing a row with them, which is what buys the
+// first row enough space to keep full-size touch targets at desktop widths.
+// Below 1024px CSS merges both rows into one horizontal scroller.
+const NAV_SECONDARY = [
+  { key: "jobs", label: "Jobs", href: `${SITE_ROOT}jobs.html` },
+  { key: "events", label: "Events", href: `${SITE_ROOT}events.html` },
+  { key: "shopping", label: "Shopping", href: `${SITE_ROOT}shopping.html` },
+  { key: "entertainment", label: "Entertainment", href: `${SITE_ROOT}entertainment.html` },
+  { key: "weather", label: "Weather", href: `${SITE_ROOT}weather.html` },
+  { key: "real-estate", label: "Real Estate", href: `${SITE_ROOT}real-estate.html` },
+  { key: "city-map", label: "City Map", href: `${SITE_ROOT}city-map.html` },
+  { key: "qa", label: "Q&A", href: `${SITE_ROOT}qa.html` },
 ];
-
-function weatherNow() {
-  const d = new Date();
-  const dateStr = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-  return { city: "Seattle, WA", date: dateStr, temp: "61°F", note: "Cloudy, no precipitation" };
-}
 
 // The photo is page content, not chrome: it sits inside .container so its
 // edges line up with every other block on the page, and the only thing laid
@@ -58,7 +60,7 @@ function heroMarkup(pageType) {
 // the real sections on top with their icons, the coming-soon sections
 // underneath in a smaller, quieter style.
 function siteHeaderMarkup() {
-  const w = weatherNow();
+  const w = weatherHeaderLine();
   return `
   <header class="site-header" id="site-header-functional">
     <div class="container header-top">
@@ -72,20 +74,20 @@ function siteHeaderMarkup() {
             </a></li>`).join("")}
         </ul>
         <ul class="nav-secondary">
-          ${NAV_DISABLED.map((label) => `
-            <li><a href="#" onclick="return false" title="Coming soon">${label}</a></li>`).join("")}
+          ${NAV_SECONDARY.map((n) => `
+            <li><a href="${n.href}" data-page="${n.key}">${n.label}</a></li>`).join("")}
         </ul>
       </div>
 
       <div class="header-utils">
-        <div class="weather-stub" aria-label="Weather (demo widget)">
+        <a class="weather-stub" href="${SITE_ROOT}weather.html" aria-label="Seattle weather">
           <span class="weather-icon" aria-hidden="true">${UI_ICONS.weather}</span>
           <div class="weather-text">
             <strong>${w.city}</strong>
             <span>${w.date} &middot; ${w.temp}</span>
             <span class="weather-note">${w.note}</span>
           </div>
-        </div>
+        </a>
         <div class="social-links">
           <a href="#" title="Facebook (demo)" aria-label="Facebook">${SOCIAL_ICONS.facebook}</a>
           <a href="#" title="Instagram (demo)" aria-label="Instagram">${SOCIAL_ICONS.instagram}</a>
@@ -156,13 +158,12 @@ export function renderFooter() {
           <li>Telegram: <a href="#">@allseattle</a></li>
         </ul>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-col--wide">
         <h4>Explore</h4>
         <ul>
-          <li><a href="${SITE_ROOT}news.html">News</a></li>
-          <li><a href="${SITE_ROOT}directory.html">Business Directory</a></li>
-          <li><a href="${SITE_ROOT}auto/index.html">Auto</a></li>
-          <li><a href="${SITE_ROOT}pricing.html">Advertise with us</a></li>
+          ${[...NAV_LINKS.slice(1), ...NAV_SECONDARY]
+            .map((n) => `<li><a href="${n.href}">${n.label}</a></li>`).join("")}
+          <li><a href="${SITE_ROOT}contest.html">Contest</a></li>
         </ul>
       </div>
     </div>

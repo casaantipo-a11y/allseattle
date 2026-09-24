@@ -1,0 +1,96 @@
+/* Раздел Shopping. Карточка акции: фото и имя компании берутся из
+   справочника, поэтому вёрстка совпадает с .biz-card по ритму. */
+
+.deal-grid {
+  grid-template-columns: 1fr;
+}
+
+.deal-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.deal-photo {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.deal-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deal-badge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.deal-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-2);
+  padding: var(--card-pad);
+}
+
+.deal-cat {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.deal-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: 1.25;
+  color: var(--color-navy);
+}
+
+.deal-biz {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.deal-terms {
+  flex: 1;
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.deal-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.deal-until {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+@media (min-width: 640px) {
+  .deal-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1440px) {
+  .shopping-layout .deal-grid { grid-template-columns: repeat(3, 1fr); }
+}

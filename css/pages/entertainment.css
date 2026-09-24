@@ -1,0 +1,82 @@
+/* Раздел Entertainment: площадки, куда пойти. Events отвечает на «когда»,
+   этот раздел — на «куда». */
+
+.venue-grid {
+  grid-template-columns: 1fr;
+}
+
+.venue-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.venue-photo {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.venue-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.venue-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-2);
+  padding: var(--card-pad);
+}
+
+.venue-meta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+}
+
+.venue-meta .kind {
+  color: var(--color-accent);
+}
+
+.venue-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: 1.25;
+  color: var(--color-navy);
+}
+
+.venue-desc {
+  flex: 1;
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.venue-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.venue-price {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--color-navy);
+}
+
+@media (min-width: 640px) {
+  .venue-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1440px) {
+  .entertainment-layout .venue-grid { grid-template-columns: repeat(3, 1fr); }
+}

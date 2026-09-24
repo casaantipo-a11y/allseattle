@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather — AllSeattle</title>
+<meta name="description" content="Current conditions and the seven-day forecast for Seattle.">
+<link rel="icon" type="image/svg+xml" href="img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/footer.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/weather.css">
+</head>
+<body data-page-type="inner" data-page="weather">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="weather-top" class="ad-slot-top"></div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Seattle Forecast</span>
+          <h1>Weather</h1>
+        </div>
+        <a href="pricing.html" class="btn">Advertise Here</a>
+      </div>
+
+      <div class="weather-layout side-layout">
+        <div>
+          <div class="weather-now" id="weather-now"></div>
+          <h2 class="weather-h">Next 12 hours</h2>
+          <div class="weather-hourly" id="weather-hourly"></div>
+          <h2 class="weather-h">Seven-day forecast</h2>
+          <div class="weather-week" id="weather-week"></div>
+          <h2 class="weather-h">Around the region</h2>
+          <div class="weather-region" id="weather-region"></div>
+        </div>
+        <aside class="weather-sidebar side-rail">
+          <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="weather-side-1"></div>
+          <div class="ad-desktop-slot" data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="weather-side-2"></div>
+        </aside>
+      </div>
+
+      <div class="mobile-footer-ads" id="mobile-footer-ads"></div>
+
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script type="module" src="js/partials.js"></script>
+<script type="module" src="js/banner-ads.js"></script>
+<script type="module" src="js/pages/weather.js"></script>
+</body>
+</html>

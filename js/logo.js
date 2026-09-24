@@ -94,3 +94,21 @@ export const UI_ICONS = {
   search: strokeIcon(`<circle cx="11" cy="11" r="6"/><path d="m15.4 15.4 4.1 4.1"/>`),
   weather: strokeIcon(`<path d="M7.6 18.4h8.9a4 4 0 0 0 .3-8 5.5 5.5 0 0 0-10.4 1.3 3.4 3.4 0 0 0 1.2 6.7z"/>`, 24),
 };
+
+// Погодные иконки для шапки и раздела Weather. Ключи совпадают с полем
+// `icon` в mock-data/weather.js. Тот же strokeIcon(), значит та же толщина
+// линии, что и у навигации (design.md §6 — один набор).
+export const WEATHER_ICONS = {
+  sun: (size) => strokeIcon(`<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.4M12 19v2.4M4.3 4.3l1.7 1.7M18 18l1.7 1.7M2.6 12H5M19 12h2.4M4.3 19.7 6 18M18 6l1.7-1.7"/>`, size),
+  cloud: (size) => strokeIcon(`<path d="M7.6 18.4h8.9a4 4 0 0 0 .3-8 5.5 5.5 0 0 0-10.4 1.3 3.4 3.4 0 0 0 1.2 6.7z"/>`, size),
+  "cloud-sun": (size) => strokeIcon(`<path d="M8.6 16.9h7.9a3.6 3.6 0 0 0 .3-7.2 5 5 0 0 0-9.4 1.2 3.1 3.1 0 0 0 1.2 6z"/><path d="M5.4 8.2a4 4 0 0 1 5-4.6"/><path d="M17.8 5.6 19 4.4M20.4 9h1.4M15.9 3.4V2.2"/>`, size),
+  rain: (size) => strokeIcon(`<path d="M7.8 14.6h8.7a3.8 3.8 0 0 0 .3-7.6 5.3 5.3 0 0 0-10 1.3 3.3 3.3 0 0 0 1 6.3z"/><path d="M9 17.6 8 20.4M13 17.6 12 20.4M17 17.6 16 20.4"/>`, size),
+  snow: (size) => strokeIcon(`<path d="M7.8 14.6h8.7a3.8 3.8 0 0 0 .3-7.6 5.3 5.3 0 0 0-10 1.3 3.3 3.3 0 0 0 1 6.3z"/><path d="M9 18.4h.01M12.5 20.4h.01M16 18.4h.01M10.7 21.2h.01M14.3 17.2h.01"/>`, size),
+};
+
+// Всегда возвращает разметку: неизвестный ключ падает на облако, а не на
+// пустое место в вёрстке.
+export function weatherIcon(name, size = 20) {
+  const make = WEATHER_ICONS[name] || WEATHER_ICONS.cloud;
+  return make(size);
+}

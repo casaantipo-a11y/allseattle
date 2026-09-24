@@ -106,8 +106,15 @@ Four things that each cost a wasted run when missed:
   screenshot is full of blank photo boxes that look like broken images.
 
 Worth asserting per page rather than eyeballing: `documentElement.scrollWidth === innerWidth`
-(no horizontal scroll), `getComputedStyle(document.body).fontSize` (16px at 375, 18px at 1440),
-how many interactive elements measure under 44px, and how many images have `naturalWidth === 0`.
+(no horizontal scroll), `window.innerWidth` itself (a grid column can inflate the layout even
+while `matchMedia` still reports the narrow width — see the third CSS trap),
+`getComputedStyle(document.body).fontSize` (16px at 375, 18px at 1440), how many interactive
+elements measure under 44px, and how many images have `naturalWidth === 0`. After touching the
+header, also check `#site-header-functional` sits at `top: 0` once the page is scrolled, and
+that neither `.nav-links` nor `.nav-secondary` has `scrollWidth > clientWidth` at 1024px and up.
+
+A pass covers 17 pages, not 9 — a harness with a stale page list will happily report that
+everything is fine.
 
 ### Known issue, not yours
 
@@ -123,9 +130,14 @@ independent, so the listing page still renders fully — the error is noise, not
 
 ### Page shape
 
-9 standalone HTML files (`index.html`, `news.html`, `contest.html`, `directory.html`,
-`pricing.html`, `auto/index.html`, `auto/listing.html`, `auto/add-listing.html`,
-`auto/my-listings.html`), each a `<head>` of the same CSS links + a `<body data-page-type="home|
+17 standalone HTML files. Five at the root are the original sections (`index.html`,
+`news.html`, `contest.html`, `directory.html`, `pricing.html`); eight more were added for the
+sections that used to be coming-soon placeholders in the nav (`jobs.html`, `events.html`,
+`shopping.html`, `entertainment.html`, `weather.html`, `real-estate.html`, `city-map.html`,
+`qa.html`); four live under `auto/` (`index.html`, `listing.html`, `add-listing.html`,
+`my-listings.html`).
+
+Each is a `<head>` of the same CSS links + a `<body data-page-type="home|
 inner" data-page="...">` with two empty mount points (`<div id="site-header">`,
 `<div id="site-footer">`) and a `<main>`. Home carries a third, `<div id="contest-strip">`.
 All real content is injected by JS at `DOMContentLoaded` — there's very little to see in the
@@ -146,17 +158,21 @@ Every page is the same three-part sandwich: **shared chrome → one `<main>` sec
 footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML and filled at
 `DOMContentLoaded`; everything else is in the markup.
 
-**Shared chrome, on all 9 pages** (from `js/partials.js`):
+**Shared chrome, on all 17 pages** (from `js/partials.js`):
 
 1. **Sticky header** — logo, then two rows of nav (5 real links with icons on top, 8
-   coming-soon placeholders underneath), then the utility cluster: weather, social icons, the
-   inert ENG switch, Register Business, account icon. Identical on all nine pages.
+   smaller sections underneath), then the utility cluster: weather, social icons, the inert
+   ENG switch, Register Business, account icon. Identical on all 17 pages. The weather block
+   is a link to `weather.html`.
 2. **Photo banner** — the skyline inside `.container`, rounded, with the search box laid over
    it. Tall on Home; short with the "Seattle / THE EMERALD CITY" wordmark everywhere else.
    This is page content, not chrome: its edges line up with every other block on the page.
 3. **Contest strip** — Home only, and rendered by `home.js`, not `partials.js`.
 4. `<main>` — the page's own `<section>`(s), listed below.
-5. **Footer** — logo, Contact, Follow us, Explore, copyright.
+5. **Footer** — logo, Contact, Follow us, Explore, copyright. Explore lists **every** section,
+   in two columns from 640px, and is built from the same `NAV_LINKS` / `NAV_SECONDARY` arrays
+   as the nav, so a new section appears in both at once. It is also the only way to reach the
+   secondary sections on a phone that does not involve scrolling the nav row sideways.
 
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown
@@ -220,6 +236,49 @@ the design asks for comes from that bottom list rather than from a third or four
 3. Section head — "Compare Plans" / **What's Included**.
 4. Feature table *(JS)* — scrolls inside its own wrapper on narrow screens.
 5. Modal: **Choose a package** — name, business, contact, message.
+
+---
+
+**The eight secondary sections** all share one skeleton, generated from `directory.html`:
+728×90 ad → section head with a `pricing.html` button → content → `#mobile-footer-ads`. Six of
+them wrap the content in `.side-layout` / `.side-rail` (the shared "content + sticky sidebar"
+pair from `components.css`), and every one carries the same three placements: `<key>-top`
+728×90, `<key>-side-1` 300×250, `<key>-side-2` 300×600, plus the inline echo after card 4.
+
+**`jobs.html` — Jobs** — category chips, a count line, then `.job-list`: rows with title,
+salary, company · neighborhood, description, a type badge and posting age. No photos, by
+design. Home's Job Board widget reads the same data and links here.
+
+**`events.html` — Events** — category chips + `.event-grid`: cards with a date plaque over the
+photo, venue, neighborhood and price. `eventDateParts()` in the data file formats the plaque.
+
+**`shopping.html` — Shopping** — category chips + `.deal-grid`. Every deal carries a
+`businessId` and `dealWithBusiness()` joins it to `businesses.js`, so the photo, name and phone
+come from the directory rather than being duplicated.
+
+**`entertainment.html` — Entertainment** — venue-kind chips + `.venue-grid`, and a
+**Tonight in Seattle** widget in the sidebar fed by `upcomingEvents(3)` from `events.js`.
+Events answers "when", this section answers "where".
+
+**`weather.html` — Weather** — the one section with no card grid: a navy current-conditions
+card, a 12-hour scroller, a seven-day list and a regional table. Icons come from
+`WEATHER_ICONS` in `logo.js`.
+
+**`real-estate.html` — Real Estate** — the only new section with a filter column, built like
+Auto's (accordion below 768px, sticky from 768px). Sale prices and monthly rents share one
+numeric field, so `PRICE_STEPS` rebuilds the max-price options whenever the deal type changes.
+
+**`city-map.html` — City Map** — a hand-drawn schematic (`MAP_SHAPES` in
+`neighborhoods.js`), then `.hood-grid`. **The pins are HTML buttons positioned over the SVG,
+not `<text>` inside it** — inside the SVG the labels scale with the drawing and reach 27px on
+a desktop; as HTML they take `--text-xs` and a real 44px target. The page says out loud that
+it is a schematic. Neighborhood counters are computed from `events.js`, `jobs.js` and
+`real-estate.js` rather than stored, so they stay true as data is added.
+
+**`qa.html` — Q&A** — topic chips + a list of native `<details>`. No JS for the accordion:
+keyboard and screen readers work on their own.
+
+---
 
 **`auto/index.html` — Auto catalog**
 
@@ -289,13 +348,19 @@ correct. Keep the header a sibling of `<main>` if you touch this again, and veri
 - The weather widget is a hardcoded stub (`weatherNow()`: always 61°F / Cloudy) with a live date
   string. The search box swaps its own placeholder to "Search is a demo placeholder" for 2.2s on
   submit — it never searches anything.
-- `NAV_LINKS` (5 real pages, each carrying its own `NAV_ICONS` entry) and `NAV_DISABLED`
-  (8 inert `onclick="return false"` placeholders) render into **two separate lists** —
-  `<ul class="nav-links">` and `<ul class="nav-secondary">` — stacked inside `.nav-stack`.
-  They used to share one row, with a CSS adjacent-sibling selector pushing the placeholders to
-  the right edge; splitting them into rows is what buys the first row enough width to keep full
-  44px targets at desktop sizes.
-- The ENG switch and the account icon are inert the same way the placeholder links are. Keep
+- `NAV_LINKS` (5 primary pages, each carrying its own `NAV_ICONS` entry) and `NAV_SECONDARY`
+  (8 smaller sections) render into **two separate lists** — `<ul class="nav-links">` and
+  `<ul class="nav-secondary">` — stacked inside `.nav-stack`. Both are real links now; the
+  secondary eight were `href="#" onclick="return false"` placeholders until their pages were
+  built. They used to share one row, with a CSS adjacent-sibling selector pushing the
+  placeholders to the right edge; splitting them into rows is what buys the first row enough
+  width to keep full 44px targets at desktop sizes.
+- **Below 1024px the two rows merge into one horizontal scroller.** `.nav-stack` itself takes
+  `overflow-x: auto` and the two lists ride inside it as `flex: none` children, so all 13
+  links live on one 44px row. A third row would push the sticky header from 112px to 148px,
+  and hiding eight real sections on a phone is not an option. From 1024px `.nav-stack` goes
+  back to `display: block` and they are two rows again.
+- The ENG switch and the account icon are the only inert controls left in the header. Keep
   them that way — the demo contract covers them.
 
 ### Two independent price systems (easy to confuse)
@@ -337,7 +402,21 @@ re-render (e.g. after filtering).
 ### Mock data (`js/mock-data/*.js`)
 
 Plain exported arrays/constants, no fetch, no build-time generation — `news.js`, `businesses.js`,
-`cars.js`, `contest.js`, `pricing.js`. The **only** thing in this entire site that touches
+`cars.js`, `contest.js`, `pricing.js`, plus one per new section: `jobs.js`, `events.js`,
+`shopping.js`, `entertainment.js`, `weather.js`, `real-estate.js`, `neighborhoods.js`, `qa.js`.
+
+Three of them are deliberately joined to their neighbours rather than self-contained, which is
+what stops the sections reading as separate sites: `shopping.js` holds a `businessId` and
+resolves photo/name/phone out of `businesses.js`; `entertainment.js`'s page pulls
+`upcomingEvents()` from `events.js`; `city-map` counts per neighbourhood by filtering
+`events.js`, `jobs.js` and `real-estate.js` on their `neighborhood` field. Keep that field
+spelled the same way across those three or the counters silently read zero.
+
+`weather.js` is the single source for the forecast **and** for the stub in the header —
+`weatherHeaderLine()` is what `partials.js` calls. Changing the temperature in one place used
+to leave the other disagreeing on the same screen.
+
+The **only** thing in this entire site that touches
 `localStorage` is the contest vote counter (`contest.js`: `CONTEST_STORAGE_KEY` for vote counts,
 `CONTEST_VOTED_KEY` for a one-vote-per-browser guard, both wrapped in try/catch since
 `localStorage` can throw in some browser contexts). If you ever see `localStorage` used from a
@@ -361,6 +440,11 @@ Every submit surface intercepts and shows a canned success state; keep it that w
   flash "Demo only" for 1.5s.
 - **Contest voting** is the one thing that persists (localStorage), and the page ships a visible
   `#reset-votes-btn` escape hatch so a demo can be re-run clean.
+
+The eight newer sections add **no forms at all**: their section-head buttons ("Post a Job",
+"Submit an Event", "List a Property", "Advertise Here") are plain links to `pricing.html`. That
+was a deliberate call — it keeps the demo contract from growing and funnels every section into
+the thing being sold. If you add a form to one of them, it has to join the list above.
 
 Each success panel says out loud that nothing was actually sent — that wording is deliberate (a
 prospective client is reading it), so don't strip it.
@@ -408,8 +492,11 @@ abstraction — each file is self-contained and safe to read in isolation.
   and the footer's "Follow us" list matches), `NAV_ICONS` (one per real nav link) and `UI_ICONS`
   (account / globe / search / weather). `NAV_ICONS` and `UI_ICONS` are built by one local
   `strokeIcon()` helper, so they share a 24-unit box, a 1.8 stroke and `currentColor` — §6 wants
-  a single icon set at one weight. Add new icons through that helper, not by hand, and don't
-  reach for an emoji: the two that used to stand in for search and weather are gone.
+  a single icon set at one weight. `WEATHER_ICONS` (sun / cloud / cloud-sun / rain / snow) comes
+  from the same helper; reach it through `weatherIcon(name, size)`, which falls back to the
+  cloud rather than returning an empty string for an unknown key. Add new icons through
+  `strokeIcon()`, not by hand, and don't reach for an emoji: the two that used to stand in for
+  search and weather are gone.
 
 ### The logo
 
@@ -461,7 +548,14 @@ there, not at the call sites. (`--gut` from the old code is gone; `.grid` uses `
 narrow-screen state and each query only adds what wider screens get. There are no `max-width`
 queries left apart from `prefers-reduced-motion`; don't reintroduce one.
 
-Two traps this layout has already hit once each:
+**`.side-layout` / `.side-rail` in `components.css` are the shared "content + sticky sidebar"
+frame**, used by News-style pages and by six of the eight newer sections. Reach for them instead
+of copying the block into another page file — that copy is exactly the "different style for the
+same component" §9 bans. A page file should only hold what is genuinely its own: its card grid's
+columns and its own components. `.ad-slot-top` and `.result-count` live there for the same
+reason.
+
+Three traps this layout has already hit once each:
 
 - **`.ad-slot--desktop` / `.ad-slot--mobile-only` sit on the same element as `.ad-slot`**, which
   is `display: flex`. Restore their visibility with `display: flex`, never `block` — `block`
@@ -469,6 +563,11 @@ Two traps this layout has already hit once each:
 - **The ad desktop/mobile swap must stay on the same breakpoint as the sidebar collapse** (both
   1024px now). If they diverge, tablet widths get a collapsed sidebar still showing desktop-sized
   ad boxes.
+- **A grid column defaults to `min-width: auto` and inflates to fit its content.** An element
+  with its own `overflow-x: auto` inside one does not clip — it widens the column and then the
+  page. Weather's 12-hour scroller stretched a 375px viewport to 1017px this way, with the media
+  queries still reporting 375px, so the page looked correct in CSS and wrong on screen.
+  `.side-layout > * { min-width: 0 }` is what holds it.
 
 `position: sticky` is used for the site header (see partials.js note above) and for the
 sidebars on News, Directory and Auto (`top: calc(var(--header-height) + var(--space-2))`). They
@@ -524,15 +623,15 @@ Each of these was decided explicitly. Don't "fix" them back:
   "Read more →"). Inflating them would wreck the line rhythm; the surrounding controls all meet
   44px.
 - **The header reveals its utilities by width, and two of its controls sit under 44px.** The
-  numbers that force this, measured on the live page: logo 178px, the row of 8 coming-soon links
+  numbers that force this, measured on the live page: logo 178px, the row of 8 secondary links
   553px (the wider of the two nav rows), the full utility cluster 564px. Together with gutters
   that needs ~1400px of container, so the cluster arrives in stages — ENG and the account icon
   from 1024px, social icons from 1280px, weather and Register Business from 1440px. Below
-  1024px the coming-soon row is hidden outright. The coming-soon links are 36px tall and the ENG
-  switch 32px from 1024px up: §8's 44×44 rule is in the responsiveness section and is about
-  touch, and both are inert controls being shown to a mouse. Everything that actually does
-  something keeps 44px. **If you add a nav item or lengthen a label, re-measure** — the
-  first thing that breaks is `.nav-links` quietly turning into a horizontal scroller.
+  1024px the two nav rows merge into one scroller instead. The secondary links are 36px tall
+  and the ENG switch 32px from 1024px up: §8's 44×44 rule is in the responsiveness section and
+  is about touch, and at those widths the pointer is a mouse — on touch widths both are back to
+  44px. **If you add a nav item or lengthen a label, re-measure** — the first thing that breaks
+  is `.nav-links` quietly turning into a horizontal scroller at desktop width.
 - **Three font families**, not two (§2) — Pacifico is the brand script in the inner hero.
 
 ### Images (`img/`)
@@ -542,3 +641,10 @@ offline in front of a client — never hotlink external image URLs here. Organiz
 (`hero/`, `news/`, `business/`, `cars/`, `contest/`, `icons/`); `cars/` photos are per-listing
 (`c1-1.jpg`, `c1-2.jpg`, ... matching a car's `id` in `cars.js`), the rest are curated pools reused
 across entries where the mock data needs more variety than there are unique photos.
+
+**The eight newer sections have no folder of their own** — there is nowhere to get new photos
+from and downloading them would break the offline guarantee, so Events, Real Estate, City Map
+and Entertainment draw from `news/`, `business/` and `hero/`. Jobs, Weather and Q&A carry no
+photos at all, which is a design choice as much as a constraint: a list of job titles reads
+faster without them. If real photography ever arrives for a section, give it its own folder
+rather than growing the shared pools.

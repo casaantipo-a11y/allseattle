@@ -75,3 +75,12 @@
     grid-template-columns: 1.4fr 1fr 1fr 1fr;
   }
 }
+
+/* Explore перечисляет все 13 разделов — в одну колонку это простыня. */
+@media (min-width: 640px) {
+  .footer-col--wide ul {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--space-6);
+  }
+}

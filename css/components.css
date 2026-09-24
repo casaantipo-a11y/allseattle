@@ -968,3 +968,97 @@ body.modal-open {
   .news-list-row { grid-template-columns: 96px 1fr; }
   .news-list-thumb { width: 96px; }
 }
+
+/* ---------- Общая раскладка «контент + липкий сайдбар» ----------
+   Восемь разделов повторяли бы блок из directory.css слово в слово, а
+   design.md §9 запрещает разный стиль у однотипных компонентов. Раскладка
+   живёт здесь одна, страницы добавляют к ней только ширину своих колонок. */
+.side-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* Без этого колонка грида раздувается под свой контент (min-width: auto),
+   и внутренний горизонтальный скроллер растягивает всю страницу. */
+.side-layout > * {
+  min-width: 0;
+}
+
+.side-rail {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--grid-gap);
+  position: static;
+}
+
+.side-rail > * {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+/* Баннер 728x90 над контентом — тот же отступ на всех разделах. */
+.ad-slot-top {
+  margin-bottom: var(--space-6);
+  display: flex;
+  justify-content: center;
+}
+
+.result-count {
+  color: var(--color-slate);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .side-layout {
+    grid-template-columns: 1fr 300px;
+  }
+  .side-rail {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-2));
+  }
+  .side-rail > * {
+    flex: 0 0 auto;
+  }
+}
+
+/* Компактная строка «название + пометка» для виджетов в сайдбаре.
+   Используется и главной (Job Board), и разделом Entertainment
+   (Tonight in Seattle), поэтому лежит здесь, а не в CSS одной страницы. */
+.mini-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-slate-soft);
+}
+
+.mini-row:last-child {
+  border-bottom: none;
+}
+
+.mini-row-title {
+  font-weight: 700;
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+}
+
+.mini-row:hover .mini-row-title {
+  color: var(--color-accent);
+}
+
+.mini-row-note {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-accent);
+  white-space: nowrap;
+}

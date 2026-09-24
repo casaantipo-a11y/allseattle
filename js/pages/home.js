@@ -2,6 +2,7 @@ import { NEWS_ARTICLES } from "../mock-data/news.js";
 import { BUSINESSES } from "../mock-data/businesses.js";
 import { CAR_LISTINGS } from "../mock-data/cars.js";
 import { CONTEST_TITLE, CONTEST_ENTRIES } from "../mock-data/contest.js";
+import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
 import { initScrollReveal } from "../reveal.js";
 import { relativeTime } from "../format-time.js";
@@ -151,14 +152,22 @@ function renderCurrencyWidget() {
   `;
 }
 
+// Виджет вёл в никуда и носил бейдж Coming Soon, пока раздела не было.
+// Теперь показывает три свежие вакансии и ведёт на jobs.html.
 function renderJobsWidget() {
   const el = document.getElementById("widget-jobs");
   if (!el) return;
+  const latest = [...JOB_LISTINGS]
+    .sort((a, b) => new Date(b.postedAt) - new Date(a.postedAt))
+    .slice(0, 3);
   el.innerHTML = `
     <div class="widget-head">Job Board</div>
-    <div class="widget-body job-teaser">
-      <p>Local listings from AllSeattle businesses are being lined up now &mdash; the job board launches in a future update.</p>
-      <span class="badge-soon">Coming Soon</span>
+    <div class="widget-body">
+      ${latest.map((job) => `
+        <a class="mini-row" href="jobs.html">
+          <span class="mini-row-title">${job.title}</span>
+          <span class="mini-row-note">${job.type}</span>
+        </a>`).join("")}
     </div>
   `;
 }

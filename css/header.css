@@ -86,23 +86,29 @@
 }
 
 /* ---------- Меню: два ряда ---------- */
+/* Ниже 1024px оба ряда сливаются в одну прокручиваемую строку из 13 пунктов:
+   третий ряд поднял бы липкую шапку со 112px до 148px, а прятать восемь
+   настоящих разделов на телефоне нельзя. Скроллит сам .nav-stack, списки
+   внутри него просто не сжимаются. */
 .nav-stack {
   grid-area: nav;
   min-width: 0;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.nav-stack::-webkit-scrollbar { display: none; }
 
 .nav-links,
 .nav-secondary {
   display: flex;
   gap: var(--space-1);
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex: none;
 }
 
-.nav-links::-webkit-scrollbar,
-.nav-secondary::-webkit-scrollbar { display: none; }
-
-.nav-links li a {
+.nav-links li a,
+.nav-secondary li a {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -123,40 +129,20 @@
 }
 
 .nav-links li a:hover,
-.nav-links li a:hover .nav-icon {
+.nav-links li a:hover .nav-icon,
+.nav-secondary li a:hover {
   color: var(--color-accent);
 }
 
 .nav-links li a.active,
-.nav-links li a.active .nav-icon {
+.nav-links li a.active .nav-icon,
+.nav-secondary li a.active {
   color: var(--color-accent);
 }
 
-.nav-links li a.active {
+.nav-links li a.active,
+.nav-secondary li a.active {
   border-bottom-color: var(--color-accent);
-}
-
-/* Неактивные разделы. Ниже 1024px они скрыты: это заглушки, которые ничего
-   не делают, а липкая шапка на телефоне и без них занимает 112px. */
-.nav-secondary {
-  display: none;
-}
-
-.nav-secondary li a {
-  display: flex;
-  align-items: center;
-  min-height: 36px;
-  padding: 0 var(--space-1);
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: var(--text-xs);
-  color: #a7b1bd;
-  white-space: nowrap;
-  cursor: default;
-}
-
-.nav-secondary li a:hover {
-  color: #a7b1bd;
 }
 
 /* ---------- Правый блок утилит ---------- */
@@ -385,7 +371,26 @@
     gap: var(--space-4);
   }
 
-  .nav-secondary { display: flex; }
+  /* Снова два ряда: .nav-stack перестаёт быть скроллером, а второй ряд
+     уходит в мелкий серый. Подсветка активного — только цветом: рамка
+     добавила бы ряду высоты, а он и так самый широкий элемент шапки. */
+  .nav-stack {
+    display: block;
+    overflow: visible;
+  }
+
+  .nav-secondary li a {
+    min-height: 36px;
+    padding: 0 var(--space-1);
+    font-weight: 600;
+    color: #a7b1bd;
+    border-bottom: none;
+  }
+
+  .nav-secondary li a:hover,
+  .nav-secondary li a.active {
+    color: var(--color-accent);
+  }
 
   /* Правило 44x44 (design.md §8) — про касания, оно в разделе адаптивности.
      На широком экране указатель мышиный, поэтому служебные контролы ужимаем,

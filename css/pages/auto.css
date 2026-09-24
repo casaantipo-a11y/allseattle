@@ -27,12 +27,6 @@
   border-bottom-color: var(--color-accent);
 }
 
-.ad-slot-top {
-  margin-bottom: var(--space-6);
-  display: flex;
-  justify-content: center;
-}
-
 /* Mobile-first: базово одна колонка и фильтры-аккордеон;
    боковая колонка фильтров включается с 768px. */
 .auto-layout {

@@ -25,12 +25,6 @@
   min-width: 0;
 }
 
-.ad-slot-top {
-  margin-bottom: var(--space-6);
-  display: flex;
-  justify-content: center;
-}
-
 @media (min-width: 640px) {
   .news-grid {
     grid-template-columns: repeat(2, 1fr);
