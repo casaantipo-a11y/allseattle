@@ -99,6 +99,104 @@ inner" data-page="...">` with two empty mount points (`<div id="site-header">`,
   `new URL("../", import.meta.url).href` (`SITE_ROOT`), so the same module works from any page
   depth regardless of how it was reached.
 
+### Section map — what every page contains, in order
+
+Every page is the same three-part sandwich: **shared chrome → one `<main>` section → shared
+footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML and filled at
+`DOMContentLoaded`; everything else is in the markup.
+
+**Shared chrome, on all 9 pages** (from `js/partials.js`):
+
+1. **Hero.** Home gets the tall photo with weather / logo / search laid over it, plus the
+   5-landmark icon strip. Every other page gets the short navy strip: "Seattle / THE EMERALD
+   CITY" wordmark + a compact version of the same icon strip.
+2. **Header bar** — weather, logo, search. Inner pages only; Home has it inside the hero instead.
+3. **Sticky nav** — 5 real links, 5 inert placeholders pushed right, social icons,
+   Register Business / Log In.
+4. `<main>` — the page's own single `<section>`, listed below.
+5. **Footer** — logo, Contact, Follow us, Explore, copyright.
+
+---
+
+**`index.html` — Home** (`data-page-type="home"`, the only `.section-tight`)
+A three-column `.home-layout`. Below 1024px it becomes one column, but the asides do not simply
+stack: the left aside's four slots are `.ad-desktop-slot` and disappear entirely, reappearing as
+inline ads inside the news feed, while the right aside's widgets do stack below the feed.
+
+1. Left aside — four ad slots: 300×250, 300×250, 300×600, 300×250.
+2. Middle `.home-main`:
+   1. 728×90 ad.
+   2. Section head — "Today in Seattle" / **Top News** + "All News" button.
+   3. News grid *(JS)* — 8 cards, with inline mobile ads after cards 4 and 8.
+3. Right aside — four widgets *(JS)* in this order: **AllSeattle at a Glance** (4 stat tiles),
+   **Exchange Rates**, **Job Board** (Coming Soon), **City Transit**; then a 300×250 ad and the
+   mobile ad stack.
+
+**`news.html` — News**
+
+1. 728×90 ad.
+2. Section head — "Seattle News" / **Latest Stories** + "+ Share the News" button.
+3. `.news-layout` — article grid *(JS)*, inline ad after card 4 | sidebar: 300×250, 300×600.
+4. Mobile ad stack *(JS)*.
+5. Contest teaser — a link block promoting `contest.html`.
+6. Modal: **Share the News** — headline, details, photo, contact.
+
+**`contest.html` — Contest**
+
+1. Contest hero — eyebrow, **Police in the Eyes of a Child**, lead paragraph, "← Back to News".
+2. Entry grid *(JS)* — 6 entries, each with a vote button.
+3. "Reset my votes (demo)" button — the escape hatch that clears the stored votes.
+
+**`directory.html` — Business Directory**
+
+1. 728×90 ad.
+2. Section head — "Business Directory" / **Find a Seattle Business** + "List Your Business".
+3. Category filter chips *(JS)*.
+4. `.directory-layout` — business grid *(JS)*, inline ad after card 4 | sidebar: 300×250, 300×600.
+5. Mobile ad stack *(JS)*.
+
+**`pricing.html` — Pricing**
+
+1. Section intro — "Advertise on AllSeattle" / **Placement Packages** + lead.
+2. Pricing grid *(JS)* — Standard / Lux / Premium, Lux flagged "Most Popular".
+3. Section head — "Compare Plans" / **What's Included**.
+4. Feature table *(JS)* — scrolls inside its own wrapper on narrow screens.
+5. Modal: **Choose a package** — name, business, contact, message.
+
+**`auto/index.html` — Auto catalog**
+
+1. Auto subnav — Catalog / Add a Car / My Listings (on all four Auto pages).
+2. 728×90 ad.
+3. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
+4. `.auto-layout` — filter aside (Make, Max price, Min year, Max mileage, Sort by, Reset, plus a
+   300×600 ad; collapses into an accordion below 768px) | results: count line + car grid *(JS)*,
+   inline ad after card 4.
+
+**`auto/listing.html` — Car detail** (reads `?id=` — an unknown id silently falls back to the
+first car)
+
+1. Auto subnav.
+2. "← Back to catalog".
+3. `#listing-root` *(JS)*: header (title + price) → `.listing-layout` — gallery, Description,
+   Specifications table | seller card with the inline contact form, plus a 300×250 ad.
+4. **Similar Cars** — up to 3 cards, same make or body type.
+
+**`auto/add-listing.html` — Add a Car** (container capped at 720px)
+
+1. Auto subnav.
+2. Section head — "AllSeattle Auto" / **Post Your Car**.
+3. Step indicator *(JS)* — Vehicle / Condition / Contact / Review.
+4. Four form steps, one visible at a time: **Photos & Vehicle**, **Condition & Price**,
+   **Description & Contact**, **Review Your Listing** (a read-back of everything entered).
+5. Back / Next / Submit.
+
+**`auto/my-listings.html` — My Listings** (container capped at 760px)
+
+1. Auto subnav.
+2. Section head — "Your Account" / **My Listings** + "+ Post a Listing".
+3. Note that the account system does not exist and the data is fixed.
+4. Listing rows *(JS)* — 3 fixed cars, Edit / Delete flash "Demo only".
+
 ### Path depth is the biggest trap here
 
 Only `partials.js` is depth-independent (`SITE_ROOT`). **Mock-data image paths are written
