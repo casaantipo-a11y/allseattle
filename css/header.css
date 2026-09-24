@@ -280,13 +280,21 @@
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.94);
+  /* Плашка прозрачная: фотография сквозь неё видна. Размытие подложки —
+     не украшение, а то, что удерживает текст читаемым: без него тёмные
+     участки фото просвечивают пятнами прямо под буквами. Замерено: на 0.7
+     без размытия контраст строки даты падает до 3.9:1 при норме 4.5. */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   font-size: var(--text-xs);
-  color: var(--color-slate);
+  /* navy, а не slate: на просвечивающем фоне серый текст уходит под норму. */
+  color: var(--color-navy);
 }
 
 .hero-weather:hover {
-  background: var(--color-white);
+  background: rgba(255, 255, 255, 0.85);
 }
 
 /* По умолчанию плашка однострочная: дата и температура. Полная в три строки

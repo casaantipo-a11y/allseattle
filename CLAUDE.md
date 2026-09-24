@@ -179,6 +179,14 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
    - **The weather plate is one line everywhere except Home at 1024px and up.** Its full
      three-line form is 79px tall and hit the search bar on a 140px inner frame and the wordmark
      on a 170px one.
+   - **The plate is translucent white (0.7) over `backdrop-filter: blur(10px)`.** The blur is
+     load-bearing, not decoration: dark patches of the photo otherwise show through in blotches
+     right under the letters. Measured against the darkest 5% of the backdrop, the readable text
+     is navy rather than slate for the same reason — slate lands at 3.9:1 there, under §4's 4.5.
+     Navy holds 8.9:1 and up. The red "no precipitation" line is 2.2:1 and fails, as it already
+     did at the old 0.94 (red on white is only 3.8:1 to begin with); it shows on Home desktop
+     only. Going more transparent than 0.7 means either dropping the dark-on-light plate for a
+     dark one with white text, or accepting that the temperature line fails AA too.
    - **Below 1024px the search is a full-width bar along the bottom**, so the plate cannot sit in
      the corner. It sits directly on top of the bar instead, at
      `calc(var(--space-4) + var(--search-h) + var(--space-2))`. `--search-h` is declared on
