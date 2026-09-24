@@ -468,7 +468,7 @@ prospective client is reading it), so don't strip it.
 
 ### Per-page modules (`js/pages/*.js`)
 
-Same shape everywhere: import mock data + `banner-ads.js` / `reveal.js` / `format-time.js` /
+Same shape everywhere: import mock data + `banner-ads.js` / `format-time.js` /
 `validation.js` / `modal.js` as needed, define small `xCardTemplate()` template-literal functions,
 wire `DOMContentLoaded` to populate the page and attach listeners. No shared page-controller
 abstraction — each file is self-contained and safe to read in isolation.
@@ -482,9 +482,8 @@ abstraction — each file is self-contained and safe to read in isolation.
   something), but don't rely on a "not found" state existing.
 - Filter/sort pages (`auto-catalog.js`, `directory.js`) recompute the full result list from the
   original mock array on every control change rather than mutating state incrementally — simple,
-  and fine at this data volume. After each re-render they call `mountAdSlots(grid)` **and**
-  `initScrollReveal(".reveal-on-scroll", grid)`; forgetting either leaves new cards permanently
-  invisible or leaves empty ad boxes.
+  and fine at this data volume. After each re-render they call `mountAdSlots(grid)`; forgetting
+  it leaves empty ad boxes where the new cards' inline placement should be.
 
 ### Shared helpers
 
@@ -493,10 +492,6 @@ abstraction — each file is self-contained and safe to read in isolation.
   class + `aria-invalid` + a `.field-error` text node inside the element with `data-field="name"`).
   Every form on the site uses this pattern, plus the shared `isEmail()` / `digits()` predicates for
   the recurring "an email or a phone, either is fine" contact rule.
-- `reveal.js` — `initScrollReveal(selector, root)` fades/slides in `.reveal-on-scroll` elements
-  via `IntersectionObserver`, skipping anything already `.is-visible` (so it's safe to call again
-  after a partial re-render) and short-circuiting to "everything visible immediately" under
-  `prefers-reduced-motion` or if `IntersectionObserver` is unavailable.
 - `format-time.js` — `relativeTime(iso)` ("2 hours ago" / "Yesterday" / falls back to a date
   after 7 days) and `formatViews(n)` (1200 → "1.2k").
 - `modal.js` — generic overlay open/close/Escape/backdrop-click wiring by element id
@@ -563,7 +558,22 @@ there, not at the call sites. (`--gut` from the old code is gone; `.grid` uses `
 
 **Breakpoints are mobile-first `min-width` at 640 / 768 / 1024 / 1280, plus 1440** — base rules are the
 narrow-screen state and each query only adds what wider screens get. There are no `max-width`
-queries left apart from `prefers-reduced-motion`; don't reintroduce one.
+queries anywhere; don't reintroduce one.
+
+**The site has no animation, deliberately.** Not a `transition`, not an `@keyframes`, not a
+`scroll-behavior: smooth`, not a hover `transform` — the user asked for all of it gone, on the
+grounds that a dense city portal has no use for it. Scroll-reveal is gone with it: `reveal.js`
+was deleted and `.reveal-on-scroll` no longer exists in any template. So a new component gets
+its states instantly: hover changes colour or shadow, an accordion snaps open, a modal appears.
+Rotations that mark a state (the accordion chevron, the Q&A plus turning into a cross) stayed,
+because they say *what is open* rather than moving for its own sake — they just flip with no
+easing. If you add a `transition`, you are re-opening a settled decision.
+
+One consequence worth knowing when measuring: **a CDP pass can no longer reach the bottom of a
+page in one `scrollTo` and expect `loading="lazy"` to have fired.** Smooth scrolling used to walk
+the viewport past every image on the way down; the jump is now instant and the middle of the page
+never enters the viewport, so a screenshot comes back full of blank photo boxes and a broken-image
+count that has nothing to do with the site. Step down a viewport at a time instead.
 
 **`.side-layout` / `.side-rail` in `components.css` are the shared "content + sticky sidebar"
 frame**, used by News-style pages and by six of the eight newer sections. Reach for them instead

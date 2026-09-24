@@ -1,6 +1,5 @@
 import { PROPERTIES, PROPERTY_DEALS, PROPERTY_NEIGHBORHOODS } from "../mock-data/real-estate.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 // Цена продажи и месячная аренда живут в одном поле, поэтому набор порогов
 // в фильтре пересобирается под выбранный тип сделки — иначе «до $900 000»
@@ -24,7 +23,7 @@ function money(n) {
 function cardTemplate(p) {
   const beds = p.beds === 0 ? "Studio" : `<b>${p.beds}</b> bed`;
   return `
-  <article class="card realty-card reveal-on-scroll">
+  <article class="card realty-card">
     <div class="realty-photo">
       <img src="${p.photo}" alt="${p.title}" loading="lazy">
       <span class="realty-deal">${p.deal}</span>
@@ -101,7 +100,6 @@ function render() {
   // Без обоих вызовов новые карточки останутся невидимыми, а рекламные
   // коробки пустыми.
   mountAdSlots(grid);
-  initScrollReveal(".reveal-on-scroll", grid);
 }
 
 function wire() {
@@ -147,5 +145,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("real-estate-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

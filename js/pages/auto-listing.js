@@ -1,7 +1,6 @@
 import { CAR_LISTINGS } from "../mock-data/cars.js";
 import { carCardTemplate } from "./auto-catalog.js";
 import { validate, isEmail, digits } from "../validation.js";
-import { initScrollReveal } from "../reveal.js";
 
 const fmtPrice = (n) => `$${n.toLocaleString("en-US")}`;
 const fmtMileage = (n) => `${n.toLocaleString("en-US")} mi`;
@@ -125,7 +124,6 @@ function renderSimilar(car) {
     .filter((c) => c.id !== car.id && (c.make === car.make || c.bodyType === car.bodyType))
     .slice(0, 3);
   document.getElementById("similar-cars-grid").innerHTML = similar.map(carCardTemplate).join("");
-  initScrollReveal();
 }
 
 function render() {

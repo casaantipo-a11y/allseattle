@@ -1,7 +1,6 @@
 import { WEATHER_NOW, WEATHER_HOURLY, WEATHER_WEEK, WEATHER_REGION } from "../mock-data/weather.js";
 import { weatherIcon } from "../logo.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 function renderNow() {
   const el = document.getElementById("weather-now");
@@ -84,5 +83,4 @@ document.addEventListener("DOMContentLoaded", () => {
     footer.innerHTML = inlineAdMarkup("weather-side-1", "300x250") + inlineAdMarkup("weather-side-2", "300x600");
   }
   mountAdSlots(document);
-  initScrollReveal();
 });

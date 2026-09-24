@@ -59,8 +59,7 @@
   position: absolute;
   right: var(--space-4);
   top: 50%;
-  transform: translateY(-50%) rotate(0deg);
-  transition: transform 0.25s ease;
+  transform: translateY(-50%);
   color: var(--color-accent);
 }
 
@@ -71,7 +70,6 @@
 .auto-filters-body {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.35s ease;
 }
 
 .auto-filters-body.open {
@@ -217,11 +215,5 @@
   .my-listing-card img {
     width: 120px;
     height: 90px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .auto-filters-body {
-    transition: none;
   }
 }

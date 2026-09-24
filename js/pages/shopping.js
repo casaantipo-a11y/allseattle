@@ -1,12 +1,11 @@
 import { allDealsWithBusiness, DEAL_CATEGORIES } from "../mock-data/shopping.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 const DEALS = allDealsWithBusiness();
 
 function dealCardTemplate(deal) {
   return `
-  <article class="card deal-card reveal-on-scroll">
+  <article class="card deal-card">
     <div class="deal-photo">
       <img src="${deal.business.photo}" alt="${deal.business.name}" loading="lazy">
       <span class="deal-badge">${deal.discount}</span>
@@ -47,7 +46,6 @@ function renderGrid(active) {
   });
   grid.innerHTML = html;
   mountAdSlots(grid);
-  initScrollReveal(".reveal-on-scroll", grid);
 }
 
 function wireFilters() {
@@ -68,5 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("shopping-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

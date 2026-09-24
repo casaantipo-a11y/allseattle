@@ -32,8 +32,7 @@
   position: absolute;
   right: var(--space-4);
   top: 50%;
-  transform: translateY(-50%) rotate(0deg);
-  transition: transform 0.25s ease;
+  transform: translateY(-50%);
   color: var(--color-accent);
 }
 
@@ -44,7 +43,6 @@
 .realty-filters-body {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.35s ease;
 }
 
 .realty-filters-body.open {

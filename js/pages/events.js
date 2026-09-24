@@ -1,11 +1,10 @@
 import { EVENTS, EVENT_CATEGORIES, eventDateParts } from "../mock-data/events.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 function eventCardTemplate(ev) {
   const d = eventDateParts(ev.startsAt);
   return `
-  <article class="card event-card reveal-on-scroll">
+  <article class="card event-card">
     <div class="event-photo">
       <img src="${ev.photo}" alt="${ev.title}" loading="lazy">
       <div class="event-date"><span class="m">${d.month}</span><span class="d">${d.day}</span></div>
@@ -47,7 +46,6 @@ function renderGrid(active) {
   });
   grid.innerHTML = html;
   mountAdSlots(grid);
-  initScrollReveal(".reveal-on-scroll", grid);
 }
 
 function wireFilters() {
@@ -68,5 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("events-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

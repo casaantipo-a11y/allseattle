@@ -1,12 +1,11 @@
 import { QA_ITEMS, QA_TOPICS } from "../mock-data/qa.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 // Нативный <details>: раскрытие, фокус и чтение скринридером работают сами,
 // без единого обработчика.
 function qaItemTemplate(item) {
   return `
-  <details class="qa-item reveal-on-scroll">
+  <details class="qa-item">
     <summary>
       <span>
         <span class="qa-topic">${item.topic}</span>
@@ -44,7 +43,6 @@ function renderList(active) {
   });
   list.innerHTML = html;
   mountAdSlots(list);
-  initScrollReveal(".reveal-on-scroll", list);
 }
 
 function wireFilters() {
@@ -65,5 +63,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("qa-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

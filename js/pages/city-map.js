@@ -3,7 +3,6 @@ import { EVENTS } from "../mock-data/events.js";
 import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { PROPERTIES } from "../mock-data/real-estate.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 // Счётчики не хранятся в данных района, а считаются по трём разделам, у
 // которых поле neighborhood уже есть. Добавится объявление — цифра сойдётся
@@ -42,7 +41,7 @@ function renderMap() {
 function hoodCardTemplate(n) {
   const c = countsFor(n.name);
   return `
-  <article class="card hood-card reveal-on-scroll" id="${n.id}">
+  <article class="card hood-card" id="${n.id}">
     <div class="hood-photo"><img src="${n.photo}" alt="${n.name}" loading="lazy"></div>
     <div class="hood-body">
       <span class="hood-known">${n.known}</span>
@@ -67,7 +66,6 @@ function renderGrid() {
   });
   grid.innerHTML = html;
   mountAdSlots(grid);
-  initScrollReveal(".reveal-on-scroll", grid);
 }
 
 function selectHood(id) {
@@ -78,7 +76,7 @@ function selectHood(id) {
   if (pin) pin.classList.add("is-active");
   if (card) {
     card.classList.add("is-active");
-    card.scrollIntoView({ behavior: "smooth", block: "start" });
+    card.scrollIntoView({ block: "start" });
   }
 }
 
@@ -98,5 +96,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("city-map-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

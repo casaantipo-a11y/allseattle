@@ -1,13 +1,12 @@
 import { CAR_LISTINGS } from "../mock-data/cars.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 const fmtPrice = (n) => `$${n.toLocaleString("en-US")}`;
 const fmtMileage = (n) => `${n.toLocaleString("en-US")} mi`;
 
 export function carCardTemplate(car) {
   return `
-  <a href="listing.html?id=${car.id}" class="card car-card reveal-on-scroll">
+  <a href="listing.html?id=${car.id}" class="card car-card">
     <div class="car-card-photo"><img src="${car.photos[0]}" alt="${car.year} ${car.make} ${car.model}" loading="lazy"></div>
     <div class="car-card-body">
       <div class="car-card-price">${fmtPrice(car.price)}</div>
@@ -80,7 +79,6 @@ function renderResults(list) {
   });
   grid.innerHTML = html;
   mountAdSlots(grid);
-  initScrollReveal(".reveal-on-scroll", grid);
 }
 
 function wireControls() {

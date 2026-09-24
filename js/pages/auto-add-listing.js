@@ -117,7 +117,7 @@ function wireNav() {
     if (!validateStep(form, currentStep)) return;
     currentStep = Math.min(currentStep + 1, TOTAL_STEPS);
     showStep(currentStep);
-    window.scrollTo({ top: form.offsetTop - 100, behavior: "smooth" });
+    window.scrollTo(0, form.offsetTop - 100);
   });
   document.getElementById("al-back").addEventListener("click", () => {
     currentStep = Math.max(currentStep - 1, 1);

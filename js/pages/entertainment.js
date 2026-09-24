@@ -1,11 +1,10 @@
 import { VENUES, VENUE_KINDS } from "../mock-data/entertainment.js";
 import { upcomingEvents, eventDateParts } from "../mock-data/events.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 
 function venueCardTemplate(v) {
   return `
-  <article class="card venue-card reveal-on-scroll">
+  <article class="card venue-card">
     <div class="venue-photo"><img src="${v.photo}" alt="${v.name}" loading="lazy"></div>
     <div class="venue-body">
       <div class="venue-meta">
@@ -46,7 +45,6 @@ function renderGrid(active) {
   });
   grid.innerHTML = html;
   mountAdSlots(grid);
-  initScrollReveal(".reveal-on-scroll", grid);
 }
 
 // Тянет три ближайших события из раздела Events — разделы портала должны
@@ -87,5 +85,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("entertainment-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

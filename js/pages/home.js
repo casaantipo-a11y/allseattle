@@ -4,7 +4,6 @@ import { CAR_LISTINGS } from "../mock-data/cars.js";
 import { CONTEST_TITLE, CONTEST_ENTRIES } from "../mock-data/contest.js";
 import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 import { relativeTime } from "../format-time.js";
 
 // The 12 articles are split, not repeated: the first 6 run as photo cards in
@@ -26,7 +25,7 @@ const FOOTER_AD_SEEDS = [
 
 function newsCardTemplate(article) {
   return `
-  <article class="card news-card reveal-on-scroll">
+  <article class="card news-card">
     <a href="news.html" class="news-card-photo"><img src="${article.photo}" alt="${article.title}" loading="lazy"></a>
     <div class="news-card-body">
       <div class="news-card-meta">
@@ -202,5 +201,4 @@ document.addEventListener("DOMContentLoaded", () => {
   renderJobsWidget();
   renderTransitWidget();
   mountAdSlots(document);
-  initScrollReveal();
 });

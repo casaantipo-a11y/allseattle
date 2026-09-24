@@ -3,7 +3,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
 }
 
 body {
@@ -129,14 +128,12 @@ main > .section + .section {
   line-height: 1.25;
   letter-spacing: 0.02em;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
   text-align: center;
 }
 
 .btn:hover {
   background: var(--color-accent-dark);
   border-color: var(--color-accent-dark);
-  transform: translateY(-1px);
   box-shadow: var(--shadow);
 }
 
@@ -179,7 +176,6 @@ main > .section + .section {
 .btn[disabled] {
   opacity: 0.55;
   cursor: not-allowed;
-  transform: none;
   box-shadow: none;
 }
 
@@ -189,7 +185,6 @@ main > .section + .section {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Badges */
@@ -295,45 +290,11 @@ main > .section + .section {
   gap: var(--grid-gap);
 }
 
-/* Scroll-reveal: fades/slides an element up as it enters the viewport.
-   See js/reveal.js. --reveal-i staggers a small wave across a grid. */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(var(--space-4));
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  transition-delay: calc(var(--reveal-i, 0) * 60ms);
-}
-
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Hover lift for card types that use .reveal-on-scroll — declared after it
-   so this wins the (equal-specificity) fight over `transform` once a card
-   has already revealed and the user hovers it. */
+/* Карточка под курсором только усиливает тень — без сдвига и без плавности.
+   На портале с плотной сеткой движение под курсором мешает читать. */
 .news-card:hover,
 .biz-card:hover,
 .car-card:hover,
 .contest-card:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-}
-
-/* Брейкпоинты по всему сайту, mobile-first: 640 / 768 / 1024 / 1280 */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .btn { transition: none; }
-  .card { transition: none; }
-  .reveal-on-scroll {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .news-card:hover,
-  .biz-card:hover,
-  .car-card:hover,
-  .contest-card:hover {
-    transform: none;
-  }
 }

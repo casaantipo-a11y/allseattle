@@ -37,7 +37,6 @@
   text-align: center;
   color: var(--color-accent);
   font-weight: 800;
-  transition: transform 0.2s ease;
 }
 
 .qa-item[open] .qa-mark {
@@ -67,8 +66,4 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-accent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .qa-mark { transition: none; }
 }

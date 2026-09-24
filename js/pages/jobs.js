@@ -1,11 +1,10 @@
 import { JOB_LISTINGS, JOB_CATEGORIES } from "../mock-data/jobs.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
-import { initScrollReveal } from "../reveal.js";
 import { relativeTime } from "../format-time.js";
 
 function jobRowTemplate(job) {
   return `
-  <article class="job-row reveal-on-scroll">
+  <article class="job-row">
     <div class="job-row-head">
       <h3 class="job-title">${job.title}</h3>
       <span class="job-salary">${job.salary}</span>
@@ -47,7 +46,6 @@ function renderList(active) {
   });
   list.innerHTML = html;
   mountAdSlots(list);
-  initScrollReveal(".reveal-on-scroll", list);
 }
 
 function wireFilters() {
@@ -68,5 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
   const footer = document.getElementById("mobile-footer-ads");
   if (footer) footer.innerHTML = inlineAdMarkup("jobs-side-2", "300x600");
   mountAdSlots(document);
-  initScrollReveal();
 });

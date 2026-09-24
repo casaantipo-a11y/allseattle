@@ -147,11 +147,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.25s ease;
-}
-
-.news-card:hover .news-card-photo img {
-  transform: scale(1.04);
 }
 
 .news-card-body {
@@ -237,11 +232,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.25s ease;
-}
-
-.biz-card:hover .biz-card-photo img {
-  transform: scale(1.04);
 }
 
 .biz-card-photo .badge {
@@ -467,11 +457,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.25s ease;
-}
-
-.car-card:hover .car-card-photo img {
-  transform: scale(1.04);
 }
 
 .car-card-body {
@@ -709,16 +694,6 @@
   margin: var(--space-1) 0 var(--space-2);
 }
 
-@keyframes vote-pop {
-  0% { transform: scale(1); }
-  45% { transform: scale(1.22); }
-  100% { transform: scale(1); }
-}
-
-.contest-vote-count.just-voted {
-  animation: vote-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
 .contest-badge {
   position: absolute;
   top: -12px;
@@ -761,13 +736,11 @@
   z-index: 200;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.22s ease, visibility 0s linear 0s;
 }
 
 .modal-overlay.hidden {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.22s ease, visibility 0s linear 0.22s;
 }
 
 .modal {
@@ -778,20 +751,6 @@
   padding: var(--space-8) var(--space-6);
   position: relative;
   box-shadow: var(--shadow-lg);
-  transform: scale(1) translateY(0);
-  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-
-.modal-overlay.hidden .modal {
-  transform: scale(0.94) translateY(10px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .modal-overlay,
-  .modal-overlay.hidden,
-  .modal {
-    transition: none;
-  }
 }
 
 .modal-close {
@@ -815,17 +774,6 @@
 
 body.modal-open {
   overflow: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .news-card-photo img,
-  .biz-card-photo img,
-  .car-card-photo img,
-  .auto-filters-toggle::after,
-  .contest-vote-count.just-voted {
-    transition: none;
-    animation: none;
-  }
 }
 
 /* ---------- Contest strip ----------
