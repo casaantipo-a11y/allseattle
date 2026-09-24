@@ -236,6 +236,9 @@
 }
 
 .hero-frame {
+  /* 44px внутреннего поля + 1.5px рамки сверху и снизу. Объявлено здесь,
+     потому что от этой высоты считает свой отступ и плашка погоды. */
+  --search-h: 47px;
   position: relative;
   height: 200px;
   border-radius: var(--radius-lg);
@@ -262,12 +265,15 @@
   height: 140px;
 }
 
-/* Погода лежит в левом верхнем углу кадра. Белая плашка, а не белый текст:
-   фотография светлая сверху и тёмная снизу, на плашке читается везде. */
+/* Погода лежит в левом нижнем углу кадра. Белая плашка, а не белый текст:
+   фотография светлая сверху и тёмная снизу, на плашке читается везде.
+   Ниже 1024px нижний край занимает строка поиска, поэтому плашка садится
+   ровно над ней: её отступ + её высота + зазор. С 1024px поиск уезжает в
+   правый верхний угол и плашка встаёт в сам угол. */
 .hero-weather {
   position: absolute;
   left: var(--space-4);
-  top: var(--space-4);
+  bottom: calc(var(--space-4) + var(--search-h) + var(--space-2));
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -291,13 +297,14 @@
   display: none;
 }
 
-/* Скриптовая надпись ушла вниз кадра, освободив верхний левый угол погоде.
-   Ниже 1024px её не видно: там внизу кадра лежит строка поиска, а на 140px
-   высоты третий элемент не помещается. Логотип в шапке несёт ту же марку. */
+/* Скриптовая надпись стоит в левом верхнем углу — он освободился, когда
+   погода ушла вниз. Ниже 1024px её не видно: на кадре 140px высоты рядом с
+   погодой и поиском третий элемент не помещается (замерено). Логотип в шапке
+   несёт ту же марку. */
 .hero-caption {
   position: absolute;
   left: var(--space-4);
-  bottom: var(--space-4);
+  top: var(--space-4);
   display: none;
   flex-direction: column;
   color: var(--color-white);
@@ -328,7 +335,7 @@
   bottom: var(--space-4);
   display: flex;
   align-items: stretch;
-  min-height: 47px; /* 44px внутреннего поля + 1.5px рамки сверху и снизу */
+  min-height: var(--search-h);
   border: 1.5px solid rgba(255,255,255,0.5);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -417,7 +424,7 @@
 
   .hero-frame { height: 340px; }
   .hero-banner--inner .hero-frame { height: 170px; }
-  .hero-weather { left: var(--space-6); top: var(--space-6); }
+  .hero-weather { left: var(--space-6); bottom: var(--space-6); }
 
   /* Полная плашка — только на главной: там кадр 340px и рядом с погодой
      ничего больше не стоит. */
@@ -425,7 +432,7 @@
   .hero-banner:not(.hero-banner--inner) .hero-weather .weather-note {
     display: block;
   }
-  .hero-caption { display: flex; left: var(--space-6); bottom: var(--space-6); }
+  .hero-caption { display: flex; left: var(--space-6); top: var(--space-6); }
 
   .search-stub {
     left: auto;

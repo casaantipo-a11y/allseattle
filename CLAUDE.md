@@ -167,18 +167,25 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
    the equal side columns push it to the middle. It only fits because the weather and the
    social icons moved out — with them the cluster was 564px wide and there was nothing to
    centre.
-2. **Photo banner** — the skyline inside `.container`, rounded, with the search box laid over
-   it and the **weather plate in the top-left corner** (`.hero-weather`, a link to
-   `weather.html`). Tall on Home; short with the "Seattle / THE EMERALD CITY" wordmark
+2. **Photo banner** — the skyline inside `.container`, rounded, with three things laid over it:
+   the **weather plate bottom-left** (`.hero-weather`, a link to `weather.html`), the search box,
+   and — on inner pages — the "Seattle / THE EMERALD CITY" wordmark top-left. Tall on Home, short
    everywhere else. This is page content, not chrome: its edges line up with every other block
    on the page.
 
-   The three things laid over the frame have to share 140–340px of height, and two collisions
-   were measured before the current arrangement settled: **the weather plate is one line
-   everywhere except Home at 1024px and up**, where the frame is 340px and nothing else sits
-   on the left. Its full three-line form is 79px tall and hit the search bar on a 140px inner
-   frame and the wordmark on a 170px one. The wordmark itself moved to the bottom-left and is
-   hidden below 1024px, where the search bar occupies that edge.
+   Those three have to share 140–340px of height, and the arrangement is the result of measuring
+   collisions rather than taste:
+
+   - **The weather plate is one line everywhere except Home at 1024px and up.** Its full
+     three-line form is 79px tall and hit the search bar on a 140px inner frame and the wordmark
+     on a 170px one.
+   - **Below 1024px the search is a full-width bar along the bottom**, so the plate cannot sit in
+     the corner. It sits directly on top of the bar instead, at
+     `calc(var(--space-4) + var(--search-h) + var(--space-2))`. `--search-h` is declared on
+     `.hero-frame` and consumed by both, so changing the search height moves the plate with it.
+     From 1024px the search moves to the top-right and the plate takes the actual corner.
+   - **The wordmark is hidden below 1024px.** On a 140px frame there is no room for a third
+     element beside the plate and the bar, and the logo in the header already carries the mark.
 3. **Contest strip** — Home only, and rendered by `home.js`, not `partials.js`.
 4. `<main>` — the page's own `<section>`(s), listed below.
 5. **Footer** — logo with the three social icons under it, Contact, Follow us, Explore,
