@@ -1,4 +1,4 @@
-import { SOCIAL_ICONS, logoLockupMarkup } from "./logo.js";
+import { SOCIAL_ICONS, NAV_ICONS, UI_ICONS, logoLockupMarkup } from "./logo.js";
 import { markActiveNav } from "./nav-active.js";
 
 // partials.js always lives at "<site root>/js/partials.js", so this resolves
@@ -6,23 +6,21 @@ import { markActiveNav } from "./nav-active.js";
 // Pages project subpath, custom domain, ...) or which page depth loaded it.
 const SITE_ROOT = new URL("../", import.meta.url).href;
 
-const HERO_ITEMS = [
-  { key: "space-needle", label: "Space Needle", img: `${SITE_ROOT}img/hero/space-needle.jpg` },
-  { key: "downtown", label: "Downtown Seattle", img: `${SITE_ROOT}img/hero/downtown.jpg` },
-  { key: "mount-rainier", label: "Mount Rainier", img: `${SITE_ROOT}img/hero/mount-rainier.jpg` },
-  { key: "waterfront", label: "Seattle Waterfront", img: `${SITE_ROOT}img/hero/waterfront.jpg` },
-  { key: "pike-place", label: "Pike Place Market", img: `${SITE_ROOT}img/hero/pike-place.jpg` },
-];
-
 const NAV_LINKS = [
-  { key: "home", label: "Home", href: `${SITE_ROOT}index.html` },
-  { key: "news", label: "News", href: `${SITE_ROOT}news.html` },
-  { key: "directory", label: "Directory", href: `${SITE_ROOT}directory.html` },
-  { key: "pricing", label: "Pricing", href: `${SITE_ROOT}pricing.html` },
-  { key: "auto", label: "Auto", href: `${SITE_ROOT}auto/index.html` },
+  { key: "home", label: "Home", href: `${SITE_ROOT}index.html`, icon: NAV_ICONS.home },
+  { key: "news", label: "News", href: `${SITE_ROOT}news.html`, icon: NAV_ICONS.news },
+  { key: "directory", label: "Directory", href: `${SITE_ROOT}directory.html`, icon: NAV_ICONS.directory },
+  { key: "pricing", label: "Advertising", href: `${SITE_ROOT}pricing.html`, icon: NAV_ICONS.pricing },
+  { key: "auto", label: "Auto", href: `${SITE_ROOT}auto/index.html`, icon: NAV_ICONS.auto },
 ];
 
-const NAV_DISABLED = ["Jobs", "Events", "Shopping", "Entertainment", "Weather"];
+// Inert placeholders. They sit in their own second row under the real links
+// rather than sharing a row with them, which is what buys the first row
+// enough space to keep full-size touch targets at desktop widths.
+const NAV_DISABLED = [
+  "Jobs", "Events", "Shopping", "Entertainment",
+  "Weather", "Real Estate", "City Map", "Q&A",
+];
 
 function weatherNow() {
   const d = new Date();
@@ -30,98 +28,89 @@ function weatherNow() {
   return { city: "Seattle, WA", date: dateStr, temp: "61°F", note: "Cloudy, no precipitation" };
 }
 
-function heroMarkup() {
+// The photo is page content, not chrome: it sits inside .container so its
+// edges line up with every other block on the page, and the only thing laid
+// over it is the search box. Home gets the tall frame; every other page gets
+// the same component at a fraction of the height, with the script wordmark.
+function heroMarkup(pageType) {
+  const inner = pageType !== "home";
   return `
-  <div class="hero-banner" id="hero-banner">
-    <div class="hero-collage">
-      <img src="${SITE_ROOT}img/hero/skyline-panorama.png" alt="Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market" class="hero-photo">
-      <div class="hero-collage-overlay"></div>
-      <div class="hero-overlay-header">${headerTopMarkup("dark")}</div>
-    </div>
-    <div class="hero-icons">
-      <div class="container hero-icons-row">
-        ${HERO_ITEMS.map((h) => `
-          <div class="hero-icon">
-            <img src="${h.img}" alt="" class="hero-icon-img">
-            <span>${h.label}</span>
-          </div>`).join("")}
+  <div class="hero-banner${inner ? " hero-banner--inner" : ""}" id="hero-banner">
+    <div class="container">
+      <div class="hero-frame">
+        <img src="${SITE_ROOT}img/hero/skyline-panorama.png" alt="Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market" class="hero-photo">
+        <div class="hero-shade"></div>
+        ${inner ? `
+        <div class="hero-caption">
+          <span class="hero-script">Seattle</span>
+          <span class="hero-sub">THE EMERALD CITY</span>
+        </div>` : ""}
+        <form class="search-stub" id="search-stub" role="search">
+          <input type="search" placeholder="Search AllSeattle..." aria-label="Search">
+          <button type="submit" aria-label="Search">${UI_ICONS.search}</button>
+        </form>
       </div>
     </div>
   </div>`;
 }
 
-function heroInnerMarkup() {
-  return `
-  <div class="hero-banner hero-banner--inner" id="hero-banner">
-    <div class="container hero-inner-row">
-      <div class="hero-inner-text">
-        <span class="hero-script hero-script--sm">Seattle</span>
-        <span class="hero-sub">THE EMERALD CITY</span>
-      </div>
-      <div class="hero-icons-row hero-icons-row--inner">
-        ${HERO_ITEMS.map((h) => `<div class="hero-icon hero-icon--sm"><img src="${h.img}" alt="" class="hero-icon-img"><span>${h.label}</span></div>`).join("")}
-      </div>
-    </div>
-  </div>`;
-}
-
-// `variant` is "dark" only where this bar is overlaid on the hero photo
-// (home), so the wordmark flips to white; every other page renders it in a
-// white bar and keeps the navy.
-function headerTopMarkup(variant = "light") {
+// One header for all nine pages. Two rows of links share the middle column:
+// the real sections on top with their icons, the coming-soon sections
+// underneath in a smaller, quieter style.
+function siteHeaderMarkup() {
   const w = weatherNow();
   return `
-    <div class="container header-top">
-      <div class="weather-stub" aria-label="Weather (demo widget)">
-        <span class="weather-icon" aria-hidden="true">&#9925;</span>
-        <div class="weather-text">
-          <strong>${w.city}</strong>
-          <span>${w.date} &middot; ${w.temp}</span>
-          <span class="weather-note">${w.note}</span>
-        </div>
-      </div>
-      ${logoLockupMarkup({ href: `${SITE_ROOT}index.html`, variant })}
-      <form class="search-stub" id="search-stub" role="search">
-        <input type="search" placeholder="Search AllSeattle..." aria-label="Search">
-        <button type="submit" aria-label="Search">&#128269;</button>
-      </form>
-    </div>`;
-}
-
-function functionalHeaderMarkup(pageType) {
-  return `
   <header class="site-header" id="site-header-functional">
-    ${pageType === "home" ? "" : headerTopMarkup()}
-    <nav class="site-nav">
-      <div class="container nav-inner">
+    <div class="container header-top">
+      ${logoLockupMarkup({ href: `${SITE_ROOT}index.html` })}
+
+      <div class="nav-stack">
         <ul class="nav-links">
-          ${NAV_LINKS.map((n) => `<li><a href="${n.href}" data-page="${n.key}">${n.label}</a></li>`).join("")}
-          ${NAV_DISABLED.map((label) => `<li class="nav-disabled"><a href="#" onclick="return false" title="Coming soon">${label}</a></li>`).join("")}
+          ${NAV_LINKS.map((n) => `
+            <li><a href="${n.href}" data-page="${n.key}">
+              <span class="nav-icon">${n.icon}</span>${n.label}
+            </a></li>`).join("")}
         </ul>
-        <div class="nav-extra">
-          <div class="social-links">
-            <a href="#" title="Facebook (demo)" aria-label="Facebook">${SOCIAL_ICONS.facebook}</a>
-            <a href="#" title="Twitter (demo)" aria-label="Twitter">${SOCIAL_ICONS.twitter}</a>
-            <a href="#" title="Instagram (demo)" aria-label="Instagram">${SOCIAL_ICONS.instagram}</a>
-          </div>
-          <a href="#" class="nav-stub">Register Business</a>
-          <a href="#" class="nav-stub nav-stub--accent">Log In</a>
-        </div>
+        <ul class="nav-secondary">
+          ${NAV_DISABLED.map((label) => `
+            <li><a href="#" onclick="return false" title="Coming soon">${label}</a></li>`).join("")}
+        </ul>
       </div>
-    </nav>
+
+      <div class="header-utils">
+        <div class="weather-stub" aria-label="Weather (demo widget)">
+          <span class="weather-icon" aria-hidden="true">${UI_ICONS.weather}</span>
+          <div class="weather-text">
+            <strong>${w.city}</strong>
+            <span>${w.date} &middot; ${w.temp}</span>
+            <span class="weather-note">${w.note}</span>
+          </div>
+        </div>
+        <div class="social-links">
+          <a href="#" title="Facebook (demo)" aria-label="Facebook">${SOCIAL_ICONS.facebook}</a>
+          <a href="#" title="Instagram (demo)" aria-label="Instagram">${SOCIAL_ICONS.instagram}</a>
+          <a href="#" title="Telegram (demo)" aria-label="Telegram">${SOCIAL_ICONS.telegram}</a>
+        </div>
+        <button type="button" class="lang-switch" title="Coming soon" aria-label="Language: English">ENG</button>
+        <a href="#" class="nav-stub nav-stub--accent">Register Business</a>
+        <a href="#" class="account-btn" title="Log In (demo)" aria-label="Log In">${UI_ICONS.account}</a>
+      </div>
+    </div>
   </header>`;
 }
 
 export function renderHeader(pageType) {
   const mount = document.getElementById("site-header");
   if (!mount) return;
-  // The nav bar is rendered as mount's own sibling (not nested inside it)
-  // so its containing block for `position: sticky` is <body> — tall enough
-  // to give it room to stay pinned for the whole page, not just the ~50px
-  // of space left over inside the hero-photo mount once the nav sits
-  // flush against that mount's bottom edge.
-  mount.innerHTML = pageType === "home" ? heroMarkup() : heroInnerMarkup();
-  mount.insertAdjacentHTML("afterend", functionalHeaderMarkup(pageType));
+  // The header goes in as mount's own sibling (not nested inside it) so its
+  // containing block for `position: sticky` is <body> — tall enough to give
+  // it room to stay pinned for the whole page. Nested inside the mount div,
+  // that parent's box would end at the header's own bottom edge, leaving
+  // zero room to stick, and it would silently behave like `position: static`
+  // despite the CSS being correct. Body order ends up:
+  // header -> mount (hero banner) -> main -> footer.
+  mount.innerHTML = heroMarkup(pageType);
+  mount.insertAdjacentHTML("beforebegin", siteHeaderMarkup());
   markActiveNav();
   wireSearchStub();
 }
@@ -163,8 +152,8 @@ export function renderFooter() {
         <h4>Follow us</h4>
         <ul>
           <li>Facebook: <a href="#">/AllSeattle</a></li>
-          <li>Twitter: <a href="#">@AllSeattleWA</a></li>
           <li>Instagram: <a href="#">@allseattle</a></li>
+          <li>Telegram: <a href="#">@allseattle</a></li>
         </ul>
       </div>
       <div class="footer-col">

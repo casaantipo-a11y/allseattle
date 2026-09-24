@@ -1,254 +1,43 @@
 /* Mobile-first. Базовые правила — для узких экранов; блоки @media (min-width)
    только добавляют то, что появляется на широких.
-   Брейкпоинты 640 / 768 / 1024 / 1280 (design.md §8). */
+   Брейкпоинты 640 / 768 / 1024 (design.md §8).
 
-/* ---------- Hero banner (tier 1) ---------- */
-.hero-banner {
-  position: relative;
-  background: var(--color-navy);
-  color: var(--color-white);
-  overflow: hidden;
-}
+   Порядок на странице: липкая белая шапка → фото-баннер → контент.
+   Фото больше не шапка: оно лежит внутри .container и выровнено по тем же
+   краям, что и всё остальное на странице (design.md §3). */
 
-.hero-collage {
-  position: relative;
-  height: 210px;
-}
-
-.hero-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
-}
-
-.hero-collage-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(13,27,42,0.15) 0%, rgba(13,27,42,0.55) 100%);
-  pointer-events: none;
-}
-
-/* Weather + logo + search. На узких экранах это обычная тёмная полоса под
-   фото; поверх самого фото она ложится только на широких экранах (Home). */
-.hero-overlay-header {
-  position: static;
-  background: var(--color-navy);
-  padding-top: 0;
-}
-
-.hero-overlay-header .header-top {
-  padding: var(--space-4) var(--gutter);
-}
-
-.hero-overlay-header .weather-stub,
-.hero-overlay-header .weather-text strong {
-  color: var(--color-white);
-}
-
-.hero-overlay-header .weather-note {
-  color: #ffcf5c;
-}
-
-/* No white plate here any more — the lockup is transparent SVG + live text,
-   so it sits straight on the photo. A soft shadow keeps it legible over the
-   brighter parts of the skyline. */
-.hero-overlay-header .site-logo {
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
-}
-
-.hero-overlay-header .search-stub {
-  border: 1px solid rgba(255,255,255,0.28);
-  background: rgba(74,85,104,0.55);
-}
-
-.hero-overlay-header .search-stub input {
-  background: transparent;
-  color: var(--color-white);
-}
-
-.hero-overlay-header .search-stub input::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-.hero-overlay-header .search-stub button {
-  background: rgba(74,85,104,0.85);
-}
-
-/* Брендовая скриптовая надпись намеренно вне шкалы кеглей (design.md §2):
-   это элемент марки, а не текст для чтения. */
-.hero-script {
-  font-family: var(--font-script);
-  font-size: clamp(52px, 9vw, 96px);
-  line-height: 1;
-  text-shadow: 0 4px 24px rgba(0,0,0,0.45);
-}
-
-.hero-sub {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  font-size: clamp(14px, 1.6vw, 18px);
-  margin-top: var(--space-2);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
-}
-
-.hero-icons {
-  background: var(--color-navy);
-  border-top: 1px solid rgba(255,255,255,0.12);
-}
-
-.hero-icons-row {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  padding: var(--space-3) var(--gutter);
-  gap: var(--space-3);
-}
-
-.hero-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  flex: 0 1 auto;
-  min-width: 0;
-  text-align: center;
-}
-
-.hero-icon-img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--color-accent);
-}
-
-/* Подписи скрыты только на самых узких экранах: пять подписей в ряд туда
-   не помещаются. Возвращаются с 640px. */
-.hero-icon span {
-  display: none;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #dfe6ee;
-}
-
-/* Inner-page shortened hero */
-.hero-banner--inner {
-  padding: var(--space-4) 0;
-  background-image: linear-gradient(180deg, rgba(13,27,42,0.72), rgba(13,27,42,0.85)), url("../img/hero/skyline-panorama.png");
-  background-size: cover;
-  background-position: center 40%;
-}
-
-.hero-inner-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  justify-content: space-between;
-  gap: var(--space-6);
-  flex-wrap: wrap;
-}
-
-.hero-inner-text {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-}
-
-.hero-script--sm {
-  font-size: var(--text-2xl);
-}
-
-.hero-icons-row--inner {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
-  gap: var(--space-4);
-  padding: 0;
-}
-
-.hero-icons-row--inner .hero-icon {
-  flex: 0 0 auto;
-}
-
-.hero-icon--sm .hero-icon-img {
-  width: 32px;
-  height: 32px;
-}
-
-.hero-icon--sm span {
-  display: none;
-}
-
-/* ---------- Functional header (tier 2, sticky) ---------- */
-.site-header {
-  position: relative;
-}
-
-#site-header-functional,
-.site-header {
-  background: var(--color-white);
-}
-
+/* ---------- Липкая шапка ---------- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
+  background: var(--color-white);
   box-shadow: var(--shadow);
 }
 
+/* База: логотип и утилиты в первой строке, меню — во второй на всю ширину.
+   С 1024px всё выстраивается в одну строку: логотип | меню | утилиты. */
 .header-top {
   display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
-  text-align: center;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "logo  utils"
+    "nav   nav";
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--gutter);
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--gutter);
 }
 
-.weather-stub {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  color: var(--color-slate);
-  font-size: var(--text-xs);
-}
-
-.weather-icon {
-  font-size: var(--text-xl);
-}
-
-.weather-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.5;
-}
-
-.weather-text strong {
-  color: var(--color-navy);
-  font-size: var(--text-xs);
-}
-
-.weather-note {
-  color: var(--color-accent);
-  font-weight: 600;
-}
-
-/* Logo lockup — pin (SVG) + wordmark (live text, so the tagline stays
-   readable instead of being a downscaled raster). Everything scales off
-   --logo-h, so a placement only has to set that one value. */
+/* ---------- Логотип ---------- */
+/* Pin (SVG) + wordmark (живой текст, поэтому тэглайн читается, а не мылится
+   уменьшенным растром). Всё масштабируется от --logo-h, так что размещению
+   достаточно задать одно значение. */
 .site-logo {
   --logo-h: 36px;
+  grid-area: logo;
   display: inline-flex;
   align-items: center;
   gap: calc(var(--logo-h) * 0.17);
-  justify-self: center;
   text-decoration: none;
   line-height: 1;
   min-height: 44px;
@@ -290,68 +79,35 @@
   margin-top: calc(var(--logo-h) * 0.07);
 }
 
-/* For the photo hero and the navy footer: flip the navy half of the
-   wordmark to white. The red "All" and the pin read fine on both. */
+/* Тёмный вариант остался только у футера: шапка теперь всегда белая. */
 .site-logo--dark .lw-seattle,
 .site-logo--dark .site-logo-tag {
   color: var(--color-white);
 }
 
-.search-stub {
-  display: flex;
-  justify-self: end;
-  align-items: stretch;
-  min-height: 47px; /* 44px внутреннего поля + 1.5px рамки сверху и снизу */
-  border: 1.5px solid var(--color-slate-soft);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  width: 100%;
-  max-width: 100%;
-}
-
-.search-stub input {
-  border: none;
-  padding: 0 var(--space-4);
-  flex: 1;
+/* ---------- Меню: два ряда ---------- */
+.nav-stack {
+  grid-area: nav;
   min-width: 0;
-  outline: none;
-  font-size: var(--text-sm);
 }
 
-.search-stub button {
-  border: none;
-  background: var(--color-slate);
-  color: var(--color-white);
-  width: 44px;
-  flex: none;
-  cursor: pointer;
-}
-
-.site-nav {
-  border-top: 1px solid var(--color-slate-soft);
-  background: var(--color-bg-soft);
-}
-
-.nav-inner {
+.nav-links,
+.nav-secondary {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: 0 var(--gutter);
-  overflow-x: auto;
-}
-
-.nav-links {
-  display: flex;
-  flex: 1;
   gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.nav-links::-webkit-scrollbar,
+.nav-secondary::-webkit-scrollbar { display: none; }
 
 .nav-links li a {
   display: flex;
   align-items: center;
+  gap: var(--space-2);
   min-height: 44px;
-  padding: 0 var(--space-4);
+  padding: 0 var(--space-3);
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: var(--text-xs);
@@ -360,42 +116,91 @@
   border-bottom: 3px solid transparent;
 }
 
-.nav-links li a:hover {
+.nav-icon {
+  display: flex;
+  flex: none;
+  color: var(--color-slate);
+}
+
+.nav-links li a:hover,
+.nav-links li a:hover .nav-icon {
+  color: var(--color-accent);
+}
+
+.nav-links li a.active,
+.nav-links li a.active .nav-icon {
   color: var(--color-accent);
 }
 
 .nav-links li a.active {
-  color: var(--color-accent);
   border-bottom-color: var(--color-accent);
 }
 
-/* Push the whole placeholder-links group (Jobs, Events, ...) toward the
-   right edge of .nav-links, away from the real nav items — targets
-   whichever .nav-disabled item is first in the sequence, wherever the
-   real/placeholder split happens to fall. */
-.nav-links li:not(.nav-disabled) + li.nav-disabled {
-  margin-left: auto;
+/* Неактивные разделы. Ниже 1024px они скрыты: это заглушки, которые ничего
+   не делают, а липкая шапка на телефоне и без них занимает 112px. */
+.nav-secondary {
+  display: none;
 }
 
-.nav-disabled a {
-  color: #a7b1bd !important;
+.nav-secondary li a {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--space-1);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  color: #a7b1bd;
+  white-space: nowrap;
   cursor: default;
 }
 
-.nav-disabled a:hover {
-  color: #a7b1bd !important;
+.nav-secondary li a:hover {
+  color: #a7b1bd;
 }
 
-.nav-extra {
+/* ---------- Правый блок утилит ---------- */
+.header-utils {
+  grid-area: utils;
+  justify-self: end;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  flex-shrink: 0;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* Погода, соцсети и Register Business появляются только на широких экранах —
+   в узкой липкой шапке им нет места, а функции они не несут. */
+.weather-stub,
+.social-links,
+.header-utils .nav-stub {
+  display: none;
+}
+
+.weather-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
+
+.weather-text strong {
+  color: var(--color-navy);
+  font-size: var(--text-xs);
+}
+
+.weather-note {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.weather-icon {
+  display: flex;
+  flex: none;
+  color: var(--color-slate);
 }
 
 .social-links {
-  display: flex;
-  gap: var(--space-2);
+  gap: var(--space-1);
   color: var(--color-slate);
 }
 
@@ -411,8 +216,37 @@
   color: var(--color-accent);
 }
 
+.lang-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  cursor: default;
+}
+
+.account-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--color-slate);
+}
+
+.account-btn:hover {
+  color: var(--color-accent);
+}
+
 .nav-stub {
-  display: none;
   align-items: center;
   min-height: 44px;
   font-size: var(--text-xs);
@@ -429,68 +263,165 @@
   text-decoration: underline;
 }
 
-/* ---------- 640: возвращаются подписи под иконками ---------- */
+/* ---------- Фото-баннер ---------- */
+.hero-banner {
+  padding-top: var(--space-4);
+}
+
+.hero-frame {
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-navy);
+}
+
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  display: block;
+}
+
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13,27,42,0.42) 0%, rgba(13,27,42,0) 45%, rgba(13,27,42,0.42) 100%);
+  pointer-events: none;
+}
+
+.hero-banner--inner .hero-frame {
+  height: 140px;
+}
+
+.hero-caption {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  color: var(--color-white);
+}
+
+.hero-script {
+  font-family: var(--font-script);
+  font-size: var(--text-2xl);
+  line-height: 1;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.45);
+}
+
+.hero-sub {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  font-size: var(--text-xs);
+  margin-top: var(--space-2);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* Поиск лежит поверх кадра: на узких экранах полосой по низу, с 1024px —
+   в правом верхнем углу, как в макете. */
+.search-stub {
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  align-items: stretch;
+  min-height: 47px; /* 44px внутреннего поля + 1.5px рамки сверху и снизу */
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: rgba(255,255,255,0.94);
+}
+
+.search-stub input {
+  border: none;
+  background: transparent;
+  padding: 0 var(--space-4);
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  font-size: var(--text-sm);
+}
+
+.search-stub button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--color-slate);
+  color: var(--color-white);
+  width: 44px;
+  flex: none;
+  cursor: pointer;
+}
+
+/* ---------- 640 ---------- */
 @media (min-width: 640px) {
   .site-logo { --logo-h: 46px; }
-  .hero-icon-img { width: 46px; height: 46px; }
-  .hero-icon span { display: block; }
-  .hero-icons-row {
-    flex-wrap: wrap;
-    row-gap: var(--space-4);
-    column-gap: var(--space-6);
-  }
-  .hero-icon { flex: 0 1 30%; }
-  .hero-inner-row {
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-  }
-  .hero-icons-row--inner {
-    flex-wrap: nowrap;
-    width: auto;
-  }
+  .hero-frame { height: 230px; }
+  .hero-banner--inner .hero-frame { height: 150px; }
 }
 
-/* ---------- 768: иконки выстраиваются в одну строку по всей ширине ---------- */
+/* ---------- 768 ---------- */
 @media (min-width: 768px) {
-  .hero-collage { height: 250px; }
-  .hero-icons-row {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    padding: var(--space-4) var(--gutter);
-    gap: var(--space-3);
-  }
-  .hero-icon { flex: 1; }
+  .hero-frame { height: 270px; }
+  .hero-banner--inner .hero-frame { height: 160px; }
+  .hero-caption { left: var(--space-6); top: var(--space-6); }
+  .hero-script { font-size: var(--text-3xl); }
 }
 
-/* ---------- 1024: полноценная десктопная шапка ---------- */
+/* ---------- 1024: шапка в одну строку ----------
+   Замерено: логотип 178px + ряд неактивных ссылок 553px (самый широкий из
+   двух рядов) + поля = 803px. В 1009px внутренней ширины контейнера это
+   влезает только с минимальным набором утилит, поэтому соцсети, погода и
+   Register Business включаются ниже по ширине, а не здесь. */
 @media (min-width: 1024px) {
-  .hero-collage { height: 340px; }
-  .hero-overlay-header {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    background: linear-gradient(180deg, rgba(13,27,42,0) 0%, rgba(13,27,42,0.65) 40%, rgba(13,27,42,0.85) 100%);
-    padding-top: var(--space-12);
-  }
   .header-top {
-    grid-template-columns: 1fr auto 1fr;
-    justify-items: stretch;
-    text-align: left;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "logo nav utils";
     gap: var(--space-4);
   }
-  .weather-stub { justify-content: flex-start; }
-  .search-stub { max-width: 260px; }
-  .nav-extra .nav-stub { display: flex; }
+
+  .nav-secondary { display: flex; }
 
   /* Правило 44x44 (design.md §8) — про касания, оно в разделе адаптивности.
-     На широком экране указатель мышиный, поэтому по горизонтали ужимаем,
-     сохраняя комфортную высоту 44px. Без этого десять пунктов меню плюс
-     соцсети не влезают в контейнер и навигация уезжает в скролл. */
-  .nav-links li a { padding: 0 var(--space-3); }
-  .social-links { gap: var(--space-1); }
+     На широком экране указатель мышиный, поэтому служебные контролы ужимаем,
+     сохраняя высоту 44px у самой навигации. */
+  .lang-switch { min-width: 36px; min-height: 32px; }
+
+  .hero-frame { height: 340px; }
+  .hero-banner--inner .hero-frame { height: 170px; }
+
+  .search-stub {
+    left: auto;
+    bottom: auto;
+    top: var(--space-6);
+    right: var(--space-6);
+    width: 320px;
+  }
+}
+
+/* ---------- 1280: появляются соцсети (+116px) ---------- */
+@media (min-width: 1280px) {
+  .social-links { display: flex; }
   .social-links a { min-width: 36px; }
-  .nav-extra { gap: var(--space-2); }
+}
+
+/* ---------- 1440: погода и Register Business (+308px) ---------- */
+@media (min-width: 1440px) {
+  .header-top { gap: var(--space-6); }
+
+  .weather-stub {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-slate);
+    font-size: var(--text-xs);
+  }
+
+  .header-utils .nav-stub { display: flex; }
+  .header-utils { gap: var(--space-3); }
 }

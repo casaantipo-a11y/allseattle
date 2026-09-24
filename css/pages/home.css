@@ -5,7 +5,6 @@
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
   align-items: start;
-  padding-top: var(--space-8);
 }
 
 .home-sidebar {
@@ -30,6 +29,12 @@
   justify-content: center;
 }
 
+.ad-slot-bottom {
+  margin-top: var(--space-6);
+  display: flex;
+  justify-content: center;
+}
+
 .news-grid {
   grid-template-columns: 1fr;
 }
@@ -44,6 +49,12 @@
   .home-layout {
     grid-template-columns: 220px 1fr 240px;
   }
+  /* Средняя колонка здесь всего 452px: две карточки дали бы по 207px,
+     то есть ~28 символов в строке вместо 55-75 (design.md §2). Две колонки
+     возвращаются на 1280px, где середина вырастает до 628px. */
+  .home-main .news-grid {
+    grid-template-columns: 1fr;
+  }
   .home-sidebar {
     flex-direction: column;
     flex-wrap: nowrap;
@@ -57,5 +68,8 @@
 @media (min-width: 1280px) {
   .home-layout {
     grid-template-columns: 260px 1fr 280px;
+  }
+  .home-main .news-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

@@ -827,3 +827,144 @@ body.modal-open {
     animation: none;
   }
 }
+
+/* ---------- Contest strip ----------
+   Тонкая полоса между фото-баннером и контентом — на месте бывшей полосы
+   иконок достопримечательностей. Та была чистой декорацией (design.md §7),
+   эта ведёт на страницу конкурса. */
+#contest-strip {
+  padding-top: var(--space-4);
+}
+
+.contest-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+}
+
+.contest-strip:hover {
+  border-color: var(--color-accent);
+}
+
+.contest-strip-thumb {
+  width: 72px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex: none;
+}
+
+.contest-strip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.contest-strip-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.contest-strip-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--color-navy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contest-strip-more {
+  display: none;
+  margin-left: auto;
+  flex: none;
+  font-weight: 700;
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+}
+
+/* ---------- Compact newsfeed ----------
+   Плотный хвост ленты: заголовки строками вместо карточек. Структура взята
+   из макета клиента, оформление — из наших токенов: никакого синего
+   подчёркнутого текста (design.md §9, §4). */
+.news-list {
+  border-top: 1px solid var(--color-slate-soft);
+}
+
+.news-list-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-slate-soft);
+}
+
+.news-list-thumb {
+  width: 72px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.news-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.news-list-meta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+}
+
+.news-list-meta .cat {
+  color: var(--color-accent);
+}
+
+.news-list-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  color: var(--color-navy);
+}
+
+.news-list-row:hover .news-list-title {
+  color: var(--color-accent);
+}
+
+.news-list-excerpt {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  max-width: 65ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .contest-strip-more { display: block; }
+}
+
+@media (min-width: 768px) {
+  .news-list-row { grid-template-columns: 96px 1fr; }
+  .news-list-thumb { width: 96px; }
+}

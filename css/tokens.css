@@ -70,7 +70,10 @@
   --shadow: 0 4px 16px rgba(13, 27, 42, 0.08);
   --shadow-lg: 0 12px 32px rgba(13, 27, 42, 0.14);
 
-  --header-height: 128px;
+  /* Замеренная высота липкой шапки: 114px в два ряда, 96px в один
+     (переопределяется на 1024px ниже). От неё считают свой top
+     липкие сайдбары News / Directory / Auto. */
+  --header-height: 116px;
 }
 
 /* Mobile-first: базовые значения выше — для узких экранов,
@@ -90,5 +93,6 @@
     --gutter: var(--space-8);
     --section-y: var(--space-24);
     --card-pad: var(--space-8);
+    --header-height: 96px;
   }
 }

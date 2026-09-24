@@ -89,13 +89,15 @@ button, input, select, textarea {
    липкой навигацией, и полные 96px сверху читаются как провал, а не как
    отбивка. Отбивка между секциями (если их станет больше одной) не страдает —
    правило бьёт только по первому потомку <main>. */
-.section-tight {
-  padding: var(--space-8) 0 var(--section-y);
+main > .section:first-child {
+  padding-top: var(--space-8);
 }
 
-main > .section:first-child,
-main > .section-tight:first-child {
-  padding-top: var(--space-8);
+/* Две соседние секции складывают свои вертикальные поля и дают 192px между
+   контентом — вдвое больше верхней границы 96-128px из §1. Отбивку между
+   ними держит нижнее поле предыдущей секции, этого достаточно. */
+main > .section + .section {
+  padding-top: 0;
 }
 
 .eyebrow {

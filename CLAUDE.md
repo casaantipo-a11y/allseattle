@@ -127,11 +127,12 @@ independent, so the listing page still renders fully — the error is noise, not
 `pricing.html`, `auto/index.html`, `auto/listing.html`, `auto/add-listing.html`,
 `auto/my-listings.html`), each a `<head>` of the same CSS links + a `<body data-page-type="home|
 inner" data-page="...">` with two empty mount points (`<div id="site-header">`,
-`<div id="site-footer">`) and a `<main>`. All real content is injected by JS at
-`DOMContentLoaded` — there's very little to see in the HTML source itself.
+`<div id="site-footer">`) and a `<main>`. Home carries a third, `<div id="contest-strip">`.
+All real content is injected by JS at `DOMContentLoaded` — there's very little to see in the
+HTML source itself.
 
-- `data-page-type` picks the full hero-photo treatment (`"home"`) vs. the compact inner hero
-  (anything else) in `partials.js`.
+- `data-page-type` picks the tall photo frame (`"home"`, 340px) vs. the short one carrying the
+  script wordmark (anything else, 170px) in `partials.js`.
 - `data-page` drives active-nav-link highlighting (`nav-active.js` matches it against each nav
   link's own `data-page`).
 - Pages under `auto/` load CSS/JS via `../` relative paths; root pages use plain relative paths.
@@ -147,32 +148,47 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
 
 **Shared chrome, on all 9 pages** (from `js/partials.js`):
 
-1. **Hero.** Home gets the tall photo with weather / logo / search laid over it, plus the
-   5-landmark icon strip. Every other page gets the short navy strip: "Seattle / THE EMERALD
-   CITY" wordmark + a compact version of the same icon strip.
-2. **Header bar** — weather, logo, search. Inner pages only; Home has it inside the hero instead.
-3. **Sticky nav** — 5 real links, 5 inert placeholders pushed right, social icons,
-   Register Business / Log In.
-4. `<main>` — the page's own single `<section>`, listed below.
+1. **Sticky header** — logo, then two rows of nav (5 real links with icons on top, 8
+   coming-soon placeholders underneath), then the utility cluster: weather, social icons, the
+   inert ENG switch, Register Business, account icon. Identical on all nine pages.
+2. **Photo banner** — the skyline inside `.container`, rounded, with the search box laid over
+   it. Tall on Home; short with the "Seattle / THE EMERALD CITY" wordmark everywhere else.
+   This is page content, not chrome: its edges line up with every other block on the page.
+3. **Contest strip** — Home only, and rendered by `home.js`, not `partials.js`.
+4. `<main>` — the page's own `<section>`(s), listed below.
 5. **Footer** — logo, Contact, Follow us, Explore, copyright.
+
+The header sits *above* the banner, which is the inversion of how this used to work: the photo
+was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown
+/ Mount Rainier / Waterfront / Pike Place) that used to sit under the hero is gone — it was
+decoration with no destination (§7) and the contest strip took its slot.
+`img/hero/skyline-panorama.png` is still used; the five landmark jpgs beside it are now loaded
+by nothing.
 
 ---
 
-**`index.html` — Home** (`data-page-type="home"`, the only `.section-tight` — though since
-`main > .section:first-child` also got a 32px top, that class now resolves to exactly the same
-padding as a plain first `.section`; it survives as a label, not as a difference)
+**`index.html` — Home** (`data-page-type="home"`, and the only page with two `<section>`s)
 A three-column `.home-layout`. Below 1024px it becomes one column, but the asides do not simply
 stack: the left aside's four slots are `.ad-desktop-slot` and disappear entirely, reappearing as
 inline ads inside the news feed, while the right aside's widgets do stack below the feed.
 
+0. Contest strip — outside `<main>`, between the banner and the first section.
 1. Left aside — four ad slots: 300×250, 300×250, 300×600, 300×250.
 2. Middle `.home-main`:
-   1. 728×90 ad.
+   1. 728×90 ad (`home-top`).
    2. Section head — "Today in Seattle" / **Top News** + "All News" button.
-   3. News grid *(JS)* — 8 cards, with inline mobile ads after cards 4 and 8.
-3. Right aside — four widgets *(JS)* in this order: **AllSeattle at a Glance** (4 stat tiles),
-   **Exchange Rates**, **Job Board** (Coming Soon), **City Transit**; then a 300×250 ad and the
+   3. News grid *(JS)* — 6 cards, with inline mobile ads after cards 3 and 6.
+   4. 728×90 ad (`home-mid`).
+3. Right aside — a 300×250 ad **first**, then four widgets *(JS)*: **AllSeattle at a Glance**
+   (4 stat tiles), **Job Board** (Coming Soon), **Exchange Rates**, **City Transit**; then the
    mobile ad stack.
+4. Second section — "More from Seattle" / **City Newsfeed**: the remaining articles as compact
+   rows *(JS)*, thumbnail + category + relative time + headline + one clipped line.
+
+**The 12 articles are split 6 + 6 and never repeated.** `CARD_COUNT` in `home.js` is the one
+place that decides where the photo cards stop and the newsfeed starts; move it and both halves
+follow. The middle column is too narrow for more than two readable cards across, so the density
+the design asks for comes from that bottom list rather than from a third or fourth column.
 
 **`news.html` — News**
 
@@ -254,37 +270,33 @@ a `SITE_ROOT`-style absolute URL, not by patching one call site.
 The one piece of shared chrome across every page. Key structural fact, non-obvious from reading
 any single function in isolation:
 
-**The sticky nav (`<header class="site-header" id="site-header-functional">`) is rendered as a
+**The sticky header (`<header class="site-header" id="site-header-functional">`) is rendered as a
 sibling of the `#site-header` mount div, not nested inside it.** `renderHeader()` sets
-`mount.innerHTML` to the hero markup only, then does
-`mount.insertAdjacentHTML("afterend", functionalHeaderMarkup(pageType))` to place the nav after
-it, both as direct children of `<body>`. This is load-bearing: `position: sticky` computes its
-"room to stick" from the element's own parent (containing block). Nesting hero + nav in the same
-mount div means that parent's box ends right at the nav's own bottom edge — zero room to stay
-pinned, so it silently degrades to acting like `position: static` despite the CSS being correct.
-Keep the nav a sibling of `<main>` if you touch this again.
+`mount.innerHTML` to the banner markup only, then does
+`mount.insertAdjacentHTML("beforebegin", siteHeaderMarkup())` to place the header *before* it,
+both as direct children of `<body>`. This is load-bearing: `position: sticky` computes its
+"room to stick" from the element's own parent (containing block). Nesting banner + header in the
+same mount div means that parent's box ends right at the header's own bottom edge — zero room to
+stay pinned, so it silently degrades to acting like `position: static` despite the CSS being
+correct. Keep the header a sibling of `<main>` if you touch this again, and verify it the way
+"Checking a layout change" describes rather than by eye.
 
-- `heroMarkup()` (home only): the tall photo (`hero-collage`) with weather/logo/search overlaid
-  directly on it via `.hero-overlay-header` (see header.css below), plus the 5-icon strip
-  (`HERO_ITEMS`) below.
-- `heroInnerMarkup()` (every other page): a short navy strip with a dimmed version of the same
-  photo as its CSS `background-image`, the small "Seattle / THE EMERALD CITY" wordmark, and a
-  compact version of the same icon strip.
-- `headerTopMarkup()` (weather + logo + search) is shared markup reused in two different visual
-  contexts: overlaid on the photo for Home (`.hero-overlay-header .weather-stub` etc. in
-  header.css override the base colors for legibility against a dark photo), and in its own plain
-  white bar below the compact hero for every other page (base `.weather-stub` / `.site-logo` /
-  `.search-stub` styles, unscoped). `functionalHeaderMarkup(pageType)` only renders it for
-  non-home pages — home gets it via `heroMarkup()` instead, never both.
+- `heroMarkup(pageType)`: one component, two heights. `.hero-frame` holds the photo, a shade
+  gradient, the search form, and — on inner pages only — the script wordmark. There is no second
+  hero function and no dark/light variant of the top bar any more: the header is always white,
+  so `logoLockupMarkup`'s `variant: "dark"` has exactly one caller left, the footer.
+- `siteHeaderMarkup()`: the whole header, identical on every page, taking no `pageType`.
 - The weather widget is a hardcoded stub (`weatherNow()`: always 61°F / Cloudy) with a live date
   string. The search box swaps its own placeholder to "Search is a demo placeholder" for 2.2s on
   submit — it never searches anything.
-- `NAV_LINKS` (5 real pages) vs. `NAV_DISABLED` (Jobs/Events/Shopping/Entertainment/Weather,
-  inert `onclick="return false"` placeholders) are separate arrays rendered into the same
-  `<ul class="nav-links">`; a CSS adjacent-sibling selector in header.css pushes the whole
-  disabled group to the right edge of the nav row regardless of how many real links precede it.
-- `headerTopMarkup(variant)` takes `"dark"` only from `heroMarkup()`, where the bar is overlaid on
-  the photo; that flips the logo's wordmark to white. `renderFooter()` passes `"dark"` too.
+- `NAV_LINKS` (5 real pages, each carrying its own `NAV_ICONS` entry) and `NAV_DISABLED`
+  (8 inert `onclick="return false"` placeholders) render into **two separate lists** —
+  `<ul class="nav-links">` and `<ul class="nav-secondary">` — stacked inside `.nav-stack`.
+  They used to share one row, with a CSS adjacent-sibling selector pushing the placeholders to
+  the right edge; splitting them into rows is what buys the first row enough width to keep full
+  44px targets at desktop sizes.
+- The ENG switch and the account icon are inert the same way the placeholder links are. Keep
+  them that way — the demo contract covers them.
 
 ### Two independent price systems (easy to confuse)
 
@@ -389,9 +401,15 @@ abstraction — each file is self-contained and safe to read in isolation.
 - `modal.js` — generic overlay open/close/Escape/backdrop-click wiring by element id
   (`wireModal(overlayId, openBtnId, closeBtnId)`; pass `null` for the open button when the page
   opens it itself, as `pricing.js` does per tier card).
-- `logo.js` — the brand mark, as vector. `pinSvg()` draws the red teardrop + white disc + navy
-  Space Needle; `logoLockupMarkup({href, variant})` wraps it with the wordmark. See "The logo"
-  below. Also exports `SOCIAL_ICONS` as inline SVG strings.
+- `logo.js` — the brand mark, as vector, plus every icon on the site. `pinSvg()` draws the red
+  teardrop + white disc + navy Space Needle; `logoLockupMarkup({href, variant})` wraps it with
+  the wordmark (see "The logo" below). It also exports three icon maps as inline SVG strings:
+  `SOCIAL_ICONS` (facebook / twitter / instagram / telegram — the header shows the last three,
+  and the footer's "Follow us" list matches), `NAV_ICONS` (one per real nav link) and `UI_ICONS`
+  (account / globe / search / weather). `NAV_ICONS` and `UI_ICONS` are built by one local
+  `strokeIcon()` helper, so they share a 24-unit box, a 1.8 stroke and `currentColor` — §6 wants
+  a single icon set at one weight. Add new icons through that helper, not by hand, and don't
+  reach for an emoji: the two that used to stand in for search and weather are gone.
 
 ### The logo
 
@@ -452,13 +470,23 @@ Two traps this layout has already hit once each:
   1024px now). If they diverge, tablet widths get a collapsed sidebar still showing desktop-sized
   ad boxes.
 
-`position: sticky` is used for the functional nav (see partials.js note above) and for the
+`position: sticky` is used for the site header (see partials.js note above) and for the
 sidebars on News, Directory and Auto (`top: calc(var(--header-height) + var(--space-2))`). They
 do not all start at the same width: Auto's filter column sticks from **768px**, because that is
 where it stops being an accordion, while News and Directory only get a sidebar at all from
 **1024px**. Home's two sidebars are deliberately `position: static` so they scroll away with
 the page instead (an explicit, non-default choice — don't "fix" it back to sticky without checking
 history first).
+
+**`--header-height` is a measurement, not a guess** — 116px while the header is two rows,
+96px from 1024px where it collapses to one. Those sidebar offsets are computed from it, so if
+you change the header's rows, padding or logo size, re-measure it and update the token in
+`tokens.css`; leaving it stale wedges the sidebars under the header or floats them below it.
+
+Two adjacent `<section class="section">` elements would otherwise stack their own vertical
+padding and put 192px between them, twice what §1 allows. `main > .section + .section` zeroes
+the second one's top, so the gap is the single `--section-y`. Home is currently the only page
+with two sections; the rule is there so the next one doesn't have to rediscover this.
 
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is
@@ -495,10 +523,16 @@ Each of these was decided explicitly. Don't "fix" them back:
 - **Inline text links inside prose are not padded out to 44px** (footer contact lines,
   "Read more →"). Inflating them would wreck the line rhythm; the surrounding controls all meet
   44px.
-- **From 1024px the nav trims its horizontal padding and icon width.** The 44×44 rule lives in
-  §8 (Адаптивность) and is about touch; at desktop widths the ten nav items plus the social icons
-  do not fit the container otherwise, and the nav would fall into a horizontal scroll. Vertical
-  size stays 44px.
+- **The header reveals its utilities by width, and two of its controls sit under 44px.** The
+  numbers that force this, measured on the live page: logo 178px, the row of 8 coming-soon links
+  553px (the wider of the two nav rows), the full utility cluster 564px. Together with gutters
+  that needs ~1400px of container, so the cluster arrives in stages — ENG and the account icon
+  from 1024px, social icons from 1280px, weather and Register Business from 1440px. Below
+  1024px the coming-soon row is hidden outright. The coming-soon links are 36px tall and the ENG
+  switch 32px from 1024px up: §8's 44×44 rule is in the responsiveness section and is about
+  touch, and both are inert controls being shown to a mouse. Everything that actually does
+  something keeps 44px. **If you add a nav item or lengthen a label, re-measure** — the
+  first thing that breaks is `.nav-links` quietly turning into a horizontal scroller.
 - **Three font families**, not two (§2) — Pacifico is the brand script in the inner hero.
 
 ### Images (`img/`)

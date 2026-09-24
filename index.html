@@ -19,9 +19,10 @@
 <body data-page-type="home" data-page="home">
 
 <div id="site-header"></div>
+<div id="contest-strip"></div>
 
 <main>
-  <section class="section-tight">
+  <section class="section">
     <div class="container home-layout">
       <aside class="home-sidebar home-sidebar-left">
         <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="home-left-1"></div>
@@ -40,24 +41,37 @@
           <a href="news.html" class="btn btn-outline btn-sm">All News</a>
         </div>
         <div class="grid news-grid" id="home-news-grid"></div>
+        <div class="ad-slot-bottom" data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="home-mid"></div>
       </div>
 
       <aside class="home-sidebar home-sidebar-right">
+        <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="home-right-1"></div>
         <div class="widget" id="widget-stats">
           <h4>AllSeattle by the numbers</h4>
-        </div>
-        <div class="widget" id="widget-currency">
-          <h4>Exchange rates</h4>
         </div>
         <div class="widget" id="widget-jobs">
           <h4>Job search</h4>
         </div>
+        <div class="widget" id="widget-currency">
+          <h4>Exchange rates</h4>
+        </div>
         <div class="widget" id="widget-transit">
           <h4>Transit status</h4>
         </div>
-        <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="home-right-1"></div>
         <div class="mobile-footer-ads" id="mobile-footer-ads"></div>
       </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">More from Seattle</span>
+          <h2>City Newsfeed</h2>
+        </div>
+      </div>
+      <div class="news-list" id="home-news-list"></div>
     </div>
   </section>
 </main>
