@@ -1,0 +1,33 @@
+:root {
+  /* Brand colors */
+  --color-accent: #E53935;      /* Seattle Red */
+  --color-accent-dark: #C62828;
+  --color-navy: #0D1B2A;        /* dark / text */
+  --color-white: #FFFFFF;
+  --color-slate: #4A5568;       /* secondary text / icons */
+  --color-slate-soft: #E2E8F0;
+  --color-bg-soft: #F7F8FA;
+  --color-success: #2F855A;
+  --color-success-bg: #E6F4EA;
+  --color-danger: #C53030;
+  --color-danger-bg: #FDECEC;
+  --color-standard: #4A5568;
+  --color-lux: #0D1B2A;
+  --color-premium: #E53935;
+
+  /* Typography */
+  --font-heading: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-script: "Pacifico", cursive;
+
+  /* Layout */
+  --container: 1180px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 16px rgba(13, 27, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(13, 27, 42, 0.14);
+  --gut: 24px;
+  --header-height: 128px;
+
+  /* Breakpoints (referenced in comments; CSS can't read these as values) */
+}

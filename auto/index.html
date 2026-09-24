@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto — Cars for Sale in Seattle — AllSeattle</title>
+<meta name="description" content="Browse cars for sale in the Seattle area on AllSeattle Auto.">
+<link rel="icon" type="image/svg+xml" href="../img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/footer.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/pages/auto.css">
+</head>
+<body data-page-type="inner" data-page="auto">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container auto-container">
+      <div class="auto-subnav">
+        <a href="index.html" class="active">Catalog</a>
+        <a href="add-listing.html">Add a Car</a>
+        <a href="my-listings.html">My Listings</a>
+      </div>
+
+      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="auto-top" class="ad-slot-top"></div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">AllSeattle Auto</span>
+          <h1>Cars for Sale</h1>
+        </div>
+        <a href="add-listing.html" class="btn">+ Post a Listing</a>
+      </div>
+
+      <div class="auto-layout">
+        <aside class="auto-filters" id="auto-filters">
+          <button class="auto-filters-toggle" id="auto-filters-toggle" type="button">Filters &amp; Sort</button>
+          <div class="auto-filters-body" id="auto-filters-body">
+            <div class="field">
+              <label for="f-make">Make</label>
+              <select id="f-make"><option value="">All makes</option></select>
+            </div>
+            <div class="field">
+              <label for="f-price">Max price</label>
+              <select id="f-price">
+                <option value="">Any price</option>
+                <option value="15000">Under $15,000</option>
+                <option value="20000">Under $20,000</option>
+                <option value="25000">Under $25,000</option>
+                <option value="30000">Under $30,000</option>
+                <option value="999999">Any</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-year">Min year</label>
+              <select id="f-year">
+                <option value="">Any year</option>
+                <option value="2022">2022+</option>
+                <option value="2020">2020+</option>
+                <option value="2018">2018+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-mileage">Max mileage</label>
+              <select id="f-mileage">
+                <option value="">Any mileage</option>
+                <option value="25000">Under 25,000</option>
+                <option value="40000">Under 40,000</option>
+                <option value="60000">Under 60,000</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-sort">Sort by</label>
+              <select id="f-sort">
+                <option value="default">Newest listed</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="year-desc">Year: Newest first</option>
+                <option value="mileage-asc">Mileage: Lowest first</option>
+              </select>
+            </div>
+            <button class="btn btn-outline btn-sm btn-block" id="f-reset" type="button">Reset Filters</button>
+            <div class="ad-desktop-slot" data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="auto-filter-ad" style="margin-top:20px;"></div>
+          </div>
+        </aside>
+
+        <div class="auto-results">
+          <p class="muted" id="auto-results-count" style="margin-bottom:14px;"></p>
+          <div class="grid car-grid" id="car-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script type="module" src="../js/partials.js"></script>
+<script type="module" src="../js/banner-ads.js"></script>
+<script type="module" src="../js/pages/auto-catalog.js"></script>
+</body>
+</html>

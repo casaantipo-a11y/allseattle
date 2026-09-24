@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add a Car — AllSeattle Auto</title>
+<meta name="description" content="Post your car for sale on AllSeattle Auto.">
+<link rel="icon" type="image/svg+xml" href="../img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/footer.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/pages/auto.css">
+</head>
+<body data-page-type="inner" data-page="auto">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container" style="max-width:720px;">
+      <div class="auto-subnav">
+        <a href="index.html">Catalog</a>
+        <a href="add-listing.html" class="active">Add a Car</a>
+        <a href="my-listings.html">My Listings</a>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">AllSeattle Auto</span>
+          <h1>Post Your Car</h1>
+        </div>
+      </div>
+
+      <div class="form-stepper" id="form-stepper"></div>
+
+      <div id="add-listing-content">
+        <form id="add-listing-form" novalidate>
+          <section class="form-step active" data-step="1">
+            <h3>Photos &amp; Vehicle</h3>
+            <div class="field" data-field="photos">
+              <label for="al-photos">Photos</label>
+              <input type="file" id="al-photos" name="photos" accept="image/*" multiple>
+              <div class="photo-preview-row" id="al-photo-preview"></div>
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="make">
+              <label for="al-make">Make</label>
+              <select id="al-make" name="make">
+                <option value="">Select make</option>
+                <option>Toyota</option><option>Honda</option><option>Ford</option>
+                <option>Chevrolet</option><option>Subaru</option><option>Mazda</option>
+                <option>Volkswagen</option><option>Jeep</option><option>Nissan</option>
+                <option>BMW</option><option>Other</option>
+              </select>
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="model">
+              <label for="al-model">Model</label>
+              <input type="text" id="al-model" name="model" placeholder="e.g. Camry">
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="year">
+              <label for="al-year">Year</label>
+              <select id="al-year" name="year"></select>
+              <span class="field-error"></span>
+            </div>
+          </section>
+
+          <section class="form-step" data-step="2">
+            <h3>Condition &amp; Price</h3>
+            <div class="field" data-field="mileage">
+              <label for="al-mileage">Mileage</label>
+              <input type="number" id="al-mileage" name="mileage" placeholder="e.g. 42000" min="0">
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="engine">
+              <label for="al-engine">Engine</label>
+              <input type="text" id="al-engine" name="engine" placeholder="e.g. 2.5L I4">
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="transmission">
+              <label for="al-transmission">Transmission</label>
+              <select id="al-transmission" name="transmission">
+                <option value="">Select transmission</option>
+                <option>Automatic</option>
+                <option>Manual</option>
+                <option>CVT Automatic</option>
+              </select>
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="price">
+              <label for="al-price">Asking price (USD)</label>
+              <input type="number" id="al-price" name="price" placeholder="e.g. 21900" min="0">
+              <span class="field-error"></span>
+            </div>
+          </section>
+
+          <section class="form-step" data-step="3">
+            <h3>Description &amp; Contact</h3>
+            <div class="field" data-field="description">
+              <label for="al-description">Description</label>
+              <textarea id="al-description" name="description" placeholder="Tell buyers about the car's condition and history"></textarea>
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="sellerName">
+              <label for="al-seller-name">Your name</label>
+              <input type="text" id="al-seller-name" name="sellerName">
+              <span class="field-error"></span>
+            </div>
+            <div class="field" data-field="sellerContact">
+              <label for="al-seller-contact">Phone or email</label>
+              <input type="text" id="al-seller-contact" name="sellerContact">
+              <span class="field-error"></span>
+            </div>
+          </section>
+
+          <section class="form-step" data-step="4">
+            <h3>Review Your Listing</h3>
+            <div class="review-list" id="review-list"></div>
+            <p class="form-note" style="margin-top:14px;">By submitting, your listing will be sent for moderation. This is a demo — nothing is actually saved or published.</p>
+          </section>
+
+          <div class="form-step-actions">
+            <button type="button" class="btn btn-outline" id="al-back" disabled>Back</button>
+            <button type="button" class="btn" id="al-next">Next</button>
+            <button type="submit" class="btn hidden" id="al-submit">Submit Listing</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script type="module" src="../js/partials.js"></script>
+<script type="module" src="../js/pages/auto-add-listing.js"></script>
+</body>
+</html>

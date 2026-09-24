@@ -1,0 +1,8 @@
+# Normalise to LF in the repo regardless of what Windows checks out locally,
+# so line endings never show up as spurious diffs.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary

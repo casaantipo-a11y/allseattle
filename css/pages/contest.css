@@ -1,0 +1,25 @@
+.contest-hero {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.contest-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 860px) {
+  .contest-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 460px) {
+  .contest-grid {
+    grid-template-columns: 1fr;
+  }
+}

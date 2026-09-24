@@ -1,0 +1,303 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-navy);
+  background: var(--color-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 12px;
+  color: var(--color-navy);
+}
+
+h1 { font-size: clamp(28px, 4vw, 42px); }
+h2 { font-size: clamp(22px, 3vw, 30px); }
+h3 { font-size: clamp(18px, 2.4vw, 22px); }
+
+p { margin: 0 0 12px; }
+
+ul { margin: 0; padding: 0; list-style: none; }
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section {
+  padding: 48px 0;
+}
+
+.section-tight {
+  padding: 28px 0;
+}
+
+.eyebrow {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  border: 2px solid var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-white);
+  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+  text-align: center;
+}
+
+.btn:hover {
+  background: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.btn-outline:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+.btn-navy {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+}
+
+.btn-navy:hover {
+  background: #16283d;
+  border-color: #16283d;
+}
+
+.btn-sm {
+  padding: 9px 18px;
+  font-size: 12px;
+}
+
+.btn-lg {
+  padding: 16px 34px;
+  font-size: 16px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Cards */
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+.badge-standard { background: var(--color-standard); }
+.badge-lux { background: var(--color-lux); }
+.badge-premium { background: var(--color-premium); }
+
+/* Forms */
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: var(--color-navy);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-slate-soft);
+  background: var(--color-white);
+  color: var(--color-navy);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--color-accent);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.field.invalid input,
+.field.invalid select,
+.field.invalid textarea {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.field-error {
+  display: none;
+  color: var(--color-danger);
+  font-size: 12.5px;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.field.invalid .field-error {
+  display: block;
+}
+
+.form-note {
+  font-size: 13px;
+  color: var(--color-slate);
+}
+
+.success-panel {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--color-success-bg);
+  border-radius: var(--radius-lg);
+}
+
+.success-panel .success-icon {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
+
+.success-panel h3 {
+  color: var(--color-success);
+}
+
+/* Utility */
+.text-center { text-align: center; }
+.muted { color: var(--color-slate); }
+.hidden { display: none !important; }
+
+.grid {
+  display: grid;
+  gap: var(--gut);
+}
+
+/* Scroll-reveal: fades/slides an element up as it enters the viewport.
+   See js/reveal.js. --reveal-i staggers a small wave across a grid. */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition-delay: calc(var(--reveal-i, 0) * 60ms);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover lift for card types that use .reveal-on-scroll — declared after it
+   so this wins the (equal-specificity) fight over `transform` once a card
+   has already revealed and the user hovers it. */
+.news-card:hover,
+.biz-card:hover,
+.car-card:hover,
+.contest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Shared breakpoints across the site: 1180 / 980 / 860 / 760 / 620 / 460 / 380 */
+@media (max-width: 620px) {
+  .section { padding: 32px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn { transition: none; }
+  .card { transition: none; }
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .news-card:hover,
+  .biz-card:hover,
+  .car-card:hover,
+  .contest-card:hover {
+    transform: none;
+  }
+}

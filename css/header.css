@@ -1,0 +1,445 @@
+/* ---------- Hero banner (tier 1) ---------- */
+.hero-banner {
+  position: relative;
+  background: var(--color-navy);
+  color: var(--color-white);
+  overflow: hidden;
+}
+
+.hero-collage {
+  position: relative;
+  height: 340px;
+}
+
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+.hero-collage-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13,27,42,0.15) 0%, rgba(13,27,42,0.55) 100%);
+  pointer-events: none;
+}
+
+/* Weather + logo + search overlaid on the hero photo itself (Home only —
+   inner pages keep header-top in its own bar below the compact hero). */
+.hero-overlay-header {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(13,27,42,0) 0%, rgba(13,27,42,0.65) 40%, rgba(13,27,42,0.85) 100%);
+  padding-top: 40px;
+}
+
+.hero-overlay-header .header-top {
+  padding: 14px 20px;
+}
+
+.hero-overlay-header .weather-stub,
+.hero-overlay-header .weather-text strong {
+  color: var(--color-white);
+}
+
+.hero-overlay-header .weather-note {
+  color: #ffcf5c;
+}
+
+/* No white plate here any more — the lockup is transparent SVG + live text,
+   so it sits straight on the photo. A soft shadow keeps it legible over the
+   brighter parts of the skyline. */
+.hero-overlay-header .site-logo {
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
+}
+
+.hero-overlay-header .search-stub {
+  border: 1px solid rgba(255,255,255,0.28);
+  background: rgba(74,85,104,0.55);
+}
+
+.hero-overlay-header .search-stub input {
+  background: transparent;
+  color: var(--color-white);
+}
+
+.hero-overlay-header .search-stub input::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+.hero-overlay-header .search-stub button {
+  background: rgba(74,85,104,0.85);
+}
+
+.hero-script {
+  font-family: var(--font-script);
+  font-size: clamp(52px, 9vw, 96px);
+  line-height: 1;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.45);
+}
+
+.hero-sub {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  font-size: clamp(13px, 1.6vw, 18px);
+  margin-top: 10px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+.hero-icons {
+  background: var(--color-navy);
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.hero-icons-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+  gap: 10px;
+}
+
+.hero-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  text-align: center;
+}
+
+.hero-icon-img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-accent);
+}
+
+.hero-icon span {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #dfe6ee;
+}
+
+/* Inner-page shortened hero */
+.hero-banner--inner {
+  padding: 14px 0;
+  background-image: linear-gradient(180deg, rgba(13,27,42,0.72), rgba(13,27,42,0.85)), url("../img/hero/skyline-panorama.png");
+  background-size: cover;
+  background-position: center 40%;
+}
+
+.hero-inner-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-inner-text {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.hero-script--sm {
+  font-size: 28px;
+}
+
+.hero-icons-row--inner {
+  display: flex;
+  gap: 18px;
+  padding: 0;
+}
+
+.hero-icons-row--inner .hero-icon {
+  flex: 0 0 auto;
+}
+
+.hero-icon--sm .hero-icon-img {
+  width: 30px;
+  height: 30px;
+}
+
+.hero-icon--sm span {
+  display: none;
+}
+
+/* ---------- Functional header (tier 2, sticky) ---------- */
+.site-header {
+  position: relative;
+}
+
+#site-header-functional,
+.site-header {
+  background: var(--color-white);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow);
+}
+
+.header-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px;
+}
+
+.weather-stub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-slate);
+  font-size: 12.5px;
+}
+
+.weather-icon {
+  font-size: 24px;
+}
+
+.weather-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.weather-text strong {
+  color: var(--color-navy);
+  font-size: 13px;
+}
+
+.weather-note {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Logo lockup — pin (SVG) + wordmark (live text, so the tagline stays
+   readable instead of being a downscaled raster). Everything scales off
+   --logo-h, so a placement only has to set that one value. */
+.site-logo {
+  --logo-h: 46px;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--logo-h) * 0.17);
+  justify-self: center;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.site-logo-pin {
+  height: var(--logo-h);
+  width: auto;
+  display: block;
+  flex: none;
+}
+
+.site-logo-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.site-logo-word {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: calc(var(--logo-h) * 0.62);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.lw-all { color: var(--color-accent); }
+.lw-seattle { color: var(--color-navy); }
+
+.site-logo-tag {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: calc(var(--logo-h) * 0.195);
+  letter-spacing: 0.115em;
+  color: var(--color-navy);
+  white-space: nowrap;
+  margin-top: calc(var(--logo-h) * 0.07);
+}
+
+/* For the photo hero and the navy footer: flip the navy half of the
+   wordmark to white. The red "All" and the pin read fine on both. */
+.site-logo--dark .lw-seattle,
+.site-logo--dark .site-logo-tag {
+  color: var(--color-white);
+}
+
+.search-stub {
+  display: flex;
+  justify-self: end;
+  border: 1.5px solid var(--color-slate-soft);
+  border-radius: 999px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 260px;
+}
+
+.search-stub input {
+  border: none;
+  padding: 10px 14px;
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  font-size: 13px;
+}
+
+.search-stub button {
+  border: none;
+  background: var(--color-slate);
+  color: var(--color-white);
+  width: 42px;
+  cursor: pointer;
+}
+
+.site-nav {
+  border-top: 1px solid var(--color-slate-soft);
+  background: var(--color-bg-soft);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 20px;
+  overflow-x: auto;
+}
+
+.nav-links {
+  display: flex;
+  flex: 1;
+  gap: 4px;
+}
+
+.nav-links li a {
+  display: block;
+  padding: 12px 14px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-navy);
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-links li a:hover {
+  color: var(--color-accent);
+}
+
+.nav-links li a.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+/* Push the whole placeholder-links group (Jobs, Events, ...) toward the
+   right edge of .nav-links, away from the real nav items — targets
+   whichever .nav-disabled item is first in the sequence, wherever the
+   real/placeholder split happens to fall. */
+.nav-links li:not(.nav-disabled) + li.nav-disabled {
+  margin-left: auto;
+}
+
+.nav-disabled a {
+  color: #a7b1bd !important;
+  cursor: default;
+}
+
+.nav-disabled a:hover {
+  color: #a7b1bd !important;
+}
+
+.nav-extra {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 8px;
+  color: var(--color-slate);
+}
+
+.social-links a {
+  display: flex;
+  padding: 4px;
+}
+
+.social-links a:hover {
+  color: var(--color-accent);
+}
+
+.nav-stub {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-slate);
+  white-space: nowrap;
+}
+
+.nav-stub--accent {
+  color: var(--color-accent);
+}
+
+.nav-stub:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 980px) {
+  .header-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+  .weather-stub { justify-content: center; }
+  .search-stub { max-width: 100%; }
+  .hero-collage { height: 250px; }
+  .hero-overlay-header {
+    position: static;
+    background: var(--color-navy);
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .nav-extra .nav-stub { display: none; }
+}
+
+@media (max-width: 760px) {
+  .hero-collage { height: 210px; }
+  .hero-icons-row { flex-wrap: wrap; justify-content: center; row-gap: 16px; column-gap: 24px; }
+  .hero-icon { flex: 0 1 30%; min-width: 0; }
+}
+
+@media (max-width: 620px) {
+  .hero-inner-row { flex-direction: column; align-items: center; text-align: center; }
+  .hero-icons-row--inner { flex-wrap: wrap; justify-content: center; row-gap: 8px; width: 100%; }
+}
+
+@media (max-width: 460px) {
+  .site-logo { --logo-h: 36px; }
+  .hero-icon span { display: none; }
+  .hero-icons-row {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+  .hero-icon-img { width: 32px; height: 32px; }
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Listing — AllSeattle Auto</title>
+<meta name="description" content="Car listing details on AllSeattle Auto.">
+<link rel="icon" type="image/svg+xml" href="../img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/footer.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/pages/auto.css">
+</head>
+<body data-page-type="inner" data-page="auto">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="auto-subnav">
+        <a href="index.html">Catalog</a>
+        <a href="add-listing.html">Add a Car</a>
+        <a href="my-listings.html">My Listings</a>
+      </div>
+
+      <p><a href="index.html" class="muted" style="font-size:13px;text-decoration:underline;">&larr; Back to catalog</a></p>
+
+      <div id="listing-root">
+        <p class="muted">Loading listing...</p>
+      </div>
+
+      <div class="similar-cars" id="similar-cars-wrap" style="margin-top:48px;">
+        <div class="section-head">
+          <div><h2>Similar Cars</h2></div>
+        </div>
+        <div class="grid car-grid" id="similar-cars-grid"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script type="module" src="../js/partials.js"></script>
+<script type="module" src="../js/pages/auto-listing.js"></script>
+</body>
+</html>

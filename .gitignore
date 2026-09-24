@@ -1,0 +1,7 @@
+# OS / editor cruft — nothing else to ignore here: the site is plain static
+# HTML/CSS/JS with no build step, no dependencies and no generated output.
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

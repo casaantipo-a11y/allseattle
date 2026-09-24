@@ -1,0 +1,74 @@
+.site-footer {
+  background: var(--color-navy);
+  color: #c9d3de;
+  margin-top: 48px;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 32px;
+  padding: 48px 20px 32px;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The white badge that used to sit behind the logo here is gone — it only
+   existed to hide the old PNG's opaque near-white background. The vector
+   lockup drops straight onto the navy in its dark variant. */
+.footer-brand .site-logo {
+  --logo-h: 40px;
+  align-self: flex-start;
+}
+
+.site-footer h4 {
+  color: var(--color-white);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.site-footer ul li {
+  margin-bottom: 9px;
+  font-size: 13.5px;
+}
+
+.site-footer a {
+  color: #c9d3de;
+}
+
+.site-footer a:hover {
+  color: var(--color-accent);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #8695a6;
+}
+
+@media (max-width: 760px) {
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}

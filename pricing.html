@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing & Advertising Packages — AllSeattle</title>
+<meta name="description" content="AllSeattle advertising packages: Standard, Lux and Premium — pricing and features.">
+<link rel="icon" type="image/svg+xml" href="img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/footer.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/pricing.css">
+</head>
+<body data-page-type="inner" data-page="pricing">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="max-width:640px;margin:0 auto 36px;">
+        <span class="eyebrow">Advertise on AllSeattle</span>
+        <h1>Placement Packages</h1>
+        <p class="muted">Choose the package that fits your business — every plan includes a listing in the directory, city map placement and full editing access.</p>
+      </div>
+
+      <div class="pricing-grid" id="pricing-grid"></div>
+
+      <div class="section-head" style="margin-top:56px;">
+        <div>
+          <span class="eyebrow">Compare Plans</span>
+          <h2>What's Included</h2>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table class="feature-table" id="feature-table"></table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Choose package modal -->
+<div class="modal-overlay hidden" id="choose-pkg-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="choose-pkg-title">
+    <button class="modal-close" id="choose-pkg-close" aria-label="Close">&times;</button>
+    <div id="choose-pkg-content">
+      <h2 id="choose-pkg-title">Get Started</h2>
+      <p class="form-note" id="choose-pkg-note"></p>
+      <form id="choose-pkg-form" novalidate>
+        <div class="field" data-field="name">
+          <label for="pk-name">Your name</label>
+          <input type="text" id="pk-name" name="name" placeholder="Full name">
+          <span class="field-error"></span>
+        </div>
+        <div class="field" data-field="business">
+          <label for="pk-business">Business name</label>
+          <input type="text" id="pk-business" name="business" placeholder="Your business">
+          <span class="field-error"></span>
+        </div>
+        <div class="field" data-field="contact">
+          <label for="pk-contact">Email or phone</label>
+          <input type="text" id="pk-contact" name="contact" placeholder="How should we reach you?">
+          <span class="field-error"></span>
+        </div>
+        <div class="field" data-field="message">
+          <label for="pk-message">Message</label>
+          <textarea id="pk-message" name="message"></textarea>
+          <span class="field-error"></span>
+        </div>
+        <button type="submit" class="btn btn-lg btn-block">Request This Package</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module" src="js/partials.js"></script>
+<script type="module" src="js/pages/pricing.js"></script>
+</body>
+</html>

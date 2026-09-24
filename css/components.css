@@ -1,0 +1,818 @@
+/* ---------- Ad slots ---------- */
+.ad-slot-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.ad-slot {
+  width: 100%;
+  max-width: var(--ad-max-w);
+  min-width: 0;
+  flex-shrink: 1;
+  aspect-ratio: var(--ad-w) / var(--ad-h);
+  display: flex;
+  border: 2px dashed var(--color-slate-soft);
+  border-radius: 10px;
+  background: var(--color-bg-soft);
+}
+
+.ad-slot-inner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+  padding: 6px 8px 12px;
+}
+
+.ad-slot-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11.5px;
+  color: var(--color-slate);
+  margin-top: 8px;
+}
+
+.ad-slot-tier {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-navy);
+  letter-spacing: 0.03em;
+}
+
+.ad-slot-status {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-top: 2px;
+}
+
+.ad-slot-status.is-occupied {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.ad-slot-status.is-available {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.ad-slot--mobile-only { display: none; }
+
+@media (max-width: 980px) {
+  .ad-slot--desktop { display: none; }
+  .ad-slot--mobile-only { display: block; }
+}
+
+/* Desktop sidebar ad slots vs. their mobile inline echoes: exactly one of
+   each pair is ever visible at a time, toggled at 980px — matching the
+   breakpoint where .home-sidebar / .news-sidebar / .directory-sidebar
+   themselves collapse into a stacked mobile column. Using the same
+   breakpoint here avoids a gap where the sidebar has already collapsed
+   but still shows desktop-sized ad boxes (common on tablet-width screens,
+   e.g. a 768px iPad, which sits between a narrower ad breakpoint and the
+   980px layout one). */
+.ad-mobile-inline-slot {
+  display: none;
+}
+
+.mobile-footer-ads {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .ad-desktop-slot {
+    display: none;
+  }
+  .ad-mobile-inline-slot {
+    display: flex;
+    justify-content: center;
+    margin: 28px 0;
+  }
+  .mobile-footer-ads {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-top: 24px;
+  }
+  .mobile-footer-ads .ad-mobile-inline-slot {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+/* Inside a 2-column card grid, an inline ad should break out to full width */
+.news-grid .ad-mobile-inline-slot,
+.biz-grid .ad-mobile-inline-slot,
+.car-grid .ad-mobile-inline-slot {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Section heading row ---------- */
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+/* ---------- News card ---------- */
+.news-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.news-card-photo {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.news-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.news-card:hover .news-card-photo img {
+  transform: scale(1.04);
+}
+
+.news-card-body {
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.news-card-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 11.5px;
+  color: var(--color-slate);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.news-card-meta .cat {
+  color: var(--color-accent);
+}
+
+.news-card-body h3 {
+  margin-bottom: 8px;
+}
+
+.news-card-body h3 a {
+  color: var(--color-navy);
+}
+
+.news-card-body h3 a:hover {
+  color: var(--color-accent);
+}
+
+.news-card-excerpt {
+  color: var(--color-slate);
+  font-size: 14px;
+  flex: 1;
+}
+
+.news-card-more {
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-accent);
+}
+
+.news-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.news-card-footer .news-card-more {
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.news-card-author {
+  font-size: 12.5px;
+  color: var(--color-slate);
+  font-style: italic;
+}
+
+/* ---------- Business card ---------- */
+.biz-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.biz-card-photo {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  position: relative;
+}
+
+.biz-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.biz-card:hover .biz-card-photo img {
+  transform: scale(1.04);
+}
+
+.biz-card-photo .badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.biz-card-body {
+  padding: 16px 18px 20px;
+}
+
+.biz-card-cat {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+
+.biz-card-desc {
+  color: var(--color-slate);
+  font-size: 13.5px;
+  margin-bottom: 10px;
+}
+
+.biz-card-phone {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+/* ---------- Category filter (Directory) ---------- */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.category-filter button {
+  border: 1.5px solid var(--color-slate-soft);
+  background: var(--color-white);
+  color: var(--color-navy);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.category-filter button:hover {
+  border-color: var(--color-accent);
+}
+
+.category-filter button.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* ---------- Sidebar widgets (home) ---------- */
+.widget {
+  background: var(--color-white);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.widget-head {
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-head-tag {
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 11px;
+  color: #9fb0c3;
+}
+
+.widget-body {
+  padding: 16px;
+}
+
+/* Stat grid (AllSeattle at a Glance) */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-tile {
+  background: var(--color-bg-soft);
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.stat-tile .num {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 21px;
+  color: var(--color-accent);
+}
+
+.stat-tile .label {
+  display: block;
+  font-size: 10.5px;
+  color: var(--color-slate);
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+/* Exchange-rate ticker */
+.ticker-row {
+  display: grid;
+  grid-template-columns: 1fr auto 18px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--color-slate-soft);
+  font-size: 13.5px;
+}
+
+.ticker-row:last-child { border-bottom: none; }
+
+.ticker-pair {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ticker-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.ticker-change {
+  font-size: 10px;
+  text-align: right;
+}
+
+.ticker-change.up { color: var(--color-success); }
+.ticker-change.down { color: var(--color-danger); }
+
+/* Job board teaser */
+.job-teaser p {
+  font-size: 13px;
+  color: var(--color-slate);
+  margin-bottom: 12px;
+}
+
+.badge-soon {
+  display: inline-block;
+  background: var(--color-danger-bg);
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+/* City transit rows */
+.transit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--color-slate-soft);
+  font-size: 13.5px;
+}
+
+.transit-row:last-child { border-bottom: none; }
+
+.status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.status-pill.status-good {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.status-pill.status-warn {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+/* ---------- Car card ---------- */
+.car-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.car-card-photo {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-bg-soft);
+}
+
+.car-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.car-card:hover .car-card-photo img {
+  transform: scale(1.04);
+}
+
+.car-card-body {
+  padding: 16px 18px 18px;
+}
+
+.car-card-price {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--color-accent);
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.car-card-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.car-card-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  color: var(--color-slate);
+}
+
+/* ---------- Package badges (pricing / feature matrix helpers) ---------- */
+.pkg-badge-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* ---------- Multi-step form ---------- */
+.form-stepper {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.form-stepper .step-dot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-slate);
+}
+
+.form-stepper .step-dot .num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--color-slate-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-slate);
+}
+
+.form-stepper .step-dot.active .num {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+.form-stepper .step-dot.done .num {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.form-stepper .step-dot.active { color: var(--color-navy); }
+
+.form-step { display: none; }
+.form-step.active { display: block; }
+
+.form-step-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 12px;
+}
+
+.photo-preview-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.photo-preview-row img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-slate-soft);
+}
+
+.review-list {
+  background: var(--color-bg-soft);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+
+.review-list .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--color-slate-soft);
+  font-size: 13.5px;
+}
+
+.review-list .row:last-child { border-bottom: none; }
+.review-list .row span:first-child { color: var(--color-slate); }
+.review-list .row span:last-child { font-weight: 600; text-align: right; }
+
+/* ---------- Gallery (auto detail) ---------- */
+.gallery-main {
+  aspect-ratio: 16/10;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-bg-soft);
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(13,27,42,0.55);
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.gallery-nav.prev { left: 10px; }
+.gallery-nav.next { right: 10px; }
+
+.gallery-thumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gallery-thumbs img {
+  width: 74px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.6;
+  border: 2px solid transparent;
+}
+
+.gallery-thumbs img.active {
+  opacity: 1;
+  border-color: var(--color-accent);
+}
+
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.spec-table tr {
+  border-bottom: 1px dashed var(--color-slate-soft);
+}
+
+.spec-table td {
+  padding: 10px 4px;
+  font-size: 14px;
+}
+
+.spec-table td:first-child {
+  color: var(--color-slate);
+  width: 42%;
+}
+
+.spec-table td:last-child {
+  font-weight: 700;
+}
+
+/* ---------- Contest ---------- */
+.contest-card {
+  border: 2px solid var(--color-accent);
+  position: relative;
+  overflow: visible;
+}
+
+.contest-card-photo {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.contest-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contest-card-body {
+  padding: 14px 16px 18px;
+  text-align: center;
+}
+
+.contest-vote-count {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--color-accent);
+  margin: 6px 0 10px;
+}
+
+@keyframes vote-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+.contest-vote-count.just-voted {
+  animation: vote-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.contest-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-accent);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.contest-teaser {
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #fff 0%, #fff2f1 100%);
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+@media (max-width: 460px) {
+  .form-step-actions { flex-direction: column-reverse; }
+  .form-step-actions .btn { width: 100%; }
+}
+
+/* ---------- Modal (share-news, choose-package, contact-seller) ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,27,42,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow-y: auto;
+  z-index: 200;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.22s ease, visibility 0s linear 0s;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0s linear 0.22s;
+}
+
+.modal {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  width: 100%;
+  padding: 32px 28px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  transform: scale(1) translateY(0);
+  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.modal-overlay.hidden .modal {
+  transform: scale(0.94) translateY(10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-overlay.hidden,
+  .modal {
+    transition: none;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border: none;
+  background: var(--color-bg-soft);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--color-slate);
+  line-height: 1;
+}
+
+.modal-close:hover {
+  background: var(--color-slate-soft);
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-card-photo img,
+  .biz-card-photo img,
+  .car-card-photo img,
+  .auto-filters-toggle::after,
+  .contest-vote-count.just-voted {
+    transition: none;
+    animation: none;
+  }
+}

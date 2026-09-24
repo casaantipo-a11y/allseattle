@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News — AllSeattle</title>
+<meta name="description" content="Local Seattle news, submitted by AllSeattle readers and staff.">
+<link rel="icon" type="image/svg+xml" href="img/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/footer.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/news.css">
+</head>
+<body data-page-type="inner" data-page="news">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="news-top" class="ad-slot-top"></div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Seattle News</span>
+          <h1>Latest Stories</h1>
+        </div>
+        <button class="btn btn-navy" id="share-news-btn" type="button">+ Share the News</button>
+      </div>
+
+      <div class="news-layout">
+        <div>
+          <div class="grid news-grid" id="news-grid-all"></div>
+        </div>
+        <aside class="news-sidebar">
+          <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="news-side-1"></div>
+          <div class="ad-desktop-slot" data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="news-side-2"></div>
+        </aside>
+      </div>
+
+      <div class="mobile-footer-ads" id="mobile-footer-ads"></div>
+
+      <a href="contest.html" class="contest-teaser" id="contest-teaser">
+        <div>
+          <span class="eyebrow">Photo &amp; Art Contest</span>
+          <h2 style="margin-bottom:6px;">Police in the Eyes of a Child</h2>
+          <p class="muted" style="margin-bottom:0;">Vote for your favorite entry in our community art contest — new submissions every week.</p>
+        </div>
+        <span class="btn btn-outline">Vote Now &rarr;</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- Share the news modal -->
+<div class="modal-overlay hidden" id="share-news-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="share-news-title">
+    <button class="modal-close" id="share-news-close" aria-label="Close">&times;</button>
+    <div id="share-news-content">
+      <h2 id="share-news-title">Share the News</h2>
+      <p class="form-note">See something happening around Seattle? Let us know — accidents, local events, anything newsworthy.</p>
+      <form id="share-news-form" novalidate>
+        <div class="field" data-field="title">
+          <label for="sn-title">Headline</label>
+          <input type="text" id="sn-title" name="title" placeholder="What happened?">
+          <span class="field-error"></span>
+        </div>
+        <div class="field" data-field="text">
+          <label for="sn-text">Details</label>
+          <textarea id="sn-text" name="text" placeholder="Tell us what you saw..."></textarea>
+          <span class="field-error"></span>
+        </div>
+        <div class="field" data-field="photo">
+          <label for="sn-photo">Photo (optional)</label>
+          <input type="file" id="sn-photo" name="photo" accept="image/*">
+          <div class="photo-preview-row" id="sn-photo-preview"></div>
+          <span class="field-error"></span>
+        </div>
+        <div class="field" data-field="contact">
+          <label for="sn-contact">Your contact (email or phone)</label>
+          <input type="text" id="sn-contact" name="contact" placeholder="So we can follow up if needed">
+          <span class="field-error"></span>
+        </div>
+        <button type="submit" class="btn btn-lg btn-block">Submit Story</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script type="module" src="js/partials.js"></script>
+<script type="module" src="js/banner-ads.js"></script>
+<script type="module" src="js/pages/news.js"></script>
+</body>
+</html>
