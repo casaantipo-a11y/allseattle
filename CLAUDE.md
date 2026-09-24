@@ -69,8 +69,7 @@ that no longer exists.
 
 ## Commands
 
-No build step, no package.json, no test suite — verification is always manual, by running the
-static site locally and clicking through it (or via a headless-browser screenshot pass).
+No build step, no package.json, no test suite — verification is always manual.
 
 ```powershell
 # from inside this folder — relative asset paths and ES modules need real HTTP, not file://
@@ -78,6 +77,47 @@ python -m http.server 8000          # Python 3.13 is on PATH on this machine
 # then open http://localhost:8000/
 # for a phone on the same LAN: add --bind 0.0.0.0, browse to the machine's LAN IP instead of localhost
 ```
+
+### Checking a layout change
+
+**Do not screenshot narrow widths with `--window-size`.** Headless Chrome on this machine clamps
+its window to roughly **504 CSS px**, so `--window-size=375` quietly returns a 375px-wide *crop of
+a desktop render*: content looks truncated and a horizontal scrollbar appears that no real browser
+shows. Two false bugs have already been chased this way.
+
+A trustworthy pass drives Chrome over CDP instead:
+
+1. Launch with `--headless=new --disable-gpu --no-sandbox --user-data-dir=<tmp> --remote-debugging-port=9222 about:blank`.
+2. `PUT http://localhost:9222/json/new?about:blank`, take `webSocketDebuggerUrl`.
+3. On that socket (Node 24 has a global `WebSocket`; nothing to install) send
+   `Emulation.setDeviceMetricsOverride {width:375,height:812,deviceScaleFactor:1,mobile:true}`,
+   then `Page.navigate`, then `Page.captureScreenshot`.
+
+Four things that each cost a wasted run when missed:
+
+- **`Network.setCacheDisabled {cacheDisabled:true}` before navigating.** Otherwise Chrome serves
+  the previous CSS and the run measures the layout you just changed away from — it will look like
+  your edit did nothing.
+- **Assert `matchMedia('(max-width:460px)').matches === true`** on every mobile page. If it is
+  false the emulation silently did not apply and every number in that run is wrong.
+- **A fresh tab per page.** The renderer intermittently hangs on the longest pages; without
+  isolation one hang takes down the whole pass.
+- **Scroll to the bottom and back before capturing**, or `loading="lazy"` never fires and the
+  screenshot is full of blank photo boxes that look like broken images.
+
+Worth asserting per page rather than eyeballing: `documentElement.scrollWidth === innerWidth`
+(no horizontal scroll), `getComputedStyle(document.body).fontSize` (16px at 375, 18px at 1440),
+how many interactive elements measure under 44px, and how many images have `naturalWidth === 0`.
+
+### Known issue, not yours
+
+`auto/listing.html` throws `Cannot read properties of null (reading 'appendChild')` at
+`js/pages/auto-catalog.js:33` on every load, in both viewports. It predates the current work.
+Cause: `auto-listing.js` imports `carCardTemplate` from `auto-catalog.js`, and that import also
+runs the catalog module's top-level `DOMContentLoaded` handler, whose `populateMakes()` looks for
+the `#f-make` filter select that only exists on the catalog page. The two handlers are
+independent, so the listing page still renders fully — the error is noise, not breakage. Treat a
+*clean* console on that page as the surprise.
 
 ## Architecture
 
@@ -118,7 +158,9 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
 
 ---
 
-**`index.html` — Home** (`data-page-type="home"`, the only `.section-tight`)
+**`index.html` — Home** (`data-page-type="home"`, the only `.section-tight` — though since
+`main > .section:first-child` also got a 32px top, that class now resolves to exactly the same
+padding as a plain first `.section`; it survives as a label, not as a difference)
 A three-column `.home-layout`. Below 1024px it becomes one column, but the asides do not simply
 stack: the left aside's four slots are `.ad-desktop-slot` and disappear entirely, reappearing as
 inline ads inside the news feed, while the right aside's widgets do stack below the feed.
@@ -264,7 +306,7 @@ A rate-carded component, not a decoration. Size → tier → price is fixed (`AD
 Occupied/Available status is `hashSeed(seed) % 5 < 3` — deterministic per seed string, not random
 per render, so the **same placement shows the same status everywhere it appears**: its desktop
 box, its own mobile-size swap (`renderAdSlot(seed, size, {mobileSize})`, toggled by the
-`ad-slot--desktop` / `ad-slot--mobile-only` CSS classes at the 760px breakpoint), and its separate
+`ad-slot--desktop` / `ad-slot--mobile-only` CSS classes at 1024px), and its separate
 inline echo interleaved into a mobile content feed (`inlineAdMarkup(seed, tierSize)`, used by
 `home.js` / `news.js` / `directory.js` / `auto-catalog.js` to redistribute sidebar ads into the
 card grid on narrow screens instead of stacking them at the top). Always pass the **same seed and
@@ -360,8 +402,9 @@ was an illegible smudge once downscaled to header size, and the opaque near-whit
 forced a white plate behind the logo on both the photo hero and the navy footer. Live text stays
 crisp and recolors with CSS, which is what makes the plates unnecessary.
 
-- **One knob for size**: every part scales off `--logo-h` on `.site-logo` (46px in the header,
-  40px in the footer, 36px under 460px). Don't set pixel sizes on the pieces.
+- **One knob for size**: every part scales off `--logo-h` on `.site-logo`. Mobile-first, so 36px
+  is the base and 46px arrives at 640px; the footer pins its own 40px. Don't set pixel sizes on
+  the pieces.
 - **`variant: "dark"`** (`.site-logo--dark`) flips the wordmark and tagline to white for the photo
   hero and the navy footer. The red "All" and the pin are left alone — they read on either.
 - **Needle sizing**: the Space Needle paths are drawn at a convenient size and then scaled about
@@ -409,9 +452,11 @@ Two traps this layout has already hit once each:
   1024px now). If they diverge, tablet widths get a collapsed sidebar still showing desktop-sized
   ad boxes.
 
-`position: sticky` is used for the functional nav (see partials.js note above) and for
-Directory / News / Auto's filter sidebars (`top: calc(var(--header-height) + var(--space-2))`,
-from 1024px up); Home's two sidebars are deliberately `position: static` so they scroll away with
+`position: sticky` is used for the functional nav (see partials.js note above) and for the
+sidebars on News, Directory and Auto (`top: calc(var(--header-height) + var(--space-2))`). They
+do not all start at the same width: Auto's filter column sticks from **768px**, because that is
+where it stops being an accordion, while News and Directory only get a sidebar at all from
+**1024px**. Home's two sidebars are deliberately `position: static` so they scroll away with
 the page instead (an explicit, non-default choice — don't "fix" it back to sticky without checking
 history first).
 

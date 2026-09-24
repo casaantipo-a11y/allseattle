@@ -71,7 +71,7 @@
 .ad-slot--mobile-only { display: flex; }
 
 /* Desktop sidebar ad slots vs. their mobile inline echoes: exactly one of
-   each pair is ever visible at a time, toggled at 980px — matching the
+   each pair is ever visible at a time, toggled at 1024px — matching the
    breakpoint where .home-sidebar / .news-sidebar / .directory-sidebar
    themselves collapse into a stacked mobile column. Using the same
    breakpoint here avoids a gap where the sidebar has already collapsed
