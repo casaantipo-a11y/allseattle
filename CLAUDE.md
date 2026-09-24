@@ -18,19 +18,29 @@ survive dead conference wifi, that stylesheet is the one thing that degrades —
 in `--font-heading`/`--font-body` cover the body text, but the Pacifico script wordmark won't
 render as designed.
 
-## Environment & deploy (read before running git/gh)
+## Environment & deploy
 
-The working copy lives at `D:\allseattle` and **is not currently a git working tree** — there is
-no `.git` here. Don't assume `git status`, `git log`, or `gh` will work; check first, and offer
-`git init` rather than silently failing. Historically this was `github.com/mijckela-alt/allseattle`
-deployed via GitHub Pages from `main`, so if a remote is reattached, deploying is just pushing to
-`main` and polling `gh api repos/mijckela-alt/allseattle/pages/builds/latest` for `"status":"built"`
-on the new commit SHA rather than assuming a push is live immediately.
+The working copy lives at `D:\allseattle`. The repo is
+**`github.com/casaantipo-a11y/allseattle`** (public), served by GitHub Pages from `main` at
+<https://casaantipo-a11y.github.io/allseattle/>.
 
-A custom domain (`allseattle.org`) was purchased and briefly pointed at Pages via a `CNAME` file,
-then explicitly reverted — there is **no `CNAME` file in the repo**, and the site is not live at
-allseattle.org despite what README.md's "Real" section still says. Don't re-add `CNAME` or treat
-allseattle.org as live unless the user asks to redo that DNS work.
+Deploying is just pushing to `main` — Pages rebuilds on its own. Poll
+`gh api repos/casaantipo-a11y/allseattle/pages/builds/latest` for `"status":"built"` on the new
+commit SHA rather than assuming a push is live immediately; a build takes roughly a minute.
+
+The history starts at a single squashed initial commit (Sept 2026) — the project was re-homed
+here from an earlier repo (`mijckela-alt/allseattle`) that is no longer the deploy target. Don't
+expect to find pre-move history, and don't push to the old remote.
+
+**Pages serves the site from a project subpath** (`/allseattle/`), not from a domain root. That's
+survivable only because nothing here uses root-relative (`/css/...`) URLs and `partials.js`
+resolves `SITE_ROOT` from `import.meta.url` at runtime. Introducing a leading-slash asset path
+will work on `localhost:8000` and 404 on Pages — see "Path depth is the biggest trap here".
+
+A custom domain (`allseattle.org`) was purchased and briefly pointed at Pages via a `CNAME` file
+under the old repo, then explicitly reverted — there is **no `CNAME` file here**, and the site is
+not live at allseattle.org despite what README.md's "Real" section still says. Don't re-add
+`CNAME` or treat allseattle.org as live unless the user asks to redo that DNS work.
 
 README.md is out of date in two other spots: it says asset paths are root-relative (`/css/...`) —
 they are plain relative (`css/...`, or `../css/...` under `auto/`) — and it points at a `CNAME`
