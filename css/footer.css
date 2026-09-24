@@ -1,20 +1,21 @@
 .site-footer {
   background: var(--color-navy);
   color: #c9d3de;
-  margin-top: 48px;
+  margin-top: var(--space-12);
 }
 
+/* Mobile-first: базово одна колонка, шире — две и четыре. */
 .footer-inner {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: 32px;
-  padding: 48px 20px 32px;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--gutter) var(--space-8);
 }
 
 .footer-brand {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 /* The white badge that used to sit behind the logo here is gone — it only
@@ -27,15 +28,15 @@
 
 .site-footer h4 {
   color: var(--color-white);
-  font-size: 13px;
+  font-size: var(--text-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-bottom: 14px;
+  margin-bottom: var(--space-3);
 }
 
 .site-footer ul li {
-  margin-bottom: 9px;
-  font-size: 13.5px;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xs);
 }
 
 .site-footer a {
@@ -48,27 +49,29 @@
 
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.12);
-  padding: 18px 20px;
+  padding: var(--space-4) var(--gutter);
   display: flex;
+  flex-direction: column;
+  text-align: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
-  font-size: 12px;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
   color: #8695a6;
 }
 
-@media (max-width: 760px) {
+@media (min-width: 640px) {
   .footer-inner {
     grid-template-columns: 1fr 1fr;
   }
+  .footer-bottom {
+    flex-direction: row;
+    text-align: left;
+  }
 }
 
-@media (max-width: 460px) {
+@media (min-width: 768px) {
   .footer-inner {
-    grid-template-columns: 1fr;
-  }
-  .footer-bottom {
-    flex-direction: column;
-    text-align: center;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
   }
 }

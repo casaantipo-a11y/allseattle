@@ -14,7 +14,7 @@
   aspect-ratio: var(--ad-w) / var(--ad-h);
   display: flex;
   border: 2px dashed var(--color-slate-soft);
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: var(--color-bg-soft);
 }
 
@@ -25,9 +25,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: var(--space-1);
   text-align: center;
-  padding: 6px 8px 12px;
+  padding: var(--space-1) var(--space-2) var(--space-3);
 }
 
 .ad-slot-label {
@@ -35,7 +35,7 @@
   font-weight: 700;
   font-size: 11.5px;
   color: var(--color-slate);
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .ad-slot-tier {
@@ -48,9 +48,9 @@
 .ad-slot-status {
   font-size: 9.5px;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 999px;
-  margin-top: 2px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  margin-top: var(--space-1);
 }
 
 .ad-slot-status.is-occupied {
@@ -63,49 +63,49 @@
   background: var(--color-success-bg);
 }
 
-.ad-slot--mobile-only { display: none; }
-
-@media (max-width: 980px) {
-  .ad-slot--desktop { display: none; }
-  .ad-slot--mobile-only { display: block; }
-}
+/* Mobile-first: базово видна мобильная версия слота, десктопная — с 1024px.
+   Видимость возвращаем именно flex, а не block: эти модификаторы висят на том
+   же элементе, что и .ad-slot, и block перебил бы его display:flex, из-за чего
+   подпись перестаёт центрироваться по вертикали. */
+.ad-slot--desktop { display: none; }
+.ad-slot--mobile-only { display: flex; }
 
 /* Desktop sidebar ad slots vs. their mobile inline echoes: exactly one of
    each pair is ever visible at a time, toggled at 980px — matching the
    breakpoint where .home-sidebar / .news-sidebar / .directory-sidebar
    themselves collapse into a stacked mobile column. Using the same
    breakpoint here avoids a gap where the sidebar has already collapsed
-   but still shows desktop-sized ad boxes (common on tablet-width screens,
-   e.g. a 768px iPad, which sits between a narrower ad breakpoint and the
-   980px layout one). */
-.ad-mobile-inline-slot {
+   but still shows desktop-sized ad boxes. Этот инвариант обязателен:
+   если двигать брейкпоинт сайдбаров, двигать и этот. */
+.ad-desktop-slot {
   display: none;
+}
+
+.ad-mobile-inline-slot {
+  display: flex;
+  justify-content: center;
+  margin: var(--space-6) 0;
 }
 
 .mobile-footer-ads {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--grid-gap);
+  margin-top: var(--space-6);
 }
 
-@media (max-width: 980px) {
-  .ad-desktop-slot {
-    display: none;
-  }
-  .ad-mobile-inline-slot {
-    display: flex;
-    justify-content: center;
-    margin: 28px 0;
-  }
-  .mobile-footer-ads {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    margin-top: 24px;
-  }
-  .mobile-footer-ads .ad-mobile-inline-slot {
-    margin: 0;
-    width: 100%;
-  }
+.mobile-footer-ads .ad-mobile-inline-slot {
+  margin: 0;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .ad-slot--desktop { display: flex; }
+  .ad-slot--mobile-only { display: none; }
+  .ad-desktop-slot { display: block; }
+  .ad-mobile-inline-slot { display: none; }
+  .mobile-footer-ads { display: none; }
 }
 
 /* Inside a 2-column card grid, an inline ad should break out to full width */
@@ -116,12 +116,19 @@
 }
 
 /* ---------- Section heading row ---------- */
+/* Отбивка между двумя смысловыми блоками внутри одной секции —
+   заметно больше внутренних отступов, чтобы группы читались раздельно
+   (design.md §1, закон близости). */
+.section-head--spaced {
+  margin-top: var(--space-16);
+}
+
 .section-head {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 22px;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
   flex-wrap: wrap;
 }
 
@@ -148,7 +155,7 @@
 }
 
 .news-card-body {
-  padding: 16px 18px 20px;
+  padding: var(--card-pad);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -156,11 +163,11 @@
 
 .news-card-meta {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2);
   align-items: center;
-  font-size: 11.5px;
+  font-size: var(--text-xs);
   color: var(--color-slate);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 700;
@@ -171,7 +178,7 @@
 }
 
 .news-card-body h3 {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .news-card-body h3 a {
@@ -184,14 +191,14 @@
 
 .news-card-excerpt {
   color: var(--color-slate);
-  font-size: 14px;
+  font-size: var(--text-xs);
   flex: 1;
 }
 
 .news-card-more {
-  margin-top: 10px;
+  margin-top: var(--space-2);
   font-weight: 700;
-  font-size: 13px;
+  font-size: var(--text-xs);
   color: var(--color-accent);
 }
 
@@ -199,8 +206,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 10px;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .news-card-footer .news-card-more {
@@ -209,7 +216,7 @@
 }
 
 .news-card-author {
-  font-size: 12.5px;
+  font-size: var(--text-xs);
   color: var(--color-slate);
   font-style: italic;
 }
@@ -244,44 +251,45 @@
 }
 
 .biz-card-body {
-  padding: 16px 18px 20px;
+  padding: var(--card-pad);
 }
 
 .biz-card-cat {
-  font-size: 11.5px;
+  font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--color-accent);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 .biz-card-desc {
   color: var(--color-slate);
-  font-size: 13.5px;
-  margin-bottom: 10px;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-2);
 }
 
 .biz-card-phone {
   font-weight: 700;
-  font-size: 13.5px;
+  font-size: var(--text-xs);
 }
 
 /* ---------- Category filter (Directory) ---------- */
 .category-filter {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 28px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
 }
 
 .category-filter button {
+  min-height: 44px;
   border: 1.5px solid var(--color-slate-soft);
   background: var(--color-white);
   color: var(--color-navy);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 13px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
   font-weight: 600;
   cursor: pointer;
 }
@@ -302,7 +310,7 @@
   border: 1px solid var(--color-slate-soft);
   border-radius: var(--radius);
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-4);
 }
 
 .widget-head {
@@ -310,13 +318,13 @@
   color: var(--color-white);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  padding: 10px 16px;
+  padding: var(--space-2) var(--space-4);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .widget-head-tag {
@@ -324,25 +332,25 @@
   font-weight: 400;
   text-transform: none;
   letter-spacing: normal;
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: #9fb0c3;
 }
 
 .widget-body {
-  padding: 16px;
+  padding: var(--card-pad);
 }
 
 /* Stat grid (AllSeattle at a Glance) */
 .stat-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .stat-tile {
   background: var(--color-bg-soft);
-  border-radius: 8px;
-  padding: 12px 8px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-2);
   text-align: center;
 }
 
@@ -350,15 +358,15 @@
   display: block;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 21px;
+  font-size: var(--text-lg);
   color: var(--color-accent);
 }
 
 .stat-tile .label {
   display: block;
-  font-size: 10.5px;
+  font-size: var(--text-xs);
   color: var(--color-slate);
-  margin-top: 3px;
+  margin-top: var(--space-1);
   line-height: 1.3;
 }
 
@@ -367,10 +375,10 @@
   display: grid;
   grid-template-columns: 1fr auto 18px;
   align-items: center;
-  gap: 10px;
-  padding: 7px 0;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
   border-bottom: 1px solid var(--color-slate-soft);
-  font-size: 13.5px;
+  font-size: var(--text-xs);
 }
 
 .ticker-row:last-child { border-bottom: none; }
@@ -387,7 +395,7 @@
 }
 
 .ticker-change {
-  font-size: 10px;
+  font-size: var(--text-xs);
   text-align: right;
 }
 
@@ -396,9 +404,9 @@
 
 /* Job board teaser */
 .job-teaser p {
-  font-size: 13px;
+  font-size: var(--text-xs);
   color: var(--color-slate);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .badge-soon {
@@ -407,11 +415,11 @@
   color: var(--color-accent);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 5px 12px;
-  border-radius: 999px;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
 }
 
 /* City transit rows */
@@ -419,18 +427,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px dashed var(--color-slate-soft);
-  font-size: 13.5px;
+  font-size: var(--text-xs);
 }
 
 .transit-row:last-child { border-bottom: none; }
 
 .status-pill {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
 }
 
 .status-pill.status-good {
@@ -467,27 +475,27 @@
 }
 
 .car-card-body {
-  padding: 16px 18px 18px;
+  padding: var(--card-pad);
 }
 
 .car-card-price {
   font-family: var(--font-heading);
   font-weight: 800;
   color: var(--color-accent);
-  font-size: 20px;
-  margin-bottom: 4px;
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-1);
 }
 
 .car-card-title {
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .car-card-specs {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 14px;
-  font-size: 12.5px;
+  gap: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
   color: var(--color-slate);
 }
 
@@ -497,22 +505,22 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  margin-right: 6px;
+  margin-right: var(--space-1);
 }
 
 /* ---------- Multi-step form ---------- */
 .form-stepper {
   display: flex;
-  gap: 8px;
-  margin-bottom: 28px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
   flex-wrap: wrap;
 }
 
 .form-stepper .step-dot {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
   font-weight: 700;
   color: var(--color-slate);
 }
@@ -547,38 +555,46 @@
 
 .form-step-actions {
   display: flex;
+  flex-direction: column-reverse;
   justify-content: space-between;
-  margin-top: 24px;
-  gap: 12px;
+  margin-top: var(--space-6);
+  gap: var(--space-3);
+}
+
+.form-step-actions .btn { width: 100%; }
+
+@media (min-width: 640px) {
+  .form-step-actions { flex-direction: row; }
+  .form-step-actions .btn { width: auto; }
 }
 
 .photo-preview-row {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2);
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-top: var(--space-2);
 }
 
 .photo-preview-row img {
   width: 72px;
   height: 72px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1.5px solid var(--color-slate-soft);
 }
 
 .review-list {
   background: var(--color-bg-soft);
   border-radius: var(--radius);
-  padding: 16px 20px;
+  padding: var(--space-4) var(--space-4);
 }
 
 .review-list .row {
   display: flex;
   justify-content: space-between;
-  padding: 7px 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px dashed var(--color-slate-soft);
-  font-size: 13.5px;
+  font-size: var(--text-xs);
 }
 
 .review-list .row:last-child { border-bottom: none; }
@@ -591,7 +607,7 @@
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--color-bg-soft);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   position: relative;
 }
 
@@ -608,19 +624,19 @@
   background: rgba(13,27,42,0.55);
   color: #fff;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 18px;
+  font-size: var(--text-base);
 }
 
-.gallery-nav.prev { left: 10px; }
-.gallery-nav.next { right: 10px; }
+.gallery-nav.prev { left: var(--space-2); }
+.gallery-nav.next { right: var(--space-2); }
 
 .gallery-thumbs {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -628,7 +644,7 @@
   width: 74px;
   height: 56px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   opacity: 0.6;
   border: 2px solid transparent;
@@ -649,8 +665,8 @@
 }
 
 .spec-table td {
-  padding: 10px 4px;
-  font-size: 14px;
+  padding: var(--space-2) var(--space-1);
+  font-size: var(--text-xs);
 }
 
 .spec-table td:first-child {
@@ -681,16 +697,16 @@
 }
 
 .contest-card-body {
-  padding: 14px 16px 18px;
+  padding: var(--card-pad);
   text-align: center;
 }
 
 .contest-vote-count {
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 22px;
+  font-size: var(--text-lg);
   color: var(--color-accent);
-  margin: 6px 0 10px;
+  margin: var(--space-1) 0 var(--space-2);
 }
 
 @keyframes vote-pop {
@@ -710,9 +726,9 @@
   transform: translateX(-50%);
   background: var(--color-accent);
   color: #fff;
-  padding: 4px 14px;
-  border-radius: 999px;
-  font-size: 10.5px;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -723,18 +739,13 @@
   border: 2px solid var(--color-accent);
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, #fff 0%, #fff2f1 100%);
-  padding: 28px;
+  padding: var(--space-6);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--space-4);
   flex-wrap: wrap;
-  margin-bottom: 36px;
-}
-
-@media (max-width: 460px) {
-  .form-step-actions { flex-direction: column-reverse; }
-  .form-step-actions .btn { width: 100%; }
+  margin-bottom: var(--space-8);
 }
 
 /* ---------- Modal (share-news, choose-package, contact-seller) ---------- */
@@ -745,7 +756,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 40px 16px;
+  padding: var(--space-8) var(--space-4);
   overflow-y: auto;
   z-index: 200;
   opacity: 1;
@@ -764,7 +775,7 @@
   border-radius: var(--radius-lg);
   max-width: 520px;
   width: 100%;
-  padding: 32px 28px;
+  padding: var(--space-8) var(--space-6);
   position: relative;
   box-shadow: var(--shadow-lg);
   transform: scale(1) translateY(0);
@@ -792,7 +803,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: var(--text-base);
   cursor: pointer;
   color: var(--color-slate);
   line-height: 1;

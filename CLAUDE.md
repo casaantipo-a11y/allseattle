@@ -18,6 +18,27 @@ survive dead conference wifi, that stylesheet is the one thing that degrades —
 in `--font-heading`/`--font-body` cover the body text, but the Pacifico script wordmark won't
 render as designed.
 
+## Design rules (`design.md`)
+
+`design.md` (Russian) is the project's composition standard: spacing scale, type scale, grid,
+colour proportion, hierarchy, component consistency, and a per-section checklist. **Read it before
+writing markup or CSS.** Its core premise is that every value comes from a declared system and
+anything picked by eye is a defect — so "it looks better this way" is not an argument against it.
+
+**This file wins on conflict**, because what's recorded here is load-bearing architecture (the
+sticky-nav sibling rule, `SITE_ROOT` path resolution, CSS load order, the demo contract). Breaking
+those to satisfy a composition rule breaks the site. `design.md` governs everything else.
+
+The site **has been retrofitted to it** (Sept 2026): spacing, type, radii, section and card
+padding all come from tokens, and the breakpoints are its mobile-first 640/768/1024/1280. So new
+work has no excuse to drift — match the tokens, don't invent values. The agreed exceptions are
+listed under "CSS structure" below.
+
+Two deliberate deviations already ruled on by the user: **more than two font families is fine**
+here (Libre Franklin / Public Sans / Pacifico — Pacifico is the brand script in the inner hero,
+not a stray), and inline `style="..."` in JS templates stays acceptable per the CSS section below,
+despite `design.md` §9.
+
 ## Environment & deploy
 
 The working copy lives at `D:\allseattle`. The repo is
@@ -258,23 +279,69 @@ crisp and recolors with CSS, which is what makes the plates unnecessary.
 
 ### CSS structure
 
-`tokens.css` (colors/fonts/radii/shadow/`--container: 1180px`/`--header-height: 128px`) →
-`base.css` (reset + `.container` / `.btn` primitives) → `header.css` / `footer.css` →
-`components.css` (cards, ad-slot, forms, badges, modals — shared across pages) → `css/pages/*.css`
-(one file per page, layout only). Same load order in every HTML file's `<head>`; keep it that way
-since later files are relied on to override earlier ones at equal specificity in a few places
-(e.g. a page's own `*-container` class widening the shared `.container` max-width).
+`tokens.css` (colours, fonts, **the spacing / type / radius scales**, `--container`,
+`--header-height`) → `base.css` (reset + `.container` / `.btn` / `.field` primitives) →
+`header.css` / `footer.css` → `components.css` (cards, ad-slot, forms, badges, modals — shared
+across pages) → `css/pages/*.css` (one file per page, layout only). Same load order in every HTML
+file's `<head>`; keep it that way since later files are relied on to override earlier ones at
+equal specificity in a few places (e.g. a page's own `*-container` class widening the shared
+`.container` max-width).
 
-Responsive breakpoints cluster at 1180 / 980 / 860 / 760 / 620 / 460px, consistent across every
-CSS file (a handful of one-off widths exist for individual components). `position: sticky` is used
-for the functional nav (see partials.js note above) and for Directory/Auto's filter sidebars
-(`top: calc(var(--header-height) + 10px)`); Home's two sidebars are deliberately `position: static`
-so they scroll away with the page instead (an explicit, non-default choice — don't "fix" it back
-to sticky without checking history first).
+**Everything is built from tokens** — see `design.md` above. Concretely: spacing comes from
+`--space-1..--space-32` (4/8/12/16/24/32/48/64/96/128), type from `--text-xs..--text-5xl`
+(14/16/18/20/24/30/36/48/60), radii from `--radius-sm|--radius|--radius-lg|--radius-full`
+(8/12/16/full). A raw `18px` or `10px` in a rule is a defect, not a style choice.
+
+Four tokens are **responsive and redefined by breakpoint inside `tokens.css` itself**, so the
+whole responsive spacing scale lives in one file instead of being spread across thirteen:
+`--gutter` (container side padding, 16/24/32), `--section-y` (vertical section padding, 64/80/96),
+`--grid-gap` (grid gutters, 16/24) and `--card-pad` (card inner padding, 24/32). Change the scale
+there, not at the call sites. (`--gut` from the old code is gone; `.grid` uses `--grid-gap`.)
+
+**Breakpoints are mobile-first `min-width` at 640 / 768 / 1024 / 1280** — base rules are the
+narrow-screen state and each query only adds what wider screens get. There are no `max-width`
+queries left apart from `prefers-reduced-motion`; don't reintroduce one.
+
+Two traps this layout has already hit once each:
+
+- **`.ad-slot--desktop` / `.ad-slot--mobile-only` sit on the same element as `.ad-slot`**, which
+  is `display: flex`. Restore their visibility with `display: flex`, never `block` — `block`
+  silently wins and the slot's caption stops centring vertically.
+- **The ad desktop/mobile swap must stay on the same breakpoint as the sidebar collapse** (both
+  1024px now). If they diverge, tablet widths get a collapsed sidebar still showing desktop-sized
+  ad boxes.
+
+`position: sticky` is used for the functional nav (see partials.js note above) and for
+Directory / News / Auto's filter sidebars (`top: calc(var(--header-height) + var(--space-2))`,
+from 1024px up); Home's two sidebars are deliberately `position: static` so they scroll away with
+the page instead (an explicit, non-default choice — don't "fix" it back to sticky without checking
+history first).
 
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is
 churn.
+
+#### Agreed deviations from `design.md`
+
+Each of these was decided explicitly. Don't "fix" them back:
+
+- **`--container: 1180px`**, not the 1200–1280 of §3 — the site is laid out for this width.
+- **Base text is 16px on mobile, 18px from 1024px** (§2) — but the site keeps a dense,
+  portal-like feel, so most secondary text sits at `--text-xs` (14px), the floor of the scale.
+- **Text below 14px survives in exactly two places**, both marked in the CSS: the captions inside
+  ad placeholders (`.ad-slot-label` / `-tier` / `-status`), which otherwise stop fitting a
+  320×100 box, and `.site-logo-tag` plus `.hero-script`, which are brand artwork rather than
+  text to read.
+- **`.btn-sm` is 40px tall**, which §6 explicitly allows for buttons even though §8 asks for
+  44px touch targets generally.
+- **Inline text links inside prose are not padded out to 44px** (footer contact lines,
+  "Read more →"). Inflating them would wreck the line rhythm; the surrounding controls all meet
+  44px.
+- **From 1024px the nav trims its horizontal padding and icon width.** The 44×44 rule lives in
+  §8 (Адаптивность) and is about touch; at desktop widths the ten nav items plus the social icons
+  do not fit the container otherwise, and the nav would fall into a horizontal scroll. Vertical
+  size stays 44px.
+- **Three font families**, not two (§2) — Pacifico is the brand script in the inner hero.
 
 ### Images (`img/`)
 
