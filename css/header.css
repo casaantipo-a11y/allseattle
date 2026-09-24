@@ -155,10 +155,8 @@
   min-width: 0;
 }
 
-/* Погода, соцсети и Register Business появляются только на широких экранах —
-   в узкой липкой шапке им нет места, а функции они не несут. */
-.weather-stub,
-.social-links,
+/* Register Business появляется только с 1280px: ниже он забирает ширину у
+   ряда меню, который и так самый широкий элемент шапки. */
 .header-utils .nav-stub {
   display: none;
 }
@@ -183,23 +181,6 @@
   display: flex;
   flex: none;
   color: var(--color-slate);
-}
-
-.social-links {
-  gap: var(--space-1);
-  color: var(--color-slate);
-}
-
-.social-links a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.social-links a:hover {
-  color: var(--color-accent);
 }
 
 .lang-switch {
@@ -281,11 +262,43 @@
   height: 140px;
 }
 
-.hero-caption {
+/* Погода лежит в левом верхнем углу кадра. Белая плашка, а не белый текст:
+   фотография светлая сверху и тёмная снизу, на плашке читается везде. */
+.hero-weather {
   position: absolute;
   left: var(--space-4);
   top: var(--space-4);
   display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.94);
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.hero-weather:hover {
+  background: var(--color-white);
+}
+
+/* По умолчанию плашка однострочная: дата и температура. Полная в три строки
+   занимает 79px, а на внутреннем кадре высотой 140-170px рядом с ней ещё
+   стоят поиск и скриптовая надпись — замерено, накладывались обе. */
+.hero-weather .weather-text strong,
+.hero-weather .weather-note {
+  display: none;
+}
+
+/* Скриптовая надпись ушла вниз кадра, освободив верхний левый угол погоде.
+   Ниже 1024px её не видно: там внизу кадра лежит строка поиска, а на 140px
+   высоты третий элемент не помещается. Логотип в шапке несёт ту же марку. */
+.hero-caption {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  display: none;
   flex-direction: column;
   color: var(--color-white);
 }
@@ -355,21 +368,25 @@
 @media (min-width: 768px) {
   .hero-frame { height: 270px; }
   .hero-banner--inner .hero-frame { height: 160px; }
-  .hero-caption { left: var(--space-6); top: var(--space-6); }
   .hero-script { font-size: var(--text-3xl); }
 }
 
-/* ---------- 1024: шапка в одну строку ----------
-   Замерено: логотип 178px + ряд неактивных ссылок 553px (самый широкий из
-   двух рядов) + поля = 803px. В 1009px внутренней ширины контейнера это
-   влезает только с минимальным набором утилит, поэтому соцсети, погода и
-   Register Business включаются ниже по ширине, а не здесь. */
+/* ---------- 1024: шапка в одну строку, меню по центру ----------
+   Колонки 1fr auto 1fr: средняя берёт ровно ширину блока меню, а боковые
+   равны между собой — поэтому меню стоит по центру шапки, а не просто следом
+   за логотипом. Ширина рядов и кегль не меняются, центрируется готовый блок.
+
+   Замерено: логотип 178px, самый широкий ряд меню 553px. Место под это
+   появилось ровно потому, что погода уехала на баннер, а соцсети в футер:
+   раньше блок утилит занимал 564px и центрировать было нечего. */
 @media (min-width: 1024px) {
   .header-top {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: 1fr auto 1fr;
     grid-template-areas: "logo nav utils";
     gap: var(--space-4);
   }
+
+  .site-logo { justify-self: start; }
 
   /* Снова два ряда: .nav-stack перестаёт быть скроллером, а второй ряд
      уходит в мелкий серый. Подсветка активного — только цветом: рамка
@@ -377,6 +394,7 @@
   .nav-stack {
     display: block;
     overflow: visible;
+    justify-self: center;
   }
 
   .nav-secondary li a {
@@ -399,6 +417,15 @@
 
   .hero-frame { height: 340px; }
   .hero-banner--inner .hero-frame { height: 170px; }
+  .hero-weather { left: var(--space-6); top: var(--space-6); }
+
+  /* Полная плашка — только на главной: там кадр 340px и рядом с погодой
+     ничего больше не стоит. */
+  .hero-banner:not(.hero-banner--inner) .hero-weather .weather-text strong,
+  .hero-banner:not(.hero-banner--inner) .hero-weather .weather-note {
+    display: block;
+  }
+  .hero-caption { display: flex; left: var(--space-6); bottom: var(--space-6); }
 
   .search-stub {
     left: auto;
@@ -409,24 +436,9 @@
   }
 }
 
-/* ---------- 1280: появляются соцсети (+116px) ---------- */
+/* ---------- 1280: в утилитах появляется Register Business ---------- */
 @media (min-width: 1280px) {
-  .social-links { display: flex; }
-  .social-links a { min-width: 36px; }
-}
-
-/* ---------- 1440: погода и Register Business (+308px) ---------- */
-@media (min-width: 1440px) {
   .header-top { gap: var(--space-6); }
-
-  .weather-stub {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--color-slate);
-    font-size: var(--text-xs);
-  }
-
-  .header-utils .nav-stub { display: flex; }
   .header-utils { gap: var(--space-3); }
+  .header-utils .nav-stub { display: flex; }
 }

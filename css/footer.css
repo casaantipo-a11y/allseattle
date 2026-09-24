@@ -26,6 +26,26 @@
   align-self: flex-start;
 }
 
+/* Соцсети переехали сюда из шапки и стоят прямо под логотипом. */
+.footer-brand .social-links {
+  display: flex;
+  gap: var(--space-1);
+  margin-left: calc(var(--space-2) * -1);
+}
+
+.footer-brand .social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: #c9d3de;
+}
+
+.footer-brand .social-links a:hover {
+  color: var(--color-white);
+}
+
 .site-footer h4 {
   color: var(--color-white);
   font-size: var(--text-xs);

@@ -160,16 +160,31 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
 
 **Shared chrome, on all 17 pages** (from `js/partials.js`):
 
-1. **Sticky header** — logo, then two rows of nav (5 real links with icons on top, 8
-   smaller sections underneath), then the utility cluster: weather, social icons, the inert
-   ENG switch, Register Business, account icon. Identical on all 17 pages. The weather block
-   is a link to `weather.html`.
+1. **Sticky header** — logo at the left, two rows of nav (5 real links with icons on top, 8
+   smaller sections underneath) **centred in the header**, and a short utility cluster at the
+   right: the inert ENG switch, Register Business, account icon. Identical on all 17 pages.
+   The centring is a `1fr auto 1fr` grid, so the nav block keeps its own intrinsic width and
+   the equal side columns push it to the middle. It only fits because the weather and the
+   social icons moved out — with them the cluster was 564px wide and there was nothing to
+   centre.
 2. **Photo banner** — the skyline inside `.container`, rounded, with the search box laid over
-   it. Tall on Home; short with the "Seattle / THE EMERALD CITY" wordmark everywhere else.
-   This is page content, not chrome: its edges line up with every other block on the page.
+   it and the **weather plate in the top-left corner** (`.hero-weather`, a link to
+   `weather.html`). Tall on Home; short with the "Seattle / THE EMERALD CITY" wordmark
+   everywhere else. This is page content, not chrome: its edges line up with every other block
+   on the page.
+
+   The three things laid over the frame have to share 140–340px of height, and two collisions
+   were measured before the current arrangement settled: **the weather plate is one line
+   everywhere except Home at 1024px and up**, where the frame is 340px and nothing else sits
+   on the left. Its full three-line form is 79px tall and hit the search bar on a 140px inner
+   frame and the wordmark on a 170px one. The wordmark itself moved to the bottom-left and is
+   hidden below 1024px, where the search bar occupies that edge.
 3. **Contest strip** — Home only, and rendered by `home.js`, not `partials.js`.
 4. `<main>` — the page's own `<section>`(s), listed below.
-5. **Footer** — logo, Contact, Follow us, Explore, copyright. Explore lists **every** section,
+5. **Footer** — logo with the three social icons under it, Contact, Follow us, Explore,
+   copyright. The icons came out of the header; note that "Follow us" already lists the same
+   three networks as text, so the footer now names them twice — that was the user's call, not
+   an oversight. Explore lists **every** section,
    in two columns from 640px, and is built from the same `NAV_LINKS` / `NAV_SECONDARY` arrays
    as the nav, so a new section appears in both at once. It is also the only way to reach the
    secondary sections on a phone that does not involve scrolling the nav row sideways.
@@ -341,13 +356,15 @@ correct. Keep the header a sibling of `<main>` if you touch this again, and veri
 "Checking a layout change" describes rather than by eye.
 
 - `heroMarkup(pageType)`: one component, two heights. `.hero-frame` holds the photo, a shade
-  gradient, the search form, and — on inner pages only — the script wordmark. There is no second
-  hero function and no dark/light variant of the top bar any more: the header is always white,
-  so `logoLockupMarkup`'s `variant: "dark"` has exactly one caller left, the footer.
+  gradient, the weather plate, the search form, and — on inner pages only — the script wordmark.
+  There is no second hero function and no dark/light variant of the top bar any more: the header
+  is always white, so `logoLockupMarkup`'s `variant: "dark"` has exactly one caller left, the
+  footer.
 - `siteHeaderMarkup()`: the whole header, identical on every page, taking no `pageType`.
-- The weather widget is a hardcoded stub (`weatherNow()`: always 61°F / Cloudy) with a live date
-  string. The search box swaps its own placeholder to "Search is a demo placeholder" for 2.2s on
-  submit — it never searches anything.
+- The weather plate reads `weatherHeaderLine()` from `mock-data/weather.js` — the same numbers
+  the Weather section shows — with only the date computed live. It renders inside
+  `heroMarkup()`, not the header. The search box swaps its own placeholder to "Search is a demo
+  placeholder" for 2.2s on submit — it never searches anything.
 - `NAV_LINKS` (5 primary pages, each carrying its own `NAV_ICONS` entry) and `NAV_SECONDARY`
   (8 smaller sections) render into **two separate lists** — `<ul class="nav-links">` and
   `<ul class="nav-secondary">` — stacked inside `.nav-stack`. Both are real links now; the
@@ -622,16 +639,17 @@ Each of these was decided explicitly. Don't "fix" them back:
 - **Inline text links inside prose are not padded out to 44px** (footer contact lines,
   "Read more →"). Inflating them would wreck the line rhythm; the surrounding controls all meet
   44px.
-- **The header reveals its utilities by width, and two of its controls sit under 44px.** The
-  numbers that force this, measured on the live page: logo 178px, the row of 8 secondary links
-  553px (the wider of the two nav rows), the full utility cluster 564px. Together with gutters
-  that needs ~1400px of container, so the cluster arrives in stages — ENG and the account icon
-  from 1024px, social icons from 1280px, weather and Register Business from 1440px. Below
-  1024px the two nav rows merge into one scroller instead. The secondary links are 36px tall
-  and the ENG switch 32px from 1024px up: §8's 44×44 rule is in the responsiveness section and
-  is about touch, and at those widths the pointer is a mouse — on touch widths both are back to
-  44px. **If you add a nav item or lengthen a label, re-measure** — the first thing that breaks
-  is `.nav-links` quietly turning into a horizontal scroller at desktop width.
+- **The header stages its right-hand cluster by width, and two of its controls sit under 44px.**
+  Measured on the live page: logo 178px, the row of 8 secondary links 553px (the wider of the
+  two nav rows), the utility cluster 100px with ENG and the account icon, 236px once Register
+  Business joins. Centring uses `1fr auto 1fr`, so the side columns end up as wide as the wider
+  of logo and cluster — which is why Register Business waits until 1280px rather than 1024px.
+  Below 1024px the two nav rows merge into one scroller instead. The secondary links are 36px
+  tall and the ENG switch 32px from 1024px up: §8's 44×44 rule is in the responsiveness section
+  and is about touch, and at those widths the pointer is a mouse — on touch widths both are back
+  to 44px. **If you add a nav item, lengthen a label, or put anything back into the cluster,
+  re-measure** — the first thing that breaks is `.nav-links` quietly turning into a horizontal
+  scroller at desktop width, and the second is the nav sliding off centre.
 - **Three font families**, not two (§2) — Pacifico is the brand script in the inner hero.
 
 ### Images (`img/`)

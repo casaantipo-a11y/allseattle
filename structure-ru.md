@@ -36,15 +36,13 @@
   Auto — `#nav-main`
 - **Второй ряд меню**, мельче и серым: Jobs, Events, Shopping, Entertainment,
   Weather, Real Estate, City Map, Q&A — `#nav-more`
-- Погода справа: город, дата, температура, осадки; ведёт на раздел
-  погоды — `#header-weather`
-- Иконки Facebook / Instagram / Telegram — `#header-social`
+- Оба ряда стоят **по центру шапки**, между логотипом слева и утилитами справа.
 - Переключатель языка **ENG** — `#header-lang`
 - Ссылка **Register Business** и иконка аккаунта — `#header-account`
 
 На экранах уже 1024px оба ряда меню сливаются в одну строку, которая
-прокручивается вбок; погода, соцсети и Register Business прячутся, чтобы шапка
-не съедала экран телефона.
+прокручивается вбок; Register Business прячется, чтобы шапка не съедала экран
+телефона.
 
 ENG и иконка аккаунта пока ничего не делают — это заглушки.
 
@@ -54,6 +52,11 @@ ENG и иконка аккаунта пока ничего не делают —
 баннер высокий, на остальных страницах — низкий и с надписью
 «Seattle / THE EMERALD CITY».
 
+В левом верхнем углу кадра — **погода** на белой плашке, ведёт на раздел
+погоды — `#banner-weather`. На главной при ширине от 1024px она в три строки
+(город, дата и температура, осадки), везде остальном — в одну: дата и
+температура.
+
 Поверх баннера лежит поле поиска — `#search` — справа вверху на десктопе,
 полосой по низу на телефоне. Поиск демонстрационный: при отправке подсказывает,
 что это заглушка.
@@ -62,7 +65,8 @@ ENG и иконка аккаунта пока ничего не делают —
 
 - Логотип.
 - **Contact** — телефон, email, город — `#footer-contact`
-- **Follow us** — Facebook, Instagram, Telegram — `#footer-social`
+- Под логотипом — иконки Facebook / Instagram / Telegram — `#footer-icons`
+- **Follow us** — те же три сети текстом с адресами — `#footer-social`
 - **Explore** — все разделы сайта в две колонки — `#footer-explore`
 - Строка копирайта — `#footer-copy`
 
@@ -440,11 +444,11 @@ Catalog / Add a Car / My Listings.
 
 **Общее для всех страниц**
 `#header` шапка · `#logo` логотип · `#nav-main` первый ряд меню ·
-`#nav-more` второй ряд меню · `#header-weather` погода в шапке ·
-`#header-social` соцсети · `#header-lang` переключатель ENG ·
+`#nav-more` второй ряд меню · `#header-lang` переключатель ENG ·
 `#header-account` Register Business и аккаунт · `#banner` фото-баннер ·
-`#search` поиск · `#footer` футер · `#footer-contact` контакты ·
-`#footer-social` соцсети в футере · `#footer-explore` список разделов ·
+`#banner-weather` погода на баннере · `#search` поиск · `#footer` футер ·
+`#footer-contact` контакты · `#footer-icons` иконки соцсетей под логотипом ·
+`#footer-social` блок Follow us текстом · `#footer-explore` список разделов ·
 `#footer-copy` копирайт
 
 **Главная** `#home`

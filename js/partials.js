@@ -36,12 +36,21 @@ const NAV_SECONDARY = [
 // the same component at a fraction of the height, with the script wordmark.
 function heroMarkup(pageType) {
   const inner = pageType !== "home";
+  const w = weatherHeaderLine();
   return `
   <div class="hero-banner${inner ? " hero-banner--inner" : ""}" id="hero-banner">
     <div class="container">
       <div class="hero-frame">
         <img src="${SITE_ROOT}img/hero/skyline-panorama.png" alt="Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market" class="hero-photo">
         <div class="hero-shade"></div>
+        <a class="hero-weather" href="${SITE_ROOT}weather.html" aria-label="Seattle weather">
+          <span class="weather-icon" aria-hidden="true">${UI_ICONS.weather}</span>
+          <span class="weather-text">
+            <strong>${w.city}</strong>
+            <span>${w.date} &middot; ${w.temp}</span>
+            <span class="weather-note">${w.note}</span>
+          </span>
+        </a>
         ${inner ? `
         <div class="hero-caption">
           <span class="hero-script">Seattle</span>
@@ -56,11 +65,12 @@ function heroMarkup(pageType) {
   </div>`;
 }
 
-// One header for all nine pages. Two rows of links share the middle column:
-// the real sections on top with their icons, the coming-soon sections
-// underneath in a smaller, quieter style.
+// One header for all pages. Two rows of links sit in the middle column and
+// are centred in the header: the real sections on top with their icons, the
+// smaller sections underneath in a quieter style. The weather moved onto the
+// banner and the social icons into the footer, which is what frees enough
+// width to centre the block without shrinking it.
 function siteHeaderMarkup() {
-  const w = weatherHeaderLine();
   return `
   <header class="site-header" id="site-header-functional">
     <div class="container header-top">
@@ -80,19 +90,6 @@ function siteHeaderMarkup() {
       </div>
 
       <div class="header-utils">
-        <a class="weather-stub" href="${SITE_ROOT}weather.html" aria-label="Seattle weather">
-          <span class="weather-icon" aria-hidden="true">${UI_ICONS.weather}</span>
-          <div class="weather-text">
-            <strong>${w.city}</strong>
-            <span>${w.date} &middot; ${w.temp}</span>
-            <span class="weather-note">${w.note}</span>
-          </div>
-        </a>
-        <div class="social-links">
-          <a href="#" title="Facebook (demo)" aria-label="Facebook">${SOCIAL_ICONS.facebook}</a>
-          <a href="#" title="Instagram (demo)" aria-label="Instagram">${SOCIAL_ICONS.instagram}</a>
-          <a href="#" title="Telegram (demo)" aria-label="Telegram">${SOCIAL_ICONS.telegram}</a>
-        </div>
         <button type="button" class="lang-switch" title="Coming soon" aria-label="Language: English">ENG</button>
         <a href="#" class="nav-stub nav-stub--accent">Register Business</a>
         <a href="#" class="account-btn" title="Log In (demo)" aria-label="Log In">${UI_ICONS.account}</a>
@@ -141,6 +138,11 @@ export function renderFooter() {
     <div class="container footer-inner">
       <div class="footer-col footer-brand">
         ${logoLockupMarkup({ href: `${SITE_ROOT}index.html`, variant: "dark" })}
+        <div class="social-links">
+          <a href="#" title="Facebook (demo)" aria-label="Facebook">${SOCIAL_ICONS.facebook}</a>
+          <a href="#" title="Instagram (demo)" aria-label="Instagram">${SOCIAL_ICONS.instagram}</a>
+          <a href="#" title="Telegram (demo)" aria-label="Telegram">${SOCIAL_ICONS.telegram}</a>
+        </div>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
