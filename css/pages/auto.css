@@ -97,8 +97,11 @@
 }
 
 @media (min-width: 768px) {
+  /* 300px — как у сайдбаров News/Directory/Home, и ровно нативная ширина
+     рекламного блока 300x600, который стоит внутри колонки фильтров:
+     на 260px он ужимался до 260x520. */
   .auto-layout {
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 300px 1fr;
   }
   .auto-filters {
     position: sticky;
@@ -111,6 +114,17 @@
   .auto-filters-body {
     max-height: none;
     overflow: visible;
+  }
+  /* На планшете рядом с колонкой фильтров на две карточки места не остаётся
+     (выходило по 179px), поэтому здесь ряд из одной. Две возвращаются с 1024px. */
+  .auto-results .car-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .auto-results .car-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
