@@ -284,8 +284,8 @@ crisp and recolors with CSS, which is what makes the plates unnecessary.
 `header.css` / `footer.css` → `components.css` (cards, ad-slot, forms, badges, modals — shared
 across pages) → `css/pages/*.css` (one file per page, layout only). Same load order in every HTML
 file's `<head>`; keep it that way since later files are relied on to override earlier ones at
-equal specificity in a few places (e.g. a page's own `*-container` class widening the shared
-`.container` max-width).
+equal specificity in a few places. (The one page that used this to widen `.container` — Auto's
+`.auto-container` — is gone: every page now shares one width.)
 
 **Everything is built from tokens** — see `design.md` above. Concretely: spacing comes from
 `--space-1..--space-32` (4/8/12/16/24/32/48/64/96/128), type from `--text-xs..--text-5xl`
@@ -298,7 +298,7 @@ whole responsive spacing scale lives in one file instead of being spread across 
 `--grid-gap` (grid gutters, 16/24) and `--card-pad` (card inner padding, 24/32). Change the scale
 there, not at the call sites. (`--gut` from the old code is gone; `.grid` uses `--grid-gap`.)
 
-**Breakpoints are mobile-first `min-width` at 640 / 768 / 1024 / 1280** — base rules are the
+**Breakpoints are mobile-first `min-width` at 640 / 768 / 1024 / 1280, plus 1440** — base rules are the
 narrow-screen state and each query only adds what wider screens get. There are no `max-width`
 queries left apart from `prefers-reduced-motion`; don't reintroduce one.
 
@@ -325,7 +325,22 @@ churn.
 
 Each of these was decided explicitly. Don't "fix" them back:
 
-- **`--container: 1180px`**, not the 1200–1280 of §3 — the site is laid out for this width.
+- **`--container: 1600px`**, not the 1200–1280 of §3. Deliberately wide: the previous split
+  (1180 on most pages, 1400 on Home and Auto) made content jump 110px horizontally when moving
+  between sections, which §3 bans in its own right. One width everywhere trades a bigger
+  deviation on the number for compliance on the alignment, and the user asked for the narrower
+  side margins.
+- **A fifth breakpoint at 1440px** beyond §8's four, used only to give the card grids a third
+  column (`.news-layout .news-grid`, `.directory-layout .biz-grid`, `.auto-results .car-grid`).
+  Without it the 1600px container inflates a card from 384px to 594px and its text runs past the
+  75-character limit of §2. Measured: three columns need 1440px to stay ~390px wide; at 1280px
+  they collapse to 276px, which is why the threshold is not 1280.
+  Scope these rules to their page wrapper — a bare `.news-grid` would also hit Home, where the
+  same class sits between two sidebars and a third column would leave ~300px.
+- **The first section of every page gets 32px of top padding instead of 96px**
+  (`main > .section:first-child`). §1 allows an exception for the block adjoining the hero, and
+  that is exactly what this is — it sits directly under the sticky nav. Spacing *between*
+  sections is untouched at 96px.
 - **Base text is 16px on mobile, 18px from 1024px** (§2) — but the site keeps a dense,
   portal-like feel, so most secondary text sits at `--text-xs` (14px), the floor of the scale.
 - **Text below 14px survives in exactly two places**, both marked in the CSS: the captions inside

@@ -6,7 +6,6 @@
   gap: var(--grid-gap);
   align-items: start;
   padding-top: var(--space-8);
-  max-width: 1400px;
 }
 
 .home-sidebar {

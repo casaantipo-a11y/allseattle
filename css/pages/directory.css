@@ -36,6 +36,16 @@
   }
 }
 
+/* С контейнером 1600px две колонки раздували карточку до 594px, а строки
+   в ней — за 75 символов (design.md §2). Третья колонка возвращает карточку
+   к ~390px. Порог 1440px подобран замером: на 1280px три колонки дают 276px.
+   Это пятый брейкпоинт сверх четырёх из §8 — согласованное отступление. */
+@media (min-width: 1440px) {
+  .directory-layout .biz-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (min-width: 1024px) {
   .directory-layout {
     grid-template-columns: 1fr 300px;

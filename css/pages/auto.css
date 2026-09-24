@@ -33,10 +33,6 @@
   justify-content: center;
 }
 
-.auto-container {
-  max-width: 1400px;
-}
-
 /* Mobile-first: базово одна колонка и фильтры-аккордеон;
    боковая колонка фильтров включается с 768px. */
 .auto-layout {
@@ -125,6 +121,16 @@
 @media (min-width: 1024px) {
   .auto-results .car-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* С контейнером 1600px две колонки раздували карточку до 594px, а строки
+   в ней — за 75 символов (design.md §2). Третья колонка возвращает карточку
+   к ~390px. Порог 1440px подобран замером: на 1280px три колонки дают 276px.
+   Это пятый брейкпоинт сверх четырёх из §8 — согласованное отступление. */
+@media (min-width: 1440px) {
+  .auto-results .car-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
