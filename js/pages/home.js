@@ -6,16 +6,16 @@ import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
 import { relativeTime } from "../format-time.js";
 
-// The 16 articles are split, not repeated: the first 8 run as photo tiles in
-// the middle column (two rows of four), the rest as the compact newsfeed at
-// the bottom of the page. Nothing appears twice.
-const CARD_COUNT = 8;
+// The 28 articles are split, not repeated: the first 20 run as photo tiles in
+// the middle column (five rows of four), the rest as the compact newsfeed at
+// the bottom of the page. Nothing appears twice, and no photo is used twice.
+const CARD_COUNT = 20;
 
 // Same 5 placements the desktop sidebars show (home-left-1..4, home-right-1),
 // just redistributed through the feed on mobile instead of stacked at the top.
 const INLINE_AFTER_CARD = [
   { afterIndex: 4, seed: "home-left-1", size: "300x250" },
-  { afterIndex: 8, seed: "home-left-2", size: "300x250" },
+  { afterIndex: 12, seed: "home-left-2", size: "300x250" },
 ];
 const FOOTER_AD_SEEDS = [
   { seed: "home-left-3", size: "300x600" },

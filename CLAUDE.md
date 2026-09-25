@@ -251,19 +251,25 @@ inline ads inside the news feed, while the right aside's widgets do stack below 
 2. Middle `.home-main`:
    1. 728×90 ad (`home-top`).
    2. Section head — "Today in Seattle" / **Top News** + "All News" button.
-   3. News grid *(JS)* — 8 tiles, four across from 1440px, with inline mobile ads after
-      cards 4 and 8.
+   3. News grid *(JS)* — 20 tiles, four across from 1440px (five rows), with inline mobile
+      ads after cards 4 and 12.
    4. 728×90 ad (`home-mid`).
 3. Right aside — a 300×250 ad **first**, then four widgets *(JS)*: **AllSeattle at a Glance**
-   (4 stat tiles), **Job Board** (Coming Soon), **Exchange Rates**, **City Transit**; then the
-   mobile ad stack.
+   (4 stat tiles), **Job Board** (3 newest jobs from `jobs.js`), **Exchange Rates**,
+   **City Transit**; then the mobile ad stack.
 4. Second section — "More from Seattle" / **City Newsfeed**: the remaining articles as compact
    rows *(JS)*, thumbnail + category + relative time + headline + one clipped line.
 
-**The 16 articles are split 8 + 8 and never repeated.** `CARD_COUNT` in `home.js` is the one
-place that decides where the photo tiles stop and the newsfeed starts; move it and both halves
-follow. `news.html` renders the whole array, so adding an article there adds a card to that page
-too — and the home stats widget counts `NEWS_ARTICLES.length * 6`.
+**The 28 articles are split 20 + 8 and never repeated**, and no photo is used twice either —
+the pools ran to exactly 28 between `img/news/`, `img/hero/` and `img/business/`. `CARD_COUNT`
+in `home.js` is the one place that decides where the photo tiles stop and the newsfeed starts;
+move it and both halves follow. `news.html` renders the whole array, so an article added here
+adds a card to that page too — and the home stats widget counts `NEWS_ARTICLES.length * 6`.
+
+**Five rows of four make the middle column roughly 900px taller than either aside.** Measured at
+1440: middle 2001px, left rail 1242px, right 1448px. The rails simply end, so the last row and a
+half sit between two empty margins. Filling that space means new ad placements, which is new
+inventory to sell — a decision for the user, not a side effect of the next layout change.
 
 **The middle column carries four tiles, not two cards** — the client asked for it, and the card
 had to shrink to survive it. `.news-card--tile` in `home.css` is that compact variant: 16px of
