@@ -10,7 +10,7 @@ export const EVENTS = [
     neighborhood: "Fremont",
     startsAt: "2026-09-26T16:00:00",
     price: "$35",
-    photo: "img/news/news-3.jpg",
+    photo: "img/news/news-3.webp",
     description: "Twenty local breweries, a redesigned beer garden under the Aurora Bridge and a second entrance to cut the lines.",
   },
   {
@@ -21,7 +21,7 @@ export const EVENTS = [
     neighborhood: "Ballard",
     startsAt: "2026-09-25T17:00:00",
     price: "Free",
-    photo: "img/news/news-1.jpg",
+    photo: "img/news/news-1.webp",
     description: "Forty stalls along the historic block, live music at both ends and the bakeries staying open late.",
   },
   {
@@ -32,7 +32,7 @@ export const EVENTS = [
     neighborhood: "SoDo",
     startsAt: "2026-09-27T19:30:00",
     price: "$45",
-    photo: "img/news/news-7.jpg",
+    photo: "img/news/news-7.webp",
     description: "The Cascadia derby. Gates open two hours early and Occidental Avenue closes to traffic at 4 p.m.",
   },
   {
@@ -43,7 +43,7 @@ export const EVENTS = [
     neighborhood: "Downtown",
     startsAt: "2026-09-28T14:00:00",
     price: "$28",
-    photo: "img/news/news-5.jpg",
+    photo: "img/news/news-5.webp",
     description: "An afternoon programme of Brahms and Shostakovich, performed by members of the Seattle Symphony.",
   },
   {
@@ -54,7 +54,7 @@ export const EVENTS = [
     neighborhood: "Capitol Hill",
     startsAt: "2026-09-25T18:00:00",
     price: "Free",
-    photo: "img/news/news-9.jpg",
+    photo: "img/news/news-9.webp",
     description: "Thirty galleries, studios and shops open their doors on the second Thursday of every month.",
   },
   {
@@ -65,7 +65,7 @@ export const EVENTS = [
     neighborhood: "Downtown",
     startsAt: "2026-09-27T10:00:00",
     price: "Free",
-    photo: "img/news/news-11.jpg",
+    photo: "img/news/news-11.webp",
     description: "Face painting, a small amphitheatre programme and free entry to the play area on the new pedestrian bridge.",
   },
   {
@@ -76,7 +76,7 @@ export const EVENTS = [
     neighborhood: "Georgetown",
     startsAt: "2026-10-03T18:00:00",
     price: "Free",
-    photo: "img/news/news-12.jpg",
+    photo: "img/news/news-12.webp",
     description: "More than a dozen studios open for the free self-guided walk, with most staying open until 9 p.m.",
   },
   {
@@ -87,7 +87,7 @@ export const EVENTS = [
     neighborhood: "Green Lake",
     startsAt: "2026-10-04T08:30:00",
     price: "$40",
-    photo: "img/news/news-2.jpg",
+    photo: "img/news/news-2.webp",
     description: "Two laps of the lake, chip timing, and a pancake breakfast at the finish run by the rowing club.",
   },
   {
@@ -98,7 +98,7 @@ export const EVENTS = [
     neighborhood: "Columbia City",
     startsAt: "2026-09-26T21:00:00",
     price: "$20",
-    photo: "img/news/news-6.jpg",
+    photo: "img/news/news-6.webp",
     description: "A rotating house quartet plus a guest soloist, two sets, doors at half past eight.",
   },
   {
@@ -109,7 +109,7 @@ export const EVENTS = [
     neighborhood: "Chinatown-International District",
     startsAt: "2026-09-29T18:30:00",
     price: "Free",
-    photo: "img/news/news-10.jpg",
+    photo: "img/news/news-10.webp",
     description: "SPD precinct staff answer questions from residents and business owners. Interpretation provided.",
   },
   {
@@ -120,7 +120,7 @@ export const EVENTS = [
     neighborhood: "Downtown",
     startsAt: "2026-10-05T09:00:00",
     price: "Free",
-    photo: "img/news/news-8.jpg",
+    photo: "img/news/news-8.webp",
     description: "Late-season tomatoes, squash and cider from thirty regional growers, plus cooking demonstrations.",
   },
   {
@@ -131,7 +131,7 @@ export const EVENTS = [
     neighborhood: "Ballard",
     startsAt: "2026-09-30T10:30:00",
     price: "Free",
-    photo: "img/news/news-4.jpg",
+    photo: "img/news/news-4.webp",
     description: "Picture books and songs for under-fives, every Wednesday morning in the community room.",
   },
 ];

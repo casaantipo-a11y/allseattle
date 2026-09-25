@@ -4,12 +4,12 @@ export const CONTEST_STORAGE_KEY = "allseattle_votes";
 export const CONTEST_VOTED_KEY = "allseattle_voted_entries";
 
 export const CONTEST_ENTRIES = [
-  { id: "e1", title: "My Neighborhood Hero", author: "Ava, age 7", photo: "img/contest/contest-1.jpg", baseVotes: 128 },
-  { id: "e2", title: "The Friendly Patrol Car", author: "Noah, age 6", photo: "img/contest/contest-2.jpg", baseVotes: 94 },
-  { id: "e3", title: "Helping Me Cross the Street", author: "Mia, age 8", photo: "img/contest/contest-3.jpg", baseVotes: 151 },
-  { id: "e4", title: "K-9 Unit and Me", author: "Liam, age 9", photo: "img/contest/contest-4.jpg", baseVotes: 76 },
-  { id: "e5", title: "Officer Friendly at School", author: "Zoe, age 7", photo: "img/contest/contest-5.jpg", baseVotes: 112 },
-  { id: "e6", title: "Thank You for Keeping Us Safe", author: "Ethan, age 8", photo: "img/contest/contest-6.jpg", baseVotes: 89 },
+  { id: "e1", title: "My Neighborhood Hero", author: "Ava, age 7", photo: "img/contest/contest-1.webp", baseVotes: 128 },
+  { id: "e2", title: "The Friendly Patrol Car", author: "Noah, age 6", photo: "img/contest/contest-2.webp", baseVotes: 94 },
+  { id: "e3", title: "Helping Me Cross the Street", author: "Mia, age 8", photo: "img/contest/contest-3.webp", baseVotes: 151 },
+  { id: "e4", title: "K-9 Unit and Me", author: "Liam, age 9", photo: "img/contest/contest-4.webp", baseVotes: 76 },
+  { id: "e5", title: "Officer Friendly at School", author: "Zoe, age 7", photo: "img/contest/contest-5.webp", baseVotes: 112 },
+  { id: "e6", title: "Thank You for Keeping Us Safe", author: "Ethan, age 8", photo: "img/contest/contest-6.webp", baseVotes: 89 },
 ];
 
 function readVoteMap() {

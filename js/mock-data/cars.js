@@ -1,8 +1,8 @@
 function photosFor(id) {
   return [
-    `../img/cars/${id}-1.jpg`,
-    `../img/cars/${id}-2.jpg`,
-    `../img/cars/${id}-3.jpg`,
+    `../img/cars/${id}-1.webp`,
+    `../img/cars/${id}-2.webp`,
+    `../img/cars/${id}-3.webp`,
   ];
 }
 

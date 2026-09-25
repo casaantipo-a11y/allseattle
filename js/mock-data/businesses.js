@@ -6,7 +6,7 @@ export const BUSINESSES = [
     description: "Small-batch coffee roaster in Capitol Hill with single-origin pour-overs and weekend cupping sessions.",
     phone: "(206) 555-0143",
     package: "Premium",
-    photo: "img/business/biz-1.jpg",
+    photo: "img/business/biz-1.webp",
   },
   {
     id: "b2",
@@ -15,7 +15,7 @@ export const BUSINESSES = [
     description: "Pacific Northwest comfort food with a rotating seasonal menu and a full bar overlooking the water.",
     phone: "(206) 555-0118",
     package: "Lux",
-    photo: "img/business/biz-2.jpg",
+    photo: "img/business/biz-2.webp",
   },
   {
     id: "b3",
@@ -24,7 +24,7 @@ export const BUSINESSES = [
     description: "Family-owned repair shop specializing in Japanese and domestic makes, same-day diagnostics.",
     phone: "(206) 555-0187",
     package: "Standard",
-    photo: "img/business/biz-3.jpg",
+    photo: "img/business/biz-3.webp",
   },
   {
     id: "b4",
@@ -33,7 +33,7 @@ export const BUSINESSES = [
     description: "Classic cuts and hot towel shaves in Ballard, walk-ins welcome most weekdays.",
     phone: "(206) 555-0129",
     package: "Standard",
-    photo: "img/business/biz-4.jpg",
+    photo: "img/business/biz-4.webp",
   },
   {
     id: "b5",
@@ -42,7 +42,7 @@ export const BUSINESSES = [
     description: "Independent clothing store featuring Pacific Northwest designers and vintage finds.",
     phone: "(206) 555-0164",
     package: "Lux",
-    photo: "img/business/biz-5.jpg",
+    photo: "img/business/biz-5.webp",
   },
   {
     id: "b6",
@@ -51,7 +51,7 @@ export const BUSINESSES = [
     description: "Boutique strength and conditioning studio with small-group classes and personal training.",
     phone: "(206) 555-0152",
     package: "Premium",
-    photo: "img/business/biz-6.jpg",
+    photo: "img/business/biz-6.webp",
   },
   {
     id: "b7",
@@ -60,7 +60,7 @@ export const BUSINESSES = [
     description: "Wood-fired sourdough and pastries baked fresh daily, known for its weekend cinnamon rolls.",
     phone: "(206) 555-0176",
     package: "Standard",
-    photo: "img/business/biz-7.jpg",
+    photo: "img/business/biz-7.webp",
   },
   {
     id: "b8",
@@ -69,7 +69,7 @@ export const BUSINESSES = [
     description: "Independent bookstore with a strong local-authors section and a monthly reading club.",
     phone: "(206) 555-0193",
     package: "Standard",
-    photo: "img/business/biz-8.jpg",
+    photo: "img/business/biz-8.webp",
   },
   {
     id: "b9",
@@ -78,7 +78,7 @@ export const BUSINESSES = [
     description: "Small web design and branding agency working with local Seattle businesses.",
     phone: "(206) 555-0121",
     package: "Lux",
-    photo: "img/business/biz-9.jpg",
+    photo: "img/business/biz-9.webp",
   },
   {
     id: "b10",
@@ -87,7 +87,7 @@ export const BUSINESSES = [
     description: "Custom floral arrangements and same-day delivery across greater Seattle.",
     phone: "(206) 555-0138",
     package: "Standard",
-    photo: "img/business/biz-10.jpg",
+    photo: "img/business/biz-10.webp",
   },
   {
     id: "b11",
@@ -96,7 +96,7 @@ export const BUSINESSES = [
     description: "Full-service grooming and nail trims, with a calm, low-stress handling approach.",
     phone: "(206) 555-0147",
     package: "Standard",
-    photo: "img/business/biz-11.jpg",
+    photo: "img/business/biz-11.webp",
   },
   {
     id: "b12",
@@ -105,7 +105,7 @@ export const BUSINESSES = [
     description: "Neighborhood taproom with a rotating list of house-brewed ales and a weekly trivia night.",
     phone: "(206) 555-0159",
     package: "Premium",
-    photo: "img/business/biz-12.jpg",
+    photo: "img/business/biz-12.webp",
   },
   {
     id: "b13",
@@ -114,7 +114,7 @@ export const BUSINESSES = [
     description: "Vinyasa and restorative classes in a light-filled studio near Green Lake.",
     phone: "(206) 555-0112",
     package: "Lux",
-    photo: "img/business/biz-13.jpg",
+    photo: "img/business/biz-13.webp",
   },
   {
     id: "b14",
@@ -123,7 +123,7 @@ export const BUSINESSES = [
     description: "Neighborhood hardware store with expert advice and same-day key cutting.",
     phone: "(206) 555-0184",
     package: "Standard",
-    photo: "img/business/biz-14.jpg",
+    photo: "img/business/biz-14.webp",
   },
   {
     id: "b15",
@@ -132,7 +132,7 @@ export const BUSINESSES = [
     description: "Small-batch ice cream made with local dairy, with a new flavor every week.",
     phone: "(206) 555-0171",
     package: "Lux",
-    photo: "img/business/biz-15.jpg",
+    photo: "img/business/biz-15.webp",
   },
 ];
 

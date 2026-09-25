@@ -41,7 +41,7 @@ function heroMarkup(pageType) {
   <div class="hero-banner${inner ? " hero-banner--inner" : ""}" id="hero-banner">
     <div class="container">
       <div class="hero-frame">
-        <img src="${SITE_ROOT}img/hero/skyline-panorama.png" alt="Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market" class="hero-photo">
+        <img src="${SITE_ROOT}img/hero/skyline-panorama.webp" alt="Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market" class="hero-photo">
         <div class="hero-shade"></div>
         <a class="hero-weather" href="${SITE_ROOT}weather.html" aria-label="Seattle weather">
           <span class="weather-icon" aria-hidden="true">${UI_ICONS.weather}</span>
