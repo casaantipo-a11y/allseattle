@@ -706,6 +706,12 @@ banner and the City Newsfeed heading with a ruler and asked for one centimetre; 
 carries a 20px visual shift and its eyebrow another 8px, and the three add up to the 36. Change
 any one of them and re-measure the other two; the arithmetic is written out in `home.css`.
 
+**Home also pins its gap to the footer at the same 36px**, by zeroing `.home-feed`'s bottom
+padding and overriding `.site-footer { margin-top }` from `home.css` — 96 + 48 was the old sum.
+That override only reaches Home because `home.css` loads nowhere else; the other 16 pages keep
+144px. So Home's vertical rhythm is deliberately tighter than the rest of the site at both
+section seams, and that is the user's call, measured with a ruler, not drift.
+
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is
 churn.
