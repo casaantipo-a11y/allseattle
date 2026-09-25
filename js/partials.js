@@ -133,16 +133,21 @@ export function renderFooter() {
   const mount = document.getElementById("site-footer");
   if (!mount) return;
   const year = new Date().getFullYear();
+  // Соцсети раньше стояли в футере дважды: иконки под логотипом и те же три
+  // сети текстом в колонке «Follow us». Иконка и подпись съехались в одну
+  // ссылку — сети те же, ников не убавилось, а колонка освободила ширину
+  // для Explore, который и задавал высоту футера.
+  const social = [
+    ["facebook", "Facebook", "/AllSeattle"],
+    ["instagram", "Instagram", "@allseattle"],
+    ["telegram", "Telegram", "@allseattle"],
+  ];
   mount.innerHTML = `
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-col footer-brand">
         ${logoLockupMarkup({ href: `${SITE_ROOT}index.html`, variant: "dark" })}
-        <div class="social-links">
-          <a href="#" title="Facebook (demo)" aria-label="Facebook">${SOCIAL_ICONS.facebook}</a>
-          <a href="#" title="Instagram (demo)" aria-label="Instagram">${SOCIAL_ICONS.instagram}</a>
-          <a href="#" title="Telegram (demo)" aria-label="Telegram">${SOCIAL_ICONS.telegram}</a>
-        </div>
+        <p class="footer-copy">&copy; ${year} AllSeattle. All rights reserved.</p>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
@@ -154,10 +159,9 @@ export function renderFooter() {
       </div>
       <div class="footer-col">
         <h4>Follow us</h4>
-        <ul>
-          <li>Facebook: <a href="#">/AllSeattle</a></li>
-          <li>Instagram: <a href="#">@allseattle</a></li>
-          <li>Telegram: <a href="#">@allseattle</a></li>
+        <ul class="footer-social">
+          ${social.map(([key, name, handle]) => `
+            <li><a href="#" title="${name} (demo)">${SOCIAL_ICONS[key]}<span>${name}: ${handle}</span></a></li>`).join("")}
         </ul>
       </div>
       <div class="footer-col footer-col--wide">
@@ -168,9 +172,6 @@ export function renderFooter() {
           <li><a href="${SITE_ROOT}contest.html">Contest</a></li>
         </ul>
       </div>
-    </div>
-    <div class="container footer-bottom">
-      <p>&copy; ${year} AllSeattle. All rights reserved.</p>
     </div>
   </footer>`;
 }

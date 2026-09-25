@@ -224,13 +224,20 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
      element beside the plate and the bar, and the logo in the header already carries the mark.
 3. **Contest strip** — Home only, and rendered by `home.js`, not `partials.js`.
 4. `<main>` — the page's own `<section>`(s), listed below.
-5. **Footer** — logo with the three social icons under it, Contact, Follow us, Explore,
-   copyright. The icons came out of the header; note that "Follow us" already lists the same
-   three networks as text, so the footer now names them twice — that was the user's call, not
-   an oversight. Explore lists **every** section,
-   in two columns from 640px, and is built from the same `NAV_LINKS` / `NAV_SECONDARY` arrays
-   as the nav, so a new section appears in both at once. It is also the only way to reach the
-   secondary sections on a phone that does not involve scrolling the nav row sideways.
+5. **Footer** — four columns in one band: logo with the copyright under it, Contact,
+   Follow us, Explore. Everything the old footer said is still there; it is roughly half as
+   tall (383px → 192px at 1440, 989px → 585px at 375) because two things that cost height
+   were fixed. The three social icons no longer sit under the logo as a separate row — they
+   are the same three networks "Follow us" already listed, so each icon moved next to its
+   handle and that freed a whole column. And Explore, which lists **every** section and is
+   what actually sets the footer's height, now picks its own column count
+   (`repeat(auto-fill, minmax(100px, 1fr))`): two on a phone, up to five on a wide screen,
+   instead of a fixed two everywhere. The separate copyright strip is gone too; that line
+   lives under the logo. Explore is still built from the same `NAV_LINKS` / `NAV_SECONDARY`
+   arrays as the nav, so a new section appears in both at once, and it is still the only way
+   to reach the secondary sections on a phone without scrolling the nav row sideways —
+   **if you add one, re-check that its label is under 93px** ("Entertainment" is the current
+   longest and the 100px column threshold is measured from it).
 
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown

@@ -67,12 +67,18 @@ ENG и иконка аккаунта пока ничего не делают —
 
 ### Футер `#footer`
 
-- Логотип.
+Четыре колонки в ряд, без отдельной полосы внизу.
+
+- Логотип, под ним строка копирайта — `#footer-copy`
 - **Contact** — телефон, email, город — `#footer-contact`
-- Под логотипом — иконки Facebook / Instagram / Telegram — `#footer-icons`
-- **Follow us** — те же три сети текстом с адресами — `#footer-social`
-- **Explore** — все разделы сайта в две колонки — `#footer-explore`
-- Строка копирайта — `#footer-copy`
+- **Follow us** — Facebook / Instagram / Telegram: иконка и ник в одной
+  ссылке — `#footer-social`
+- **Explore** — все 13 разделов; число подколонок браузер подбирает сам по
+  ширине, от двух на телефоне до пяти на широком экране — `#footer-explore`
+
+Отдельных иконок под логотипом (бывший `#footer-icons`) больше нет: это были
+те же три сети, что и в Follow us. Иконки переехали к никам, футер стал ниже
+вдвое, содержимое не убавилось.
 
 ---
 
@@ -466,9 +472,8 @@ Catalog / Add a Car / My Listings.
 `#nav-more` второй ряд меню · `#header-lang` переключатель ENG ·
 `#header-account` Register Business и аккаунт · `#banner` фото-баннер ·
 `#banner-weather` погода на баннере · `#search` поиск · `#footer` футер ·
-`#footer-contact` контакты · `#footer-icons` иконки соцсетей под логотипом ·
-`#footer-social` блок Follow us текстом · `#footer-explore` список разделов ·
-`#footer-copy` копирайт
+`#footer-contact` контакты · `#footer-social` Follow us, иконка и ник ·
+`#footer-explore` список разделов · `#footer-copy` копирайт под логотипом
 
 **Главная** `#home`
 `#home-contest` строка конкурса · `#home-ads-left` левая колонка рекламы ·
