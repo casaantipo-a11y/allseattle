@@ -39,6 +39,34 @@ here (Libre Franklin / Public Sans / Pacifico — Pacifico is the brand script i
 not a stray), and inline `style="..."` in JS templates stays acceptable per the CSS section below,
 despite `design.md` §9.
 
+## Section tags (`structure-ru.md`)
+
+`structure-ru.md` (Russian) walks every page section by section, and each section carries a short
+tag — `#home-news`, `#banner-weather`, `#footer-icons`, `#wx-hourly` and 120 more, with the full
+index at the end of that file.
+
+**A tag in the request is a scope, not a hint.** When the user names one — "#header иконки
+соцсетей перенести в footer", "#home сделай карточки меньше" — read that section in
+`structure-ru.md`, change only what it covers, and verify only the pages that actually render it.
+Do not sweep the other 16 pages, do not re-audit the neighbouring components, do not rebuild the
+page around it. Anything outside the tagged section stays untouched unless the change genuinely
+cannot work without it — and then say so in the reply rather than quietly widening the job.
+
+Two things a tag does not switch off, because the section's own correctness depends on them:
+
+- **Shared chrome is shared.** `#header`, `#banner` and `#footer` are rendered by `partials.js`
+  on all 17 pages, so a change inside one of those tags lands everywhere by definition. That is
+  the section, not scope creep — but it also means the check has to cover more than one page.
+- **Measurement still applies.** A tagged change is verified across the widths that matter to it,
+  the way "Checking a layout change" describes. A narrow scope means fewer pages in the pass, not
+  fewer measurements.
+
+Keeping `structure-ru.md` current is part of the job: if a tagged section changes shape, update
+its description and the index entry in the same commit, or the next tagged request points at
+something that no longer exists.
+
+When a request carries no tag, work the scope out from the request itself, as before.
+
 ## Environment & deploy
 
 The working copy lives at `D:\allseattle`. The repo is
