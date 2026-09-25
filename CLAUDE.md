@@ -688,6 +688,13 @@ padding and put 192px between them, twice what §1 allows. `main > .section + .s
 the second one's top, so the gap is the single `--section-y`. Home is currently the only page
 with two sections; the rule is there so the next one doesn't have to rediscover this.
 
+**Home overrides that gap to 36px** (`main > .section:first-child { padding-bottom: var(--space-2) }`
+in `home.css`, so it lands on that page only). The user measured the space between the `home-mid`
+banner and the City Newsfeed heading with a ruler and asked for one centimetre; 1cm is 37.8px and
+36px is the nearest sum of scale steps. The 8px of padding is only part of it — the heading also
+carries a 20px visual shift and its eyebrow another 8px, and the three add up to the 36. Change
+any one of them and re-measure the other two; the arithmetic is written out in `home.css`.
+
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is
 churn.
