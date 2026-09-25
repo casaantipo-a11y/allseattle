@@ -123,13 +123,64 @@
   margin-top: var(--space-16);
 }
 
+/* Надзаголовок и заголовок слева, кнопка действия справа.
+   Сетка, а не флекс: во флексе кнопка выравнивалась по всему левому блоку
+   (надзаголовок + заголовок + его нижний отступ), и её центр оказывался
+   ниже центра заголовка — на 21px на главной и на 17px на остальных
+   страницах. Кнопка заметно провисала. В сетке она стоит в одной строке
+   с самим заголовком и центрируется по нему, а надзаголовок живёт в
+   своей строке сверху.
+
+   display: contents у обёртки нужен, чтобы надзаголовок и заголовок
+   стали ячейками сетки: разметка на 16 страницах остаётся прежней.
+   Обёртка есть всегда, кнопка и надзаголовок — нет; пустая строка без
+   элементов имеет нулевую высоту, так что варианты «без кнопки» и
+   «без надзаголовка» работают сами собой. */
 .section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-4);
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: var(--space-4);
+  align-items: center;
   margin-bottom: var(--space-6);
-  flex-wrap: wrap;
+}
+
+.section-head > div {
+  display: contents;
+}
+
+.section-head .eyebrow {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Свой нижний отступ заголовку здесь не нужен: отбивку до контента держит
+   margin-bottom самой шапки, а лишние 12px как раз и сдвигали кнопку. */
+.section-head h1,
+.section-head h2 {
+  grid-column: 1;
+  grid-row: 2;
+  margin-bottom: 0;
+}
+
+/* Мобильно кнопка идёт под заголовком — так же, как раньше её переносил
+   flex-wrap. В одну строку с заголовком на 375px она сжала бы его до
+   двух слов. */
+.section-head .btn {
+  grid-column: 1;
+  grid-row: 3;
+  justify-self: start;
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .section-head {
+    grid-template-columns: 1fr auto;
+  }
+  .section-head .btn {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+  }
 }
 
 /* ---------- News card ---------- */

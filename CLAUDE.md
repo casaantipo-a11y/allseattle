@@ -656,6 +656,17 @@ same component" §9 bans. A page file should only hold what is genuinely its own
 columns and its own components. `.ad-slot-top` and `.result-count` live there for the same
 reason.
 
+**`.section-head` is a grid, not a flex row, and its inner `<div>` is `display: contents`.**
+Every page writes the same markup — a wrapper div holding the eyebrow and the heading, then an
+optional `.btn` — and the CSS lifts the eyebrow and the heading out of that wrapper into grid
+cells so the button can sit in the heading's own row and centre on it. As a flex row the button
+aligned against the whole left block instead, which put its centre 17–21px below the heading's;
+it read as visibly sagging on all 16 pages that have one. The heading's `margin-bottom` is zeroed
+there for the same reason — the head's own `margin-bottom` holds the gap to the content. Below
+640px the button drops to a third row, which is what `flex-wrap` used to do. If you add anything
+to a section head, give it an explicit `grid-row`, or auto-placement will drop it somewhere
+surprising.
+
 Three traps this layout has already hit once each:
 
 - **`.ad-slot--desktop` / `.ad-slot--mobile-only` sit on the same element as `.ad-slot`**, which
