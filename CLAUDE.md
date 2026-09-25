@@ -223,7 +223,8 @@ inline ads inside the news feed, while the right aside's widgets do stack below 
 2. Middle `.home-main`:
    1. 728×90 ad (`home-top`).
    2. Section head — "Today in Seattle" / **Top News** + "All News" button.
-   3. News grid *(JS)* — 6 cards, with inline mobile ads after cards 3 and 6.
+   3. News grid *(JS)* — 8 tiles, four across from 1440px, with inline mobile ads after
+      cards 4 and 8.
    4. 728×90 ad (`home-mid`).
 3. Right aside — a 300×250 ad **first**, then four widgets *(JS)*: **AllSeattle at a Glance**
    (4 stat tiles), **Job Board** (Coming Soon), **Exchange Rates**, **City Transit**; then the
@@ -231,10 +232,32 @@ inline ads inside the news feed, while the right aside's widgets do stack below 
 4. Second section — "More from Seattle" / **City Newsfeed**: the remaining articles as compact
    rows *(JS)*, thumbnail + category + relative time + headline + one clipped line.
 
-**The 12 articles are split 6 + 6 and never repeated.** `CARD_COUNT` in `home.js` is the one
-place that decides where the photo cards stop and the newsfeed starts; move it and both halves
-follow. The middle column is too narrow for more than two readable cards across, so the density
-the design asks for comes from that bottom list rather than from a third or fourth column.
+**The 16 articles are split 8 + 8 and never repeated.** `CARD_COUNT` in `home.js` is the one
+place that decides where the photo tiles stop and the newsfeed starts; move it and both halves
+follow. `news.html` renders the whole array, so adding an article there adds a card to that page
+too — and the home stats widget counts `NEWS_ARTICLES.length * 6`.
+
+**The middle column carries four tiles, not two cards** — the client asked for it, and the card
+had to shrink to survive it. `.news-card--tile` in `home.css` is that compact variant: 16px of
+body padding instead of 32, the headline at 16px clamped to three lines, the lead clamped to two,
+the byline and "Read more" gone, and from 768px the relative time sits under the category rather
+than beside it. The full `.news-card` from `components.css` is untouched and still runs on
+`news.html`.
+
+Three things about it were settled by measuring, not by eye, and all three will bite again if the
+column widths change:
+
+- **Four columns start at 1440px, not 1280.** At 1280 the middle is 613px and a tile comes to
+  135px — 103px of text, which cuts the headline after three words. 1280 gets three columns
+  (188px), 1024 gets two (207px), 768 gets three of 219px, and 1600 and up gets four of 219px.
+- **The meta line cannot hold the category and the time side by side.** "Community 2 days ago"
+  needs 192px against the 187px a 219px tile offers, so at 1920 exactly one card in eight wrapped
+  and its headline sat a line lower than its neighbours'. Stacking them from 768px costs 19px and
+  keeps every row level. 14px is the floor of the type scale, so shrinking the text was not an
+  option.
+- **`-webkit-line-clamp` needs the element's height to equal the clamp.** `.news-card-excerpt`
+  carries `flex: 1`, which stretched the box past two lines: the ellipsis appeared on line two
+  and the rest of the paragraph kept rendering under it. The tile sets `flex: none`.
 
 **`news.html` — News**
 
@@ -647,8 +670,9 @@ Each of these was decided explicitly. Don't "fix" them back:
   Without it the 1600px container inflates a card from 384px to 594px and its text runs past the
   75-character limit of §2. Measured: three columns need 1440px to stay ~390px wide; at 1280px
   they collapse to 276px, which is why the threshold is not 1280.
-  Scope these rules to their page wrapper — a bare `.news-grid` would also hit Home, where the
-  same class sits between two sidebars and a third column would leave ~300px.
+  Scope these rules to their page wrapper — a bare `.news-grid` would also hit Home, which has a
+  ladder of its own (1 / 2 / 3 / 2 / 3 / 4 columns) because its grid sits between two sidebars
+  and holds the compact tile rather than the full card.
 - **The first section of every page gets 32px of top padding instead of 96px**
   (`main > .section:first-child`). §1 allows an exception for the block adjoining the hero, and
   that is exactly what this is — it sits directly under the sticky nav. Spacing *between*

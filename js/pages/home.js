@@ -6,16 +6,16 @@ import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
 import { relativeTime } from "../format-time.js";
 
-// The 12 articles are split, not repeated: the first 6 run as photo cards in
-// the middle column, the rest as the compact newsfeed at the bottom of the
-// page. Nothing appears twice.
-const CARD_COUNT = 6;
+// The 16 articles are split, not repeated: the first 8 run as photo tiles in
+// the middle column (two rows of four), the rest as the compact newsfeed at
+// the bottom of the page. Nothing appears twice.
+const CARD_COUNT = 8;
 
 // Same 5 placements the desktop sidebars show (home-left-1..4, home-right-1),
 // just redistributed through the feed on mobile instead of stacked at the top.
 const INLINE_AFTER_CARD = [
-  { afterIndex: 3, seed: "home-left-1", size: "300x250" },
-  { afterIndex: 6, seed: "home-left-2", size: "300x250" },
+  { afterIndex: 4, seed: "home-left-1", size: "300x250" },
+  { afterIndex: 8, seed: "home-left-2", size: "300x250" },
 ];
 const FOOTER_AD_SEEDS = [
   { seed: "home-left-3", size: "300x600" },
@@ -23,22 +23,22 @@ const FOOTER_AD_SEEDS = [
   { seed: "home-right-1", size: "300x250" },
 ];
 
-function newsCardTemplate(article) {
+// Compact variant of the news card, four across instead of two. At the widths
+// the middle column actually has (219px at 1600 and up, 139px at 1280) the
+// byline and "Read more" no longer fit on one line, so the tile carries the
+// photo, the category, the time, the headline and a two-line lead — and
+// nothing else. The full card still runs on news.html.
+function newsTileTemplate(article) {
   return `
-  <article class="card news-card">
+  <article class="card news-card news-card--tile">
     <a href="news.html" class="news-card-photo"><img src="${article.photo}" alt="${article.title}" loading="lazy"></a>
     <div class="news-card-body">
       <div class="news-card-meta">
         <span class="cat">${article.category}</span>
-        <span>&middot;</span>
         <span>${relativeTime(article.publishedAt)}</span>
       </div>
       <h3><a href="news.html">${article.title}</a></h3>
       <p class="news-card-excerpt">${article.excerpt}</p>
-      <div class="news-card-footer">
-        <span class="news-card-author">By ${article.author}</span>
-        <a href="news.html" class="news-card-more">Read more &rarr;</a>
-      </div>
     </div>
   </article>`;
 }
@@ -65,7 +65,7 @@ function renderNewsGrid() {
   const articles = NEWS_ARTICLES.slice(0, CARD_COUNT);
   let html = "";
   articles.forEach((article, i) => {
-    html += newsCardTemplate(article);
+    html += newsTileTemplate(article);
     const adHere = INLINE_AFTER_CARD.find((a) => a.afterIndex === i + 1);
     if (adHere) html += inlineAdMarkup(adHere.seed, adHere.size);
   });

@@ -29,6 +29,10 @@
   justify-content: center;
 }
 
+/* Сетка новостей главной. Карточка здесь — компактная плитка (ниже по файлу),
+   она рассчитана примерно на 220px, и лестница колонок подобрана так, чтобы
+   держать её около этой ширины. Замерено: 343px на 375, 296 на 640, 219 на
+   768, 207 на 1024, 188 на 1280, 175 на 1440 и 219 на 1600 и шире. */
 .news-grid {
   grid-template-columns: 1fr;
 }
@@ -39,15 +43,21 @@
   }
 }
 
+/* Планшет: сайдбаров ещё нет, под сеткой вся ширина контейнера. Двумя
+   колонками плитка растянулась бы до 468px и выглядела бы полупустой. */
+@media (min-width: 768px) {
+  .news-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (min-width: 1024px) {
   .home-layout {
     grid-template-columns: 220px 1fr 240px;
   }
-  /* Средняя колонка здесь всего 452px: две карточки дали бы по 207px,
-     то есть ~28 символов в строке вместо 55-75 (design.md §2). Две колонки
-     возвращаются на 1280px, где середина вырастает до 628px. */
+  /* Средняя колонка здесь всего 437px — ровно на две плитки по 207px. */
   .home-main .news-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   .home-sidebar {
     flex-direction: column;
@@ -63,7 +73,68 @@
   .home-layout {
     grid-template-columns: 260px 1fr 280px;
   }
+  /* Четвёртая колонка здесь не помещается: середина 613px даёт плитку в
+     135px, а это 103px под текст — заголовок обрывается на третьем слове,
+     от лида остаются два. Замерено и снято. Три колонки дают 188px. */
   .home-main .news-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
+}
+
+/* Четыре в ряд — то, ради чего всё затевалось. Порог 1440, а не 1280:
+   середина вырастает до 773px и плитка становится 175px, с 1600px — 219px. */
+@media (min-width: 1440px) {
+  .home-main .news-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------- Плитка новости ----------
+   Собственный компонент главной. Общий .news-card из components.css не
+   трогаем — он продолжает работать на news.html в полном виде; здесь он
+   ужимается под сетку в четыре колонки. Значения только из шкал. */
+.news-card--tile .news-card-body {
+  padding: var(--space-4);
+}
+
+/* С 768px время уходит под рубрику. Замерено: в одну строку «Community
+   2 days ago» просит 192px при 187px доступных даже на 1920, а на 1440 из
+   восьми карточек влезают две. То есть перенос всё равно случится — но по
+   случайному признаку, и заголовок на такой карточке съедет вниз
+   относительно соседей. Две строки всегда — это на 19px выше, зато ряд
+   ровный. Ужать текст нельзя: 14px — пол шкалы (design.md §2).
+   Ниже 768px плитка шире 296px и строка помещается целиком, там не трогаем. */
+@media (min-width: 768px) {
+  .news-card--tile .news-card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    line-height: 1.35;
+  }
+}
+
+.news-card--tile h3 {
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  margin-bottom: var(--space-2);
+  -webkit-line-clamp: 3;
+}
+
+/* flex: 1 из components.css растягивает бокс выше двух строк, и тогда
+   -webkit-line-clamp рисует многоточие на второй строке, но продолжает
+   показывать остальные. Обрезка работает только когда высота равна клампу. */
+.news-card--tile .news-card-excerpt {
+  -webkit-line-clamp: 2;
+  flex: none;
+}
+
+/* Обрезка по числу строк — единственное место в проекте, где она нужна: на
+   175px заголовок иначе уходит в пять строк и рвёт выравнивание ряда.
+   Работает только в связке с display: -webkit-box и -webkit-box-orient,
+   поодиночке -webkit-line-clamp игнорируется. */
+.news-card--tile h3,
+.news-card--tile .news-card-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
