@@ -249,11 +249,13 @@ inline ads inside the news feed, while the right aside's widgets do stack below 
 0. Contest strip — outside `<main>`, between the banner and the first section.
 1. Left aside — four ad slots: 300×250, 300×250, 300×600, 300×250.
 2. Middle `.home-main`:
-   1. 728×90 ad (`home-top`).
-   2. Section head — "Today in Seattle" / **Top News** + "All News" button.
-   3. News grid *(JS)* — 20 tiles, four across from 1440px (five rows), with inline mobile
+   1. Section head — "Today in Seattle" / **Top News** + "All News" button. It starts the
+      column: the 728×90 `home-top` that used to sit above it was removed at the user's
+      request, so Home carries six placements now, not seven, and `home-mid` is the page's
+      only 728×90.
+   2. News grid *(JS)* — 20 tiles, four across from 1440px (five rows), with inline mobile
       ads after cards 4 and 12.
-   4. 728×90 ad (`home-mid`).
+   3. 728×90 ad (`home-mid`).
 3. Right aside — a 300×250 ad **first**, then four widgets *(JS)*: **AllSeattle at a Glance**
    (4 stat tiles), **Job Board** (3 newest jobs from `jobs.js`), **Exchange Rates**,
    **City Transit**; then the mobile ad stack.

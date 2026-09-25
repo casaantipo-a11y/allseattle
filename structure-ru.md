@@ -93,7 +93,6 @@ ENG и иконка аккаунта пока ничего не делают —
    - 300×250
 
    **Центральная колонка:**
-   - Баннер 728×90 — `#home-ad-top`
    - Заголовок секции: надзаголовок «Today in Seattle», заголовок **Top News**,
      справа кнопка «All News» — `#home-head`
    - Сетка из **20 плиток**, пять рядов по четыре (фото, категория, время,
@@ -469,8 +468,8 @@ Catalog / Add a Car / My Listings.
 
 **Главная** `#home`
 `#home-contest` строка конкурса · `#home-ads-left` левая колонка рекламы ·
-`#home-ad-top` баннер сверху · `#home-head` заголовок Top News ·
-`#home-news` 20 плиток новостей · `#home-ad-mid` баннер снизу ·
+`#home-head` заголовок Top News · `#home-news` 20 плиток новостей ·
+`#home-ad-mid` баннер снизу ·
 `#home-ad-right` реклама в правой колонке · `#home-glance` виджет статистики ·
 `#home-jobs` виджет вакансий · `#home-rates` виджет курсов ·
 `#home-transit` виджет транспорта · `#home-feed` City Newsfeed
