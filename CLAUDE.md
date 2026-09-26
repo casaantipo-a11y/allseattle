@@ -413,6 +413,10 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 
 1. 728×90 ad.
 2. Section head — "Business Directory" / **Find a Seattle Business** + "List Your Business".
+   **This page's `h1` is one step smaller than the rest of the site** — the clamp's ceiling is
+   36px instead of 48, at the user's request; the floor stays 30 so the phone is unchanged. Both
+   labels also carry a large horizontal offset that only applies from 1280px up, for the reasons
+   written out in `directory.css`.
 3. `.dir-layout` — three columns, built to a mockup the client sent: **left rail** (Headings —
    the category list) | **main** (search, count line, 728×90, the business list, 728×90) |
    **right rail** (300×250, Statistics, 300×600).

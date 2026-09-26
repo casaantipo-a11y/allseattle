@@ -389,11 +389,19 @@
 @media (min-width: 1440px) {
   .section-head .eyebrow,
   .section-head h1 {
-    left: calc(var(--space-2) + 242px);
+    left: calc(var(--space-2) + 272px);
   }
   .section-head .eyebrow {
-    left: calc(var(--space-4) + 242px);
+    left: calc(var(--space-4) + 272px);
   }
+}
+
+/* Заголовок на шаг мельче: клиент просил «немного поменьше». Потолок clamp
+   опущен с 48px на 36 — соседний размер шкалы (design.md §2), нижняя граница
+   не тронута, поэтому на телефоне остаётся прежние 30px и мельче не станет.
+   Правило только для справочника: общий h1 на остальных 16 страницах прежний. */
+.section-head h1 {
+  font-size: clamp(30px, 4vw, 36px);
 }
 
 /* ---------- Нижний баннер во всю ширину ----------
