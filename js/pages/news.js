@@ -1,65 +1,214 @@
-import { NEWS_ARTICLES } from "../mock-data/news.js";
+import { NEWS_ARTICLES, TOP_NEWS_IDS } from "../mock-data/news.js";
 import { validate, isEmail, digits } from "../validation.js";
 import { wireModal, closeModal } from "../modal.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
 import { relativeTime } from "../format-time.js";
 
-function newsCardTemplate(article) {
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+
+// Год и месяц режутся прямо из строки ISO, а не через Date: дата в данных
+// записана без часового пояса, и разбор через Date сдвигал бы сентябрьскую
+// полночь в август на западном берегу.
+const yearOf = (article) => article.publishedAt.slice(0, 4);
+const monthOf = (article) => article.publishedAt.slice(5, 7);
+
+// Плотная строка ленты — тот же компонент, что в ленте главной
+// (.news-list-row в components.css). Шаблон здесь свой, а не импортирован из
+// home.js: импорт потянул бы её DOMContentLoaded — ровно то, из-за чего
+// auto/listing.html до сих пор пишет ошибку в консоль. Страничные модули в
+// этом проекте самодостаточны по устройству.
+// Заголовок никуда не ведёт: отдельных страниц статей на сайте нет.
+function newsListRowTemplate(article) {
   return `
-  <article class="card news-card">
-    <a href="#" class="news-card-photo" onclick="return false"><img src="${article.photo}" alt="${article.title}" loading="lazy"></a>
-    <div class="news-card-body">
-      <div class="news-card-meta">
+  <a class="news-list-row" href="#" onclick="return false">
+    <img class="news-list-thumb" src="${article.photo}" alt="" loading="lazy">
+    <span class="news-list-body">
+      <span class="news-list-meta">
         <span class="cat">${article.category}</span>
         <span>&middot;</span>
         <span>${relativeTime(article.publishedAt)}</span>
-      </div>
-      <h3><a href="#" onclick="return false">${article.title}</a></h3>
-      <p class="news-card-excerpt">${article.body}</p>
-      <div class="news-card-footer">
-        <span class="news-card-author">By ${article.author}</span>
-      </div>
-    </div>
-  </article>`;
+      </span>
+      <span class="news-list-title">${article.title}</span>
+      <span class="news-list-excerpt">${article.excerpt}</span>
+    </span>
+  </a>`;
 }
 
-// Реклама идёт по всей длине ленты, а не только в её начале. Замерено:
-// 28 статей тянутся на 6 900px в три колонки и на 16 800px в одну, а весь
-// инвентарь страницы раньше умещался в первые 1 400px — дальше человек
-// прокручивал только новости, а последний баннер лежал вообще под лентой.
-// after — номер карточки, после которой встаёт место.
+// Реклама идёт по всей длине ленты, а не только в её начале: иначе человек
+// прокручивает одни новости, а последний баннер лежит под всем списком.
+// Строками лента примерно втрое короче прежней сетки карточек, поэтому мест
+// внутри неё три, а не пять — шаг по высоте остался прежним.
+// after — номер строки, после которой встаёт место.
 const FEED_ADS = [
-  // Эхо боковой колонки: нужно только там, где самой колонки нет (<1024px),
-  // поэтому стоит в начале ленты — как и сама колонка на десктопе.
-  { after: 2, echo: "news-side-1", tier: "300x250" },
-  { after: 7, echo: "news-side-2", tier: "300x600" },
-  // Свои места в ленте, во всю ширину ряда и на всех ширинах экрана:
-  // каждые пять карточек, последнее — до конца списка, а не после него.
-  { after: 5, seed: "news-feed-1" },
-  { after: 10, seed: "news-feed-2" },
-  { after: 15, seed: "news-feed-3" },
-  { after: 20, seed: "news-feed-4" },
-  { after: 25, seed: "news-feed-5" },
+  // Эхо боковых колонок: нужно только там, где самих колонок нет (<1024px).
+  { after: 4, echo: "news-side-1", tier: "300x250" },
+  { after: 12, echo: "news-side-2", tier: "300x600" },
+  // Свои места в ленте, на всех ширинах экрана. Последнее — до конца списка.
+  { after: 8, seed: "news-feed-1" },
+  { after: 16, seed: "news-feed-2" },
+  { after: 24, seed: "news-feed-3" },
 ];
 
-// Место рисуется через mountAdSlots (ниже), а не сразу: так оно получает
-// обе версии бокса — 728x90 на десктопе и 320x100 на телефоне.
+// Место рисуется через mountAdSlots (ниже), а не сразу: так оно получает обе
+// версии бокса — 728x90 на десктопе и 320x100 на телефоне.
 function feedAdMarkup(seed) {
   return `<div class="news-feed-ad" data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="${seed}"></div>`;
 }
 
-function renderGrid() {
-  const grid = document.getElementById("news-grid-all");
-  if (!grid) return;
+// filter: { month, year } — пустая строка значит «все».
+function renderFeed(filter) {
+  const list = document.getElementById("news-list-all");
+  if (!list) return;
+  const articles = NEWS_ARTICLES.filter((article) =>
+    (!filter.month || monthOf(article) === filter.month) &&
+    (!filter.year || yearOf(article) === filter.year));
+
+  if (!articles.length) {
+    list.innerHTML = `<p class="muted">No stories filed in that month yet.</p>`;
+    return;
+  }
+
   let html = "";
-  NEWS_ARTICLES.forEach((article, i) => {
-    html += newsCardTemplate(article);
+  articles.forEach((article, i) => {
+    html += newsListRowTemplate(article);
     FEED_ADS.filter((ad) => ad.after === i + 1).forEach((ad) => {
       html += ad.echo ? inlineAdMarkup(ad.echo, ad.tier) : feedAdMarkup(ad.seed);
     });
   });
-  grid.innerHTML = html;
-  mountAdSlots(grid);
+  list.innerHTML = html;
+  // Свой проход banner-ads.js к этому моменту уже отработал, так что без
+  // этого вызова места в ленте остались бы пустыми коробками.
+  mountAdSlots(list);
+}
+
+// Подборка редакции: ручной список id из mock-data, без счётчиков —
+// «самое главное», а не самое читаемое. Рубрика и описание в колонке
+// шириной 300px не помещаются, поэтому строка идёт в варианте --mini.
+function renderTopNews() {
+  const el = document.getElementById("widget-top-news");
+  if (!el) return;
+  const picks = TOP_NEWS_IDS
+    .map((id) => NEWS_ARTICLES.find((article) => article.id === id))
+    .filter(Boolean);
+  el.innerHTML = `
+    <div class="widget-head">Top News</div>
+    <div class="widget-body">
+      ${picks.map((article) => `
+        <a class="news-list-row news-list-row--mini" href="#" onclick="return false">
+          <img class="news-list-thumb" src="${article.photo}" alt="" loading="lazy">
+          <span class="news-list-body">
+            <span class="news-list-title">${article.title}</span>
+          </span>
+        </a>`).join("")}
+    </div>`;
+}
+
+// Архив собирается из самих статей, а не из выдуманного списка месяцев: в
+// демо-данных один месяц, и селект честно показывает ровно его. Появятся
+// статьи постарше — месяцы появятся сами.
+function renderArchive() {
+  const el = document.getElementById("widget-archive");
+  if (!el) return;
+  const months = [...new Set(NEWS_ARTICLES.map(monthOf))].sort();
+  const years = [...new Set(NEWS_ARTICLES.map(yearOf))].sort().reverse();
+  el.innerHTML = `
+    <div class="widget-head">News Archive</div>
+    <div class="widget-body">
+      <div class="news-archive-row">
+        <div class="field">
+          <label for="ar-month">Month</label>
+          <select id="ar-month">
+            <option value="">All</option>
+            ${months.map((m) => `<option value="${m}">${MONTH_NAMES[Number(m) - 1]}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label for="ar-year">Year</label>
+          <select id="ar-year">
+            <option value="">All</option>
+            ${years.map((y) => `<option value="${y}">${y}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+    </div>`;
+}
+
+function wireArchive() {
+  const el = document.getElementById("widget-archive");
+  if (!el) return;
+  el.addEventListener("change", () => {
+    renderFeed({
+      month: document.getElementById("ar-month").value,
+      year: document.getElementById("ar-year").value,
+    });
+  });
+}
+
+function newsletterFormMarkup() {
+  return `
+    <form id="newsletter-form" novalidate>
+      <div class="field" data-field="email">
+        <label for="nl-email">Your e-mail address</label>
+        <input type="email" id="nl-email" name="email" placeholder="you@example.com">
+        <span class="field-error"></span>
+      </div>
+      <div class="newsletter-actions">
+        <button type="submit" class="btn btn-sm" data-action="subscribe">Subscribe</button>
+        <button type="submit" class="btn btn-outline btn-sm" data-action="unsubscribe">Unsubscribe</button>
+      </div>
+      <p class="form-note">A demo sign-up — nothing is sent and no address is stored.</p>
+    </form>`;
+}
+
+function renderNewsletter() {
+  const el = document.getElementById("widget-newsletter");
+  if (!el) return;
+  el.innerHTML = `
+    <div class="widget-head">Newsletter</div>
+    <div class="widget-body" id="newsletter-body">${newsletterFormMarkup()}</div>`;
+}
+
+// Ещё одна форма под демо-контракт: проверяет адрес и показывает готовую
+// панель, где прямо сказано, что ничего не отправлено. Кнопка «Back»
+// возвращает форму, чтобы показ можно было повторить, не перезагружая
+// страницу, — как кнопка сброса голосов в конкурсе.
+function wireNewsletterForm() {
+  const body = document.getElementById("newsletter-body");
+  if (!body) return;
+  const form = document.getElementById("newsletter-form");
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const action = (e.submitter && e.submitter.dataset.action) || "subscribe";
+    const data = { email: form.email.value.trim() };
+
+    const ok = validate(form, data, {
+      email: (v) => {
+        if (!v) return "Enter your email address.";
+        if (!isEmail(v)) return "That doesn't look like an email address.";
+        return null;
+      },
+    });
+
+    if (!ok) return;
+
+    const subscribing = action === "subscribe";
+    body.innerHTML = `
+      <div class="success-panel">
+        <div class="success-icon">&#9989;</div>
+        <h3>${subscribing ? "You're on the list" : "You're unsubscribed"}</h3>
+        <p class="muted">${subscribing
+          ? "The Seattle morning briefing would land in your inbox on weekdays."
+          : "That address would stop receiving the briefing."} This is a demo, so nothing was sent and no address was stored.</p>
+        <button class="btn btn-outline btn-sm" id="newsletter-again" type="button">Back</button>
+      </div>`;
+    document.getElementById("newsletter-again").addEventListener("click", () => {
+      body.innerHTML = newsletterFormMarkup();
+      wireNewsletterForm();
+    });
+  });
 }
 
 function wireShareNewsForm() {
@@ -116,7 +265,12 @@ function wireShareNewsForm() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderGrid();
+  renderFeed({ month: "", year: "" });
+  renderTopNews();
+  renderNewsletter();
+  renderArchive();
+  wireArchive();
+  wireNewsletterForm();
   wireShareNewsForm();
   mountAdSlots(document);
 });

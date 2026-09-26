@@ -315,26 +315,54 @@ column widths change:
 
 1. 728×90 ad.
 2. Section head — "Seattle News" / **Latest Stories** + "+ Share the News" button.
-3. `.news-layout` — article grid *(JS)*, five in-feed 728×90 placements interleaved
-   through it | sidebar: 300×250, 300×600.
+3. `.news-layout` — three columns, built to a mockup the client sent:
+   **left rail** (300×600, Newsletter, News Archive) | **feed** *(JS)* | **right rail**
+   (300×250, Top News).
 4. Contest teaser — a link block promoting `contest.html`.
 5. Modal: **Share the News** — headline, details, photo, contact.
 
-**The ads run the whole length of the feed, and that is what `FEED_ADS` in `news.js` is for.**
-28 articles come to 6,900px in three columns and 16,800px in one, while every placement on the
-page used to sit inside the first 1,400px — the rail covered 12% of the list on a desktop and 1%
-on a phone, and below 1024px the last banner sat *under* the whole feed, in `#mobile-footer-ads`.
-So: `news-feed-1..5`, a 728×90 each, after cards 5 / 10 / 15 / 20 / 25, plus the two rail echoes
-early in the list (after cards 2 and 7) where the rail itself sits on desktop. That is five new
-placements — real inventory added on purpose, at the user's request, not a layout side effect.
-The trailing `#mobile-footer-ads` stack is gone from this page for the same reason.
+**The feed is the compact `.news-list` row, not a grid of photo cards.** The client asked for
+a dense portal feed — thumbnail, category, relative time, headline, one clipped line — and that
+component already existed in `components.css` (it is what Home's City Newsfeed uses). So the page
+shows 28 headlines where it used to show 6 cards, and the article `body` is no longer rendered
+anywhere: there are no article pages, and the row's headline deliberately goes nowhere
+(`href="#"`). The full `.news-card` now runs only on Home, as the base of `.news-card--tile`.
+`newsListRowTemplate()` is **copied** from `home.js` rather than imported — importing across page
+modules also runs the other module's `DOMContentLoaded`, which is exactly the bug that makes
+`auto/listing.html` log an error on every load.
 
-Two things that keep it working: the in-feed slot is `grid-column: 1 / -1` so it breaks the row
-instead of leaving a hole in it, and it is emitted as a `data-ad-slot` div and mounted by
-`mountAdSlots(grid)` at the end of `renderGrid()` — `banner-ads.js`'s own `DOMContentLoaded` pass
-has already run by then, so without that call the boxes stay empty. `.ad-slot` is
-`width: 100%; max-width: var(--ad-max-w)`, so the 728 box simply shrinks to 621×77 at 1024px
-rather than overflowing, and below 1024 the `data-ad-slot-mobile` swap draws it at 320×100.
+**The column ladder is 1 / 2 / 3.** One column below 1024 with the feed pulled first
+(`order: -1` — the left rail precedes it in the markup so it can sit on the left when there is
+room, but on a phone the news comes first). At 1024–1279 two columns, `1fr 300px`, with **both**
+rails stacked in the right one (right rail first) — three columns there would leave the middle
+under 400px. Three columns from 1280, `300px 1fr 300px`, which is the mockup. Measured middles:
+553 at 1280, 713 at 1440, 888 at 1920. The rails are 300px because that is the native width of
+the 300×600 and 300×250 boxes.
+
+**Ads run the whole length of the feed — `FEED_ADS` in `news.js`.** `news-feed-1..3`, a 728×90
+each, after rows 8 / 16 / 24, plus the two rail echoes after rows 4 and 12 (the rails themselves
+vanish below 1024). Three in-feed placements, not the five the card grid carried: rows are about
+a third the height of cards, so the same three keep a banner roughly every 900px on a desktop and
+every 550px on a phone, with the last one still *before* the end of the list. The in-feed slot is
+emitted as a `data-ad-slot` div and mounted by `mountAdSlots(list)` at the end of `renderFeed()` —
+`banner-ads.js`'s own `DOMContentLoaded` pass has already run by then, so without that call the
+boxes stay empty, including after the archive re-renders the feed. `.ad-slot` is
+`width: 100%; max-width: var(--ad-max-w)`, so the 728 box shrinks to 621×77 at 1024 rather than
+overflowing, and below 1024 the `data-ad-slot-mobile` swap draws it at 320×100.
+
+**The two left-rail widgets are real, not decoration.** *Newsletter* validates the address
+through `validation.js` and swaps in a `.success-panel` that says outright that nothing was sent
+and no address stored; its "Back" button restores the form so a demo can be re-run, like the
+contest's reset. *News Archive* builds its Month and Year options **from `publishedAt` itself**
+and actually filters the feed — the mock data spans August and September 2026, so both months are
+there, and an empty month shows the same `<p class="muted">` empty state the directory uses. The
+month select gets the wider grid column: "September" needs 93px of inner width against "2026"'s
+44, and an even split left it two pixels from clipping.
+
+**Top News is an editorial pick, not a metric.** `TOP_NEWS_IDS` in `mock-data/news.js` is a hand
+written list of six ids drawn from across the array, rendered as `.news-list-row--mini` (56px
+thumb, no category line, no excerpt — a 300px column has no room for them). No view or comment
+counts: the site has neither, and the user asked for "the big stories", not the most-read.
 
 **`contest.html` — Contest**
 
@@ -555,6 +583,8 @@ rather than changing `relativeTime()`.
 Every submit surface intercepts and shows a canned success state; keep it that way:
 
 - **Share the News** (`news.js`, modal) → `.success-panel`, then closes + reloads the page.
+- **Newsletter** (`news.js`, the left-rail widget on News) → `.success-panel` for both Subscribe
+  and Unsubscribe, saying nothing was sent and no address stored; "Back" brings the form back.
 - **Choose a Package** (`pricing.js`, modal) → `.success-panel`, then closes + reloads.
 - **Add a Car** (`auto-add-listing.js`, 4-step wizard) → replaces `#add-listing-content` with a
   "sent for moderation" panel.

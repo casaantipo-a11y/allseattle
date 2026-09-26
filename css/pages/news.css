@@ -1,4 +1,10 @@
-/* Mobile-first: базово одна колонка, сайдбар в строку под контентом. */
+/* Раскладка раздела новостей — по макету клиента: слева реклама 300x600,
+   подписка и архив, в середине плотная лента, справа реклама 300x250 и
+   редакционная подборка Top News.
+
+   Mobile-first: базово одна колонка — лента, под ней обе боковые колонки
+   строкой. Сами колонки шириной 300px, потому что это нативная ширина
+   баннеров 300x600 и 300x250 (так же, как у Auto и Real Estate). */
 .news-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -7,63 +13,141 @@
   margin-bottom: var(--space-12);
 }
 
-.news-grid {
-  grid-template-columns: 1fr;
+/* Пока колонка одна, лента идёт первой: в разметке левая колонка стоит перед
+   ней (так она встаёт слева на широком экране), но на телефоне человек пришёл
+   за новостями, а не за подпиской и архивом. */
+.news-feed {
+  order: -1;
 }
 
-.news-sidebar {
+.news-rail {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--grid-gap);
+  /* Реклама уезжает вместе со страницей, как и на остальных страницах:
+     пользователь просил, чтобы при скролле двигались не только новости,
+     но и баннеры. Не «чинить» обратно на sticky без просьбы. */
   position: static;
 }
 
-.news-sidebar > * {
+.news-rail > * {
   flex: 1 1 260px;
   min-width: 0;
 }
 
-@media (min-width: 640px) {
-  .news-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* С контейнером 1600px две колонки раздували карточку до 594px, а строки
-   в ней — за 75 символов (design.md §2). Третья колонка возвращает карточку
-   к ~390px. Порог 1440px подобран замером: на 1280px три колонки дают 276px.
-   Это пятый брейкпоинт сверх четырёх из §8 — согласованное отступление. */
-@media (min-width: 1440px) {
-  .news-layout .news-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
+/* Планшет и узкий десктоп: на три колонки ширины ещё нет (середина ушла бы
+   под 400px), поэтому колонки две — лента и один столбец справа, в который
+   ложатся обе боковые. Правая встаёт первой: в ней реклама 300x250 и
+   Top News, то есть то, что ближе к содержанию ленты. */
 @media (min-width: 1024px) {
   .news-layout {
     grid-template-columns: 1fr 300px;
   }
-  .news-sidebar {
+  .news-feed {
+    order: 0;
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .news-rail--right {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .news-rail--left {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .news-rail {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    /* Реклама уезжает вместе со страницей, как на главной. Пользователь
-       попросил, чтобы при скролле двигались не только новости, но и баннеры;
-       липкий сайдбар держал их на месте. Не «чинить» обратно без просьбы. */
   }
-  .news-sidebar > * {
+  .news-rail > * {
     flex: 0 0 auto;
   }
 }
 
-/* Рекламное место внутри ленты статей: во всю ширину ряда, чтобы не
-   выбивать карточки из сетки, и видно на любой ширине экрана (боковая
-   колонка ниже 1024px пропадает, а реклама должна оставаться). Ставится
-   каждые пять карточек — см. FEED_ADS в js/pages/news.js. */
-.news-grid .news-feed-ad {
-  grid-column: 1 / -1;
+/* Три колонки, как в макете. Порог 1280, а не 1024: середина тогда
+   получается 568px и держит заголовок строки в одну-две строки. */
+@media (min-width: 1280px) {
+  .news-layout {
+    grid-template-columns: 300px 1fr 300px;
+  }
+  .news-rail--left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .news-feed {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .news-rail--right {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+/* Рекламное место внутри ленты: обычная строка списка, а не ячейка сетки —
+   с тем же вертикальным ритмом и той же линией снизу, что у новостей.
+   Видно на любой ширине: боковых колонок ниже 1024px нет, а реклама должна
+   идти вместе с лентой. Шаг — см. FEED_ADS в js/pages/news.js. */
+.news-list .news-feed-ad {
   display: flex;
   justify-content: center;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-slate-soft);
+}
+
+/* Встроенное эхо боковых баннеров живёт в той же ленте — выравниваем его по
+   тому же ритму, иначе у него остаются свои 24px сверху и снизу. */
+.news-list .ad-mobile-inline-slot {
+  margin: 0;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-slate-soft);
+}
+
+/* Строка Top News — та же .news-list-row, но без рубрики и описания:
+   в виджете шириной 300px на них нет места. Модификатор лежит здесь, а не
+   в общем файле, по образцу .news-card--tile у главной. */
+.news-list-row--mini {
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.news-list-row--mini .news-list-thumb {
+  width: 56px;
+}
+
+.news-list-row--mini:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Архив: «месяц» и «год» стоят рядом, как в макете. Колонка узкая (300px),
+   поэтому у этого виджета поля тела 16px вместо 32 — иначе на селект остаётся
+   114px и «September» обрезается на середине. */
+#widget-archive .widget-body {
+  padding: var(--space-4);
+}
+
+/* Месяцу колонка шире года: «September» просит 93px внутренней ширины, «2026»
+   — 44. Поровну месяц вставал впритык, с запасом в два пикселя. */
+.news-archive-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-2);
+}
+
+.news-archive-row .field {
+  margin-bottom: 0;
+}
+
+/* Две кнопки рассылки в одну строку — тоже как в макете. */
+.newsletter-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
 }

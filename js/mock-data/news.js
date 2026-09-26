@@ -280,3 +280,8 @@ export const NEWS_ARTICLES = [
     body: "Eleven businesses along a four-block stretch of Lake City Way have replaced their awnings and signs using a facade improvement grant that had gone unclaimed two years running. The office administering it says the application was rewritten this spring after shop owners said the old one took a weekend to fill out.",
   },
 ];
+
+// Подборка редакции для виджета Top News на news.html: «самое главное», а не
+// самое свежее и не самое читаемое — поэтому это ручной список id, а не срез
+// массива и не сортировка. Порядок здесь и есть порядок в виджете.
+export const TOP_NEWS_IDS = ["n5", "n6", "n10", "n2", "n15", "n17"];
