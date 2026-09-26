@@ -155,3 +155,13 @@ main > .section {
 .site-footer {
   margin-top: calc(var(--space-8) + var(--space-1));
 }
+
+/* Надзаголовок «Seattle News» — на 4мм вниз и 2мм вправо по просьбе клиента.
+   4мм это 15.1px (берём 16px, --space-4), 2мм — 7.6px (берём 8px, --space-2).
+   Сдвиг относительный, а не через margin: так съезжает только сама надпись,
+   а заголовок и кнопка остаются на месте. */
+.section-head .eyebrow {
+  position: relative;
+  top: var(--space-4);
+  left: var(--space-2);
+}
