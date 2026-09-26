@@ -29,7 +29,7 @@ function bizRowTemplate(biz) {
         <span class="biz-row-views">${formatViews(biz.views)} views this month</span>
         ${upsell}
       </div>
-      <h3 class="biz-row-name">${biz.name}</h3>
+      <span class="biz-row-name">${biz.name}</span>
       <div class="biz-row-cat">${biz.category}</div>
       <p class="biz-row-desc">${biz.description}</p>
       <div class="biz-row-contact">
@@ -97,11 +97,13 @@ function renderList(state) {
 
 // Те же четыре числа, что в виджете главной, — общий источник в
 // mock-data/stats.js, чтобы на показе страницы не спорили друг с другом.
+// Заголовок тоже как на главной: рядом счётчик пишет «15 businesses listed»,
+// и «Statistics» читалось бы как статистика этого списка, а не портала.
 function renderStats() {
   const el = document.getElementById("widget-stats");
   if (!el) return;
   el.innerHTML = `
-    <div class="widget-head">Statistics</div>
+    <div class="widget-head">AllSeattle at a Glance</div>
     <div class="widget-body">
       <div class="stat-grid">
         ${siteStats().map(([label, value]) => `

@@ -92,7 +92,7 @@
 
 .dir-search input {
   width: 100%;
-  min-height: 48px;
+  min-height: var(--space-12);
   padding: var(--space-2) var(--space-4) var(--space-2) var(--space-12);
   border: 1.5px solid var(--color-slate-soft);
   border-radius: var(--radius);
@@ -218,9 +218,16 @@
   color: var(--color-accent);
 }
 
+/* Название — span, а не заголовок (design.md §6): строк пятнадцать, и h3
+   подряд ломали бы оглавление страницы. Начертание задаём здесь, чтобы строка
+   выглядела ровно так же, как выглядела заголовком. */
 .biz-row-name {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
   font-size: var(--text-sm);
   line-height: 1.25;
+  color: var(--color-navy);
   margin-bottom: var(--space-1);
 }
 
