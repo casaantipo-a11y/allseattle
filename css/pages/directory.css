@@ -177,10 +177,13 @@
 }
 
 /* Подложка по тарифу — так в макете отмечены платные размещения. Оттенки
-   объявлены в tokens.css из фирменных цветов, а не подобраны на глаз. */
+   объявлены в tokens.css, а не подобраны на глаз. Premium — золотой по просьбе
+   пользователя: он же верхний тариф, и на показе золото читается как «дороже»
+   быстрее, чем второй красный. Плашка «Premium» осталась красной — она общая
+   с pricing.html. */
 .biz-row--premium {
-  background: var(--color-accent-tint);
-  border-color: var(--color-accent);
+  background: var(--color-gold-tint);
+  border-color: var(--color-gold);
 }
 
 .biz-row--lux {

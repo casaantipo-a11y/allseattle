@@ -422,11 +422,21 @@ badge, the month's views, name, category, description, address and phone. The cl
 no photos at all; the small thumbnail is the user's call on top of it. Nothing links anywhere:
 there are no per-business pages.
 
-**Paid placement is what the row's tint means.** Premium rows take `--color-accent-tint` and a red
-border, Lux takes `--color-navy-tint`, Standard stays white and instead carries an
+**Paid placement is what the row's tint means.** Premium rows take `--color-gold-tint` and a
+`--color-gold` border, Lux takes `--color-navy-tint`, Standard stays white and instead carries an
 **"Upgrade to Lux →"** link to `pricing.html`. The list is sorted Premium → Lux → Standard for the
-same reason: on a demo it shows what the money buys. Both tints are declared in `tokens.css` from
-the brand colours — don't put a raw `rgba()` in the page file.
+same reason: on a demo it shows what the money buys. All three tints are declared in `tokens.css`
+— don't put a raw `rgba()` in the page file.
+
+**The gold is a second colour beside the accent, and it was the user's call** (26.09.2026), so it
+carries the numbers that justify it in `tokens.css`: `#B8860B` is 3.25:1 against white, which
+clears the 3:1 that `design.md` §4 asks of a non-text element like a 1px border, and the tint's
+0.08 alpha is not an eyeballed value — at that alpha the underlay differs from white by exactly
+the 1.089:1 the red tint had at 0.06, so the row is highlighted no more strongly than before.
+**The "Premium" badge stays red**: `badge-premium` is shared with `pricing.html` and recolouring
+it here would either split that vocabulary or drag the pricing page along. If the user asks for a
+gold badge too, it needs its own text colour — white on `#B8860B` is 3.25:1 and fails AA for
+14px text, navy is 5.34:1 and passes.
 
 **The search and the category list both really filter.** `renderList({category, query})` matches
 the query against name, description, category and address, writes `#dir-count` ("Showing 3 of 15
