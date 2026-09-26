@@ -261,8 +261,15 @@
   pointer-events: none;
 }
 
+.hero-banner--inner {
+  /* Высота короткого кадра — одна ручка на все брейкпоинты. Страница может
+     добавить к ней своё (так news.css делает кадр на 12px выше), не повторяя
+     всю лестницу. */
+  --hero-inner-h: 140px;
+}
+
 .hero-banner--inner .hero-frame {
-  height: 140px;
+  height: var(--hero-inner-h);
 }
 
 /* Погода лежит в левом нижнем углу кадра. Белая плашка, а не белый текст:
@@ -376,13 +383,13 @@
 @media (min-width: 640px) {
   .site-logo { --logo-h: 46px; }
   .hero-frame { height: 230px; }
-  .hero-banner--inner .hero-frame { height: 150px; }
+  .hero-banner--inner { --hero-inner-h: 150px; }
 }
 
 /* ---------- 768 ---------- */
 @media (min-width: 768px) {
   .hero-frame { height: 270px; }
-  .hero-banner--inner .hero-frame { height: 160px; }
+  .hero-banner--inner { --hero-inner-h: 160px; }
   .hero-script { font-size: var(--text-3xl); }
 }
 
@@ -431,7 +438,7 @@
   .lang-switch { min-width: 36px; min-height: 32px; }
 
   .hero-frame { height: 340px; }
-  .hero-banner--inner .hero-frame { height: 170px; }
+  .hero-banner--inner { --hero-inner-h: 170px; }
   .hero-weather { left: var(--space-6); bottom: var(--space-6); }
 
   /* Полная плашка — только на главной: там кадр 340px и рядом с погодой

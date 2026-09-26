@@ -172,7 +172,12 @@ All real content is injected by JS at `DOMContentLoaded` — there's very little
 HTML source itself.
 
 - `data-page-type` picks the tall photo frame (`"home"`, 340px) vs. the short one carrying the
-  script wordmark (anything else, 170px) in `partials.js`.
+  script wordmark (anything else, 170px) in `partials.js`. **The short frame's height is one
+  token, `--hero-inner-h`** on `.hero-banner--inner` — 140 / 150 / 160 / 170px by breakpoint in
+  `header.css`. A page adds to it instead of restating the ladder: News does
+  `height: calc(var(--hero-inner-h) + var(--space-3))` from `news.css`, so its banner is 12px
+  (3mm, the user's ruler again) taller than the other fifteen inner pages at every width. If you
+  change the ladder, that page follows on its own.
 - `data-page` drives active-nav-link highlighting (`nav-active.js` matches it against each nav
   link's own `data-page`).
 - Pages under `auto/` load CSS/JS via `../` relative paths; root pages use plain relative paths.
