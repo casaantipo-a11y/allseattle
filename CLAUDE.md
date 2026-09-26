@@ -897,22 +897,24 @@ padding and put 192px between them, twice what §1 allows. `main > .section + .s
 the second one's top, so the gap is the single `--section-y`. Home is currently the only page
 with two sections; the rule is there so the next one doesn't have to rediscover this.
 
-**Home overrides that gap to 36px** (`main > .section:first-child { padding-bottom: var(--space-2) }`
-in `home.css`, so it lands on that page only). The user measured the space between the `home-mid`
-banner and the City Newsfeed heading with a ruler and asked for one centimetre; 1cm is 37.8px and
-36px is the nearest sum of scale steps. The 8px of padding is only part of it — the heading also
-carries a 20px visual shift and its eyebrow another 8px, and the three add up to the 36. Change
-any one of them and re-measure the other two; the arithmetic is written out in `home.css`.
+**One centimetre is the vertical seam everywhere now** — 36px, the nearest sum of scale steps to
+1cm's 37.8. The user measured it with a ruler twice (Home's two sections, then News's gap to the
+footer), so on the third page it stopped being a per-page fix: `base.css` zeroes the last
+section's bottom padding and gives an earlier section 36px, `footer.css` carries the whole gap on
+`.site-footer { margin-top }`, and one more rule zeroes the trailing margin of the last block in
+the last section. That last one matters: before it the pages disagreed — 192px on the Directory,
+158 on My Listings, 156 on Contest against 144 everywhere else, because each had its own trailing
+margin stacked on top.
 
-**Home also pins its gap to the footer at the same 36px**, by zeroing `.home-feed`'s bottom
-padding and overriding `.site-footer { margin-top }` from `home.css` — 96 + 48 was the old sum.
-**News does the same from `news.css`**, where the old gap was 176: the contest teaser's own 32px
-bottom margin on top of the section's 96 and the footer's 48. Both pages zero everything above
-the footer and put the whole number on `.site-footer { margin-top }`, so there is one knob rather
-than three. The override reaches only those two pages because a page stylesheet loads nowhere
-else; the other 15 keep 144px. So Home's and News's vertical rhythm is deliberately tighter than
-the rest of the site at their last seam, and that is the user's call, measured with a ruler,
-not drift.
+**Home's seam is the one place where the 36 is assembled rather than declared.** Its first section
+keeps `padding-bottom: var(--space-2)` from `home.css` — 8px — and the City Newsfeed heading adds
+a 20px shift with another 8px on its eyebrow. Those three are the 36. Change any one and
+re-measure the other two; the arithmetic is written out in `home.css`, and the page rule wins over
+the shared one only because `home.css` loads later at equal specificity.
+
+This is a deliberate deviation from `design.md` §1, which asks for 96–128px between sections on a
+desktop. It was the user's call, made with a ruler, and §1 now carries the exception next to its
+own numbers so the two cannot be read apart.
 
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is

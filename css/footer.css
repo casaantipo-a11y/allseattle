@@ -1,7 +1,9 @@
+/* 36px = 1см по линейке пользователя: единственная ручка зазора до подвала,
+   нижний отступ последней секции обнулён в base.css. */
 .site-footer {
   background: var(--color-navy);
   color: #c9d3de;
-  margin-top: var(--space-12);
+  margin-top: calc(var(--space-8) + var(--space-1));
 }
 
 /* Футер собран в один блок: отдельной полосы с копирайтом больше нет,

@@ -9,7 +9,6 @@
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
   align-items: start;
-  margin-bottom: var(--space-12);
 }
 
 .dir-main {
