@@ -239,6 +239,15 @@ footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML an
    **if you add one, re-check that its label is under 93px** ("Entertainment" is the current
    longest and the 100px column threshold is measured from it).
 
+   **One gutter, 16px, everywhere in the footer.** The columns and Explore's sub-columns used
+   to sit on 24px and 16px respectively, and the sub-columns read as visibly tighter than the
+   rest. They are one value now, and it is the smaller one on purpose: at 24px the auto-fill
+   loses a sub-column on a phone, at 1280 and at 1920, which puts the height back. The three
+   text columns are `1fr` each for the same reason — the brand column used to be narrower than
+   its neighbours, so the left edges stepped 258 / 294 / 293 instead of evenly. Vertical
+   spacing stays 24px (`row-gap`): that is the gap between stacked blocks on a phone, not
+   between columns.
+
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown
 / Mount Rainier / Waterfront / Pike Place) that used to sit under the hero is gone — it was
