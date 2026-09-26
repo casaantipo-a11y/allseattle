@@ -371,28 +371,28 @@
 
    Полосы две, потому что третью сотню пикселей 1280 не выдержала: там до
    счётчика оставалось 49.7px. Поэтому большой сдвиг живёт с 1440, а полоса
-   1280–1439 стоит на меньшем. Последняя правка — 20px влево в обеих:
-   252 и 122.
+   1280–1439 стоит на меньшем. Последние правки — 20px влево и 10px вправо
+   в обеих полосах: 262 и 132.
 
    Чтобы сдвиг работал и на планшете, счётчику пришлось бы уйти на свою
    строку — это отдельное решение, за ним к клиенту. */
 @media (min-width: 1280px) {
   .section-head .eyebrow,
   .section-head h1 {
-    left: calc(var(--space-2) + 122px);
+    left: calc(var(--space-2) + 132px);
   }
   .section-head .eyebrow {
-    left: calc(var(--space-4) + 122px);
+    left: calc(var(--space-4) + 132px);
   }
 }
 
 @media (min-width: 1440px) {
   .section-head .eyebrow,
   .section-head h1 {
-    left: calc(var(--space-2) + 252px);
+    left: calc(var(--space-2) + 262px);
   }
   .section-head .eyebrow {
-    left: calc(var(--space-4) + 252px);
+    left: calc(var(--space-4) + 262px);
   }
 }
 
