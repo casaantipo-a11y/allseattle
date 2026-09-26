@@ -264,11 +264,11 @@
 
 /* Шапка раздела по линейке клиента.
 
-   Заголовок «Find a Seattle Business» опущен на 20px: сначала 28 (просили
+   Заголовок «Find a Seattle Business» опущен на 12px: сначала 28 (просили
    7мм = 26.5px, ближайшая сумма шагов шкалы — 24 + 4), потом обе надписи
-   подняли на 8px (2мм = 7.6px).
+   дважды подняли на 8px.
 
-   Надзаголовок «Business Directory» опущен на 36px и сдвинут на 8px вправо.
+   Надзаголовок «Business Directory» опущен на 28px и сдвинут на 8px вправо.
    Разница между ними — те же 16px, что и была: поднимали обе надписи вместе.
    Ниже 36px надзаголовок опускать нельзя, и упор здесь не в шкалу, а в сам
    заголовок: замерено по контурам букв, на 48px надзаголовок ещё проходит на
@@ -281,10 +281,10 @@
 .section-head .eyebrow,
 .section-head h1 {
   position: relative;
-  top: calc(var(--space-4) + var(--space-1));
+  top: var(--space-3);
 }
 
 .section-head .eyebrow {
-  top: calc(var(--space-8) + var(--space-1));
+  top: calc(var(--space-6) + var(--space-1));
   left: var(--space-2);
 }
