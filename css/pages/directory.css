@@ -47,13 +47,6 @@
   .dir-rail--right {
     grid-column: 2;
     grid-row: 1;
-    /* Выравниваем верх колонки по строке поиска, а не по верху раскладки: в
-       средней колонке над поиском стоит счётчик «15 businesses listed», и без
-       этого отступа реклама и рубрики висят выше него. Число — ровно высота
-       строки счётчика (--text-xs при line-height 1.55 из base.css) плюс её
-       нижний отступ. Клиент просил именно опустить боковые, а не поднять
-       поиск. */
-    margin-top: calc(var(--text-xs) * 1.55 + var(--space-4));
   }
   .dir-rail--left {
     grid-column: 2;
@@ -79,8 +72,6 @@
   .dir-rail--left {
     grid-column: 1;
     grid-row: 1;
-    /* Своя колонка — значит тоже по строке поиска, см. выше. */
-    margin-top: calc(var(--text-xs) * 1.55 + var(--space-4));
   }
   .dir-main {
     grid-column: 2;
@@ -405,4 +396,34 @@
 
 .site-footer {
   margin-top: 0;
+}
+
+
+/* ---------- Счётчик найденного — в строке шапки ----------
+   «15 businesses listed» стоял в средней колонке над поиском, и из-за него
+   колонка начиналась на 38px выше боковых: приходилось опускать боковые, а
+   потом заголовок упирался в сам счётчик. Перенесли его в шапку, вправо от
+   заголовка: средняя колонка снова начинается с поиска, все три колонки
+   выравниваются сами, а заголовок стоит в 8.8px над ними. */
+.section-head .result-count {
+  margin-bottom: 0;
+  grid-column: 1;
+  grid-row: 3;
+  align-self: center;
+}
+
+@media (min-width: 640px) {
+  /* Третья колонка в сетке шапки: заголовок — счётчик — кнопка. */
+  .section-head {
+    grid-template-columns: 1fr auto auto;
+  }
+  .section-head .result-count {
+    grid-column: 2;
+    grid-row: 2;
+    margin-right: var(--space-4);
+  }
+  .section-head .btn {
+    grid-column: 3;
+    grid-row: 2;
+  }
 }
