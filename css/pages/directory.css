@@ -363,6 +363,27 @@
   }
 }
 
+/* Подпись внутри этого — и только этого — места крупнее. В общих стилях она
+   11.5/10/9.5px: такие размеры подобраны под коробку 320x100, а в полосе
+   1425x176 они теряются. Здесь берём значения из шкалы кеглей: 24 / 16 / 14.
+   Остальные рекламные места не трогаются. */
+.dir-bottom-ad .ad-slot-inner {
+  gap: var(--space-2);
+}
+
+.dir-bottom-ad .ad-slot-label {
+  font-size: var(--text-xl);
+}
+
+.dir-bottom-ad .ad-slot-tier {
+  font-size: var(--text-sm);
+}
+
+.dir-bottom-ad .ad-slot-status {
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-3);
+}
+
 .site-footer {
   margin-top: 0;
 }
