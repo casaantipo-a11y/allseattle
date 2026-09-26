@@ -438,8 +438,11 @@ its own. The search input is a page control, not the header's placeholder — th
 `mock-data/stats.js`. That file exists precisely so the two cannot disagree on a demo; before it
 the numbers lived inside `home.js`.
 
-**Two of the five placements are new** (`dir-list-top`, `dir-list-bottom`, both 728×90, above and
-below the list, as in the mockup). **No ads between the rows** — the same rule the news feed got.
+**The page carries four placements**: `directory-top` (728×90 above the head), the rail's 300×250
+and 300×600, and `dir-list-bottom`, the full-bleed strip against the footer. A fifth, `dir-list-top`,
+sat between the search and the list for a day and the user removed it — **nothing stands between
+the search and the first row**, and nothing stands between the rows either, the same rule the news
+feed got.
 The rail slots therefore carry no `.ad-desktop-slot`: they stay visible at every width and swap to
 320×100 below 1024, and the old inline echo plus `#mobile-footer-ads` are gone from this page.
 
