@@ -318,11 +318,11 @@
   position: relative;
   /* +2px — последний шаг просили прямо в пикселях, а двойки в шкале нет.
      Оставлена отдельным слагаемым, чтобы было видно, откуда она взялась. */
-  top: calc(var(--space-3) + 2px);
+  top: calc(var(--space-4) + 2px);
 }
 
 .section-head .eyebrow {
-  top: calc(var(--space-6) + var(--space-1) + 2px);
+  top: calc(var(--space-8) + 2px);
   left: var(--space-2);
 }
 
@@ -426,10 +426,20 @@
   .section-head .result-count {
     grid-column: 2;
     grid-row: 2;
-    margin-right: var(--space-4);
+    /* Ещё 24px влево по просьбе клиента: счётчик отходит от кнопки к строке
+       поиска, над которой он и должен читаться. */
+    margin-right: calc(var(--space-4) + var(--space-6));
   }
   .section-head .btn {
     grid-column: 3;
     grid-row: 2;
   }
+}
+
+/* Кнопка «List Your Business»: на 8px ниже и на 4px левее. Общее правило
+   сайта поднимает кнопку секции на 4px над центром заголовка — здесь она,
+   наоборот, на 4px ниже центра. */
+.section-head .btn {
+  top: var(--space-1);
+  left: calc(-1 * var(--space-1));
 }
