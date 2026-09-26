@@ -77,6 +77,15 @@ Deploying is just pushing to `main` — Pages rebuilds on its own. Poll
 `gh api repos/casaantipo-a11y/allseattle/pages/builds/latest` for `"status":"built"` on the new
 commit SHA rather than assuming a push is live immediately; a build takes roughly a minute.
 
+**Every stylesheet link carries `?v=<date><letter>`, and you bump it whenever you touch CSS.**
+Pages serves assets with `Cache-Control: max-age=600`, so for ten minutes after a deploy a
+returning browser keeps drawing the old stylesheet — twice the user reported a change as "not
+applied" when the file on the server was already correct. The query string is what forces the
+refetch. Bump it in all 17 `<head>`s at once (a one-line `re.sub` over `*.html` and `auto/*.html`
+does it) in the same commit as the CSS change, or the fix ships invisible. **JS is not versioned**
+— module imports would each need the query too — so a page-module change can still take up to ten
+minutes or a Ctrl+F5 to show up.
+
 The history starts at a single squashed initial commit (Sept 2026) — the project was re-homed
 here from an earlier repo (`mijckela-alt/allseattle`) that is no longer the deploy target. Don't
 expect to find pre-move history, and don't push to the old remote.
