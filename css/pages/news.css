@@ -193,3 +193,11 @@ main > .section {
 .hero-banner--inner .hero-frame {
   height: calc(var(--hero-inner-h) + var(--space-3));
 }
+
+/* Кнопка «+ Share the News» — на 3мм выше (3мм это 11.3px, ближайший шаг
+   шкалы 12px). Сдвиг относительный, как у надзаголовка: едет только кнопка,
+   заголовок и лента остаются на месте. */
+.section-head .btn {
+  position: relative;
+  top: calc(-1 * var(--space-3));
+}
