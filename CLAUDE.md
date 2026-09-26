@@ -828,12 +828,33 @@ there for the same reason — the head's own `margin-bottom` holds the gap to th
 to a section head, give it an explicit `grid-row`, or auto-placement will drop it somewhere
 surprising.
 
-**News is the one page where that button is not centred on its heading:** `news.css` lifts it
-4px with a relative offset, so only the button moves. Its centre sits 4px above the heading's
-there, and on a phone it ends up 12px under the heading instead of 16. That is deliberate and
-page-local — don't read it as the sag the grid was built to fix. The 4 is three rulered nudges
-netted out: 3mm up, 1.5mm down, 1mm down. One more nudge of that size and the button is back on
-the heading's centre, at which point the override should just be deleted.
+**Where the section head sits is a rule now, not a per-page fix.** The user asked for the same
+thing on Home, then on News, then on the Directory — a dozen separate "move the eyebrow down"
+requests — so the geometry he approved on News is the default in `components.css` and a new page
+gets it for free:
+
+- `.ad-slot-top { margin-bottom: 0 }` and `.section-head { margin-bottom: 0 }` — the 728×90
+  banner sits against the head, and the head against the content.
+- `.section-head .eyebrow { position: relative; top: 16px; left: 4px }` — the eyebrow drops to
+  the heading it belongs to.
+- `.section-head .btn { position: relative; top: -4px }` — the button rides 4px above the
+  heading's centre. That is not the sag the grid was built to fix; it is deliberate.
+
+Measured at 1440: **21.4px** from the banner's edge to the eyebrow's letters, **6.1px** between
+the two labels, **10.8px** from the heading's letters to the content. At 1024 those become 4.9
+and 8.6, at 375 2.3 and a button row. The shifts are relative on purpose — a margin would drag
+the heading, the button and the whole page down with it, and only the labels should move.
+
+**Two pages are exempt and say so in their own files:** the Directory takes its 24px back above
+and below the head (`directory.css`) because its own offsets were tuned on top of them, and Home
+does the same plus zeroing the eyebrow shift (`home.css`), since both its heads were set by hand.
+If a third page ever needs to opt out, copy that pattern — an explicit reset with a comment —
+rather than weakening the shared rule.
+
+**Two places are tight by design and worth knowing before you add anything to a head:** Pricing's
+"What's Included" (`--spaced`, a smaller `h2`) leaves 2.3px between the labels at 1440 and 1.2px
+at 375, and the chip rows on Shopping, City Map and Q&A sit 1.6–3.6px under the heading at 1024.
+All positive, all measured — but there is no room left there.
 
 Three traps this layout has already hit once each:
 
