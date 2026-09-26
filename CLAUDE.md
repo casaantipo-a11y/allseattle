@@ -786,9 +786,10 @@ to a section head, give it an explicit `grid-row`, or auto-placement will drop i
 surprising.
 
 **News is the one page where that button is not centred on its heading:** `news.css` lifts it
-12px (3mm, asked for with a ruler) with a relative offset, so only the button moves. Its centre
-sits 12px above the heading's there, and on a phone it ends up 4px under the heading instead of
-16. That is deliberate and page-local — don't read it as the sag the grid was built to fix.
+8px with a relative offset, so only the button moves. Its centre sits 8px above the heading's
+there, and on a phone it ends up 8px under the heading instead of 16. That is deliberate and
+page-local — don't read it as the sag the grid was built to fix. The 8 is two rulered requests
+netted out: 3mm up, then 1.5mm back down.
 
 Three traps this layout has already hit once each:
 
