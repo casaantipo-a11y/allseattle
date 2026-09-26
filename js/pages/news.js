@@ -23,18 +23,43 @@ function newsCardTemplate(article) {
   </article>`;
 }
 
+// Реклама идёт по всей длине ленты, а не только в её начале. Замерено:
+// 28 статей тянутся на 6 900px в три колонки и на 16 800px в одну, а весь
+// инвентарь страницы раньше умещался в первые 1 400px — дальше человек
+// прокручивал только новости, а последний баннер лежал вообще под лентой.
+// after — номер карточки, после которой встаёт место.
+const FEED_ADS = [
+  // Эхо боковой колонки: нужно только там, где самой колонки нет (<1024px),
+  // поэтому стоит в начале ленты — как и сама колонка на десктопе.
+  { after: 2, echo: "news-side-1", tier: "300x250" },
+  { after: 7, echo: "news-side-2", tier: "300x600" },
+  // Свои места в ленте, во всю ширину ряда и на всех ширинах экрана:
+  // каждые пять карточек, последнее — до конца списка, а не после него.
+  { after: 5, seed: "news-feed-1" },
+  { after: 10, seed: "news-feed-2" },
+  { after: 15, seed: "news-feed-3" },
+  { after: 20, seed: "news-feed-4" },
+  { after: 25, seed: "news-feed-5" },
+];
+
+// Место рисуется через mountAdSlots (ниже), а не сразу: так оно получает
+// обе версии бокса — 728x90 на десктопе и 320x100 на телефоне.
+function feedAdMarkup(seed) {
+  return `<div class="news-feed-ad" data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="${seed}"></div>`;
+}
+
 function renderGrid() {
   const grid = document.getElementById("news-grid-all");
   if (!grid) return;
   let html = "";
   NEWS_ARTICLES.forEach((article, i) => {
     html += newsCardTemplate(article);
-    if (i + 1 === 4) html += inlineAdMarkup("news-side-1", "300x250");
+    FEED_ADS.filter((ad) => ad.after === i + 1).forEach((ad) => {
+      html += ad.echo ? inlineAdMarkup(ad.echo, ad.tier) : feedAdMarkup(ad.seed);
+    });
   });
   grid.innerHTML = html;
-
-  const footerAds = document.getElementById("mobile-footer-ads");
-  if (footerAds) footerAds.innerHTML = inlineAdMarkup("news-side-2", "300x600");
+  mountAdSlots(grid);
 }
 
 function wireShareNewsForm() {

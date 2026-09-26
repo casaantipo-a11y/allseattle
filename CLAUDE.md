@@ -315,10 +315,26 @@ column widths change:
 
 1. 728×90 ad.
 2. Section head — "Seattle News" / **Latest Stories** + "+ Share the News" button.
-3. `.news-layout` — article grid *(JS)*, inline ad after card 4 | sidebar: 300×250, 300×600.
-4. Mobile ad stack *(JS)*.
-5. Contest teaser — a link block promoting `contest.html`.
-6. Modal: **Share the News** — headline, details, photo, contact.
+3. `.news-layout` — article grid *(JS)*, five in-feed 728×90 placements interleaved
+   through it | sidebar: 300×250, 300×600.
+4. Contest teaser — a link block promoting `contest.html`.
+5. Modal: **Share the News** — headline, details, photo, contact.
+
+**The ads run the whole length of the feed, and that is what `FEED_ADS` in `news.js` is for.**
+28 articles come to 6,900px in three columns and 16,800px in one, while every placement on the
+page used to sit inside the first 1,400px — the rail covered 12% of the list on a desktop and 1%
+on a phone, and below 1024px the last banner sat *under* the whole feed, in `#mobile-footer-ads`.
+So: `news-feed-1..5`, a 728×90 each, after cards 5 / 10 / 15 / 20 / 25, plus the two rail echoes
+early in the list (after cards 2 and 7) where the rail itself sits on desktop. That is five new
+placements — real inventory added on purpose, at the user's request, not a layout side effect.
+The trailing `#mobile-footer-ads` stack is gone from this page for the same reason.
+
+Two things that keep it working: the in-feed slot is `grid-column: 1 / -1` so it breaks the row
+instead of leaving a hole in it, and it is emitted as a `data-ad-slot` div and mounted by
+`mountAdSlots(grid)` at the end of `renderGrid()` — `banner-ads.js`'s own `DOMContentLoaded` pass
+has already run by then, so without that call the boxes stay empty. `.ad-slot` is
+`width: 100%; max-width: var(--ad-max-w)`, so the 728 box simply shrinks to 621×77 at 1024px
+rather than overflowing, and below 1024 the `data-ad-slot-mobile` swap draws it at 320×100.
 
 **`contest.html` — Contest**
 
