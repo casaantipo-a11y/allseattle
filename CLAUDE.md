@@ -784,9 +784,13 @@ any one of them and re-measure the other two; the arithmetic is written out in `
 
 **Home also pins its gap to the footer at the same 36px**, by zeroing `.home-feed`'s bottom
 padding and overriding `.site-footer { margin-top }` from `home.css` — 96 + 48 was the old sum.
-That override only reaches Home because `home.css` loads nowhere else; the other 16 pages keep
-144px. So Home's vertical rhythm is deliberately tighter than the rest of the site at both
-section seams, and that is the user's call, measured with a ruler, not drift.
+**News does the same from `news.css`**, where the old gap was 176: the contest teaser's own 32px
+bottom margin on top of the section's 96 and the footer's 48. Both pages zero everything above
+the footer and put the whole number on `.site-footer { margin-top }`, so there is one knob rather
+than three. The override reaches only those two pages because a page stylesheet loads nowhere
+else; the other 15 keep 144px. So Home's and News's vertical rhythm is deliberately tighter than
+the rest of the site at their last seam, and that is the user's call, measured with a ruler,
+not drift.
 
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is
