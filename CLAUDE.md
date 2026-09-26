@@ -438,9 +438,13 @@ nothing: the tier is the word on the badge, and a Standard row's own border
 (`--color-slate-soft`) is 1.24:1, half as contrasty as this one. Text on the fill is unaffected —
 navy 15.3:1, slate 6.6:1.
 
-**The "Premium" badge stays red**: `badge-premium` is shared with `pricing.html` and recolouring
-it here would either split that vocabulary or drag the pricing page along. If the user asks for a
-gold badge too, it needs navy text — white on `#DF9C16` is 2.36:1 and fails AA outright.
+**The row's "Premium" badge is gold too, but only in the directory.** `badge-premium` is shared
+with `pricing.html`, so the override is scoped to `.biz-row--premium .badge-premium` and the
+pricing page keeps the red pill until the user says otherwise. **The badge's text is navy, and
+that is a contrast requirement, not a style choice**: the `.badge` base sets white, which on
+`#DF9C16` is 2.36:1 against the 4.5 that AA wants of 14px bold. Navy is 7.38:1 — which, worth
+knowing, is also better than the 4.23:1 the red badge has always had, the one place on the site
+where a badge misses AA.
 
 **The search and the category list both really filter.** `renderList({category, query})` matches
 the query against name, description, category and address, writes `#dir-count` ("Showing 3 of 15
