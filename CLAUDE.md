@@ -428,15 +428,19 @@ there are no per-business pages.
 same reason: on a demo it shows what the money buys. All three tints are declared in `tokens.css`
 — don't put a raw `rgba()` in the page file.
 
-**The gold is a second colour beside the accent, and it was the user's call** (26.09.2026), so it
-carries the numbers that justify it in `tokens.css`: `#B8860B` is 3.25:1 against white, which
-clears the 3:1 that `design.md` §4 asks of a non-text element like a 1px border, and the tint's
-0.08 alpha is not an eyeballed value — at that alpha the underlay differs from white by exactly
-the 1.089:1 the red tint had at 0.06, so the row is highlighted no more strongly than before.
+**The gold is a second colour beside the accent, and it was the user's call** (26.09.2026). The
+first pick was `#B8860B`, chosen because it clears 3:1 against white; the user called it "dark
+lemon" — at hsl 43 that gold reads olive, and at 0.08 the fill was a dirty cream. It is
+`#DF9C16` now, hsl 40, with the tint at 0.14. **Brightness and contrast-against-white are the
+same axis in opposite directions**, so the border dropped to 2.36:1 and there is no brighter gold
+that keeps 3:1 — that was the trade, made knowingly. It is defensible because the border states
+nothing: the tier is the word on the badge, and a Standard row's own border
+(`--color-slate-soft`) is 1.24:1, half as contrasty as this one. Text on the fill is unaffected —
+navy 15.3:1, slate 6.6:1.
+
 **The "Premium" badge stays red**: `badge-premium` is shared with `pricing.html` and recolouring
 it here would either split that vocabulary or drag the pricing page along. If the user asks for a
-gold badge too, it needs its own text colour — white on `#B8860B` is 3.25:1 and fails AA for
-14px text, navy is 5.34:1 and passes.
+gold badge too, it needs navy text — white on `#DF9C16` is 2.36:1 and fails AA outright.
 
 **The search and the category list both really filter.** `renderList({category, query})` matches
 the query against name, description, category and address, writes `#dir-count` ("Showing 3 of 15
