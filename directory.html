@@ -34,17 +34,28 @@
         <a href="pricing.html" class="btn">List Your Business</a>
       </div>
 
-      <div class="category-filter" id="category-filter"></div>
+      <div class="dir-layout">
+        <aside class="dir-rail dir-rail--left">
+          <div class="widget" id="widget-categories"></div>
+        </aside>
 
-      <div class="directory-layout">
-        <div class="grid biz-grid" id="biz-grid"></div>
-        <aside class="directory-sidebar">
-          <div class="ad-desktop-slot" data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="directory-side-1"></div>
-          <div class="ad-desktop-slot" data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="directory-side-2"></div>
+        <div class="dir-main">
+          <form class="dir-search" id="dir-search" role="search" novalidate>
+            <input type="search" id="dir-q" name="q" placeholder="I am looking for..."
+                   aria-label="Search the business directory" autocomplete="off">
+          </form>
+          <p class="result-count" id="dir-count"></p>
+          <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="dir-list-top" class="ad-slot-top"></div>
+          <div class="biz-list" id="biz-list"></div>
+          <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="dir-list-bottom" class="ad-slot-bottom"></div>
+        </div>
+
+        <aside class="dir-rail dir-rail--right">
+          <div data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="directory-side-1"></div>
+          <div class="widget" id="widget-stats"></div>
+          <div data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="directory-side-2"></div>
         </aside>
       </div>
-
-      <div class="mobile-footer-ads" id="mobile-footer-ads"></div>
     </div>
   </section>
 </main>

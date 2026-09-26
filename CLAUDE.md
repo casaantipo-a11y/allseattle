@@ -400,13 +400,39 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 
 **`directory.html` — Business Directory**
 
-**Code:** [directory.html](directory.html) · [css/pages/directory.css](css/pages/directory.css) · [js/pages/directory.js](js/pages/directory.js) (`bizCardTemplate`, `renderFilters`, `wireFilters`) · data [js/mock-data/businesses.js](js/mock-data/businesses.js)
+**Code:** [directory.html](directory.html) · [css/pages/directory.css](css/pages/directory.css) · [js/pages/directory.js](js/pages/directory.js) (`bizRowTemplate`, `renderCategories`, `renderList`, `renderStats`) · data [js/mock-data/businesses.js](js/mock-data/businesses.js) · [js/mock-data/stats.js](js/mock-data/stats.js)
 
 1. 728×90 ad.
 2. Section head — "Business Directory" / **Find a Seattle Business** + "List Your Business".
-3. Category filter chips *(JS)*.
-4. `.directory-layout` — business grid *(JS)*, inline ad after card 4 | sidebar: 300×250, 300×600.
-5. Mobile ad stack *(JS)*.
+3. `.dir-layout` — three columns, built to a mockup the client sent: **left rail** (Headings —
+   the category list) | **main** (search, count line, 728×90, the business list, 728×90) |
+   **right rail** (300×250, Statistics, 300×600).
+
+**The listing is rows, not photo cards** — `.biz-row`: a 72px thumbnail (96 from 768), the tier
+badge, the month's views, name, category, description, address and phone. The client's mockup had
+no photos at all; the small thumbnail is the user's call on top of it. Nothing links anywhere:
+there are no per-business pages.
+
+**Paid placement is what the row's tint means.** Premium rows take `--color-accent-tint` and a red
+border, Lux takes `--color-navy-tint`, Standard stays white and instead carries an
+**"Upgrade to Lux →"** link to `pricing.html`. The list is sorted Premium → Lux → Standard for the
+same reason: on a demo it shows what the money buys. Both tints are declared in `tokens.css` from
+the brand colours — don't put a raw `rgba()` in the page file.
+
+**The search and the category list both really filter.** `renderList({category, query})` matches
+the query against name, description, category and address, writes `#dir-count` ("Showing 3 of 15
+businesses") and falls back to the same `<p class="muted">` empty state the rest of the site uses.
+The category list counts its own rows from the data, so adding a business updates the numbers on
+its own. The search input is a page control, not the header's placeholder — this one works.
+
+**Statistics shows the same four numbers as Home's "at a Glance" widget**, from
+`mock-data/stats.js`. That file exists precisely so the two cannot disagree on a demo; before it
+the numbers lived inside `home.js`.
+
+**Two of the five placements are new** (`dir-list-top`, `dir-list-bottom`, both 728×90, above and
+below the list, as in the mockup). **No ads between the rows** — the same rule the news feed got.
+The rail slots therefore carry no `.ad-desktop-slot`: they stay visible at every width and swap to
+320×100 below 1024, and the old inline echo plus `#mobile-footer-ads` are gone from this page.
 
 **`pricing.html` — Pricing**
 
@@ -524,8 +550,9 @@ first car)
 Only `partials.js` is depth-independent (`SITE_ROOT`). **Mock-data image paths are written
 relative to the page that consumes them, not to the site root**: `news.js` / `businesses.js` /
 `contest.js` use `img/news/...` (root pages), while `cars.js` uses `../img/cars/...` because
-`CAR_LISTINGS` is only rendered from pages inside `auto/`. Home imports `CAR_LISTINGS` but uses
-only `.length`, which is why nothing breaks today. If you ever render car photos from a root-level
+`CAR_LISTINGS` is only rendered from pages inside `auto/`. `mock-data/stats.js` imports
+`CAR_LISTINGS` (and so, through it, Home and the Directory do too) but touches only `.length`,
+which is why nothing breaks today. If you ever render car photos from a root-level
 page (or business/news photos from `auto/`), those images 404 — fix it by moving that data file to
 a `SITE_ROOT`-style absolute URL, not by patching one call site.
 
@@ -611,6 +638,13 @@ re-render (e.g. after filtering).
 Plain exported arrays/constants, no fetch, no build-time generation — `news.js`, `businesses.js`,
 `cars.js`, `contest.js`, `pricing.js`, plus one per new section: `jobs.js`, `events.js`,
 `shopping.js`, `entertainment.js`, `weather.js`, `real-estate.js`, `neighborhoods.js`, `qa.js`.
+`stats.js` is the odd one out: it holds no data of its own, just the four showcase numbers
+(`siteStats()`) that Home's "at a Glance" and the Directory's "Statistics" both render. It exists
+because the second copy of that list would have drifted from the first — the same way the header's
+weather and the Weather section once disagreed.
+
+`businesses.js` carries `views` and `address` per business. Only the Directory renders them today;
+other sections get the same treatment when the user asks for it, not automatically.
 
 Three of them are deliberately joined to their neighbours rather than self-contained, which is
 what stops the sections reading as separate sites: `shopping.js` holds a `businessId` and

@@ -1,6 +1,5 @@
 import { NEWS_ARTICLES } from "../mock-data/news.js";
-import { BUSINESSES } from "../mock-data/businesses.js";
-import { CAR_LISTINGS } from "../mock-data/cars.js";
+import { siteStats } from "../mock-data/stats.js";
 import { CONTEST_TITLE, CONTEST_ENTRIES } from "../mock-data/contest.js";
 import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
@@ -109,12 +108,8 @@ function renderMobileFooterAds() {
 function renderStatsWidget() {
   const el = document.getElementById("widget-stats");
   if (!el) return;
-  const stats = [
-    ["Listed businesses", `${BUSINESSES.length * 41}+`],
-    ["Active car listings", `${CAR_LISTINGS.length * 27}+`],
-    ["Articles this month", `${NEWS_ARTICLES.length * 6}+`],
-    ["Monthly visitors", "48.2k"],
-  ];
+  // Числа общие со справочником — см. mock-data/stats.js.
+  const stats = siteStats();
   el.innerHTML = `
     <div class="widget-head">AllSeattle at a Glance</div>
     <div class="widget-body">

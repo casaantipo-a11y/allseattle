@@ -15,6 +15,11 @@
   --color-success-bg: #E6F4EA;
   --color-danger: #C53030;
   --color-danger-bg: #FDECEC;
+  /* Подложки строк справочника: прозрачные оттенки тех же фирменных цветов,
+     чтобы платное размещение читалось как выделенное, а не как другой бренд. */
+  --color-accent-tint: rgba(229, 57, 53, 0.06);
+  --color-navy-tint: rgba(13, 27, 42, 0.04);
+
   --color-standard: #4A5568;
   --color-lux: #0D1B2A;
   --color-premium: #E53935;
