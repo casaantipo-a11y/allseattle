@@ -346,7 +346,7 @@ column widths change:
 
 **The eight secondary sections** all share one skeleton, generated from `directory.html`:
 728×90 ad → section head with a `pricing.html` button → content → `#mobile-footer-ads`. Six of
-them wrap the content in `.side-layout` / `.side-rail` (the shared "content + sticky sidebar"
+them wrap the content in `.side-layout` / `.side-rail` (the shared "content + sidebar"
 pair from `components.css`), and every one carries the same three placements: `<key>-top`
 728×90, `<key>-side-1` 300×250, `<key>-side-2` 300×600, plus the inline echo after card 4.
 
@@ -370,7 +370,7 @@ card, a 12-hour scroller, a seven-day list and a regional table. Icons come from
 `WEATHER_ICONS` in `logo.js`.
 
 **`real-estate.html` — Real Estate** — the only new section with a filter column, built like
-Auto's (accordion below 768px, sticky from 768px). Sale prices and monthly rents share one
+Auto's (accordion below 768px, a plain column from 768px). Sale prices and monthly rents share one
 numeric field, so `PRICE_STEPS` rebuilds the max-price options whenever the deal type changes.
 
 **`city-map.html` — City Map** — a hand-drawn schematic (`MAP_SHAPES` in
@@ -665,7 +665,7 @@ the viewport past every image on the way down; the jump is now instant and the m
 never enters the viewport, so a screenshot comes back full of blank photo boxes and a broken-image
 count that has nothing to do with the site. Step down a viewport at a time instead.
 
-**`.side-layout` / `.side-rail` in `components.css` are the shared "content + sticky sidebar"
+**`.side-layout` / `.side-rail` in `components.css` are the shared "content + sidebar"
 frame**, used by News-style pages and by six of the eight newer sections. Reach for them instead
 of copying the block into another page file — that copy is exactly the "different style for the
 same component" §9 bans. A page file should only hold what is genuinely its own: its card grid's
@@ -697,18 +697,27 @@ Three traps this layout has already hit once each:
   queries still reporting 375px, so the page looked correct in CSS and wrong on screen.
   `.side-layout > * { min-width: 0 }` is what holds it.
 
-`position: sticky` is used for the site header (see partials.js note above) and for the
-sidebars on News, Directory and Auto (`top: calc(var(--header-height) + var(--space-2))`). They
-do not all start at the same width: Auto's filter column sticks from **768px**, because that is
-where it stops being an accordion, while News and Directory only get a sidebar at all from
-**1024px**. Home's two sidebars are deliberately `position: static` so they scroll away with
-the page instead (an explicit, non-default choice — don't "fix" it back to sticky without checking
-history first).
+**`position: sticky` is now used for exactly one thing: the site header** (see the partials.js
+note above). **Every sidebar on every page scrolls away with the page** — the user asked for the
+ads to move when the content moves, not to sit pinned while the cards go past them. Home's two
+rails were already static; News, Directory, the six `.side-rail` sections, Auto's filter column
+and Real Estate's all used to stick at `top: calc(var(--header-height) + var(--space-2))` and no
+longer do. Their base rules already declare `position: static`, so the desktop overrides are gone
+rather than restated, with a comment left at each site saying why. Don't "fix" any of them back
+to sticky without asking.
+
+**On Auto and Real Estate that also unpinned the filters**, because the 300×250 and 300×600
+placements sit *inside* the filter aside. Keeping the filter card pinned while the ads below it
+scroll is not an option: sticky keeps its space in flow, so the ad would slide up underneath the
+pinned block and the two would overlap. Filters scrolling away is the cost of the ads moving, and
+it was the user's call.
 
 **`--header-height` is a measurement, not a guess** — 116px while the header is two rows,
-96px from 1024px where it collapses to one. Those sidebar offsets are computed from it, so if
-you change the header's rows, padding or logo size, re-measure it and update the token in
-`tokens.css`; leaving it stale wedges the sidebars under the header or floats them below it.
+96px from 1024px where it collapses to one. It had five consumers while the sidebars were sticky;
+the one left is City Map's `scroll-margin-top`, which keeps a pin's neighbourhood card from
+landing under the header when it scrolls into view. Re-measure it and update the token in
+`tokens.css` if you change the header's rows, padding or logo size — and expect the next thing
+that needs an offset from the header to read it from there too.
 
 Two adjacent `<section class="section">` elements would otherwise stack their own vertical
 padding and put 192px between them, twice what §1 allows. `main > .section + .section` zeroes
