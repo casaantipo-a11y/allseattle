@@ -88,25 +88,6 @@
   }
 }
 
-/* Рекламное место внутри ленты: обычная строка списка, а не ячейка сетки —
-   с тем же вертикальным ритмом и той же линией снизу, что у новостей.
-   Видно на любой ширине: боковых колонок ниже 1024px нет, а реклама должна
-   идти вместе с лентой. Шаг — см. FEED_ADS в js/pages/news.js. */
-.news-list .news-feed-ad {
-  display: flex;
-  justify-content: center;
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--color-slate-soft);
-}
-
-/* Встроенное эхо боковых баннеров живёт в той же ленте — выравниваем его по
-   тому же ритму, иначе у него остаются свои 24px сверху и снизу. */
-.news-list .ad-mobile-inline-slot {
-  margin: 0;
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--color-slate-soft);
-}
-
 /* Строка Top News — та же .news-list-row, но без рубрики и описания:
    в виджете шириной 300px на них нет места. Модификатор лежит здесь, а не
    в общем файле, по образцу .news-card--tile у главной. */

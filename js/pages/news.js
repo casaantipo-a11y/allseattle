@@ -1,7 +1,7 @@
 import { NEWS_ARTICLES, TOP_NEWS_IDS } from "../mock-data/news.js";
 import { validate, isEmail, digits } from "../validation.js";
 import { wireModal, closeModal } from "../modal.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 import { relativeTime } from "../format-time.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
@@ -35,27 +35,6 @@ function newsListRowTemplate(article) {
   </a>`;
 }
 
-// Реклама идёт по всей длине ленты, а не только в её начале: иначе человек
-// прокручивает одни новости, а последний баннер лежит под всем списком.
-// Строками лента примерно втрое короче прежней сетки карточек, поэтому мест
-// внутри неё три, а не пять — шаг по высоте остался прежним.
-// after — номер строки, после которой встаёт место.
-const FEED_ADS = [
-  // Эхо боковых колонок: нужно только там, где самих колонок нет (<1024px).
-  { after: 4, echo: "news-side-1", tier: "300x250" },
-  { after: 12, echo: "news-side-2", tier: "300x600" },
-  // Свои места в ленте, на всех ширинах экрана. Последнее — до конца списка.
-  { after: 8, seed: "news-feed-1" },
-  { after: 16, seed: "news-feed-2" },
-  { after: 24, seed: "news-feed-3" },
-];
-
-// Место рисуется через mountAdSlots (ниже), а не сразу: так оно получает обе
-// версии бокса — 728x90 на десктопе и 320x100 на телефоне.
-function feedAdMarkup(seed) {
-  return `<div class="news-feed-ad" data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="${seed}"></div>`;
-}
-
 // filter: { month, year } — пустая строка значит «все».
 function renderFeed(filter) {
   const list = document.getElementById("news-list-all");
@@ -69,17 +48,11 @@ function renderFeed(filter) {
     return;
   }
 
-  let html = "";
-  articles.forEach((article, i) => {
-    html += newsListRowTemplate(article);
-    FEED_ADS.filter((ad) => ad.after === i + 1).forEach((ad) => {
-      html += ad.echo ? inlineAdMarkup(ad.echo, ad.tier) : feedAdMarkup(ad.seed);
-    });
-  });
-  list.innerHTML = html;
-  // Свой проход banner-ads.js к этому моменту уже отработал, так что без
-  // этого вызова места в ленте остались бы пустыми коробками.
-  mountAdSlots(list);
+  // Рекламы внутри ленты нет по просьбе пользователя: между новостями не
+  // должно стоять ничего. Все места страницы живут в боковых колонках и в
+  // баннере над заголовком — там же они остаются и на телефоне, где колонки
+  // уходят под ленту.
+  list.innerHTML = articles.map(newsListRowTemplate).join("");
 }
 
 // Подборка редакции: ручной список id из mock-data, без счётчиков —

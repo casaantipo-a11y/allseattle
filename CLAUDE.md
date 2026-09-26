@@ -339,16 +339,21 @@ under 400px. Three columns from 1280, `300px 1fr 300px`, which is the mockup. Me
 553 at 1280, 713 at 1440, 888 at 1920. The rails are 300px because that is the native width of
 the 300×600 and 300×250 boxes.
 
-**Ads run the whole length of the feed — `FEED_ADS` in `news.js`.** `news-feed-1..3`, a 728×90
-each, after rows 8 / 16 / 24, plus the two rail echoes after rows 4 and 12 (the rails themselves
-vanish below 1024). Three in-feed placements, not the five the card grid carried: rows are about
-a third the height of cards, so the same three keep a banner roughly every 900px on a desktop and
-every 550px on a phone, with the last one still *before* the end of the list. The in-feed slot is
-emitted as a `data-ad-slot` div and mounted by `mountAdSlots(list)` at the end of `renderFeed()` —
-`banner-ads.js`'s own `DOMContentLoaded` pass has already run by then, so without that call the
-boxes stay empty, including after the archive re-renders the feed. `.ad-slot` is
-`width: 100%; max-width: var(--ad-max-w)`, so the 728 box shrinks to 621×77 at 1024 rather than
-overflowing, and below 1024 the `data-ad-slot-mobile` swap draws it at 320×100.
+**Nothing is interleaved into the feed — no ads between the news rows.** The page briefly carried
+five, then three, in-feed 728×90 placements; the user then asked for the feed to run clean, so
+`FEED_ADS` and `feedAdMarkup()` are gone and `renderFeed()` is a plain map over the articles.
+Don't re-add an in-feed slot without asking, and note the consequence before proposing one: the
+page is back to three placements (`news-top`, `news-side-1`, `news-side-2`), and on a desktop the
+rails end around 1,100px while the feed runs to ~3,500px, so the bottom two thirds of the list
+have no ad beside them. More inventory has to go **into the rails**, down their length, not
+between the rows.
+
+Because of that the rail slots no longer carry `.ad-desktop-slot`: they are visible at every
+width, and below 1024 the `data-ad-slot-mobile` swap draws them at 320×100 inside the stacked
+rails. The usual pattern on this site — hide the rail slot on a phone and echo it inline in the
+feed — cannot apply here, since the echo is exactly the thing the feed must not contain. The
+phone therefore shows those two banners *after* the list; the alternative is an ad between the
+news, which is ruled out.
 
 **The two left-rail widgets are real, not decoration.** *Newsletter* validates the address
 through `validation.js` and swaps in a `.success-panel` that says outright that nothing was sent
