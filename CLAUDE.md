@@ -191,7 +191,19 @@ Every page is the same three-part sandwich: **shared chrome → one `<main>` sec
 footer**. Only the middle differs. Blocks marked *(JS)* are empty in the HTML and filled at
 `DOMContentLoaded`; everything else is in the markup.
 
+**Every block below opens with a `Code:` line** — the markup, the page stylesheet, the page
+module with the functions worth opening first, and the mock data it reads. It names files and
+functions rather than line numbers, which go stale the first time anyone edits above them;
+the function names are greppable. What the line deliberately leaves out is everything shared,
+because it would repeat on all 17 rows: cards, ad slots, forms, badges, modals and the compact
+newsfeed row are in `css/components.css`, the ad placements in `js/banner-ads.js`, the header,
+banner and footer in `js/partials.js`, and the scales in `css/tokens.css`. **Keep the line
+current when a page gains or loses a file** — a pointer to a module that no longer exists is
+worse than no pointer.
+
 **Shared chrome, on all 17 pages** (from `js/partials.js`):
+
+**Code:** [js/partials.js](js/partials.js) (`siteHeaderMarkup()`, `heroMarkup()`, `renderFooter()`, `NAV_LINKS`) · [css/header.css](css/header.css) · [css/footer.css](css/footer.css) · marks and icons [js/logo.js](js/logo.js) · the weather stub [js/mock-data/weather.js](js/mock-data/weather.js)
 
 1. **Sticky header** — logo at the left, two rows of nav (5 real links with icons on top, 8
    smaller sections underneath) **centred in the header**, and a short utility cluster at the
@@ -263,6 +275,8 @@ by nothing.
 ---
 
 **`index.html` — Home** (`data-page-type="home"`, and the only page with two `<section>`s)
+
+**Code:** [index.html](index.html) · [css/pages/home.css](css/pages/home.css) · [js/pages/home.js](js/pages/home.js) (`CARD_COUNT`, `newsTileTemplate`, `renderNewsList`, the four `render*Widget`) · data [js/mock-data/news.js](js/mock-data/news.js) · [js/mock-data/jobs.js](js/mock-data/jobs.js) · [js/mock-data/businesses.js](js/mock-data/businesses.js) · [js/mock-data/cars.js](js/mock-data/cars.js) · [js/mock-data/contest.js](js/mock-data/contest.js)
 A three-column `.home-layout`. Below 1024px it becomes one column, but the asides do not simply
 stack: the left aside's four slots are `.ad-desktop-slot` and disappear entirely, reappearing as
 inline ads inside the news feed, while the right aside's widgets do stack below the feed.
@@ -317,6 +331,8 @@ column widths change:
   and the rest of the paragraph kept rendering under it. The tile sets `flex: none`.
 
 **`news.html` — News**
+
+**Code:** [news.html](news.html) · [css/pages/news.css](css/pages/news.css) · [js/pages/news.js](js/pages/news.js) (`renderFeed`, `renderTopNews`, `renderArchive`, `wireNewsletterForm`) · data [js/mock-data/news.js](js/mock-data/news.js)
 
 1. 728×90 ad.
 2. Section head — "Seattle News" / **Latest Stories** + "+ Share the News" button.
@@ -376,11 +392,15 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 
 **`contest.html` — Contest**
 
+**Code:** [contest.html](contest.html) · [css/pages/contest.css](css/pages/contest.css) · [js/pages/contest.js](js/pages/contest.js) (`entryTemplate`, `wireVoting`, `wireReset`) · data [js/mock-data/contest.js](js/mock-data/contest.js)
+
 1. Contest hero — eyebrow, **Police in the Eyes of a Child**, lead paragraph, "← Back to News".
 2. Entry grid *(JS)* — 6 entries, each with a vote button.
 3. "Reset my votes (demo)" button — the escape hatch that clears the stored votes.
 
 **`directory.html` — Business Directory**
+
+**Code:** [directory.html](directory.html) · [css/pages/directory.css](css/pages/directory.css) · [js/pages/directory.js](js/pages/directory.js) (`bizCardTemplate`, `renderFilters`, `wireFilters`) · data [js/mock-data/businesses.js](js/mock-data/businesses.js)
 
 1. 728×90 ad.
 2. Section head — "Business Directory" / **Find a Seattle Business** + "List Your Business".
@@ -389,6 +409,8 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 5. Mobile ad stack *(JS)*.
 
 **`pricing.html` — Pricing**
+
+**Code:** [pricing.html](pricing.html) · [css/pages/pricing.css](css/pages/pricing.css) · [js/pages/pricing.js](js/pages/pricing.js) (`tierCardTemplate`, `renderFeatureTable`, `wireChoosePackage`) · data [js/mock-data/pricing.js](js/mock-data/pricing.js)
 
 1. Section intro — "Advertise on AllSeattle" / **Placement Packages** + lead.
 2. Pricing grid *(JS)* — Standard / Lux / Premium, Lux flagged "Most Popular".
@@ -408,24 +430,36 @@ pair from `components.css`), and every one carries the same three placements: `<
 salary, company · neighborhood, description, a type badge and posting age. No photos, by
 design. Home's Job Board widget reads the same data and links here.
 
+**Code:** [jobs.html](jobs.html) · [css/pages/jobs.css](css/pages/jobs.css) · [js/pages/jobs.js](js/pages/jobs.js) (`jobRowTemplate`, `renderList`) · data [js/mock-data/jobs.js](js/mock-data/jobs.js)
+
 **`events.html` — Events** — category chips + `.event-grid`: cards with a date plaque over the
 photo, venue, neighborhood and price. `eventDateParts()` in the data file formats the plaque.
+
+**Code:** [events.html](events.html) · [css/pages/events.css](css/pages/events.css) · [js/pages/events.js](js/pages/events.js) (`eventCardTemplate`, `eventDateParts`) · data [js/mock-data/events.js](js/mock-data/events.js)
 
 **`shopping.html` — Shopping** — category chips + `.deal-grid`. Every deal carries a
 `businessId` and `dealWithBusiness()` joins it to `businesses.js`, so the photo, name and phone
 come from the directory rather than being duplicated.
 
+**Code:** [shopping.html](shopping.html) · [css/pages/shopping.css](css/pages/shopping.css) · [js/pages/shopping.js](js/pages/shopping.js) (`dealCardTemplate`, `dealWithBusiness`) · data [js/mock-data/shopping.js](js/mock-data/shopping.js) · [js/mock-data/businesses.js](js/mock-data/businesses.js)
+
 **`entertainment.html` — Entertainment** — venue-kind chips + `.venue-grid`, and a
 **Tonight in Seattle** widget in the sidebar fed by `upcomingEvents(3)` from `events.js`.
 Events answers "when", this section answers "where".
+
+**Code:** [entertainment.html](entertainment.html) · [css/pages/entertainment.css](css/pages/entertainment.css) · [js/pages/entertainment.js](js/pages/entertainment.js) (`venueCardTemplate`, `renderTonightWidget`) · data [js/mock-data/entertainment.js](js/mock-data/entertainment.js) · [js/mock-data/events.js](js/mock-data/events.js)
 
 **`weather.html` — Weather** — the one section with no card grid: a navy current-conditions
 card, a 12-hour scroller, a seven-day list and a regional table. Icons come from
 `WEATHER_ICONS` in `logo.js`.
 
+**Code:** [weather.html](weather.html) · [css/pages/weather.css](css/pages/weather.css) · [js/pages/weather.js](js/pages/weather.js) (`renderNow`, `renderHourly`, `renderWeek`, `renderRegion`) · data [js/mock-data/weather.js](js/mock-data/weather.js)
+
 **`real-estate.html` — Real Estate** — the only new section with a filter column, built like
 Auto's (accordion below 768px, a plain column from 768px). Sale prices and monthly rents share one
 numeric field, so `PRICE_STEPS` rebuilds the max-price options whenever the deal type changes.
+
+**Code:** [real-estate.html](real-estate.html) · [css/pages/real-estate.css](css/pages/real-estate.css) · [js/pages/real-estate.js](js/pages/real-estate.js) (`PRICE_STEPS`, `fillSelects`, `currentList`) · data [js/mock-data/real-estate.js](js/mock-data/real-estate.js)
 
 **`city-map.html` — City Map** — a hand-drawn schematic (`MAP_SHAPES` in
 `neighborhoods.js`), then `.hood-grid`. **The pins are HTML buttons positioned over the SVG,
@@ -434,12 +468,18 @@ a desktop; as HTML they take `--text-xs` and a real 44px target. The page says o
 it is a schematic. Neighborhood counters are computed from `events.js`, `jobs.js` and
 `real-estate.js` rather than stored, so they stay true as data is added.
 
+**Code:** [city-map.html](city-map.html) · [css/pages/city-map.css](css/pages/city-map.css) · [js/pages/city-map.js](js/pages/city-map.js) (`renderMap`, `countsFor`, `selectHood`) · data [js/mock-data/neighborhoods.js](js/mock-data/neighborhoods.js) · [js/mock-data/events.js](js/mock-data/events.js) · [js/mock-data/jobs.js](js/mock-data/jobs.js) · [js/mock-data/real-estate.js](js/mock-data/real-estate.js)
+
 **`qa.html` — Q&A** — topic chips + a list of native `<details>`. No JS for the accordion:
 keyboard and screen readers work on their own.
+
+**Code:** [qa.html](qa.html) · [css/pages/qa.css](css/pages/qa.css) · [js/pages/qa.js](js/pages/qa.js) (`qaItemTemplate`, `renderFilters`) · data [js/mock-data/qa.js](js/mock-data/qa.js)
 
 ---
 
 **`auto/index.html` — Auto catalog**
+
+**Code:** [auto/index.html](auto/index.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-catalog.js](js/pages/auto-catalog.js) (`populateMakes`, `applyFilters`, `carCardTemplate`) · data [js/mock-data/cars.js](js/mock-data/cars.js)
 
 1. Auto subnav — Catalog / Add a Car / My Listings (on all four Auto pages).
 2. 728×90 ad.
@@ -451,6 +491,8 @@ keyboard and screen readers work on their own.
 **`auto/listing.html` — Car detail** (reads `?id=` — an unknown id silently falls back to the
 first car)
 
+**Code:** [auto/listing.html](auto/listing.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-listing.js](js/pages/auto-listing.js) (`render`, `galleryMarkup`, `wireContactSeller`, `renderSimilar`) · data [js/mock-data/cars.js](js/mock-data/cars.js)
+
 1. Auto subnav.
 2. "← Back to catalog".
 3. `#listing-root` *(JS)*: header (title + price) → `.listing-layout` — gallery, Description,
@@ -458,6 +500,8 @@ first car)
 4. **Similar Cars** — up to 3 cards, same make or body type.
 
 **`auto/add-listing.html` — Add a Car** (container capped at 720px)
+
+**Code:** [auto/add-listing.html](auto/add-listing.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-add-listing.js](js/pages/auto-add-listing.js) (`STEP_RULES`, `showStep`, `renderReview`)
 
 1. Auto subnav.
 2. Section head — "AllSeattle Auto" / **Post Your Car**.
@@ -467,6 +511,8 @@ first car)
 5. Back / Next / Submit.
 
 **`auto/my-listings.html` — My Listings** (container capped at 760px)
+
+**Code:** [auto/my-listings.html](auto/my-listings.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-my-listings.js](js/pages/auto-my-listings.js) (`MY_LISTING_IDS`, `cardTemplate`) · data [js/mock-data/cars.js](js/mock-data/cars.js)
 
 1. Auto subnav.
 2. Section head — "Your Account" / **My Listings** + "+ Post a Listing".
