@@ -448,8 +448,8 @@
     grid-column: 1;
     grid-row: 2;
     justify-self: end;
-    /* 4px левее правого края поля поиска — по просьбе клиента. */
-    margin-right: var(--space-1);
+    /* 12px левее правого края поля поиска — по просьбе клиента, двумя шагами. */
+    margin-right: var(--space-3);
   }
   .section-head .btn {
     grid-column: 2;
@@ -462,6 +462,15 @@
    сайта поднимает кнопку секции на 4px над центром заголовка — здесь она,
    наоборот, на 4px ниже центра. */
 .section-head .btn {
-  top: var(--space-3);
+  top: var(--space-4);
+  /* Ниже 1024px горизонтальный сдвиг остаётся прежним (−40px): там шапка
+     идёт в три колонки без резерва, и на 768 кнопка при −72px наехала бы на
+     счётчик — замерено, между ними оставалось 16px. */
   left: calc(-1 * (var(--space-8) + var(--space-2)));
+}
+
+@media (min-width: 1024px) {
+  .section-head .btn {
+    left: calc(-1 * (var(--space-16) + var(--space-2)));
+  }
 }
