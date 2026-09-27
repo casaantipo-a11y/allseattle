@@ -1038,7 +1038,8 @@ gets it for free:
 - `.ad-slot-top { margin-bottom: 0 }` and `.section-head { margin-bottom: 0 }` — the 728×90
   banner sits against the head, and the head against the content.
 - `.section-head .eyebrow { position: relative; top: 16px; left: 4px }` — the eyebrow drops to
-  the heading it belongs to.
+  the heading it belongs to. **The eight secondary sections take 10px instead of 4**, through
+  `.section-head--sub` on the head's own div — see below.
 - `.section-head .btn { position: relative; top: -4px }` — the button rides 4px above the
   heading's centre. That is not the sag the grid was built to fix; it is deliberate.
 
@@ -1047,12 +1048,25 @@ the two labels, **10.8px** from the heading's letters to the content. At 1024 th
 and 8.6, at 375 2.3 and a button row. The shifts are relative on purpose — a margin would drag
 the heading, the button and the whole page down with it, and only the labels should move.
 
-**Two pages are exempt and say so in their own files:** the Directory replaces the whole block
-(`directory.css`) — it has no top banner, so its head carries its own negative `margin-top`, its
-own label offsets and no `margin-bottom` — and Home takes its 24px back below the head plus zeroes
-the eyebrow shift (`home.css`), since both its heads were set by hand.
-If a third page ever needs to opt out, copy that pattern — an explicit reset with a comment —
-rather than weakening the shared rule.
+**Three sets of pages sit outside the shared numbers, and each says so where it lives:** the
+Directory replaces the whole block (`directory.css`) — it has no top banner, so its head carries
+its own negative `margin-top`, its own label offsets and no `margin-bottom`; Home takes its 24px
+back below the head plus zeroes the eyebrow shift (`home.css`), since both its heads were set by
+hand; and the Auto catalog adds 12px to the eyebrow and −16px to the button (`auto.css`, and only
+from 640px — below that the head is one column and a shifted label pushes the page sideways).
+If another page needs to opt out, copy that pattern — an explicit reset with a comment — rather
+than weakening the shared rule.
+
+**The eight secondary sections carry `.section-head--sub`, which puts the eyebrow at 10px**
+(`calc(var(--space-1) + 6px)`, one rule in `components.css` next to the base). The user asked for
+"6px further right" on Jobs through Q&A on 27.09.2026 and, asked whether News and Pricing should
+follow since they draw the same head, **chose to leave them at 4px** — so the 6px jump between
+News and Jobs is a decision, not drift. It is a class rather than a `body[data-page=…]` list
+because a ninth secondary page gets copied from one of these eight and the class travels with the
+markup; eight copies of the rule in eight page files is what §9 bans. Measured at 1440: the
+eyebrow's letters moved 36 → 42 while the heading stayed at 32, the vertical relationship is
+untouched, and at 375 the shifted box ends at 369 against a 375 viewport — 6px more would start
+pushing the page sideways.
 
 **Two places are tight by design and worth knowing before you add anything to a head:** Pricing's
 "What's Included" (`--spaced`, a smaller `h2`) leaves 2.3px between the labels at 1440 and 1.2px
