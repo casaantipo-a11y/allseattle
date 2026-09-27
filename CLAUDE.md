@@ -656,6 +656,11 @@ Things worth knowing before touching it:
 - **Day names are computed from today's date**, not stored — `WEATHER_WEEK` has no `day`/`date`
   fields any more, so the strip can't go stale. `WEATHER_WEEK[0].pop` is also the left panel's
   "Rain – N%" (one number, one source).
+- **The strip is a grid, not a scroller** — the user asked for the scrollbar under the hourly
+  forecast to go. `renderStrip()` sets `.wx-strip--days` / `--hours`: 12 hours in one row from
+  1280 (74px cells at 1440, 24px icons), 6 per row at 640–1279, 4 on phones; 7 days in one row
+  from 640, 4 + 3 on phones. The city photo sits right under the facts, not pinned to the
+  panel's bottom as in the mockup (also the user's call).
 - `WEATHER_NOW` lost `feelsLike`, `pressure` and the display strings (`"8 mph W"`, `"2 of 11 ·
   Low"`) — nothing rendered them after the rebuild. It holds numbers (`uvIndex`, `windMph`,
   `humidity`, `visibilityMi`, `aqi`) and the page derives the words (`uvWord()` etc.). The
@@ -665,8 +670,8 @@ Things worth knowing before touching it:
   250px tall). Highlight cards: 3 per row at 768–1023 and from 1280, 2 at 1024–1279 (the main
   panel is only 576px there) and on phones, 1 below 360. On phones the cards drop to 16px
   padding, 36px numbers and 32px round icons — at 48px / 40px "78 %" beside its meter and
-  "6:52 AM" beside its icon didn't fit a 155px card. `.wx-main` needs `min-width: 0` or the
-  strip's `overflow-x` inflates the page (the third CSS trap).
+  "6:52 AM" beside its icon didn't fit a 155px card. `.wx-main` keeps `min-width: 0` so no
+  wide child can inflate the page (the third CSS trap).
 
 **Code:** [weather.html](weather.html) · [css/pages/weather.css](css/pages/weather.css) · [js/pages/weather.js](js/pages/weather.js) (`renderNow`, `renderStrip`, `renderHighlights`, `uvGauge`, `meter`, `renderRegion`, `wireControls`) · data [js/mock-data/weather.js](js/mock-data/weather.js)
 

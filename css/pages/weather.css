@@ -163,10 +163,8 @@
     width: 112px;
     height: 112px;
   }
-  /* Фото прижато к низу панели, как в макете. */
-  .wx-place {
-    margin-top: auto;
-  }
+  /* Фото стоит сразу под строками погоды, а не прижато к низу панели, как
+     в макете, — клиент попросил поднять его (27.09.2026). */
 }
 
 /* ---------- Вкладки и единицы ---------- */
@@ -230,17 +228,33 @@
 }
 
 /* ---------- Лента: 7 дней или 12 часов ----------
-   Ячейки растягиваются, пока есть место, и не уже 80px; когда не
-   помещаются (телефон, 12 часов), лента прокручивается внутри себя. */
+   Сетка без прокрутки — клиент попросил убрать полосу прокрутки под
+   почасовым прогнозом (27.09.2026). Что не влезает в строку, переносится
+   рядом ниже: 12 часов идут одной строкой с 1280px, по 6 на 640–1279 и по 4
+   на телефоне; 7 дней — одной строкой с 640px, 4 + 3 на телефоне. Класс
+   ставит weather.js по текущей вкладке. */
 .wx-strip {
-  display: flex;
+  display: grid;
   gap: var(--space-3);
-  overflow-x: auto;
-  padding-bottom: var(--space-1);
+}
+
+.wx-strip--days { grid-template-columns: repeat(4, 1fr); }
+.wx-strip--hours {
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .wx-strip--days { grid-template-columns: repeat(7, 1fr); }
+  .wx-strip--hours { grid-template-columns: repeat(6, 1fr); }
+}
+
+@media (min-width: 1280px) {
+  .wx-strip--hours { grid-template-columns: repeat(12, 1fr); }
 }
 
 .wx-slot {
-  flex: 1 0 80px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -266,6 +280,17 @@
 .wx-slot-icon svg {
   width: 32px;
   height: 32px;
+}
+
+/* Часов 12, поэтому ячейка часа мельче дневной: иконка 24, поля уже. */
+.wx-strip--hours .wx-slot {
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-1);
+}
+
+.wx-strip--hours .wx-slot-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .wx-slot-temp {

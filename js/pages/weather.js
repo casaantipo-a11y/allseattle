@@ -57,6 +57,7 @@ function renderStrip() {
         title: `${h.pop}% chance of rain`,
         temps: deg(h.temp),
       }));
+  el.className = `wx-strip wx-strip--${state.view === "week" ? "days" : "hours"}`;
   el.innerHTML = items.map((it) => `
     <div class="wx-slot" title="${it.title}">
       <span class="wx-slot-label">${it.label}</span>
