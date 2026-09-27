@@ -160,20 +160,19 @@
   .wx-now {
     display: flex;
   }
-  .wx-place {
-    aspect-ratio: 5 / 2;
-    min-height: 0;
-  }
   .wx-now-icon svg {
     width: 112px;
     height: 112px;
   }
-  /* Фото у низа панели, но не вплотную: margin-top: auto уводит его вниз,
-     а свои 32px снизу держат его «чуть над низом» — просьба клиента
-     27.09.2026 (сначала было вплотную к низу, потом сразу под строками
-     погоды; остановились на этом). */
+  /* Фото занимает всю свободную высоту панели: от строк погоды (обычный
+     зазор колонки, 16px) до своих 32px над низом — просьба клиента
+     27.09.2026 «от строки Rain до низа». Пропорции нет, снимок обрезается
+     по object-fit: cover. */
   .wx-place {
-    margin-top: auto;
+    flex: 1 1 auto;
+    aspect-ratio: auto;
+    min-height: 160px;
+    margin-top: 0;
     margin-bottom: var(--space-8);
     margin-inline: calc(-1 * var(--space-4));
   }

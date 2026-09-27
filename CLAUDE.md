@@ -656,14 +656,16 @@ Things worth knowing before touching it:
 - **Day names are computed from today's date**, not stored — `WEATHER_WEEK` has no `day`/`date`
   fields any more, so the strip can't go stale. `WEATHER_WEEK[0].pop` is also the left panel's
   "Rain – N%" (one number, one source).
+- **The city photo fills the "now" panel's free height on desktop** (`flex: 1`, no aspect
+  ratio, `object-fit: cover`): from 16px under the facts to 32px above the panel padding, 288px
+  wide — 352px tall at 1440, 585 at 1024 where the main panel is taller. The user asked for it
+  to run "from the Rain line down to the bottom".
 - **The strip is a grid, not a scroller** — the user asked for the scrollbar under the hourly
   forecast to go. `renderStrip()` sets `.wx-strip--days` / `--hours`: 12 hours in one row from
   1280 (74px cells at 1440, 24px icons), 6 per row at 640–1279, 4 on phones; 7 days in one row
-  from 640, 4 + 3 on phones. The city photo sits low in the panel but not flush: on desktop
-  `margin-top: auto` plus `margin-bottom: var(--space-8)`, 64px from the panel's edge (the
-  user tried flush-bottom, then right under the facts, and settled on "a little above the
-  bottom"). It is also wider than the panel's text — `margin-inline: -16px` into the padding
-  (256 → 288px on desktop) — except at 640–1023, where it sits in its own grid column.
+  from 640, 4 + 3 on phones. The photo is wider than the panel's text — `margin-inline: -16px`
+  into the padding (256 → 288px on desktop) — except at 640–1023, where it sits in its own
+  grid column.
 - `WEATHER_NOW` lost `feelsLike`, `pressure` and the display strings (`"8 mph W"`, `"2 of 11 ·
   Low"`) — nothing rendered them after the rebuild. It holds numbers (`uvIndex`, `windMph`,
   `humidity`, `visibilityMi`, `aqi`) and the page derives the words (`uvWord()` etc.). The
