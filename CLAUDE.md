@@ -587,7 +587,7 @@ keyboard and screen readers work on their own.
    from–to, Find, plus an "Advanced search" disclosure holding body, transmission, fuel, mileage
    and sort. Everything filters as you pick; submit is swallowed.
 5. `.auto-layout` — the same column ladder as the Directory: **left rail** (Car catalog — 13
-   models in two columns with counts) | **main** (count line + 48 `.car-row` listings) |
+   models in two columns with counts) | **main** (count line + 24 `.car-row` listings) |
    **right rail** (300×250, 300×600).
 6. 728×90 (`auto-mid`), then a second `<section>`: **Directory of Enterprises** — auto topics on
    the left linking into `directory.html?q=…`, the Auto Services companies as `.biz-row` on the
@@ -597,8 +597,8 @@ keyboard and screen readers work on their own.
 to be settled out loud: the mockup lists 40+ makes *and* shows no photos, while the user asked for
 full-size photos in the rows. There are exactly 13 photo sets, one per model, every one
 identifiable by badge (`c1-1.webp` is unmistakably a Toyota Camry), and no way to get more — the
-demo has to work offline. **The user chose photos**, so `cars.js` grew to 48 listings *within
-those 13 models* (different year, mileage, price, colour, trim, seller) and the left catalog
+demo has to work offline. **The user chose photos**, so `cars.js` holds 24 listings *within
+those 13 models*, one or two each — it was briefly 48 and the user halved it as too many (different year, mileage, price, colour, trim, seller) and the left catalog
 lists **models, not makes** — there are only eight makes and they do not fill two columns.
 Every listing references its own model's photo set, so the picture always matches the title;
 a script checks that rather than an eye.
@@ -758,7 +758,7 @@ and `shopping.js` and `stats.js` both read from it. Their photos come from `img/
 "Emerald Shine Car Wash" reads as a mistake on a demo.
 
 **Both showcase numbers moved when that data grew**, and they move together because `stats.js` is
-the single source: 15 businesses → 23 (`615+` → `943+` listed) and 13 cars → 48 (`351+` → `1296+`
+the single source: 15 businesses → 23 (`615+` → `943+` listed) and 13 cars → 24 (`351+` → `648+`
 active listings), on Home and the Directory alike.
 
 Three of them are deliberately joined to their neighbours rather than self-contained, which is
