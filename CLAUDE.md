@@ -615,9 +615,16 @@ pages) carries the offsets. He then asked, twice in a row, for the subnav 50px l
 where the subnav should sit instead, he said just above "AllSeattle Auto / Cars for Sale". So the
 settled state is the compact one: the banner back at **292…382** (`top: -22px`, 10px under the photo
 banner, where he put it in the first place) and the subnav at **422** (`margin-top: 18px`, exactly
-40.00px under the banner), with the section head following 24px later as it always does. Measured at
-1024–1920: photo ends 282, ad 292…382, 40px, subnav 422…466, the head's eyebrow letters at 508,
-the search bar at 577.
+40.00px under the banner). He then asked for **10px between the subnav's rule and the "ALLSEATTLE
+AUTO" letters**, which was 42 — 24px of the subnav's own `margin-bottom`, the eyebrow's shared
+`top: 16px`, and 2px of leading above the caps. The eyebrow's offset is not available to spend: it
+is what holds the eyebrow against the heading. So the 32px comes off the subnav —
+`margin-bottom: -8px` — and the head's box then reaches 8px over the subnav's. Nothing shows,
+because the eyebrow is painted 16px below its own box, **but the head is later in the DOM and was
+stealing clicks from the bottom edge of the subnav links**, so the subnav carries `position:
+relative; z-index: 1` (well under the sticky header's 50). Verified with `elementFromPoint` at the
+top, middle and bottom of all three links, at every width. Measured at 1024–1920: photo ends 282,
+ad 292…382, 40px, subnav 422…466, 10.00px, the head's eyebrow letters at 476, the search bar at 545.
 
 Two things to keep in mind before touching any of it. **The 18px is measured off the banner's
 invisible flow box, not off what you see** — the box stays 314…404 while the banner is drawn at
