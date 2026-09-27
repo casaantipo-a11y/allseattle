@@ -610,16 +610,20 @@ a subnav dropped 120px lands on the section head's eyebrow (measured: subnav 314
 at 472, the shifted subnav would have occupied 434…478). So the two swapped places in the flow and
 `.auto-catalog` (a class on the first `<section>`, because `auto.css` is shared by all four Auto
 pages) carries the offsets. He then asked, twice in a row, for the subnav 50px lower *and* exactly
-40px between the two — and that second half is what keeps pulling the banner down after it, since
-left alone the gap would open to 90px. The sequence is 382 → 292 → 354 → **404** for the banner and
-314 → 434 → 484 → **534** for the subnav. The rules are therefore `top: 90px` on `.ad-slot-top` and
-`margin-top: 130px` on `.auto-subnav`, and the measured result at 1024–1920 is: the banner's visible
-box **404…494** (its flow box stays 314…404), the subnav at **534**, the gap **40.00px** on the
-nose, and **122px between the photo banner and the ad** — that last number is the sum of four
-requests, not an oversight, and it is the thing to raise if the top ever looks too airy.
-**Re-measure the whole cluster before touching any of it**, and don't reach for `margin-top` on the
-banner: as the first child of `.container` it collapses into the container and carries the whole
-section with it, up or down. **The rules start at 1024px** — below
+40px between the two, and I moved the banner down after the subnav to hold the 40 (292 → 354 → 404).
+**That was the wrong half to move** — "надо было опустить подменю, а не банер рекламы" — and asked
+where the subnav should sit instead, he said just above "AllSeattle Auto / Cars for Sale". So the
+settled state is the compact one: the banner back at **292…382** (`top: -22px`, 10px under the photo
+banner, where he put it in the first place) and the subnav at **422** (`margin-top: 18px`, exactly
+40.00px under the banner), with the section head following 24px later as it always does. Measured at
+1024–1920: photo ends 282, ad 292…382, 40px, subnav 422…466, the head's eyebrow letters at 508,
+the search bar at 577.
+
+Two things to keep in mind before touching any of it. **The 18px is measured off the banner's
+invisible flow box, not off what you see** — the box stays 314…404 while the banner is drawn at
+292…382, so the subnav's margin and the visible gap differ by 22px; re-measure the whole cluster
+rather than one rule. And **don't reach for `margin-top` on the banner**: as the first child of
+`.container` it collapses into the container and carries the whole section with it, up or down. **The rules start at 1024px** — below
 that the slot is a 320×100, the stack is already tight at a 24px gap, and 120px of air on a phone
 contradicts what the user asked for on the Directory.
 
