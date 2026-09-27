@@ -244,15 +244,9 @@ function fillSalary() {
 
 function renderList() {
   const list = document.getElementById("job-list");
-  const count = document.getElementById("jobs-count");
   if (!list) return;
 
   const found = sorted(JOB_LISTINGS.filter((j) => matches(j)));
-  if (count) {
-    count.textContent = found.length === JOB_LISTINGS.length
-      ? `${JOB_LISTINGS.length} openings in Seattle`
-      : `Showing ${found.length} of ${JOB_LISTINGS.length} openings`;
-  }
   list.innerHTML = found.length
     ? found.map(jobCardTemplate).join("")
     : `<p class="muted">No openings match those filters. Try widening your search.</p>`;

@@ -200,15 +200,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  /* Сортировка стоит сразу справа от «14 openings in Seattle», а не у
-     дальнего края колонки — просьба клиента 27.09.2026. */
+  /* Счётчика «14 openings in Seattle» здесь больше нет — клиент попросил
+     убрать его (27.09.2026), и сортировка встала на его место, в начало
+     строки, а не к дальнему краю колонки. */
   justify-content: flex-start;
   gap: var(--space-2) var(--space-6);
   margin-bottom: var(--space-4);
-}
-
-.jobs-toolbar .result-count {
-  margin-bottom: 0;
 }
 
 .jobs-sort {
@@ -456,13 +453,19 @@
     grid-template-columns: 300px 1fr;
     column-gap: var(--grid-gap);
   }
+  /* «Work in Seattle» на 16px ниже общего положения (16 → 32px), «Job Board»
+     на 8px выше — просьба клиента 27.09.2026. Только здесь, где они стоят в
+     разных колонках: на узком экране надпись над заголовком легла бы на него. */
   .jobs-head .eyebrow {
     grid-column: 1;
+    top: calc(var(--space-4) + var(--space-4));
   }
   .jobs-head h1 {
     grid-column: 2;
     width: calc(100% - 208px);
     text-align: center;
+    position: relative;
+    top: calc(-1 * var(--space-2));
   }
   .jobs-head .btn {
     grid-column: 2;

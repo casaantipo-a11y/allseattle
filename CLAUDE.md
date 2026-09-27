@@ -570,8 +570,11 @@ Filters, while "Job Board" sits in the second in a box as wide as a card (`calc(
 with `text-align: center` — centred over the job card, not the page. The button stays at the
 column's right edge, inside the 208px strip the cards leave free, so it never meets the heading
 (measured at 1024–1920). Every `.job-card` is 5.5 cm (208px) shorter than the results column.
-And the sort control sits right after "14 openings in Seattle" (`.jobs-toolbar` is
-`justify-content: flex-start`), not at the far edge. (A first try put the whole head in the page
+On top of that the eyebrow sits 16px lower (`top` 32px instead of 16) and the heading 8px
+higher, desktop only — in one column on a phone the lowered eyebrow would land on the heading.
+**There is no result count on this page** — the user had "14 openings in Seattle" removed, so
+the sort control opens the toolbar row on its own (`justify-content: flex-start`); `jobs.js`
+no longer writes one either. (A first try put the whole head in the page
 centre shifted 200px left; the user replaced that with this.)
 
 **Four things from the screenshot were deliberately not copied**, and each is commented where it
