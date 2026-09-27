@@ -609,14 +609,17 @@ asked for the top banner 90px higher and the subnav 120px lower, which relative 
 a subnav dropped 120px lands on the section head's eyebrow (measured: subnav 314…358, head starts
 at 472, the shifted subnav would have occupied 434…478). So the two swapped places in the flow and
 `.auto-catalog` (a class on the first `<section>`, because `auto.css` is shared by all four Auto
-pages) carries the offsets. He then asked for the subnav 50px lower again *and* exactly 40px
-between the two, which pulls the banner down with it — otherwise the gap opens to 102px. The rules
-are therefore `top: 40px` on `.ad-slot-top` and `margin-top: 80px` on `.auto-subnav`, and the
-measured result at 1280–1920 is: the banner's visible box **354…444** (its flow box stays 314…404),
-the subnav at **484**, the gap **40.00px** on the nose. **Every one of those numbers is the sum of
-three separate requests** — re-measure the whole cluster before touching any of them, and don't
-reach for `margin-top` on the banner: as the first child of `.container` it collapses into the
-container and carries the whole section with it, up or down. **The rules start at 1024px** — below
+pages) carries the offsets. He then asked, twice in a row, for the subnav 50px lower *and* exactly
+40px between the two — and that second half is what keeps pulling the banner down after it, since
+left alone the gap would open to 90px. The sequence is 382 → 292 → 354 → **404** for the banner and
+314 → 434 → 484 → **534** for the subnav. The rules are therefore `top: 90px` on `.ad-slot-top` and
+`margin-top: 130px` on `.auto-subnav`, and the measured result at 1024–1920 is: the banner's visible
+box **404…494** (its flow box stays 314…404), the subnav at **534**, the gap **40.00px** on the
+nose, and **122px between the photo banner and the ad** — that last number is the sum of four
+requests, not an oversight, and it is the thing to raise if the top ever looks too airy.
+**Re-measure the whole cluster before touching any of it**, and don't reach for `margin-top` on the
+banner: as the first child of `.container` it collapses into the container and carries the whole
+section with it, up or down. **The rules start at 1024px** — below
 that the slot is a 320×100, the stack is already tight at a 24px gap, and 120px of air on a phone
 contradicts what the user asked for on the Directory.
 
