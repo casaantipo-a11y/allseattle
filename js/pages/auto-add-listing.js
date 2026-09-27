@@ -1,3 +1,7 @@
+/* Эту страницу сейчас закрывает заглушка «Will appear soon», и файл не
+   подключён ни к одной странице: auto/add-listing.html снял <script>.
+   Модуль оставлен целым — вернуть форму значит вернуть блок шагов в
+   разметку и эту строку в конец страницы. */
 import { validate, isEmail, digits } from "../validation.js";
 
 const TOTAL_STEPS = 4;

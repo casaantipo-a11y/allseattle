@@ -580,28 +580,69 @@ keyboard and screen readers work on their own.
 
 **Code:** [auto/index.html](auto/index.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-catalog.js](js/pages/auto-catalog.js) (`carRowTemplate`, `renderCatalog`, `renderList`, `renderTopics`, `renderFirms`) · data [js/mock-data/cars.js](js/mock-data/cars.js) · [js/mock-data/businesses.js](js/mock-data/businesses.js)
 
-1. Auto subnav — Catalog / Add a Car / My Listings (on all four Auto pages).
-2. 728×90 ad (`auto-top`).
+1. 728×90 ad (`auto-top`) — **above** the subnav on this page, see the geometry note below.
+2. Auto subnav — Catalog / Add a Car / My Listings (on all four Auto pages).
 3. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
 4. **A full-width search bar** on navy, not a filter column: Make, Model, Price from–to, Year
    from–to, Find, plus an "Advanced search" disclosure holding body, transmission, fuel, mileage
    and sort. Everything filters as you pick; submit is swallowed.
 5. `.auto-layout` — the same column ladder as the Directory: **left rail** (Car catalog — 13
-   models in two columns with counts) | **main** (count line + 24 `.car-row` listings) |
+   models in two columns with counts) | **main** (count line + 12 `.car-row` listings) |
    **right rail** (300×250, 300×600).
-6. 728×90 (`auto-mid`), then a second `<section>`: **Directory of Enterprises** — auto topics on
-   the left linking into `directory.html?q=…`, the Auto Services companies as `.biz-row` on the
-   right.
+6. 728×90 (`auto-mid`), then a second `<section>`: **Directory of Enterprises** — auto topics plus
+   a 300×250 on the left, the Auto Services companies as `.biz-row` in the middle, a 300×600 on
+   the right.
+
+**The top of this page is hand-set, and the order in the markup is load-bearing.** The user asked
+for the top banner 90px higher and the subnav 120px lower, which relative offsets cannot do — a
+subnav dropped 120px lands on the section head's eyebrow (measured: subnav 314…358, head starts at
+472, the shifted subnav would occupy 434…478). So the two swapped places in the flow and
+`.auto-catalog` (a class on the first `<section>`, because `auto.css` is shared by all four Auto
+pages) carries two rules: `top: -22px` on `.ad-slot-top` and `margin-top: 30px` on `.auto-subnav`.
+Measured at 1280–1920: the banner sits at 292 (−90, and 10px under the photo banner), the subnav at
+434 (+120), and **everything below moved down 30px** — two swapped bars with a gap between them are
+taller than the old stack. A negative `margin-top` on the banner is the wrong tool: as the first
+child of `.container` it collapses into the container and carries the whole section up. **Both
+rules start at 1024px** — below that the slot is a 320×100, the stack is already tight, and 120px
+of air on a phone contradicts what the user asked for on the Directory.
+`.auto-head .eyebrow { left: var(--space-4) }` is the 12px shift of "AllSeattle Auto", scoped the
+same way because `add-listing.html` shows the same eyebrow and must not move.
+
+**In the enterprise block the packages are ordered Lux → Premium → Standard** (`FIRMS_ORDER` in
+`auto-catalog.js`), which is *not* the Directory's order (Premium → Lux → Standard in
+`directory.js`). That is the user's decision, not an oversight: the request carried the
+`#auto-firms` tag and he chose to leave the Directory alone. Before the sort the rows came out in
+data-file order, i.e. mixed.
+
+**The enterprise rows are a third shorter than the block's width, and the freed sides are
+inventory.** The user asked for both in one sentence. `.auto-layout--firms` is `300px 1fr 300px`
+from 1280 (the left column grew from 240 so a 300×250 renders at its own rate), and the row
+measures 888px at 1920 (from 1272, −30.2%), 809 at 1536 (−32.2%), 713 at 1440 (−35.0%) and 553 at
+1280 (−41.0%). Exactly one third at every width is not available: 848px at 1920 needs a 44px
+gutter or a 348px rail, and neither exists in the system — 300px is the boxes' native width and
+24px is `--grid-gap`. The same row already renders at 788px in the Directory. At 1024–1279 both new
+boxes sit in the left column and `.auto-results` spans two grid rows, so the second one follows the
+topics widget instead of dropping to the foot of the block. **Two new placements**: `auto-firms-side-1`
+300×250 (Business, $149/mo) and `auto-firms-side-2` 300×600 (Premium, $199/mo) — the page carries
+six now, not four.
 
 **The page was rebuilt to a mockup the client sent** (27.09.2026), and one conflict inside it had
 to be settled out loud: the mockup lists 40+ makes *and* shows no photos, while the user asked for
 full-size photos in the rows. There are exactly 13 photo sets, one per model, every one
 identifiable by badge (`c1-1.webp` is unmistakably a Toyota Camry), and no way to get more — the
-demo has to work offline. **The user chose photos**, so `cars.js` holds 24 listings *within
-those 13 models*, one or two each — it was briefly 48 and the user halved it as too many (different year, mileage, price, colour, trim, seller) and the left catalog
-lists **models, not makes** — there are only eight makes and they do not fill two columns.
-Every listing references its own model's photo set, so the picture always matches the title;
-a script checks that rather than an eye.
+demo has to work offline. **The user chose photos**, so `cars.js` lives *within those 13 models*
+and the left catalog lists **models, not makes** — there are only eight makes and they do not fill
+two columns. Every listing references its own model's photo set, so the picture always matches the
+title; a script checks that rather than an eye.
+
+**There are 12 listings, one per model.** It went 13 → 48 → 24 → 12: the user built it up for the
+mockup and then cut it twice as too much. One model had to go, and it is **Chevrolet Camaro** —
+with any other choice some car ends up with an empty "Similar Cars" block, which matches on make
+or body type (drop the Fit and the Golf has no neighbour at all). The hybrid, the diesel and three
+manuals are kept on purpose: the fuel and transmission selects are built from the data, so those
+options disappear with the cars. `img/cars/c13-*.webp` is now loaded by nothing.
+`MY_LISTING_IDS` in `auto-my-listings.js` had to follow — `c8` became `c36`, the same F-150 in its
+diesel version, because one listing per model means the old id is gone.
 
 `cars.js` gained `color`, `fuel`, `postedAt` and `ref` on every entry — the mockup's spec line and
 the date/number in the meta column. The mockup's "add to notebook" and "print" links were dropped:
@@ -631,16 +672,26 @@ first car)
    Specifications table | seller card with the inline contact form, plus a 300×250 ad.
 4. **Similar Cars** — up to 3 cards, same make or body type.
 
-**`auto/add-listing.html` — Add a Car** (container capped at 720px)
+**`auto/add-listing.html` — Add a Car** (container capped at 720px) — **a "Will appear soon"
+placeholder since 27.09.2026, at the user's request**
 
-**Code:** [auto/add-listing.html](auto/add-listing.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-add-listing.js](js/pages/auto-add-listing.js) (`STEP_RULES`, `showStep`, `renderReview`)
+**Code:** [auto/add-listing.html](auto/add-listing.html) · [css/pages/auto.css](css/pages/auto.css)
 
 1. Auto subnav.
 2. Section head — "AllSeattle Auto" / **Post Your Car**.
-3. Step indicator *(JS)* — Vehicle / Condition / Contact / Review.
-4. Four form steps, one visible at a time: **Photos & Vehicle**, **Condition & Price**,
-   **Description & Contact**, **Review Your Listing** (a read-back of everything entered).
-5. Back / Next / Submit.
+3. A `.my-listings-note` panel reading **Will appear soon**, one line saying listing submission is
+   not part of the demo yet, and links to the catalog and to Pricing.
+
+The four-step wizard is gone from the markup and **the page no longer loads
+`js/pages/auto-add-listing.js`** — with the form absent that module would go looking for
+`#add-listing-form` and log to the console, the same trap `auto-catalog.js` guards against. The
+module is still on disk, intact, with a comment at the top saying no page includes it: restoring
+the form means restoring the step markup and one `<script>` line. The "+ Post a Listing" buttons on
+the catalog and My Listings still point here, and so does the subnav — they lead to a page that
+says outright the section is coming.
+
+**One form left the demo contract this way**, which is why the list below has five entries and not
+six.
 
 **`auto/my-listings.html` — My Listings** (container capped at 760px)
 
@@ -758,8 +809,9 @@ and `shopping.js` and `stats.js` both read from it. Their photos come from `img/
 "Emerald Shine Car Wash" reads as a mistake on a demo.
 
 **Both showcase numbers moved when that data grew**, and they move together because `stats.js` is
-the single source: 15 businesses → 23 (`615+` → `943+` listed) and 13 cars → 24 (`351+` → `648+`
-active listings), on Home and the Directory alike.
+the single source: 15 businesses → 23 (`615+` → `943+` listed) and 13 cars → 12 (`351+` →
+`324+` active listings), on Home and the Directory alike. That car number was `1296+` while the
+catalog held 48 listings and came back down as the user cut it — nothing but the data moves it.
 
 Three of them are deliberately joined to their neighbours rather than self-contained, which is
 what stops the sections reading as separate sites: `shopping.js` holds a `businessId` and
@@ -791,8 +843,6 @@ Every submit surface intercepts and shows a canned success state; keep it that w
 - **Newsletter** (`news.js`, the left-rail widget on News) → `.success-panel` for both Subscribe
   and Unsubscribe, saying nothing was sent and no address stored; "Back" brings the form back.
 - **Choose a Package** (`pricing.js`, modal) → `.success-panel`, then closes + reloads.
-- **Add a Car** (`auto-add-listing.js`, 4-step wizard) → replaces `#add-listing-content` with a
-  "sent for moderation" panel.
 - **Contact Seller** (`auto-listing.js`, inline form) → replaces the seller card with "Message Sent".
 - **My Listings** Edit/Delete buttons (`auto-my-listings.js`) carry `data-demo-only` and just
   flash "Demo only" for 1.5s.

@@ -2,8 +2,10 @@ import { CAR_LISTINGS } from "../mock-data/cars.js";
 
 const fmtPrice = (n) => `$${n.toLocaleString("en-US")}`;
 
-const MY_LISTING_IDS = ["c5", "c8", "c12"];
-const MY_STATUSES = { c5: "Live", c8: "Pending Moderation", c12: "Live" };
+/* Тот же F-150, но дизельная версия: каталог сократился до одного
+   объявления на модель, и id c8 в данных больше нет. */
+const MY_LISTING_IDS = ["c5", "c36", "c12"];
+const MY_STATUSES = { c5: "Live", c36: "Pending Moderation", c12: "Live" };
 
 function statusBadge(status) {
   const color = status === "Live" ? "var(--color-success)" : "#B7791F";

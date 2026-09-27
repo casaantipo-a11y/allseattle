@@ -1,9 +1,13 @@
-// 13 наборов фотографий — по одному на модель. Любое объявление ссылается на
+// Наборов фотографий 13 — по одному на модель. Любое объявление ссылается на
 // набор своей модели, поэтому на фото всегда та машина, что в заголовке.
 // Новых фотографий взять негде: демо должно работать без сети, а внешние
-// картинки в проект не тянем (CLAUDE.md, «Images»). Поэтому каталог растёт
-// вширь внутри этих тринадцати моделей, а не новыми марками — это был выбор
-// клиента, когда встал вопрос «фото или длинный список марок».
+// картинки в проект не тянем (CLAUDE.md, «Images»). Поэтому каталог живёт
+// внутри этих моделей, а не сорока марками из макета — это был выбор клиента,
+// когда встал вопрос «фото или длинный список марок».
+//
+// Объявлений 12, по одному на модель: было 48, клиент сократил вдвое, потом до
+// двенадцати. Набор c13 (Chevrolet Camaro) теперь не используется ни одним
+// объявлением — модель выпала, чтобы у остальных не пустел блок «Similar Cars».
 function photosFor(id) {
   return [
     `../img/cars/${id}-1.webp`,
@@ -14,13 +18,13 @@ function photosFor(id) {
 
 export const CAR_LISTINGS = [
   {
-    id: "c1",
-    make: "Toyota", model: "Camry", year: 2020, bodyType: "sedan",
-    price: 21900, mileage: 38000, engine: "2.5L I4", transmission: "Automatic",
-    color: "Silver", fuel: "Gasoline",
+    id: "c16",
+    make: "Toyota", model: "Camry", year: 2021, bodyType: "sedan",
+    price: 24300, mileage: 33400, engine: "2.5L I4 Hybrid", transmission: "CVT Automatic",
+    color: "Blue", fuel: "Hybrid",
     postedAt: "2026-09-26T09:00:00-07:00", ref: "A-4100",
-    description: "One-owner, clean Carfax, well maintained with full dealer service history. Great commuter car with excellent fuel economy.",
-    seller: { name: "Mike R.", phone: "(206) 555-0201" },
+    description: "Hybrid LE, averages 48 mpg on the daily commute to Bellevue.",
+    seller: { name: "Grace W.", phone: "(206) 555-0368" },
     photos: photosFor("c1"),
   },
   {
@@ -34,13 +38,13 @@ export const CAR_LISTINGS = [
     photos: photosFor("c2"),
   },
   {
-    id: "c3",
-    make: "Mazda", model: "3", year: 2020, bodyType: "sedan",
-    price: 17800, mileage: 29500, engine: "2.0L I4", transmission: "Automatic",
-    color: "Blue", fuel: "Gasoline",
+    id: "c22",
+    make: "Mazda", model: "3", year: 2019, bodyType: "sedan",
+    price: 16900, mileage: 44800, engine: "2.0L I4", transmission: "Manual",
+    color: "White", fuel: "Gasoline",
     postedAt: "2026-09-25T13:00:00-07:00", ref: "A-4174",
-    description: "Low mileage, garage kept, no accidents. Great handling and fuel economy for city driving.",
-    seller: { name: "Alex T.", phone: "(206) 555-0227" },
+    description: "Six-speed manual, hard to find in this trim. Garage kept its whole life.",
+    seller: { name: "Ruth E.", phone: "(206) 555-0429" },
     photos: photosFor("c3"),
   },
   {
@@ -84,13 +88,13 @@ export const CAR_LISTINGS = [
     photos: photosFor("c7"),
   },
   {
-    id: "c8",
-    make: "Ford", model: "F-150", year: 2019, bodyType: "truck",
-    price: 31900, mileage: 41000, engine: "3.5L EcoBoost V6", transmission: "Automatic",
-    color: "Blue", fuel: "Gasoline",
+    id: "c36",
+    make: "Ford", model: "F-150", year: 2020, bodyType: "truck",
+    price: 35700, mileage: 41300, engine: "3.0L Power Stroke V6", transmission: "Automatic",
+    color: "Black", fuel: "Diesel",
     postedAt: "2026-09-23T14:00:00-07:00", ref: "A-4359",
-    description: "SuperCrew cab, towing package, bed liner included. Great work or family truck.",
-    seller: { name: "Danny W.", phone: "(206) 555-0275" },
+    description: "Power Stroke diesel, 30 mpg on the highway, full tow package.",
+    seller: { name: "Rosa I.", phone: "(206) 555-0560" },
     photos: photosFor("c8"),
   },
   {
@@ -104,13 +108,13 @@ export const CAR_LISTINGS = [
     photos: photosFor("c9"),
   },
   {
-    id: "c10",
-    make: "Honda", model: "Fit", year: 2017, bodyType: "hatchback",
-    price: 13900, mileage: 62000, engine: "1.5L I4", transmission: "CVT Automatic",
-    color: "White", fuel: "Gasoline",
+    id: "c39",
+    make: "Honda", model: "Fit", year: 2015, bodyType: "hatchback",
+    price: 10400, mileage: 88600, engine: "1.5L I4", transmission: "Manual",
+    color: "Blue", fuel: "Gasoline",
     postedAt: "2026-09-21T09:00:00-07:00", ref: "A-4433",
-    description: "Reliable, economical, and easy to park in the city. New tires this year.",
-    seller: { name: "Emily S.", phone: "(206) 555-0291" },
+    description: "Five-speed manual, cheap to run and insure, a perfect first car.",
+    seller: { name: "Oscar Z.", phone: "(206) 555-0599" },
     photos: photosFor("c10"),
   },
   {
@@ -132,125 +136,5 @@ export const CAR_LISTINGS = [
     description: "GT trim, manual transmission, garage kept. Clean title, no track use.",
     seller: { name: "Tyler F.", phone: "(206) 555-0317" },
     photos: photosFor("c12"),
-  },
-  {
-    id: "c13",
-    make: "Chevrolet", model: "Camaro", year: 2019, bodyType: "coupe",
-    price: 26800, mileage: 26000, engine: "3.6L V6", transmission: "Automatic",
-    color: "Yellow", fuel: "Gasoline",
-    postedAt: "2026-09-19T15:00:00-07:00", ref: "A-4544",
-    description: "1LT trim, well cared for, non-smoker. Great condition inside and out.",
-    seller: { name: "Marcus D.", phone: "(206) 555-0329" },
-    photos: photosFor("c13"),
-  },
-  {
-    id: "c16",
-    make: "Toyota", model: "Camry", year: 2021, bodyType: "sedan",
-    price: 24300, mileage: 33400, engine: "2.5L I4 Hybrid", transmission: "CVT Automatic",
-    color: "Blue", fuel: "Hybrid",
-    postedAt: "2026-09-19T08:00:00-07:00", ref: "A-4581",
-    description: "Hybrid LE, averages 48 mpg on the daily commute to Bellevue.",
-    seller: { name: "Grace W.", phone: "(206) 555-0368" },
-    photos: photosFor("c1"),
-  },
-  {
-    id: "c17",
-    make: "Honda", model: "Accord", year: 2021, bodyType: "sedan",
-    price: 24900, mileage: 27300, engine: "1.5L Turbo I4", transmission: "CVT Automatic",
-    color: "Gray", fuel: "Gasoline",
-    postedAt: "2026-09-18T10:00:00-07:00", ref: "A-4618",
-    description: "EX-L with leather and wireless CarPlay. One owner, dealer serviced throughout.",
-    seller: { name: "Victor A.", phone: "(206) 555-0371" },
-    photos: photosFor("c2"),
-  },
-  {
-    id: "c22",
-    make: "Mazda", model: "3", year: 2019, bodyType: "sedan",
-    price: 16900, mileage: 44800, engine: "2.0L I4", transmission: "Manual",
-    color: "White", fuel: "Gasoline",
-    postedAt: "2026-09-17T12:00:00-07:00", ref: "A-4655",
-    description: "Six-speed manual, hard to find in this trim. Garage kept its whole life.",
-    seller: { name: "Ruth E.", phone: "(206) 555-0429" },
-    photos: photosFor("c3"),
-  },
-  {
-    id: "c24",
-    make: "Subaru", model: "Outback", year: 2022, bodyType: "suv",
-    price: 31200, mileage: 18900, engine: "2.5L Boxer 4", transmission: "CVT Automatic",
-    color: "Blue", fuel: "Gasoline",
-    postedAt: "2026-09-17T14:00:00-07:00", ref: "A-4692",
-    description: "Onyx Edition, heated seats front and rear, one owner since new.",
-    seller: { name: "Priya S.", phone: "(206) 555-0445" },
-    photos: photosFor("c4"),
-  },
-  {
-    id: "c27",
-    make: "Toyota", model: "RAV4", year: 2021, bodyType: "suv",
-    price: 29400, mileage: 26700, engine: "2.5L I4 Hybrid", transmission: "CVT Automatic",
-    color: "Black", fuel: "Hybrid",
-    postedAt: "2026-09-16T16:00:00-07:00", ref: "A-4729",
-    description: "Hybrid XSE, 40 mpg combined, single owner and dealer maintained.",
-    seller: { name: "Felix R.", phone: "(206) 555-0474" },
-    photos: photosFor("c5"),
-  },
-  {
-    id: "c29",
-    make: "Ford", model: "Explorer", year: 2021, bodyType: "suv",
-    price: 32400, mileage: 29500, engine: "3.5L V6", transmission: "Automatic",
-    color: "Black", fuel: "Gasoline",
-    postedAt: "2026-09-15T09:00:00-07:00", ref: "A-4766",
-    description: "XLT with the 202A package, second-row captains chairs and a factory tow hitch.",
-    seller: { name: "Bruce V.", phone: "(206) 555-0490" },
-    photos: photosFor("c6"),
-  },
-  {
-    id: "c33",
-    make: "Jeep", model: "Wrangler", year: 2022, bodyType: "suv",
-    price: 37500, mileage: 12800, engine: "3.6L V6", transmission: "Automatic",
-    color: "Gray", fuel: "Gasoline",
-    postedAt: "2026-09-15T11:00:00-07:00", ref: "A-4803",
-    description: "Rubicon, barely driven, every factory option the dealer offered.",
-    seller: { name: "Nadia F.", phone: "(206) 555-0531" },
-    photos: photosFor("c7"),
-  },
-  {
-    id: "c36",
-    make: "Ford", model: "F-150", year: 2020, bodyType: "truck",
-    price: 35700, mileage: 41300, engine: "3.0L Power Stroke V6", transmission: "Automatic",
-    color: "Black", fuel: "Diesel",
-    postedAt: "2026-09-14T13:00:00-07:00", ref: "A-4840",
-    description: "Power Stroke diesel, 30 mpg on the highway, full tow package.",
-    seller: { name: "Rosa I.", phone: "(206) 555-0560" },
-    photos: photosFor("c8"),
-  },
-  {
-    id: "c38",
-    make: "Chevrolet", model: "Silverado 1500", year: 2022, bodyType: "truck",
-    price: 42900, mileage: 15200, engine: "5.3L V8", transmission: "Automatic",
-    color: "White", fuel: "Gasoline",
-    postedAt: "2026-09-13T15:00:00-07:00", ref: "A-4877",
-    description: "LTZ crew cab with leather and adaptive cruise. One owner, no accidents.",
-    seller: { name: "Beatrice U.", phone: "(206) 555-0586" },
-    photos: photosFor("c9"),
-  },
-  {
-    id: "c39",
-    make: "Honda", model: "Fit", year: 2015, bodyType: "hatchback",
-    price: 10400, mileage: 88600, engine: "1.5L I4", transmission: "Manual",
-    color: "Blue", fuel: "Gasoline",
-    postedAt: "2026-09-13T08:00:00-07:00", ref: "A-4914",
-    description: "Five-speed manual, cheap to run and insure, a perfect first car.",
-    seller: { name: "Oscar Z.", phone: "(206) 555-0599" },
-    photos: photosFor("c10"),
-  },
-  {
-    id: "c42",
-    make: "Volkswagen", model: "Golf", year: 2016, bodyType: "hatchback",
-    price: 12700, mileage: 74500, engine: "1.4L Turbo I4", transmission: "Manual",
-    color: "White", fuel: "Gasoline",
-    postedAt: "2026-09-12T10:00:00-07:00", ref: "A-4951",
-    description: "Six-speed manual TSI, fun and frugal. New clutch fitted at 70,000 miles.",
-    seller: { name: "Erica B.", phone: "(206) 555-0627" },
-    photos: photosFor("c11"),
   },
 ];

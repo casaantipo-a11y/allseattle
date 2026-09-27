@@ -59,6 +59,13 @@ function carRowTemplate(car) {
    которой auto/listing.html пишет в консоль. Стили общие, в components.css. */
 const PACKAGE_CLASS = { Standard: "badge-standard", Lux: "badge-lux", Premium: "badge-premium" };
 
+/* Порядок пакетов здесь свой: сверху Lux, дальше Premium, дальше Standard —
+   просьба клиента по этому блоку. В справочнике (js/pages/directory.js)
+   порядок остался Premium -> Lux -> Standard: правка была на #auto-firms, и
+   клиент решил её туда и оставить. Без сортировки компании шли в порядке
+   файла данных, то есть вперемешку. */
+const FIRMS_ORDER = { Lux: 0, Premium: 1, Standard: 2 };
+
 function bizRowTemplate(biz) {
   const upsell = biz.package === "Standard"
     ? `<a class="biz-row-upsell" href="../pricing.html">Upgrade to Lux &rarr;</a>`
@@ -213,7 +220,9 @@ function renderTopics() {
 function renderFirms() {
   const el = document.getElementById("auto-firms");
   if (!el) return;
-  el.innerHTML = AUTO_BUSINESSES.map(bizRowTemplate).join("");
+  const rows = [...AUTO_BUSINESSES]
+    .sort((a, b) => FIRMS_ORDER[a.package] - FIRMS_ORDER[b.package]);
+  el.innerHTML = rows.map(bizRowTemplate).join("");
 }
 
 // ---------- Селекты ----------
