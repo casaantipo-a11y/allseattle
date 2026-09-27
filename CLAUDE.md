@@ -657,9 +657,11 @@ Things worth knowing before touching it:
   fields any more, so the strip can't go stale. `WEATHER_WEEK[0].pop` is also the left panel's
   "Rain – N%" (one number, one source).
 - **The city photo fills the "now" panel's free height on desktop** (`flex: 1`, no aspect
-  ratio, `object-fit: cover`): from 16px under the facts to 32px above the panel padding, 288px
-  wide — 352px tall at 1440, 585 at 1024 where the main panel is taller. The user asked for it
-  to run "from the Rain line down to the bottom".
+  ratio, `object-fit: cover`), centred between the facts and the panel's bottom edge — 64px
+  each side (16px column gap + 48px `margin-top` above, 32px `margin-bottom` + 32px panel
+  padding below). 288px wide, 304px tall at 1440, 537 at 1024 where the main panel is taller.
+  The user asked for it to run "from the Rain line down to the bottom", then to be centred
+  there.
 - **The strip is a grid, not a scroller** — the user asked for the scrollbar under the hourly
   forecast to go. `renderStrip()` sets `.wx-strip--days` / `--hours`: 12 hours in one row from
   1280 (74px cells at 1440, 24px icons), 6 per row at 640–1279, 4 on phones; 7 days in one row
