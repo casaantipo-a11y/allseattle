@@ -473,6 +473,17 @@ nothing: the tier is the word on the badge, and a Standard row's own border
 (`--color-slate-soft`) is 1.24:1, half as contrasty as this one. Text on the fill is unaffected —
 navy 15.3:1, slate 6.6:1.
 
+**Lux is bright gold in the Auto page's enterprise block, and only there.** The user asked for it
+once that block started with Lux, and asked in the same breath that the badge stay as it is — dark
+with white letters (`--color-lux` #0D1B2A, 17.39:1). So `#auto-firms .biz-row--lux` takes
+`--color-gold-bright-tint` and a `--color-gold-bright` border, and the Directory's Lux rows keep
+their `--color-navy-tint`: the request carried the `#auto-firms` tag. The new gold is deliberately
+brighter *and* more opaque than Premium's — the fill lands on #FFEEBF against Premium's #FBF1DE —
+because the two tiers sit in one list and a paler gold would read as the same row. Text is
+unaffected (navy 15.10:1, slate 6.53:1); the border drops to 1.60:1 against white, below the 2.36
+of `--color-gold`, which is the same trade made knowingly there: the border states nothing, the
+tier is the word on the badge, and a Standard row's own border is 1.24:1.
+
 **The row's "Premium" badge is gold too, but only in the directory.** `badge-premium` is shared
 with `pricing.html`, so the override is scoped to `.biz-row--premium .badge-premium` and the
 pricing page keeps the red pill until the user says otherwise. **The badge's text is navy, and
@@ -593,20 +604,36 @@ keyboard and screen readers work on their own.
    a 300×250 on the left, the Auto Services companies as `.biz-row` in the middle, a 300×600 on
    the right.
 
-**The top of this page is hand-set, and the order in the markup is load-bearing.** The user asked
-for the top banner 90px higher and the subnav 120px lower, which relative offsets cannot do — a
-subnav dropped 120px lands on the section head's eyebrow (measured: subnav 314…358, head starts at
-472, the shifted subnav would occupy 434…478). So the two swapped places in the flow and
+**The top of this page is hand-set, and the order in the markup is load-bearing.** The user first
+asked for the top banner 90px higher and the subnav 120px lower, which relative offsets cannot do —
+a subnav dropped 120px lands on the section head's eyebrow (measured: subnav 314…358, head starts
+at 472, the shifted subnav would have occupied 434…478). So the two swapped places in the flow and
 `.auto-catalog` (a class on the first `<section>`, because `auto.css` is shared by all four Auto
-pages) carries two rules: `top: -22px` on `.ad-slot-top` and `margin-top: 30px` on `.auto-subnav`.
-Measured at 1280–1920: the banner sits at 292 (−90, and 10px under the photo banner), the subnav at
-434 (+120), and **everything below moved down 30px** — two swapped bars with a gap between them are
-taller than the old stack. A negative `margin-top` on the banner is the wrong tool: as the first
-child of `.container` it collapses into the container and carries the whole section up. **Both
-rules start at 1024px** — below that the slot is a 320×100, the stack is already tight, and 120px
-of air on a phone contradicts what the user asked for on the Directory.
-`.auto-head .eyebrow { left: var(--space-4) }` is the 12px shift of "AllSeattle Auto", scoped the
-same way because `add-listing.html` shows the same eyebrow and must not move.
+pages) carries the offsets. He then asked for the subnav 50px lower again *and* exactly 40px
+between the two, which pulls the banner down with it — otherwise the gap opens to 102px. The rules
+are therefore `top: 40px` on `.ad-slot-top` and `margin-top: 80px` on `.auto-subnav`, and the
+measured result at 1280–1920 is: the banner's visible box **354…444** (its flow box stays 314…404),
+the subnav at **484**, the gap **40.00px** on the nose. **Every one of those numbers is the sum of
+three separate requests** — re-measure the whole cluster before touching any of them, and don't
+reach for `margin-top` on the banner: as the first child of `.container` it collapses into the
+container and carries the whole section with it, up or down. **The rules start at 1024px** — below
+that the slot is a 320×100, the stack is already tight at a 24px gap, and 120px of air on a phone
+contradicts what the user asked for on the Directory.
+
+**The horizontal nudges in both section heads all start at 640px, and that is a measured floor, not
+caution.** Below 640 the head is one column: the heading fills the width and the button drops to a
+third row at the container's left edge. A heading shifted right there pushes the page sideways
+(measured at 375: `scrollWidth` 383 against a 375 viewport) and a button shifted left lands at
+x = −4, outside the gutter. Both shipped that way for one commit before the 375 pass caught it. The
+nudges themselves: `.auto-head .eyebrow` +12px (`left: var(--space-4)`, and it is scoped to the
+catalog because `add-listing.html` shows the same eyebrow), `.auto-head .btn` −16px,
+`.auto-firms-head .btn` −20px, and `.auto-firms-head .eyebrow` / `h2` +20px. **The enterprise head
+moves as a pair** — eyebrow and heading together — because shifting only the heading leaves the two
+labels on different left edges, which is the look the user rejected on the Directory. A side effect
+worth knowing: the heading's box then overlaps the button's grid cell by 24px. Nothing shows,
+because the text is left-aligned and short, and the button still takes its own clicks (both are
+`position: relative` and the button is later in the DOM) — verified with `elementFromPoint`, not by
+eye.
 
 **In the enterprise block the packages are ordered Lux → Premium → Standard** (`FIRMS_ORDER` in
 `auto-catalog.js`), which is *not* the Directory's order (Premium → Lux → Standard in

@@ -797,6 +797,15 @@
   background: var(--color-navy-tint);
 }
 
+/* Lux в блоке предприятий на Auto — ярко-золотой, по просьбе клиента. Правило
+   заужено до этого списка (#auto-firms): в справочнике Lux остаётся на
+   синеватой подложке, просьба была с тегом #auto-firms. Плашку не трогаем —
+   клиент попросил оставить её как есть, тёмной с белыми буквами (17.39:1). */
+#auto-firms .biz-row--lux {
+  background: var(--color-gold-bright-tint);
+  border-color: var(--color-gold-bright);
+}
+
 .biz-row-thumb {
   width: 72px;
   aspect-ratio: 4 / 3;
