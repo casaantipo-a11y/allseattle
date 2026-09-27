@@ -411,8 +411,14 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 
 **Code:** [directory.html](directory.html) · [css/pages/directory.css](css/pages/directory.css) · [js/pages/directory.js](js/pages/directory.js) (`bizRowTemplate`, `renderCategories`, `renderList`, `renderStats`) · data [js/mock-data/businesses.js](js/mock-data/businesses.js) · [js/mock-data/stats.js](js/mock-data/stats.js)
 
-1. 728×90 ad.
-2. Section head — "Business Directory" / **Find a Seattle Business**, and the count line.
+1. Section head — "Business Directory" / **Find a Seattle Business**, and the count line.
+   **There is no 728×90 above it any more** — the user removed `directory-top` and asked for the
+   space to close up, so the head is the first thing under the photo banner, at 31px, which is
+   the first section's own top padding. Getting there meant collapsing the 24px of dead space
+   that used to sit inside the head box: both labels moved up 24px (keeping the 16px between
+   them), the head's `margin-bottom` went to 0 and the count's relative offset went with them.
+   Don't try to tighten it further with the head's negative `margin-top` — the box would reach
+   over the photo banner and swallow clicks on the weather plate.
    **This is the one page whose section head has no button.** "List Your Business" now sits in
    the left rail as an `Add Your Business` widget, because in the head it hung over the ad column
    touching nothing — 394px from the heading's last letter, 10px above the rail's top edge. The
@@ -428,7 +434,7 @@ counts: the site has neither, and the user asked for "the big stories", not the 
    scale's only step back up is 48, which is where it started. Both
    labels also carry a large horizontal offset that only applies from 1280px up, for the reasons
    written out in `directory.css`.
-3. `.dir-layout` — three columns, built to a mockup the client sent: **left rail** (Headings —
+2. `.dir-layout` — three columns, built to a mockup the client sent: **left rail** (Headings —
    the category list, then the Add Your Business card) | **main** (search, the business list) |
    **right rail** (300×250, Statistics, 300×600).
 
@@ -477,11 +483,13 @@ its own. The search input is a page control, not the header's placeholder — th
 `mock-data/stats.js`. That file exists precisely so the two cannot disagree on a demo; before it
 the numbers lived inside `home.js`.
 
-**The page carries four placements**: `directory-top` (728×90 above the head), the rail's 300×250
-and 300×600, and `dir-list-bottom`, the full-bleed strip against the footer. A fifth, `dir-list-top`,
-sat between the search and the list for a day and the user removed it — **nothing stands between
-the search and the first row**, and nothing stands between the rows either, the same rule the news
-feed got.
+**The page carries three placements**: the rail's 300×250 and 300×600, and `dir-list-bottom`,
+the full-bleed strip against the footer. Two others were removed by the user, a day apart:
+`dir-list-top` (728×90) sat between the search and the list, and `directory-top` (728×90, Large,
+$299/mo) sat above the head — so **nothing stands between the search and the first row**, nothing
+stands between the rows, and nothing stands between the photo banner and the heading. This page
+and Home are the two that have given inventory back; both times it was asked for explicitly, and
+both times it is worth saying out loud, because a placement is a thing being sold.
 The rail slots therefore carry no `.ad-desktop-slot`: they stay visible at every width and swap to
 320×100 below 1024, and the old inline echo plus `#mobile-footer-ads` are gone from this page.
 
@@ -887,9 +895,10 @@ the two labels, **10.8px** from the heading's letters to the content. At 1024 th
 and 8.6, at 375 2.3 and a button row. The shifts are relative on purpose — a margin would drag
 the heading, the button and the whole page down with it, and only the labels should move.
 
-**Two pages are exempt and say so in their own files:** the Directory takes its 24px back above
-and below the head (`directory.css`) because its own offsets were tuned on top of them, and Home
-does the same plus zeroing the eyebrow shift (`home.css`), since both its heads were set by hand.
+**Two pages are exempt and say so in their own files:** the Directory replaces the whole block
+(`directory.css`) — it has no top banner, so its head carries its own negative `margin-top`, its
+own label offsets and no `margin-bottom` — and Home takes its 24px back below the head plus zeroes
+the eyebrow shift (`home.css`), since both its heads were set by hand.
 If a third page ever needs to opt out, copy that pattern — an explicit reset with a comment —
 rather than weakening the shared rule.
 
