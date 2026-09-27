@@ -662,7 +662,8 @@ Things worth knowing before touching it:
   from 640, 4 + 3 on phones. The city photo sits low in the panel but not flush: on desktop
   `margin-top: auto` plus `margin-bottom: var(--space-8)`, 64px from the panel's edge (the
   user tried flush-bottom, then right under the facts, and settled on "a little above the
-  bottom").
+  bottom"). It is also wider than the panel's text — `margin-inline: -16px` into the padding
+  (256 → 288px on desktop) — except at 640–1023, where it sits in its own grid column.
 - `WEATHER_NOW` lost `feelsLike`, `pressure` and the display strings (`"8 mph W"`, `"2 of 11 ·
   Low"`) — nothing rendered them after the rebuild. It holds numbers (`uvIndex`, `windMph`,
   `humidity`, `visibilityMi`, `aqi`) and the page derives the words (`uvWord()` etc.). The

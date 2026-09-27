@@ -103,9 +103,13 @@
 
 /* Карточка города с фото. Полупрозрачная navy-подложка — не украшение: без
    неё белая подпись на светлом небе фото не читается. */
+/* Фото шире текста панели: выходит в её поля на 16px с каждой стороны —
+   просьба клиента 27.09.2026 (на десктопе 256 → 288px). На планшете, где
+   фото стоит во второй колонке, не выходит. */
 .wx-place {
   position: relative;
   margin-top: var(--space-4);
+  margin-inline: calc(-1 * var(--space-4));
   aspect-ratio: 5 / 2;
   border-radius: var(--radius);
   overflow: hidden;
@@ -146,6 +150,7 @@
     grid-column: 2;
     grid-row: 1 / span 4;
     margin-top: 0;
+    margin-inline: 0;
     aspect-ratio: auto;
     min-height: 160px;
   }
@@ -170,6 +175,7 @@
   .wx-place {
     margin-top: auto;
     margin-bottom: var(--space-8);
+    margin-inline: calc(-1 * var(--space-4));
   }
 }
 
