@@ -1,6 +1,6 @@
 import { WEATHER_NOW, WEATHER_HOURLY, WEATHER_WEEK, WEATHER_REGION } from "../mock-data/weather.js";
 import { weatherIcon } from "../logo.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 function renderNow() {
   const el = document.getElementById("weather-now");
@@ -78,9 +78,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderHourly();
   renderWeek();
   renderRegion();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) {
-    footer.innerHTML = inlineAdMarkup("weather-side-1", "300x250") + inlineAdMarkup("weather-side-2", "300x600");
-  }
   mountAdSlots(document);
 });

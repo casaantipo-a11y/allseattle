@@ -1,5 +1,5 @@
 import { JOB_LISTINGS, JOB_CATEGORIES } from "../mock-data/jobs.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 import { relativeTime } from "../format-time.js";
 
 function jobRowTemplate(job) {
@@ -38,14 +38,10 @@ function renderList(active) {
     return;
   }
   let html = "";
-  jobs.forEach((job, i) => {
+  jobs.forEach((job) => {
     html += jobRowTemplate(job);
-    // Тот же сид и размер, что у десктопного слота, иначе статус и цена
-    // разойдутся между двумя показами одного размещения.
-    if (i + 1 === 4) html += inlineAdMarkup("jobs-side-1", "300x250");
   });
   list.innerHTML = html;
-  mountAdSlots(list);
 }
 
 function wireFilters() {
@@ -63,7 +59,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFilters("All");
   renderList("All");
   wireFilters();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("jobs-side-2", "300x600");
   mountAdSlots(document);
 });

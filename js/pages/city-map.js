@@ -2,7 +2,7 @@ import { NEIGHBORHOODS, MAP_SHAPES } from "../mock-data/neighborhoods.js";
 import { EVENTS } from "../mock-data/events.js";
 import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { PROPERTIES } from "../mock-data/real-estate.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 // Счётчики не хранятся в данных района, а считаются по трём разделам, у
 // которых поле neighborhood уже есть. Добавится объявление — цифра сойдётся
@@ -60,12 +60,10 @@ function renderGrid() {
   const grid = document.getElementById("hood-grid");
   if (!grid) return;
   let html = "";
-  NEIGHBORHOODS.forEach((n, i) => {
+  NEIGHBORHOODS.forEach((n) => {
     html += hoodCardTemplate(n);
-    if (i + 1 === 4) html += inlineAdMarkup("city-map-side-1", "300x250");
   });
   grid.innerHTML = html;
-  mountAdSlots(grid);
 }
 
 function selectHood(id) {
@@ -93,7 +91,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderMap();
   renderGrid();
   wireMap();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("city-map-side-2", "300x600");
   mountAdSlots(document);
 });

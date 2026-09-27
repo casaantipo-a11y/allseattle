@@ -1,5 +1,5 @@
 import { PROPERTIES, PROPERTY_DEALS, PROPERTY_NEIGHBORHOODS } from "../mock-data/real-estate.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 // Цена продажи и месячная аренда живут в одном поле, поэтому набор порогов
 // в фильтре пересобирается под выбранный тип сделки — иначе «до $900 000»
@@ -92,14 +92,10 @@ function render() {
     return;
   }
   let html = "";
-  list.forEach((p, i) => {
+  list.forEach((p) => {
     html += cardTemplate(p);
-    if (i + 1 === 4) html += inlineAdMarkup("real-estate-side-1", "300x250");
   });
   grid.innerHTML = html;
-  // Без обоих вызовов новые карточки останутся невидимыми, а рекламные
-  // коробки пустыми.
-  mountAdSlots(grid);
 }
 
 function wire() {
@@ -142,7 +138,5 @@ document.addEventListener("DOMContentLoaded", () => {
   fillSelects();
   render();
   wire();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("real-estate-side-2", "300x600");
   mountAdSlots(document);
 });

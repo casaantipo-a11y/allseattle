@@ -1,6 +1,6 @@
 import { VENUES, VENUE_KINDS } from "../mock-data/entertainment.js";
 import { upcomingEvents, eventDateParts } from "../mock-data/events.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 function venueCardTemplate(v) {
   return `
@@ -39,12 +39,10 @@ function renderGrid(active) {
     return;
   }
   let html = "";
-  list.forEach((v, i) => {
+  list.forEach((v) => {
     html += venueCardTemplate(v);
-    if (i + 1 === 4) html += inlineAdMarkup("entertainment-side-1", "300x250");
   });
   grid.innerHTML = html;
-  mountAdSlots(grid);
 }
 
 // Тянет три ближайших события из раздела Events — разделы портала должны
@@ -82,7 +80,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderGrid("All");
   renderTonightWidget();
   wireFilters();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("entertainment-side-2", "300x600");
   mountAdSlots(document);
 });

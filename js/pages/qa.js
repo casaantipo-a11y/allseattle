@@ -1,5 +1,5 @@
 import { QA_ITEMS, QA_TOPICS } from "../mock-data/qa.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 // Нативный <details>: раскрытие, фокус и чтение скринридером работают сами,
 // без единого обработчика.
@@ -37,12 +37,10 @@ function renderList(active) {
     return;
   }
   let html = "";
-  items.forEach((item, i) => {
+  items.forEach((item) => {
     html += qaItemTemplate(item);
-    if (i + 1 === 4) html += inlineAdMarkup("qa-side-1", "300x250");
   });
   list.innerHTML = html;
-  mountAdSlots(list);
 }
 
 function wireFilters() {
@@ -60,7 +58,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFilters("All");
   renderList("All");
   wireFilters();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("qa-side-2", "300x600");
   mountAdSlots(document);
 });

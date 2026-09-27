@@ -531,10 +531,20 @@ The rail slots therefore carry no `.ad-desktop-slot`: they stay visible at every
 ---
 
 **The eight secondary sections** all share one skeleton, generated from `directory.html`:
-728×90 ad → section head with a `pricing.html` button → content → `#mobile-footer-ads`. Six of
-them wrap the content in `.side-layout` / `.side-rail` (the shared "content + sidebar"
-pair from `components.css`), and every one carries the same three placements: `<key>-top`
-728×90, `<key>-side-1` 300×250, `<key>-side-2` 300×600, plus the inline echo after card 4.
+728×90 ad → section head with a `pricing.html` button → content. **Each carries exactly one
+placement now, its `<key>-top` 728×90** — the user had the side ads removed on 27.09.2026 across
+all eight, and the mobile echoes went with them (an inline 300×250 after card 4 and a 300×600 in
+`#mobile-footer-ads`): a banner that no longer exists on the desktop has no reason to appear in a
+phone's feed. That is 16 placements given back, the largest single cut on the site; say so when
+the subject comes up, because inventory is the thing being sold.
+
+With the rails gone the content is full-width on six of them, so their wrappers keep only the page
+class (`.jobs-layout`, `.events-layout`, …) and `.side-layout` came off. Two keep a column for
+their own reasons: **Entertainment** still has the `.side-rail` holding "Tonight in Seattle", and
+**Real Estate** keeps its filter column (`.realty-filters`, never a `.side-rail`). Measured at
+1920: the six now run 1536px wide instead of 1212, which takes a card in the three-column grids
+from 404 to 496px — still well inside §2's 75 characters, but worth knowing before anyone reaches
+for a fourth column.
 
 **`jobs.html` — Jobs** — category chips, a count line, then `.job-list`: rows with title,
 salary, company · neighborhood, description, a type badge and posting age. No photos, by
@@ -828,9 +838,11 @@ the same `tierSize`** for a placement's desktop and inline-mobile renders, or th
 will visibly disagree between them.
 
 Per-page convention: desktop placements are declared as `data-ad-slot` attributes in the HTML
-(seeds like `home-left-1`, `news-side-1`, `auto-filter-ad`); their mobile echoes are emitted from
-the page module, either inline after the 4th card or into a `<div id="mobile-footer-ads">` at the
-end of the sidebar.
+(seeds like `home-left-1`, `news-side-1`, `auto-filter-ad`). **Home is the only page still
+emitting mobile echoes** from its module — inline after the 4th card and into
+`<div id="mobile-footer-ads">`; everywhere else the rail slots are visible at every width and swap
+to 320×100 themselves, or the placement is gone. `inlineAdMarkup()` therefore has one caller left,
+`home.js`.
 
 `mountAdSlots(root)` does a lazy pass over `[data-ad-slot]` elements (reads `data-ad-slot` /
 `data-ad-slot-mobile` / `data-ad-seed` attributes) and is safe to call again after any `innerHTML`
@@ -1013,7 +1025,9 @@ never enters the viewport, so a screenshot comes back full of blank photo boxes 
 count that has nothing to do with the site. Step down a viewport at a time instead.
 
 **`.side-layout` / `.side-rail` in `components.css` are the shared "content + sidebar"
-frame**, used by News-style pages and by six of the eight newer sections. Reach for them instead
+frame**. Since the side ads left the eight secondary sections, **Entertainment is its only
+user** — not dead code yet, but if that page ever loses its widget rail, the component goes with
+it (§9). Reach for them instead
 of copying the block into another page file — that copy is exactly the "different style for the
 same component" §9 bans. A page file should only hold what is genuinely its own: its card grid's
 columns and its own components. `.ad-slot-top` and `.result-count` live there for the same

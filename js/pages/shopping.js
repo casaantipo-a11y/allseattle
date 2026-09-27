@@ -1,5 +1,5 @@
 import { allDealsWithBusiness, DEAL_CATEGORIES } from "../mock-data/shopping.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 const DEALS = allDealsWithBusiness();
 
@@ -40,12 +40,10 @@ function renderGrid(active) {
     return;
   }
   let html = "";
-  list.forEach((deal, i) => {
+  list.forEach((deal) => {
     html += dealCardTemplate(deal);
-    if (i + 1 === 4) html += inlineAdMarkup("shopping-side-1", "300x250");
   });
   grid.innerHTML = html;
-  mountAdSlots(grid);
 }
 
 function wireFilters() {
@@ -63,7 +61,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFilters("All");
   renderGrid("All");
   wireFilters();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("shopping-side-2", "300x600");
   mountAdSlots(document);
 });

@@ -1,5 +1,5 @@
 import { EVENTS, EVENT_CATEGORIES, eventDateParts } from "../mock-data/events.js";
-import { inlineAdMarkup, mountAdSlots } from "../banner-ads.js";
+import { mountAdSlots } from "../banner-ads.js";
 
 function eventCardTemplate(ev) {
   const d = eventDateParts(ev.startsAt);
@@ -40,12 +40,10 @@ function renderGrid(active) {
     return;
   }
   let html = "";
-  list.forEach((ev, i) => {
+  list.forEach((ev) => {
     html += eventCardTemplate(ev);
-    if (i + 1 === 4) html += inlineAdMarkup("events-side-1", "300x250");
   });
   grid.innerHTML = html;
-  mountAdSlots(grid);
 }
 
 function wireFilters() {
@@ -63,7 +61,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFilters("All");
   renderGrid("All");
   wireFilters();
-  const footer = document.getElementById("mobile-footer-ads");
-  if (footer) footer.innerHTML = inlineAdMarkup("events-side-2", "300x600");
   mountAdSlots(document);
 });
