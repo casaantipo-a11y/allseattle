@@ -659,8 +659,10 @@ Things worth knowing before touching it:
 - **The strip is a grid, not a scroller** — the user asked for the scrollbar under the hourly
   forecast to go. `renderStrip()` sets `.wx-strip--days` / `--hours`: 12 hours in one row from
   1280 (74px cells at 1440, 24px icons), 6 per row at 640–1279, 4 on phones; 7 days in one row
-  from 640, 4 + 3 on phones. The city photo sits right under the facts, not pinned to the
-  panel's bottom as in the mockup (also the user's call).
+  from 640, 4 + 3 on phones. The city photo sits low in the panel but not flush: on desktop
+  `margin-top: auto` plus `margin-bottom: var(--space-8)`, 64px from the panel's edge (the
+  user tried flush-bottom, then right under the facts, and settled on "a little above the
+  bottom").
 - `WEATHER_NOW` lost `feelsLike`, `pressure` and the display strings (`"8 mph W"`, `"2 of 11 ·
   Low"`) — nothing rendered them after the rebuild. It holds numbers (`uvIndex`, `windMph`,
   `humidity`, `visibilityMi`, `aqi`) and the page derives the words (`uvWord()` etc.). The
