@@ -412,7 +412,16 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 **Code:** [directory.html](directory.html) · [css/pages/directory.css](css/pages/directory.css) · [js/pages/directory.js](js/pages/directory.js) (`bizRowTemplate`, `renderCategories`, `renderList`, `renderStats`) · data [js/mock-data/businesses.js](js/mock-data/businesses.js) · [js/mock-data/stats.js](js/mock-data/stats.js)
 
 1. 728×90 ad.
-2. Section head — "Business Directory" / **Find a Seattle Business** + "List Your Business".
+2. Section head — "Business Directory" / **Find a Seattle Business**, and the count line.
+   **This is the one page whose section head has no button.** "List Your Business" now sits in
+   the left rail as an `Add Your Business` widget, because in the head it hung over the ad column
+   touching nothing — 394px from the heading's last letter, 10px above the rail's top edge. The
+   card went *under* the categories rather than above them or above the 300×250, for two measured
+   reasons: the left rail ends at y=1109 while the list runs to 3432, so that column was empty for
+   2323px, and anything placed at the top of either rail pushes the first (most expensive)
+   placement down ~130px and breaks the column tops' alignment with the search bar, which the user
+   asked for. The card's `.widget-body` takes 16px of padding instead of `--card-pad` — at 32px
+   the 240px column leaves 172px and the button's label wraps.
    **This page's `h1` is smaller than the rest of the site** — the clamp's ceiling is 40px
    instead of 48, at the user's request; the floor stays 30 so the phone is unchanged. 40 is
    deliberately off the type scale and says so in the CSS: it went down to 36 first, and the
@@ -420,7 +429,7 @@ counts: the site has neither, and the user asked for "the big stories", not the 
    labels also carry a large horizontal offset that only applies from 1280px up, for the reasons
    written out in `directory.css`.
 3. `.dir-layout` — three columns, built to a mockup the client sent: **left rail** (Headings —
-   the category list) | **main** (search, count line, 728×90, the business list, 728×90) |
+   the category list, then the Add Your Business card) | **main** (search, the business list) |
    **right rail** (300×250, Statistics, 300×600).
 
 **The listing is rows, not photo cards** — `.biz-row`: a 72px thumbnail (96 from 768), the tier
@@ -451,6 +460,12 @@ that is a contrast requirement, not a style choice**: the `.badge` base sets whi
 `#DF9C16` is 2.36:1 against the 4.5 that AA wants of 14px bold. Navy is 7.38:1 — which, worth
 knowing, is also better than the 4.23:1 the red badge has always had, the one place on the site
 where a badge misses AA.
+
+**Below 640px the count keeps its own row under the heading, and that row needs a real
+`margin-top`.** The heading is shifted 26px down by a relative offset, so its letters reach into
+the row beneath it; the button used to hold that row open at 48px and no longer does. Without the
+margin the count sits on the heading's descenders. Measured at 375–639: 16px between the two sets
+of letters, 13.7px from the count to the search box.
 
 **The search and the category list both really filter.** `renderList({category, query})` matches
 the query against name, description, category and address, writes `#dir-count` ("Showing 3 of 15
