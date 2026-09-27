@@ -564,12 +564,15 @@ below 768px, a plain column from 768px. A third one moves the pattern into `comp
 **No ads live in it**: the side placements were removed from all eight secondary sections an hour
 earlier, and only `jobs-top` remains on the page.
 
-**Desktop geometry the user set by ruler (27.09.2026, from 1024px, in `jobs.css`):** the "Work in
-Seattle / Job Board" head sits near the middle — `.jobs-head` splits into `1fr auto 1fr`, the
-labels go in the centred middle column and shift 200px left, the button moves to the right
-column — and every `.job-card` is 5.5 cm (208px) shorter than the results column
-(`max-width: calc(100% - 208px)`), leaving a strip on the right; the toolbar keeps full width.
-The user was told to judge it and revert if the old layout read better.
+**Desktop geometry the user set (27.09.2026, from 1024px, in `jobs.css`):** `.jobs-head` takes
+the page's own grid (`300px 1fr`, same gap), so "Work in Seattle" sits in the first column above
+Filters, while "Job Board" sits in the second in a box as wide as a card (`calc(100% - 208px)`)
+with `text-align: center` — centred over the job card, not the page. The button stays at the
+column's right edge, inside the 208px strip the cards leave free, so it never meets the heading
+(measured at 1024–1920). Every `.job-card` is 5.5 cm (208px) shorter than the results column.
+And the sort control sits right after "14 openings in Seattle" (`.jobs-toolbar` is
+`justify-content: flex-start`), not at the far edge. (A first try put the whole head in the page
+centre shifted 200px left; the user replaced that with this.)
 
 **Four things from the screenshot were deliberately not copied**, and each is commented where it
 lives: the job title is **not a link** (there are no per-job pages, and a link to nowhere is what

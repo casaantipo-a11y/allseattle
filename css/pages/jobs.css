@@ -200,8 +200,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
+  /* Сортировка стоит сразу справа от «14 openings in Seattle», а не у
+     дальнего края колонки — просьба клиента 27.09.2026. */
+  justify-content: flex-start;
+  gap: var(--space-2) var(--space-6);
   margin-bottom: var(--space-4);
 }
 
@@ -440,31 +442,30 @@
   }
 }
 
-/* ---------- Шапка и ширина карточек (просьба клиента 27.09.2026) ----------
-   «Work in Seattle / Job Board» — почти посередине: шапка делится на
-   1fr | auto | 1fr, средняя колонка стоит ровно по центру контейнера, и
-   подписи из неё сдвинуты на 200px влево. Кнопка уходит в правую колонку.
-   Карточки вакансий короче на 5,5 см (≈208px); тулбар с сортировкой
-   остаётся на всю ширину колонки.
-   Только с 1024px: ниже колонка фильтров уходит под список и центр
-   страницы уже не над вакансиями. */
+/* ---------- Шапка и ширина карточек (просьбы клиента 27.09.2026) ----------
+   С 1024px шапка раздела повторяет сетку страницы под ней — 300px под
+   фильтры и колонка вакансий, с тем же зазором. «Work in Seattle» стоит в
+   первой колонке, над Filters; «Job Board» — во второй, в блоке шириной с
+   карточку и по центру его, то есть ровно над серединой карточки. Кнопка
+   остаётся у правого края колонки: карточка короче колонки на 208px, и
+   кнопка помещается в эту полосу, не налезая на заголовок.
+   Карточки вакансий короче колонки на 5,5 см (≈208px).
+   Ниже 1024px фильтры уходят под список, и всё это не нужно. */
 @media (min-width: 1024px) {
   .jobs-head {
-    grid-template-columns: 1fr auto 1fr;
-  }
-  .jobs-head .eyebrow,
-  .jobs-head h1 {
-    grid-column: 2;
+    grid-template-columns: 300px 1fr;
+    column-gap: var(--grid-gap);
   }
   .jobs-head .eyebrow {
-    left: calc(var(--space-1) + 6px - 200px);
+    grid-column: 1;
   }
   .jobs-head h1 {
-    position: relative;
-    left: -200px;
+    grid-column: 2;
+    width: calc(100% - 208px);
+    text-align: center;
   }
   .jobs-head .btn {
-    grid-column: 3;
+    grid-column: 2;
     justify-self: end;
   }
   .job-card {
