@@ -152,3 +152,10 @@
 @media (min-width: 1440px) {
   .map-layout .hood-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ---------- Шапка раздела (просьба клиента 27.09.2026) ----------
+   «Neighborhood Guide» на 8px выше общего положения. По горизонтали не
+   трогаем — клиент попросил оставить её как у остальных малых разделов. */
+.map-head .eyebrow {
+  top: calc(var(--space-4) - 8px);
+}

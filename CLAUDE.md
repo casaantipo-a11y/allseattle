@@ -1164,7 +1164,9 @@ pushing the page sideways.
 **Two more per-page head adjustments, both from 27.09.2026:** `.section-head--btn-low` (in
 `components.css`, from 640px only) puts the button 10px lower than the shared −4px — on Events,
 Shopping, Entertainment, Real Estate and Q&A, measured +6px from the heading's centre at 1440 —
-and `.qa-head` (in `qa.css`) lifts Q&A's eyebrow and heading 8px. Jobs has its own centred head,
+and `.qa-head` (in `qa.css`) lifts Q&A's eyebrow and heading 8px, while `.map-head` (in
+`city-map.css`) lifts only City Map's eyebrow 8px. The user explicitly declined moving that
+eyebrow sideways to sit flush over the heading — it keeps the shared 10px `--sub` offset. Jobs has its own centred head,
 described in its section above. Below 640px the button is its own row above the chips, which is
 why the 10px stops there.
 
