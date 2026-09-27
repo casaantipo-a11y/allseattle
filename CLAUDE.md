@@ -614,8 +614,8 @@ pages) carries the offsets. He then asked, twice in a row, for the subnav 50px l
 **That was the wrong half to move** — "надо было опустить подменю, а не банер рекламы" — and asked
 where the subnav should sit instead, he said just above "AllSeattle Auto / Cars for Sale". So the
 settled state is the compact one: the banner alone under the photo banner, the subnav under it, the
-head right after. He then named the numbers for all three gaps, in two more passes: **25px above the
-banner, 40px below it** (`top: -7px` on `.ad-slot-top`, `margin-top: 33px` on `.auto-subnav`) and
+head right after. He then named the numbers for all three gaps, in three more passes: **35px above
+the banner, 30px below it** (`top: 3px` on `.ad-slot-top`, `margin-top: 33px` on `.auto-subnav`) and
 **10px between the subnav's rule and the "ALLSEATTLE AUTO" letters**, which was 42 — 24px of the subnav's own `margin-bottom`, the eyebrow's shared
 `top: 16px`, and 2px of leading above the caps. The eyebrow's offset is not available to spend: it
 is what holds the eyebrow against the heading. So the 32px comes off the subnav —
@@ -624,13 +624,16 @@ because the eyebrow is painted 16px below its own box, **but the head is later i
 stealing clicks from the bottom edge of the subnav links**, so the subnav carries `position:
 relative; z-index: 1` (well under the sticky header's 50). Verified with `elementFromPoint` at the
 top, middle and bottom of all three links, at every width. Measured at 1024–1920: photo ends 282,
-**25px**, ad 307…397, **40px**, subnav 437…481, **10.00px**, the head's eyebrow letters at 491.
+**35px**, ad 317…407, **30px**, subnav 437…481, **10.00px**, the head's eyebrow letters at 491.
+The 35 above is a consequence, not a request: he asked for 25 above and 40 below, then for 30 below
+**without raising the subnav**, which leaves only the banner to move — so it dropped 10px and took
+the top gap with it. Say so before quoting that number back at anyone.
 Below 1024 the first two do not apply — the slot is a 320×100 and the stack keeps its own 32 and 24
 — while the 10px does, at every width.
 
 Two things to keep in mind before touching any of it. **Both margins are measured off the banner's
 invisible flow box, not off what you see** — the box stays 314…404 while the banner is drawn at
-307…397, so the subnav's 33px margin and the 40px you see differ by 7; re-measure the whole cluster
+317…407, so the subnav's 33px margin and the 30px you see differ by 3; re-measure the whole cluster
 rather than one rule. And **don't reach for `margin-top` on the banner**: as the first child of
 `.container` it collapses into the container and carries the whole section with it, up or down. **The rules start at 1024px** — below
 that the slot is a 320×100, the stack is already tight at a 24px gap, and 120px of air on a phone
