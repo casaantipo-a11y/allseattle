@@ -637,11 +637,38 @@ mobile echo.
 
 **Code:** [entertainment.html](entertainment.html) · [css/pages/entertainment.css](css/pages/entertainment.css) · [js/pages/entertainment.js](js/pages/entertainment.js) (`venueCardTemplate`, `renderTonightWidget`) · data [js/mock-data/entertainment.js](js/mock-data/entertainment.js) · [js/mock-data/events.js](js/mock-data/events.js)
 
-**`weather.html` — Weather** — the one section with no card grid: a navy current-conditions
-card, a 12-hour scroller, a seven-day list and a regional table. Icons come from
-`WEATHER_ICONS` in `logo.js`.
+**`weather.html` — Weather** — **rebuilt 27.09.2026 to a weather-dashboard mockup the user
+sent**: one `.wx-board` card, a white "now" panel (`#wx-now`: big icon, temperature, live
+weekday + time, condition, rain chance, a Seattle photo card) and a grey main panel with
+**Today / Week tabs** and a **°C / °F toggle**, a strip of 7 days or 12 hours (`#wx-strip`) and
+six **Today's Highlights** cards (UV gauge, wind, sunrise/sunset, humidity, visibility, air
+quality). The regional table stays below the board. Adapted, not copied: the mockup's yellow
+sun and blue rain would be a second and third accent (§4), so icons are navy/slate from
+`WEATHER_ICONS` (four added: `sunrise`, `sunset`, `wind`, `compass`) and red is only the UV fill
+and the active tab; the emoji became words; the avatar and "Search for places" were left out
+(the user asked for the search to go; the site has no photos of people).
 
-**Code:** [weather.html](weather.html) · [css/pages/weather.css](css/pages/weather.css) · [js/pages/weather.js](js/pages/weather.js) (`renderNow`, `renderHourly`, `renderWeek`, `renderRegion`) · data [js/mock-data/weather.js](js/mock-data/weather.js)
+Things worth knowing before touching it:
+
+- **Tab and unit state is in memory only** (`state` in `weather.js`) — `localStorage` belongs
+  to the contest alone. Every temperature in `weather.js` is °F; `toUnit()` converts on render,
+  there are no stored Celsius numbers.
+- **Day names are computed from today's date**, not stored — `WEATHER_WEEK` has no `day`/`date`
+  fields any more, so the strip can't go stale. `WEATHER_WEEK[0].pop` is also the left panel's
+  "Rain – N%" (one number, one source).
+- `WEATHER_NOW` lost `feelsLike`, `pressure` and the display strings (`"8 mph W"`, `"2 of 11 ·
+  Low"`) — nothing rendered them after the rebuild. It holds numbers (`uvIndex`, `windMph`,
+  `humidity`, `visibilityMi`, `aqi`) and the page derives the words (`uvWord()` etc.). The
+  header plate still reads only `weatherHeaderLine()` (city, temp, note), unchanged.
+- **Responsive**: two columns (320px + rest) from 1024; below that the panels stack, and at
+  640–1023 the "now" panel is a two-column grid with the photo on the right (full width it was
+  250px tall). Highlight cards: 3 per row at 768–1023 and from 1280, 2 at 1024–1279 (the main
+  panel is only 576px there) and on phones, 1 below 360. On phones the cards drop to 16px
+  padding, 36px numbers and 32px round icons — at 48px / 40px "78 %" beside its meter and
+  "6:52 AM" beside its icon didn't fit a 155px card. `.wx-main` needs `min-width: 0` or the
+  strip's `overflow-x` inflates the page (the third CSS trap).
+
+**Code:** [weather.html](weather.html) · [css/pages/weather.css](css/pages/weather.css) · [js/pages/weather.js](js/pages/weather.js) (`renderNow`, `renderStrip`, `renderHighlights`, `uvGauge`, `meter`, `renderRegion`, `wireControls`) · data [js/mock-data/weather.js](js/mock-data/weather.js)
 
 **`real-estate.html` — Real Estate** — the only new section with a filter column, built like
 Auto's (accordion below 768px, a plain column from 768px). Sale prices and monthly rents share one

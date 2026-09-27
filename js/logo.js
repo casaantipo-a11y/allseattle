@@ -104,6 +104,11 @@ export const WEATHER_ICONS = {
   "cloud-sun": (size) => strokeIcon(`<path d="M8.6 16.9h7.9a3.6 3.6 0 0 0 .3-7.2 5 5 0 0 0-9.4 1.2 3.1 3.1 0 0 0 1.2 6z"/><path d="M5.4 8.2a4 4 0 0 1 5-4.6"/><path d="M17.8 5.6 19 4.4M20.4 9h1.4M15.9 3.4V2.2"/>`, size),
   rain: (size) => strokeIcon(`<path d="M7.8 14.6h8.7a3.8 3.8 0 0 0 .3-7.6 5.3 5.3 0 0 0-10 1.3 3.3 3.3 0 0 0 1 6.3z"/><path d="M9 17.6 8 20.4M13 17.6 12 20.4M17 17.6 16 20.4"/>`, size),
   snow: (size) => strokeIcon(`<path d="M7.8 14.6h8.7a3.8 3.8 0 0 0 .3-7.6 5.3 5.3 0 0 0-10 1.3 3.3 3.3 0 0 0 1 6.3z"/><path d="M9 18.4h.01M12.5 20.4h.01M16 18.4h.01M10.7 21.2h.01M14.3 17.2h.01"/>`, size),
+  // Карточки «Today's Highlights» в разделе Weather.
+  sunrise: (size) => strokeIcon(`<path d="M3.5 19h17"/><path d="M7.2 19a4.8 4.8 0 0 1 9.6 0"/><path d="M12 3.5v7M9.3 6.2 12 3.5l2.7 2.7"/>`, size),
+  sunset: (size) => strokeIcon(`<path d="M3.5 19h17"/><path d="M7.2 19a4.8 4.8 0 0 1 9.6 0"/><path d="M12 3.5v7M9.3 7.8 12 10.5l2.7-2.7"/>`, size),
+  wind: (size) => strokeIcon(`<path d="M3 8.5h11a2.5 2.5 0 1 0-2.5-2.5"/><path d="M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5"/><path d="M3 16.5h7"/>`, size),
+  compass: (size) => strokeIcon(`<circle cx="12" cy="12" r="8.5"/><path d="m15.4 8.6-2 4.8-4.8 2 2-4.8z"/>`, size),
 };
 
 // Всегда возвращает разметку: неизвестный ключ падает на облако, а не на

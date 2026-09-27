@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="css/tokens.css?v=20260927z">
-<link rel="stylesheet" href="css/base.css?v=20260927z">
-<link rel="stylesheet" href="css/header.css?v=20260927z">
-<link rel="stylesheet" href="css/footer.css?v=20260927z">
-<link rel="stylesheet" href="css/components.css?v=20260927z">
-<link rel="stylesheet" href="css/pages/weather.css?v=20260927z">
+<link rel="stylesheet" href="css/tokens.css?v=20260928a">
+<link rel="stylesheet" href="css/base.css?v=20260928a">
+<link rel="stylesheet" href="css/header.css?v=20260928a">
+<link rel="stylesheet" href="css/footer.css?v=20260928a">
+<link rel="stylesheet" href="css/components.css?v=20260928a">
+<link rel="stylesheet" href="css/pages/weather.css?v=20260928a">
 </head>
 <body data-page-type="inner" data-page="weather">
 
@@ -34,17 +34,33 @@
         <a href="pricing.html" class="btn">Advertise Here</a>
       </div>
 
-      <div class="weather-layout">
-        <div>
-          <div class="weather-now" id="weather-now"></div>
-          <h2 class="weather-h">Next 12 hours</h2>
-          <div class="weather-hourly" id="weather-hourly"></div>
-          <h2 class="weather-h">Seven-day forecast</h2>
-          <div class="weather-week" id="weather-week"></div>
-          <h2 class="weather-h">Around the region</h2>
-          <div class="weather-region" id="weather-region"></div>
+      <!-- Панель погоды собрана по макету-дашборду, который прислал клиент
+           (27.09.2026): слева текущая погода, справа Today / Week, °C / °F и
+           шесть карточек «Today's Highlights». Цвета — сайта, а не макета. -->
+      <div class="wx-board">
+        <div class="wx-now" id="wx-now"></div>
+
+        <div class="wx-main">
+          <div class="wx-toolbar">
+            <div class="wx-tabs" role="tablist" aria-label="Forecast range">
+              <button type="button" class="wx-tab" role="tab" data-view="today" aria-selected="false">Today</button>
+              <button type="button" class="wx-tab" role="tab" data-view="week" aria-selected="true">Week</button>
+            </div>
+            <div class="wx-units" role="group" aria-label="Temperature unit">
+              <button type="button" class="wx-unit" data-unit="c" aria-pressed="false">&deg;C</button>
+              <button type="button" class="wx-unit" data-unit="f" aria-pressed="true">&deg;F</button>
+            </div>
+          </div>
+
+          <div class="wx-strip" id="wx-strip"></div>
+
+          <h2 class="wx-h">Today&rsquo;s Highlights</h2>
+          <div class="wx-highlights" id="wx-highlights"></div>
         </div>
       </div>
+
+      <h2 class="weather-h">Around the region</h2>
+      <div class="weather-region" id="weather-region"></div>
 
 
     </div>
