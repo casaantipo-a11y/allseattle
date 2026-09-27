@@ -438,8 +438,12 @@ counts: the site has neither, and the user asked for "the big stories", not the 
    the category list, then the Add Your Business card) | **main** (search, the business list) |
    **right rail** (300×250, Statistics, 300×600).
 
-**From 1440px both rails sit 38px above the middle column**, at the user's request — their tops
-line up with the heading's line rather than with the search bar. **That rise is scoped to 1440
+**From 1440px both rails sit 85px above the middle column**, at the user's request in two steps
+(38, then "50 more") — their tops are flush against the photo banner's bottom edge and the heading
+and search run between them. **That is the ceiling**: the photo ends at 282.00 and the rails now
+start at 282.69, so only 47 of the last 50px fit; one more pixel and the white Headings card sits
+on the photograph. Round numbers lie here — 330 − 282 reads as 48px of room and the true figure
+is 47.69, which is how the first attempt ended up 0.31px over. **That rise is scoped to 1440
 and it is a measurement, not caution:** at 1280–1439 the heading is only shifted 136px, so its
 letters start at x=176 while the left rail occupies 32–272, and a raised rail covers them by 96px
 horizontally and 40 vertically — the Headings widget lands on top of "Find a S…". Below 1280 the
