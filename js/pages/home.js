@@ -12,8 +12,11 @@ const CARD_COUNT = 20;
 
 // Same 5 placements the desktop sidebars show (home-left-1..4, home-right-1),
 // just redistributed through the feed on mobile instead of stacked at the top.
+// Echoes show below 1024px, where the grid runs 1, 2 or 3 columns — so each
+// sits after a multiple of 6 cards and always closes a full row. After card 4
+// it left card 4 alone in its row on a 3-column tablet.
 const INLINE_AFTER_CARD = [
-  { afterIndex: 4, seed: "home-left-1", size: "300x250" },
+  { afterIndex: 6, seed: "home-left-1", size: "300x250" },
   { afterIndex: 12, seed: "home-left-2", size: "300x250" },
 ];
 const FOOTER_AD_SEEDS = [

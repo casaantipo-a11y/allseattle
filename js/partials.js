@@ -149,7 +149,7 @@ export function renderFooter() {
         ${logoLockupMarkup({ href: `${SITE_ROOT}index.html`, variant: "dark" })}
         <p class="footer-copy">&copy; ${year} AllSeattle. All rights reserved.</p>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-contact">
         <h4>Contact</h4>
         <ul>
           <li>Phone: <a href="tel:+12063318216">(206) 331-8216</a></li>
@@ -157,16 +157,18 @@ export function renderFooter() {
           <li>Seattle, WA</li>
         </ul>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-follow">
         <h4>Follow us</h4>
         <ul class="footer-social">
           ${social.map(([key, name, handle]) => `
-            <li><a href="#" title="${name} (demo)">${SOCIAL_ICONS[key]}<span>${name}: ${handle}</span></a></li>`).join("")}
+            <li><a href="#" title="${name} (demo)" aria-label="${name}: ${handle}">${SOCIAL_ICONS[key]}<span class="footer-social-label">${name}: ${handle}</span></a></li>`).join("")}
         </ul>
       </div>
-      <div class="footer-col footer-col--wide">
+      <div class="footer-col footer-col--wide footer-explore">
         <h4>Explore</h4>
-        <ul>
+        <button type="button" class="footer-explore-toggle" id="footer-explore-toggle"
+                aria-expanded="false" aria-controls="footer-explore-list">Explore all sections</button>
+        <ul id="footer-explore-list">
           ${[...NAV_LINKS.slice(1), ...NAV_SECONDARY]
             .map((n) => `<li><a href="${n.href}">${n.label}</a></li>`).join("")}
           <li><a href="${SITE_ROOT}contest.html">Contest</a></li>
@@ -174,6 +176,16 @@ export function renderFooter() {
       </div>
     </div>
   </footer>`;
+  // На телефоне список Explore свёрнут под кнопку (см. footer.css); с 640px
+  // кнопка скрыта, а список виден всегда, так что класс там ни на что не влияет.
+  const toggle = document.getElementById("footer-explore-toggle");
+  const list = document.getElementById("footer-explore-list");
+  if (toggle && list) {
+    toggle.addEventListener("click", () => {
+      const open = list.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

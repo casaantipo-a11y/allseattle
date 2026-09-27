@@ -268,6 +268,18 @@ worse than no pointer.
    **if you add one, re-check that its label is under 93px** ("Entertainment" is the current
    longest and the 100px column threshold is measured from it).
 
+   **Below 640px the footer is its own compact layout** (27.09.2026 — stacked, it was 585px of
+   navy on every phone page): a grid with areas `logo social / contact / explore / copy`,
+   `.footer-brand` as `display: contents` so the logo and the copyright land in different
+   areas, the three networks as 44px round icon buttons (the handle moves into the link's
+   `aria-label`, the visible label shows from 640px), no Contact / Follow us / Explore
+   headings, and Explore's 13 links folded under an **Explore all sections** button
+   (`#footer-explore-toggle`, wired in `renderFooter()`; the list gets `.is-open`, links
+   44px tall). ~304px closed, ~532px open. Below 360px the icons drop under the logo —
+   side by side they inflated a 320px page to 334. From 640px every one of those rules is
+   reset and the column layout below applies unchanged (306px at 768, 217 at 1024, 192 at
+   1440 — measured identical before and after).
+
    **One gutter, 16px, everywhere in the footer.** The columns and Explore's sub-columns used
    to sit on 24px and 16px respectively, and the sub-columns read as visibly tighter than the
    rest. They are one value now, and it is the smaller one on purpose: at 24px the auto-fill
@@ -918,7 +930,9 @@ will visibly disagree between them.
 
 Per-page convention: desktop placements are declared as `data-ad-slot` attributes in the HTML
 (seeds like `home-left-1`, `news-side-1`, `auto-filter-ad`). **Home is the only page still
-emitting mobile echoes** from its module — inline after the 4th card and into
+emitting mobile echoes** from its module — inline after the 6th and 12th cards (multiples of
+6, so an echo always closes a full row in the 1/2/3-column grids below 1024px; after card 4 it
+used to strand card 4 alone on a 3-column tablet) and into
 `<div id="mobile-footer-ads">`; everywhere else the rail slots are visible at every width and swap
 to 320×100 themselves, or the placement is gone. `inlineAdMarkup()` therefore has one caller left,
 `home.js`.
