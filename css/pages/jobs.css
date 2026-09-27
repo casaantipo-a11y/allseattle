@@ -453,12 +453,12 @@
     grid-template-columns: 300px 1fr;
     column-gap: var(--grid-gap);
   }
-  /* «Work in Seattle» на 16px ниже общего положения (16 → 32px), «Job Board»
-     на 8px выше — просьба клиента 27.09.2026. Только здесь, где они стоят в
+  /* «Work in Seattle» на 32px ниже общего положения (16 → 48px), «Job Board»
+     на 8px выше — просьбы клиента 27.09.2026. Только здесь, где они стоят в
      разных колонках: на узком экране надпись над заголовком легла бы на него. */
   .jobs-head .eyebrow {
     grid-column: 1;
-    top: calc(var(--space-4) + var(--space-4));
+    top: var(--space-12);
   }
   .jobs-head h1 {
     grid-column: 2;
@@ -473,5 +473,11 @@
   }
   .job-card {
     max-width: calc(100% - 208px);
+  }
+  /* Сортировка — по центру карточки, как и «Job Board»: строка той же
+     ширины, что карточка, и содержимое по её середине. */
+  .jobs-toolbar {
+    max-width: calc(100% - 208px);
+    justify-content: center;
   }
 }
