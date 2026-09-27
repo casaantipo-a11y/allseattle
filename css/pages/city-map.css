@@ -1,60 +1,46 @@
-/* Раздел City Map. Карта — рисунок в системе координат 0-100, та же, в
-   которой заданы точки районов в mock-data/neighborhoods.js, поэтому фигуры
-   и точки не могут разъехаться. */
+/* Раздел City Map. Карта — настоящая (Leaflet + тайлы OpenStreetMap, см.
+   city-map.js), точки районов стоят по их реальным координатам из
+   mock-data/neighborhoods.js. Стили самой библиотеки — в
+   js/vendor/leaflet/leaflet.css, подключённом только на этой странице. */
 
+/* Высота карты — не отступ, а размер окна: 360px на телефоне, 520px с
+   1024px, чтобы весь город от Ballard до Georgetown помещался без
+   прокрутки внутри карты. */
+/* position + z-index: 0 держат слои Leaflet (z-index 400–1000) внутри карты —
+   без своего контекста наложения они всплывали бы над липкой шапкой (50). */
 .city-map {
   position: relative;
-  max-width: 620px;
-  margin: 0 auto;
+  height: 360px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--color-bg-soft);
   border: 1px solid var(--color-slate-soft);
+  background: var(--color-bg-soft);
+  z-index: 0;
 }
 
-.city-map svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.map-water { fill: #d6e6f2; }
-.map-land { fill: #e8efe6; }
-.map-canal { stroke: #d6e6f2; stroke-width: 1.8; fill: none; }
-
-.map-water-label {
-  font-family: var(--font-heading);
-  font-size: 2.4px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  fill: #8fb0c8;
-  text-anchor: middle;
-}
-
-.map-pins {
-  position: absolute;
-  inset: 0;
-}
-
-/* Точка — обычная кнопка поверх картинки, поэтому подпись берёт размер из
-   шкалы кеглей, а не масштабируется вместе с SVG. */
+/* Метка — divIcon Leaflet. Позицию маркеру Leaflet задаёт inline-transform,
+   поэтому сдвиг «центр точки ровно на координате» живёт на внутреннем блоке,
+   а не на самой .map-pin (7px — половина точки).
+   Подпись справа от точки, а не под ней: Downtown, Pioneer Square и
+   Capitol Hill стоят в ~25px друг от друга по вертикали, и подпись под
+   точкой ложилась на соседнюю метку. */
 .map-pin {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  min-width: 44px;
-  min-height: 44px;
-  padding: var(--space-1);
-  border: none;
-  background: none;
   cursor: pointer;
 }
 
+.map-pin-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-7px, -50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+}
+
 .map-dot {
+  flex: none;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -157,6 +143,10 @@
 
 @media (min-width: 640px) {
   .hood-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .city-map { height: 520px; }
 }
 
 @media (min-width: 1440px) {

@@ -12,11 +12,12 @@ shows a fake success state instead of sending anywhere (see README.md's "What's 
 table). Don't add a fetch/XHR call or a real backend integration unless explicitly asked — that
 would break the demo's offline guarantee.
 
-The single exception to "no network": every HTML `<head>` pulls Libre Franklin / Public Sans /
-Pacifico from the Google Fonts CDN. Everything else (images, CSS, JS) is local. If a demo has to
-survive dead conference wifi, that stylesheet is the one thing that degrades — the local fallbacks
-in `--font-heading`/`--font-body` cover the body text, but the Pacifico script wordmark won't
-render as designed.
+Two exceptions to "no network". Every HTML `<head>` pulls Libre Franklin / Public Sans /
+Pacifico from the Google Fonts CDN — the local fallbacks in `--font-heading`/`--font-body` cover
+the body text offline, but the Pacifico script wordmark won't render as designed. And City Map
+draws a real map from **OpenStreetMap tiles** (`tile.openstreetmap.org`); offline it degrades to
+a grey panel with the neighborhood pins still on it. Everything else (images, CSS, JS — including
+the Leaflet library itself, vendored in `js/vendor/leaflet/`) is local.
 
 ## Design rules (`design.md`)
 
@@ -563,6 +564,13 @@ below 768px, a plain column from 768px. A third one moves the pattern into `comp
 **No ads live in it**: the side placements were removed from all eight secondary sections an hour
 earlier, and only `jobs-top` remains on the page.
 
+**Desktop geometry the user set by ruler (27.09.2026, from 1024px, in `jobs.css`):** the "Work in
+Seattle / Job Board" head sits near the middle — `.jobs-head` splits into `1fr auto 1fr`, the
+labels go in the centred middle column and shift 200px left, the button moves to the right
+column — and every `.job-card` is 5.5 cm (208px) shorter than the results column
+(`max-width: calc(100% - 208px)`), leaving a strip on the right; the toolbar keeps full width.
+The user was told to judge it and revert if the old layout read better.
+
 **Four things from the screenshot were deliberately not copied**, and each is commented where it
 lives: the job title is **not a link** (there are no per-job pages, and a link to nowhere is what
 §7 bans — the Directory's rows are silent for the same reason); **Save saves nothing** and flashes
@@ -601,7 +609,11 @@ come from the directory rather than being duplicated.
 
 **`entertainment.html` — Entertainment** — venue-kind chips + `.venue-grid`, and a
 **Tonight in Seattle** widget in the sidebar fed by `upcomingEvents(3)` from `events.js`.
-Events answers "when", this section answers "where".
+Events answers "when", this section answers "where". Below the widget, **two side placements
+are back** (27.09.2026, the user's request): `entertainment-side-1` 300×250 and
+`entertainment-side-2` 300×600, plain `data-ad-slot` divs visible at every width (the rail
+drops under the grid on a phone and they swap to 320×100 there) — no `.ad-desktop-slot`, no
+mobile echo.
 
 **Code:** [entertainment.html](entertainment.html) · [css/pages/entertainment.css](css/pages/entertainment.css) · [js/pages/entertainment.js](js/pages/entertainment.js) (`venueCardTemplate`, `renderTonightWidget`) · data [js/mock-data/entertainment.js](js/mock-data/entertainment.js) · [js/mock-data/events.js](js/mock-data/events.js)
 
@@ -614,17 +626,40 @@ card, a 12-hour scroller, a seven-day list and a regional table. Icons come from
 **`real-estate.html` — Real Estate** — the only new section with a filter column, built like
 Auto's (accordion below 768px, a plain column from 768px). Sale prices and monthly rents share one
 numeric field, so `PRICE_STEPS` rebuilds the max-price options whenever the deal type changes.
+**18 properties, 9 for sale and 9 for rent** — the user asked for two more cards so the last row
+at 1440 (three columns) is full; both tabs got two so neither ends on a lone card. **Two side
+placements sit under the filters** (`real-estate-side-1` 300×250, `real-estate-side-2` 300×600,
+inside `.realty-ads`, 27.09.2026): shown from 768px only, where the filters become a side
+column — below that the aside sits above the listings and two banners would push them a
+screen down; the page's 728×90 covers the phone.
 
 **Code:** [real-estate.html](real-estate.html) · [css/pages/real-estate.css](css/pages/real-estate.css) · [js/pages/real-estate.js](js/pages/real-estate.js) (`PRICE_STEPS`, `fillSelects`, `currentList`) · data [js/mock-data/real-estate.js](js/mock-data/real-estate.js)
 
-**`city-map.html` — City Map** — a hand-drawn schematic (`MAP_SHAPES` in
-`neighborhoods.js`), then `.hood-grid`. **The pins are HTML buttons positioned over the SVG,
-not `<text>` inside it** — inside the SVG the labels scale with the drawing and reach 27px on
-a desktop; as HTML they take `--text-xs` and a real 44px target. The page says out loud that
-it is a schematic. Neighborhood counters are computed from `events.js`, `jobs.js` and
-`real-estate.js` rather than stored, so they stay true as data is added.
+**`city-map.html` — City Map** — a **real map** since 27.09.2026 (the user asked for "a real,
+normal map of Seattle" in place of the old hand-drawn SVG schematic): Leaflet 1.9.4, vendored as
+its ESM build in `js/vendor/leaflet/` (with its LICENSE) and imported by `city-map.js`, over
+OpenStreetMap tiles; `leaflet.css` is linked from this one page's `<head>`, **before**
+`city-map.css`, and carries the same `?v=`. Each neighborhood in `neighborhoods.js` has real
+`lat`/`lng` (the old `x`/`y` percentages and `MAP_SHAPES` are gone); pins are `L.divIcon`s built
+from the same `.map-dot` + `.map-label` markup as before, and a click still runs `selectHood()`
+(highlight + scroll to the card). Then `.hood-grid`. Neighborhood counters are computed from
+`events.js`, `jobs.js` and `real-estate.js` rather than stored, so they stay true as data is
+added. Four things that each fixed a real problem:
 
-**Code:** [city-map.html](city-map.html) · [css/pages/city-map.css](css/pages/city-map.css) · [js/pages/city-map.js](js/pages/city-map.js) (`renderMap`, `countsFor`, `selectHood`) · data [js/mock-data/neighborhoods.js](js/mock-data/neighborhoods.js) · [js/mock-data/events.js](js/mock-data/events.js) · [js/mock-data/jobs.js](js/mock-data/jobs.js) · [js/mock-data/real-estate.js](js/mock-data/real-estate.js)
+- **All Leaflet animation is off** (`zoomAnimation`, `fadeAnimation`, `markerZoomAnimation`,
+  `inertia` false) — the site's no-animation rule. `leaflet.css`'s transitions only apply
+  under the `leaflet-zoom-anim` / `leaflet-fade-anim` classes those options add, so they never
+  fire. `scrollWheelZoom` is off too, so the map doesn't hijack page scrolling.
+- **`.city-map` has `position: relative; z-index: 0`** — without its own stacking context
+  Leaflet's panes (z-index 400–1000) rise above the sticky header (50) while scrolling.
+- **The pin's offset lives on `.map-pin-inner`, not `.map-pin`** — Leaflet positions the marker
+  element with an inline `transform`, which would silently override one set in CSS.
+- **Labels sit right of the dot, and `fitBounds` pads 120px on the right** — Downtown, Pioneer
+  Square and Capitol Hill are ~25px apart vertically, so labels under the dots collided; and
+  without the right padding "Columbia City" was cut off at 375px. `zoomSnap: 0.25` lets the
+  city fill the frame instead of sitting small in the middle of Puget Sound.
+
+**Code:** [city-map.html](city-map.html) · [css/pages/city-map.css](css/pages/city-map.css) · [js/pages/city-map.js](js/pages/city-map.js) (`renderMap`, `countsFor`, `selectHood`) · data [js/mock-data/neighborhoods.js](js/mock-data/neighborhoods.js) · [js/mock-data/events.js](js/mock-data/events.js) · [js/mock-data/jobs.js](js/mock-data/jobs.js) · [js/mock-data/real-estate.js](js/mock-data/real-estate.js) · library [js/vendor/leaflet/](js/vendor/leaflet/)
 
 **`qa.html` — Q&A** — topic chips + a list of native `<details>`. No JS for the accordion:
 keyboard and screen readers work on their own.
@@ -1117,6 +1152,13 @@ markup; eight copies of the rule in eight page files is what §9 bans. Measured 
 eyebrow's letters moved 36 → 42 while the heading stayed at 32, the vertical relationship is
 untouched, and at 375 the shifted box ends at 369 against a 375 viewport — 6px more would start
 pushing the page sideways.
+
+**Two more per-page head adjustments, both from 27.09.2026:** `.section-head--btn-low` (in
+`components.css`, from 640px only) puts the button 10px lower than the shared −4px — on Events,
+Shopping, Entertainment, Real Estate and Q&A, measured +6px from the heading's centre at 1440 —
+and `.qa-head` (in `qa.css`) lifts Q&A's eyebrow and heading 8px. Jobs has its own centred head,
+described in its section above. Below 640px the button is its own row above the chips, which is
+why the 10px stops there.
 
 **Two places are tight by design and worth knowing before you add anything to a head:** Pricing's
 "What's Included" (`--spaced`, a smaller `h2`) leaves 2.3px between the labels at 1440 and 1.2px

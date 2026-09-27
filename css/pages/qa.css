@@ -67,3 +67,15 @@
   text-transform: uppercase;
   color: var(--color-accent);
 }
+
+/* «Ask the City / Questions and Answers» на 8px выше общего положения —
+   просьба клиента 27.09.2026. Сдвиг относительный, как у общего правила
+   шапки: едут только подписи, кнопка и контент остаются на местах. */
+.qa-head .eyebrow {
+  top: calc(var(--space-4) - 8px);
+}
+
+.qa-head h1 {
+  position: relative;
+  top: -8px;
+}

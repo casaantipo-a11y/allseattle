@@ -1,4 +1,5 @@
-import { NEIGHBORHOODS, MAP_SHAPES } from "../mock-data/neighborhoods.js";
+import * as L from "../vendor/leaflet/leaflet-src.esm.js";
+import { NEIGHBORHOODS } from "../mock-data/neighborhoods.js";
 import { EVENTS } from "../mock-data/events.js";
 import { JOB_LISTINGS } from "../mock-data/jobs.js";
 import { PROPERTIES } from "../mock-data/real-estate.js";
@@ -15,27 +16,48 @@ function countsFor(name) {
   };
 }
 
-// Схема в системе координат 0-100 — той же, в которой заданы точки районов.
-// Точки рисуются не в SVG, а обычным HTML поверх него: внутри SVG подпись
-// масштабировалась бы вместе с картинкой и на десктопе вырастала до 27px,
-// а так это обычный текст по шкале кеглей и настоящая тап-зона 44px.
+const pins = new Map();
+
+// Настоящая карта: Leaflet (лежит в js/vendor, не с CDN) и тайлы
+// OpenStreetMap — единственное, кроме Google Fonts, что страница тянет из
+// сети; без интернета останется серое поле с метками районов.
+// Все анимации Leaflet выключены (правило сайта — без анимаций), колесо мыши
+// карту не масштабирует, чтобы не перехватывать прокрутку страницы.
 function renderMap() {
   const el = document.getElementById("city-map");
   if (!el) return;
-  el.innerHTML = `
-  <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-    <rect x="0" y="0" width="100" height="100" class="map-water"></rect>
-    <path d="${MAP_SHAPES.land}" class="map-land"></path>
-    <path d="${MAP_SHAPES.canal}" class="map-canal"></path>
-    ${MAP_SHAPES.labels.map((l) => `<text x="${l.x}" y="${l.y}" class="map-water-label">${l.text}</text>`).join("")}
-  </svg>
-  <div class="map-pins">
-    ${NEIGHBORHOODS.map((n) => `
-      <button type="button" class="map-pin" data-hood="${n.id}" style="left:${n.x}%;top:${n.y}%">
-        <span class="map-dot" aria-hidden="true"></span>
-        <span class="map-label">${n.name}</span>
-      </button>`).join("")}
-  </div>`;
+  const map = L.map(el, {
+    scrollWheelZoom: false,
+    // Дробный зум: при целом fitBounds оставлял город мелким пятном
+    // посреди Пьюджет-Саунда.
+    zoomSnap: 0.25,
+    zoomAnimation: false,
+    fadeAnimation: false,
+    markerZoomAnimation: false,
+    inertia: false,
+  });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+
+  NEIGHBORHOODS.forEach((n) => {
+    const icon = L.divIcon({
+      className: "map-pin",
+      html: `<span class="map-pin-inner"><span class="map-dot" aria-hidden="true"></span><span class="map-label">${n.name}</span></span>`,
+      iconSize: null,
+    });
+    const marker = L.marker([n.lat, n.lng], { icon, title: n.name, alt: n.name, keyboard: true }).addTo(map);
+    marker.on("click", () => selectHood(n.id));
+    pins.set(n.id, marker);
+  });
+
+  // Справа запас под подписи: они стоят правее точек, и без него
+  // «Columbia City» обрезалась краем карты на телефоне.
+  map.fitBounds(L.latLngBounds(NEIGHBORHOODS.map((n) => [n.lat, n.lng])), {
+    paddingTopLeft: [24, 24],
+    paddingBottomRight: [120, 24],
+  });
 }
 
 function hoodCardTemplate(n) {
@@ -68,28 +90,16 @@ function renderGrid() {
 
 function selectHood(id) {
   document.querySelectorAll(".hood-card.is-active").forEach((c) => c.classList.remove("is-active"));
-  document.querySelectorAll(".map-pin.is-active").forEach((p) => p.classList.remove("is-active"));
+  pins.forEach((m, pinId) => m.getElement()?.classList.toggle("is-active", pinId === id));
   const card = document.getElementById(id);
-  const pin = document.querySelector(`.map-pin[data-hood="${id}"]`);
-  if (pin) pin.classList.add("is-active");
   if (card) {
     card.classList.add("is-active");
     card.scrollIntoView({ block: "start" });
   }
 }
 
-function wireMap() {
-  const el = document.getElementById("city-map");
-  if (!el) return;
-  el.addEventListener("click", (e) => {
-    const pin = e.target.closest(".map-pin");
-    if (pin) selectHood(pin.dataset.hood);
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   renderMap();
   renderGrid();
-  wireMap();
   mountAdSlots(document);
 });

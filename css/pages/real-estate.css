@@ -49,6 +49,13 @@
   max-height: 900px;
 }
 
+/* Реклама под фильтрами (вернули по просьбе клиента 27.09.2026). До 768px
+   колонка фильтров стоит над объектами, и два баннера отодвинули бы список
+   на экран вниз, поэтому на телефоне их нет — там работает верхний баннер. */
+.realty-ads {
+  display: none;
+}
+
 .realty-grid {
   grid-template-columns: 1fr;
 }
@@ -149,6 +156,12 @@
      и фильтры — иначе липкий блок налез бы на прокручивающуюся рекламу. */
 
   .realty-filters-toggle { display: none; }
+  .realty-ads {
+    display: flex;
+    flex-direction: column;
+    gap: var(--grid-gap);
+    margin-top: var(--space-8);
+  }
   .realty-filters-body {
     max-height: none;
     overflow: visible;
