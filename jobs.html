@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="css/tokens.css?v=20260927q">
-<link rel="stylesheet" href="css/base.css?v=20260927q">
-<link rel="stylesheet" href="css/header.css?v=20260927q">
-<link rel="stylesheet" href="css/footer.css?v=20260927q">
-<link rel="stylesheet" href="css/components.css?v=20260927q">
-<link rel="stylesheet" href="css/pages/jobs.css?v=20260927q">
+<link rel="stylesheet" href="css/tokens.css?v=20260927r">
+<link rel="stylesheet" href="css/base.css?v=20260927r">
+<link rel="stylesheet" href="css/header.css?v=20260927r">
+<link rel="stylesheet" href="css/footer.css?v=20260927r">
+<link rel="stylesheet" href="css/components.css?v=20260927r">
+<link rel="stylesheet" href="css/pages/jobs.css?v=20260927r">
 </head>
 <body data-page-type="inner" data-page="jobs">
 
@@ -34,15 +34,39 @@
         <a href="pricing.html" class="btn">Post a Job</a>
       </div>
 
-      <div class="category-filter" id="category-filter"></div>
-
+      <!-- Раздел собран по образцу work.ua, который прислал клиент: колонка
+           фильтров и плотные карточки вакансий. Колонка слева, а не справа как
+           в макете — так же, как рубрики в справочнике и каталог в Auto; это
+           выбор клиента. Рекламы в колонке нет: боковые места с этой страницы
+           сняты отдельной просьбой. -->
       <div class="jobs-layout">
-        <div>
-          <p class="result-count" id="jobs-count"></p>
+        <aside class="jobs-filters">
+          <button class="jobs-filters-toggle" id="jobs-filters-toggle" type="button"
+                  aria-expanded="false" aria-controls="jobs-filters-body">Filters</button>
+          <div class="jobs-filters-body" id="jobs-filters-body">
+            <div class="widget">
+              <div class="widget-head">Filters</div>
+              <div class="widget-body" id="jobs-filter-groups"></div>
+            </div>
+          </div>
+        </aside>
+
+        <div class="jobs-results">
+          <div class="jobs-toolbar">
+            <p class="result-count" id="jobs-count"></p>
+            <label class="jobs-sort">
+              <span>Sort by</span>
+              <select id="jobs-sort">
+                <option value="newest">Newest first</option>
+                <option value="salary-desc">Salary: high to low</option>
+                <option value="salary-asc">Salary: low to high</option>
+                <option value="company">Company A–Z</option>
+              </select>
+            </label>
+          </div>
           <div class="job-list" id="job-list"></div>
         </div>
       </div>
-
 
     </div>
   </section>

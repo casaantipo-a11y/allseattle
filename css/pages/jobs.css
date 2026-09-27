@@ -1,80 +1,441 @@
-/* Раздел Jobs. Рамку «контент + липкий сайдбар» даёт .side-layout из
-   components.css; здесь только строка вакансии. Фотографий нет намеренно —
-   список должностей читается быстрее без них. */
+/* Раздел Jobs. Собран по образцу work.ua, который прислал клиент: слева
+   колонка фильтров со счётчиками, справа плотные карточки вакансий.
+   Фотографий по-прежнему нет — список должностей читается быстрее без них, а
+   логотипов компаний у нас неоткуда взять, поэтому в карточке монограмма. */
 
-.job-list {
+/* ---------- Лестница колонок ----------
+   До 1024 одна колонка и список первым: фильтры на телефоне не должны
+   отодвигать вакансии на экран вниз. С 1024 — 300px под колонку, столько же,
+   сколько у рубрик справочника и боковых колонок сайта. */
+.jobs-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  align-items: start;
+}
+
+.jobs-results {
+  order: -1;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .jobs-layout {
+    grid-template-columns: 300px 1fr;
+  }
+  .jobs-results {
+    order: 0;
+  }
+}
+
+/* ---------- Колонка фильтров ----------
+   Вторая копия колонки фильтров на сайте: первая — .realty-filters на
+   «Недвижимости», устроенная так же (гармошка до 768px, дальше обычная
+   колонка). Появится третья — выносить в components.css, §9 про третью
+   одинаковую правку. Реклама сюда не возвращается: боковые места с этой
+   страницы сняты по отдельной просьбе клиента. */
+.jobs-filters {
+  position: static;
+  min-width: 0;
+}
+
+.jobs-filters-toggle {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  border: 1.5px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--color-navy);
+  cursor: pointer;
+  position: relative;
+}
+
+.jobs-filters-toggle::after {
+  content: "\25BE";
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-accent);
+}
+
+.jobs-filters-toggle.is-open::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.jobs-filters-body {
+  max-height: 0;
+  overflow: hidden;
+}
+
+.jobs-filters-body.open {
+  max-height: none;
+}
+
+@media (min-width: 768px) {
+  .jobs-filters-toggle {
+    display: none;
+  }
+  .jobs-filters-body {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* ---------- Группы фильтров ---------- */
+.filter-group + .filter-group {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--color-slate-soft);
 }
 
-.job-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-6) 0;
-  border-bottom: 1px solid var(--color-slate-soft);
-}
-
-.job-row-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-}
-
-.job-title {
+.filter-title {
   font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+  margin-bottom: var(--space-2);
+}
+
+.filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-list label,
+.filter-list--cats button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-1) 0;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+  text-align: left;
+  cursor: pointer;
+}
+
+.filter-list label span:first-of-type,
+.filter-list--cats button span:first-child {
+  flex: 1;
+}
+
+.filter-list input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--color-accent);
+}
+
+.filter-list--cats button:hover,
+.filter-list--cats button.active {
+  color: var(--color-accent);
   font-weight: 700;
-  font-size: var(--text-lg);
-  line-height: 1.25;
+}
+
+.filter-num {
+  flex: none;
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.filter-search input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
   color: var(--color-navy);
 }
 
-.job-salary {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: var(--text-sm);
-  color: var(--color-accent);
-  white-space: nowrap;
+.filter-pair {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.job-company {
+.filter-pair select {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2);
+  border: 1.5px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+/* Подпись, нужная только скринридеру: поля «от» и «to» в паре читаются по
+   плейсхолдеру, а вслух должны называться полностью. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Счётчик и сортировка ---------- */
+.jobs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.jobs-toolbar .result-count {
+  margin-bottom: 0;
+}
+
+.jobs-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.jobs-sort select {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+/* ---------- Карточка вакансии ----------
+   Из макета: бейджи сверху, крупное название, зарплата акцентом, компания
+   ссылкой, район с расстоянием до центра, строки-галочки и описание. */
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.job-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  padding: var(--card-pad);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+  background: var(--color-white);
+}
+
+.job-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.job-badge {
+  font-family: var(--font-heading);
   font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--color-slate);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
 }
 
-.job-desc {
-  font-size: var(--text-xs);
-  color: var(--color-slate);
-  max-width: 65ch;
+.job-badge--urgent {
+  background: var(--color-danger-bg);
+  color: var(--color-accent);
 }
 
-.job-tags {
+.job-badge--featured {
+  background: var(--color-gold-tint);
+  /* Тот же navy, что на золотой плашке в справочнике: белым по золоту
+     получается 2.36:1 вместо нужных 4.5. */
+  color: var(--color-navy);
+}
+
+.job-card-body {
+  min-width: 0;
+}
+
+.job-card-title {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: var(--text-lg);
+  line-height: 1.25;
+  color: var(--color-navy);
+  margin-bottom: var(--space-2);
+}
+
+.job-card-salary {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+
+.job-card-company {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
   align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-1);
 }
 
-.job-tag {
-  font-size: var(--text-xs);
+.job-card-company a {
   font-weight: 700;
-  padding: var(--space-1) var(--space-3);
+  color: var(--color-navy);
+  text-decoration: underline;
+}
+
+.job-card-company a:hover {
+  color: var(--color-accent);
+}
+
+.job-card-type {
+  padding: 2px var(--space-2);
   border-radius: var(--radius-full);
   background: var(--color-bg-soft);
   color: var(--color-slate);
+  font-weight: 600;
 }
 
-.job-tag--type {
-  background: var(--color-navy);
-  color: var(--color-white);
-}
-
-.job-posted {
-  margin-left: auto;
+.job-card-place {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--text-xs);
   color: var(--color-slate);
+  margin-bottom: var(--space-3);
+}
+
+.job-card-checks {
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.job-card-checks li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+}
+
+.job-check-icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-success);
+}
+
+.job-card-desc {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  max-width: 75ch;
+  margin-bottom: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.job-card-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Монограмма вместо логотипа: картинок логотипов у нас нет, а внешние в
+   проект не тянем (CLAUDE.md, «Images»). Одна плашка на все компании — §4
+   разрешает один акцент, разноцветные квадраты были бы вторым. */
+.job-card-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+}
+
+.job-card-posted {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+/* Кнопка ничего не сохраняет и говорит об этом при нажатии: localStorage на
+   сайте трогает только конкурс. */
+.job-card-save {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1.5px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+
+.job-card-save:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.job-card-save[disabled] {
+  color: var(--color-slate);
+  cursor: default;
+}
+
+@media (min-width: 640px) {
+  /* Монограмма, срок публикации и «Save» уходят в правый столбец, как в
+     макете; текст занимает остальное. */
+  .job-card {
+    grid-template-columns: 1fr auto;
+  }
+  .job-card-badges {
+    grid-column: 1 / -1;
+  }
+  .job-card-side {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    text-align: right;
+  }
 }

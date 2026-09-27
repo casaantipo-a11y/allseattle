@@ -1,6 +1,16 @@
 // Вакансии для раздела Jobs. Фотографий нет намеренно: список должностей
 // читается быстрее без них, и это снимает нагрузку с и без того небольших
-// пулов картинок.
+// пулов картинок. Логотипов компаний у нас тоже нет — карточка рисует
+// монограмму из названия.
+//
+// Поля сверх названия и зарплаты появились 27.09.2026, когда клиент попросил
+// собрать раздел по образцу work.ua: там у каждой вакансии строки-галочки
+// («готові взяти студента»), а в колонке — фильтры со счётчиками. Считать
+// счётчики можно только из данных, поэтому признаки лежат здесь, а не в
+// разметке. Вакансий по-прежнему 14: клиент решил объём не наращивать.
+//
+// salary остаётся строкой для показа, salaryMin/Max/Unit — числа для фильтра
+// «от — до»: часовую ставку и годовой оклад иначе не сравнить.
 
 export const JOB_LISTINGS = [
   {
@@ -10,8 +20,16 @@ export const JOB_LISTINGS = [
     category: "Hospitality",
     type: "Part-time",
     salary: "$22–25/hr",
+    salaryMin: 22, salaryMax: 25, salaryUnit: "hr",
     neighborhood: "Capitol Hill",
-    postedAt: "2026-09-23T08:10:00",
+    workMode: "On-site",
+    openTo: ["noExperience", "students"],
+    perks: ["Paid training", "Employee discount"],
+    languages: [],
+    contact: ["Phone", "Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-26T08:10:00",
     description: "Opening shifts Tuesday through Saturday, pour-over and espresso experience preferred but we train.",
   },
   {
@@ -21,8 +39,16 @@ export const JOB_LISTINGS = [
     category: "Hospitality",
     type: "Full-time",
     salary: "$26–30/hr",
+    salaryMin: 26, salaryMax: 30, salaryUnit: "hr",
     neighborhood: "South Lake Union",
-    postedAt: "2026-09-23T06:40:00",
+    workMode: "On-site",
+    openTo: ["fiftyPlus"],
+    perks: ["Health insurance", "Transit pass", "Meals on shift"],
+    languages: ["Spanish"],
+    contact: ["Phone"],
+    urgent: true,
+    featured: false,
+    postedAt: "2026-09-26T06:40:00",
     description: "Seasonal menu, scratch kitchen, four-day week. Two years on a hot line required.",
   },
   {
@@ -32,8 +58,16 @@ export const JOB_LISTINGS = [
     category: "Tech",
     type: "Full-time",
     salary: "$115k–140k",
+    salaryMin: 115000, salaryMax: 140000, salaryUnit: "yr",
     neighborhood: "Belltown",
-    postedAt: "2026-09-22T15:20:00",
+    workMode: "Hybrid",
+    openTo: ["accessible"],
+    perks: ["Health insurance", "Transit pass"],
+    languages: [],
+    contact: ["Email"],
+    urgent: false,
+    featured: true,
+    postedAt: "2026-09-25T15:20:00",
     description: "React and TypeScript, hybrid two days a week downtown. Accessibility work is a real part of the role.",
   },
   {
@@ -43,8 +77,16 @@ export const JOB_LISTINGS = [
     category: "Trades",
     type: "Full-time",
     salary: "$32–38/hr",
+    salaryMin: 32, salaryMax: 38, salaryUnit: "hr",
     neighborhood: "Ballard",
-    postedAt: "2026-09-22T11:05:00",
+    workMode: "On-site",
+    openTo: ["noExperience"],
+    perks: ["Health insurance", "Paid training"],
+    languages: [],
+    contact: ["Phone", "Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-25T11:05:00",
     description: "Japanese and domestic makes, ASE certification paid for after ninety days.",
   },
   {
@@ -54,8 +96,16 @@ export const JOB_LISTINGS = [
     category: "Healthcare",
     type: "Full-time",
     salary: "$48–56/hr",
+    salaryMin: 48, salaryMax: 56, salaryUnit: "hr",
     neighborhood: "Northgate",
-    postedAt: "2026-09-22T09:00:00",
+    workMode: "On-site",
+    openTo: ["accessible", "fiftyPlus"],
+    perks: ["Health insurance", "Signing bonus"],
+    languages: ["Spanish", "Mandarin"],
+    contact: ["Phone", "Email"],
+    urgent: true,
+    featured: true,
+    postedAt: "2026-09-25T09:00:00",
     description: "Three twelve-hour shifts, urgent care floor. Washington RN license required.",
   },
   {
@@ -65,8 +115,16 @@ export const JOB_LISTINGS = [
     category: "Retail",
     type: "Part-time",
     salary: "$21–23/hr",
+    salaryMin: 21, salaryMax: 23, salaryUnit: "hr",
     neighborhood: "Downtown",
-    postedAt: "2026-09-21T17:30:00",
+    workMode: "On-site",
+    openTo: ["noExperience", "students"],
+    perks: ["Paid training", "Transit pass", "Employee discount"],
+    languages: ["Spanish"],
+    contact: ["Phone", "Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-24T17:30:00",
     description: "Weekend coverage in the outdoor gear department, employee discount from day one.",
   },
   {
@@ -76,8 +134,16 @@ export const JOB_LISTINGS = [
     category: "Office",
     type: "Contract",
     salary: "$35–42/hr",
+    salaryMin: 35, salaryMax: 42, salaryUnit: "hr",
     neighborhood: "Wallingford",
-    postedAt: "2026-09-21T13:15:00",
+    workMode: "Hybrid",
+    openTo: ["accessible", "fiftyPlus"],
+    perks: ["Paid training"],
+    languages: [],
+    contact: ["Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-24T13:15:00",
     description: "Six-month contract covering a parental leave, QuickBooks and payroll reconciliation.",
   },
   {
@@ -87,8 +153,16 @@ export const JOB_LISTINGS = [
     category: "Education",
     type: "Full-time",
     salary: "$27–31/hr",
+    salaryMin: 27, salaryMax: 31, salaryUnit: "hr",
     neighborhood: "Green Lake",
-    postedAt: "2026-09-20T10:45:00",
+    workMode: "On-site",
+    openTo: ["fiftyPlus"],
+    perks: ["Health insurance", "Paid training"],
+    languages: ["Spanish", "ASL"],
+    contact: ["Phone", "Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-23T10:45:00",
     description: "Mixed-age classroom, sixteen children, two aides. ECE credits preferred.",
   },
   {
@@ -98,8 +172,16 @@ export const JOB_LISTINGS = [
     category: "Transport",
     type: "Full-time",
     salary: "$25–28/hr",
+    salaryMin: 25, salaryMax: 28, salaryUnit: "hr",
     neighborhood: "SoDo",
-    postedAt: "2026-09-20T07:20:00",
+    workMode: "On-site",
+    openTo: ["fiftyPlus"],
+    perks: ["Health insurance", "Paid training", "Signing bonus"],
+    languages: ["Spanish", "Vietnamese"],
+    contact: ["Phone"],
+    urgent: true,
+    featured: false,
+    postedAt: "2026-09-23T07:20:00",
     description: "Local routes only, home every night. Clean record and a year of box-truck experience.",
   },
   {
@@ -109,8 +191,16 @@ export const JOB_LISTINGS = [
     category: "Trades",
     type: "Part-time",
     salary: "$24–29/hr",
+    salaryMin: 24, salaryMax: 29, salaryUnit: "hr",
     neighborhood: "Fremont",
-    postedAt: "2026-09-19T16:00:00",
+    workMode: "On-site",
+    openTo: ["students"],
+    perks: ["Employee discount"],
+    languages: [],
+    contact: ["Phone", "Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-22T16:00:00",
     description: "Four days a week, established client book, commission on top of base.",
   },
   {
@@ -120,8 +210,16 @@ export const JOB_LISTINGS = [
     category: "Tech",
     type: "Full-time",
     salary: "$95k–118k",
+    salaryMin: 95000, salaryMax: 118000, salaryUnit: "yr",
     neighborhood: "Belltown",
-    postedAt: "2026-09-19T12:30:00",
+    workMode: "Remote",
+    openTo: ["accessible"],
+    perks: ["Health insurance", "Transit pass"],
+    languages: [],
+    contact: ["Email"],
+    urgent: false,
+    featured: true,
+    postedAt: "2026-09-22T12:30:00",
     description: "SQL and dashboard work for regional retail clients. Remote-friendly within Washington.",
   },
   {
@@ -131,8 +229,16 @@ export const JOB_LISTINGS = [
     category: "Office",
     type: "Full-time",
     salary: "$24–27/hr",
+    salaryMin: 24, salaryMax: 27, salaryUnit: "hr",
     neighborhood: "Northgate",
-    postedAt: "2026-09-18T14:50:00",
+    workMode: "On-site",
+    openTo: ["accessible", "fiftyPlus"],
+    perks: ["Health insurance", "Transit pass"],
+    languages: ["Spanish", "Vietnamese"],
+    contact: ["Phone", "Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-21T14:50:00",
     description: "Scheduling, insurance verification and patient intake for a six-provider clinic.",
   },
   {
@@ -142,8 +248,16 @@ export const JOB_LISTINGS = [
     category: "Hospitality",
     type: "Part-time",
     salary: "$23–26/hr",
+    salaryMin: 23, salaryMax: 26, salaryUnit: "hr",
     neighborhood: "Ballard",
-    postedAt: "2026-09-18T05:15:00",
+    workMode: "On-site",
+    openTo: ["noExperience", "students"],
+    perks: ["Paid training", "Meals on shift"],
+    languages: [],
+    contact: ["Phone"],
+    urgent: true,
+    featured: false,
+    postedAt: "2026-09-21T05:15:00",
     description: "Early mornings, shaping and scoring sourdough. No experience needed, willingness to start at 4 a.m. is.",
   },
   {
@@ -153,11 +267,55 @@ export const JOB_LISTINGS = [
     category: "Healthcare",
     type: "Contract",
     salary: "$40–60/hr",
+    salaryMin: 40, salaryMax: 60, salaryUnit: "hr",
     neighborhood: "Queen Anne",
-    postedAt: "2026-09-18T09:35:00",
+    workMode: "On-site",
+    openTo: ["students"],
+    perks: ["Employee discount"],
+    languages: [],
+    contact: ["Email"],
+    urgent: false,
+    featured: false,
+    postedAt: "2026-09-21T09:35:00",
     description: "Build your own client base in a small-group studio. NASM or equivalent certification required.",
   },
 ];
 
 export const JOB_CATEGORIES = [...new Set(JOB_LISTINGS.map((j) => j.category))].sort();
 export const JOB_TYPES = [...new Set(JOB_LISTINGS.map((j) => j.type))];
+export const JOB_WORK_MODES = ["On-site", "Hybrid", "Remote"];
+
+// Подписи групп «Suits you»: ключ хранится в данных, человеческое название —
+// здесь, чтобы фильтр и строка-галочка в карточке не разошлись словами.
+export const JOB_OPEN_TO = [
+  ["noExperience", "No experience needed"],
+  ["students", "Students welcome"],
+  ["accessible", "Accessible workplace"],
+  ["fiftyPlus", "50+ welcome"],
+];
+
+export const JOB_PERKS = [...new Set(JOB_LISTINGS.flatMap((j) => j.perks))].sort();
+export const JOB_LANGUAGES = [...new Set(JOB_LISTINGS.flatMap((j) => j.languages))].sort();
+
+// Расстояние до центра — по районам, а не по вакансиям: две вакансии в одном
+// районе иначе разъехались бы на пару миль без всякой причины.
+export const MILES_FROM_DOWNTOWN = {
+  Downtown: 0.3,
+  Belltown: 0.6,
+  "South Lake Union": 1.0,
+  "Capitol Hill": 1.4,
+  SoDo: 1.9,
+  "Queen Anne": 2.2,
+  Wallingford: 4.1,
+  Fremont: 4.4,
+  Ballard: 5.2,
+  "Green Lake": 5.6,
+  Northgate: 6.8,
+};
+
+// Часовая ставка против годового оклада: фильтр «от — до» сравнивает годовые
+// числа, 2080 — стандартные 40 часов на 52 недели.
+export function annualSalary(job) {
+  const mid = (job.salaryMin + job.salaryMax) / 2;
+  return job.salaryUnit === "hr" ? Math.round(mid * 2080) : Math.round(mid);
+}

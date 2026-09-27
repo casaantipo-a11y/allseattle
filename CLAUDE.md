@@ -546,11 +546,47 @@ their own reasons: **Entertainment** still has the `.side-rail` holding "Tonight
 from 404 to 496px — still well inside §2's 75 characters, but worth knowing before anyone reaches
 for a fourth column.
 
-**`jobs.html` — Jobs** — category chips, a count line, then `.job-list`: rows with title,
-salary, company · neighborhood, description, a type badge and posting age. No photos, by
-design. Home's Job Board widget reads the same data and links here.
+**`jobs.html` — Jobs** — **rebuilt to a work.ua screenshot the user sent** (27.09.2026): a filter
+column on the left and dense `.job-card` listings on the right. The card carries Urgent/Featured
+badges, the title, the salary in accent, the company as a link into `directory.html?q=…`, the
+employment pill, the neighbourhood with its distance from downtown, a list of green check lines
+(who it suits, work mode, languages, contact), a two-line description, and on the right a company
+monogram, the posting age and a Save button. No photos, by design. Home's Job Board widget reads
+the same data and links here.
 
-**Code:** [jobs.html](jobs.html) · [css/pages/jobs.css](css/pages/jobs.css) · [js/pages/jobs.js](js/pages/jobs.js) (`jobRowTemplate`, `renderList`) · data [js/mock-data/jobs.js](js/mock-data/jobs.js)
+**Code:** [jobs.html](jobs.html) · [css/pages/jobs.css](css/pages/jobs.css) · [js/pages/jobs.js](js/pages/jobs.js) (`jobCardTemplate`, `renderFilters`, `checkGroup`, `countFor`, `renderList`) · data [js/mock-data/jobs.js](js/mock-data/jobs.js)
+
+**The column is on the left, not on the right as in the screenshot** — the user's call, so the page
+matches the Directory's headings and Auto's model catalogue. It is the **second filter column on
+the site** (the first is `.realty-filters` on Real Estate) and is built the same way — an accordion
+below 768px, a plain column from 768px. A third one moves the pattern into `components.css`, §9.
+**No ads live in it**: the side placements were removed from all eight secondary sections an hour
+earlier, and only `jobs-top` remains on the page.
+
+**Four things from the screenshot were deliberately not copied**, and each is commented where it
+lives: the job title is **not a link** (there are no per-job pages, and a link to nowhere is what
+§7 bans — the Directory's rows are silent for the same reason); **Save saves nothing** and flashes
+"Demo only" like My Listings' Edit/Delete, because `contest.js` is the only thing allowed to touch
+`localStorage`; the company logo is a **monogram** (no logo images exist and nothing is hotlinked),
+one navy tile for every company because §4 allows one accent; and the **counts are small** (1–8,
+not thousands) because there are fourteen openings — the user chose not to grow the data. An option
+no opening matches is not rendered at all.
+
+`jobs.js` gained the fields those counts are computed from — `salaryMin/Max/Unit`, `workMode`,
+`openTo`, `perks`, `languages`, `contact`, `urgent`, `featured` — plus `MILES_FROM_DOWNTOWN` (per
+neighbourhood, so two openings in one place cannot disagree) and `annualSalary()`, which multiplies
+an hourly rate by 2080 so the "from–to" filter compares like with like. The display string `salary`
+stays as it was: Home's widget renders it.
+
+**Two traps worth knowing.** Each option's count is computed with its own group excluded
+(`countFor(group, …)`), otherwise ticking the first checkbox would zero every sibling and there
+would be nothing left to tick. And the keyword search re-renders the whole column, so the handler
+restores focus and the caret afterwards — without it the field lost focus on every keystroke.
+
+**The posting dates were moved three days forward** so the board reads as live, and the period
+filter measures against the real clock, the same one `relativeTime()` uses in the card. Don't set
+it against a hardcoded "today": the filter and the line under the job would disagree on screen.
+Those dates age like `news.js`'s — bump them before a demo.
 
 **`events.html` — Events** — category chips + `.event-grid`: cards with a date plaque over the
 photo, venue, neighborhood and price. `eventDateParts()` in the data file formats the plaque.
