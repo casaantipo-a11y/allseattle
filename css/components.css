@@ -750,6 +750,134 @@
   margin-bottom: var(--space-8);
 }
 
+/* ---------- Строка компании ----------
+   Живёт здесь, а не в css/pages/directory.css: тот же компонент рисуется на
+   двух страницах — в справочнике и в блоке «Directory of enterprises» раздела
+   Auto. Копия стиля под второе место была бы «разный стиль у однотипных
+   компонентов» (design.md §9). Разметку строки собирают bizRowTemplate() в
+   js/pages/directory.js и его копия в js/pages/auto-catalog.js. */
+.biz-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.biz-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  padding: var(--space-4);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+  background: var(--color-white);
+}
+
+/* Подложка по тарифу — так в макете отмечены платные размещения. Оттенки
+   объявлены в tokens.css, а не подобраны на глаз. Premium — золотой по просьбе
+   пользователя: он же верхний тариф, и на показе золото читается как «дороже»
+   быстрее, чем второй красный. */
+.biz-row--premium {
+  background: var(--color-gold-tint);
+  border-color: var(--color-gold);
+}
+
+/* Плашка тарифа в строке — тоже золотая, по просьбе пользователя. Правило
+   заужено до строки справочника: класс .badge-premium общий с pricing.html,
+   где плашка остаётся красной, пока не попросят обратного.
+   Текст на ней тёмный, и это не выбор стиля: белый на золоте даёт 2.36:1,
+   а 14px bold по AA требует 4.5. Navy даёт 7.38 — заодно больше, чем 4.23
+   у нынешней красной плашки, которая порог не держит. */
+.biz-row--premium .badge-premium {
+  background: var(--color-gold);
+  color: var(--color-navy);
+}
+
+.biz-row--lux {
+  background: var(--color-navy-tint);
+}
+
+.biz-row-thumb {
+  width: 72px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.biz-row-body {
+  min-width: 0;
+}
+
+.biz-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.biz-row-views {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+}
+
+.biz-row-upsell {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+/* Название — span, а не заголовок (design.md §6): строк пятнадцать, и h3
+   подряд ломали бы оглавление страницы. Начертание задаём здесь, чтобы строка
+   выглядела ровно так же, как выглядела заголовком. */
+.biz-row-name {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  color: var(--color-navy);
+  margin-bottom: var(--space-1);
+}
+
+.biz-row-cat {
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+
+.biz-row-desc {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  max-width: 75ch;
+  margin-bottom: var(--space-2);
+}
+
+.biz-row-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+}
+
+.biz-row-contact a {
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .biz-row {
+    grid-template-columns: 96px 1fr;
+  }
+  .biz-row-thumb {
+    width: 96px;
+  }
+}
+
 /* ---------- Modal (share-news, choose-package, contact-seller) ---------- */
 .modal-overlay {
   position: fixed;

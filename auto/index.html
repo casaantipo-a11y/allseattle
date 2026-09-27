@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="../img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="../css/tokens.css?v=20260927g">
-<link rel="stylesheet" href="../css/base.css?v=20260927g">
-<link rel="stylesheet" href="../css/header.css?v=20260927g">
-<link rel="stylesheet" href="../css/footer.css?v=20260927g">
-<link rel="stylesheet" href="../css/components.css?v=20260927g">
-<link rel="stylesheet" href="../css/pages/auto.css?v=20260927g">
+<link rel="stylesheet" href="../css/tokens.css?v=20260927h">
+<link rel="stylesheet" href="../css/base.css?v=20260927h">
+<link rel="stylesheet" href="../css/header.css?v=20260927h">
+<link rel="stylesheet" href="../css/footer.css?v=20260927h">
+<link rel="stylesheet" href="../css/components.css?v=20260927h">
+<link rel="stylesheet" href="../css/pages/auto.css?v=20260927h">
 </head>
 <body data-page-type="inner" data-page="auto">
 
@@ -40,61 +40,116 @@
         <a href="add-listing.html" class="btn">+ Post a Listing</a>
       </div>
 
-      <div class="auto-layout">
-        <aside class="auto-filters" id="auto-filters">
-          <button class="auto-filters-toggle" id="auto-filters-toggle" type="button">Filters &amp; Sort</button>
-          <div class="auto-filters-body" id="auto-filters-body">
-            <div class="field">
-              <label for="f-make">Make</label>
-              <select id="f-make"><option value="">All makes</option></select>
-            </div>
-            <div class="field">
-              <label for="f-price">Max price</label>
-              <select id="f-price">
-                <option value="">Any price</option>
-                <option value="15000">Under $15,000</option>
-                <option value="20000">Under $20,000</option>
-                <option value="25000">Under $25,000</option>
-                <option value="30000">Under $30,000</option>
-                <option value="999999">Any</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="f-year">Min year</label>
-              <select id="f-year">
-                <option value="">Any year</option>
-                <option value="2022">2022+</option>
-                <option value="2020">2020+</option>
-                <option value="2018">2018+</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="f-mileage">Max mileage</label>
-              <select id="f-mileage">
-                <option value="">Any mileage</option>
-                <option value="25000">Under 25,000</option>
-                <option value="40000">Under 40,000</option>
-                <option value="60000">Under 60,000</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="f-sort">Sort by</label>
-              <select id="f-sort">
-                <option value="default">Newest listed</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="year-desc">Year: Newest first</option>
-                <option value="mileage-asc">Mileage: Lowest first</option>
-              </select>
-            </div>
-            <button class="btn btn-outline btn-sm btn-block" id="f-reset" type="button">Reset Filters</button>
-            <div class="ad-desktop-slot" data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="auto-filter-ad" style="margin-top:20px;"></div>
+      <!-- Полоса поиска по макету клиента: марка, модель, цена и год в одну
+           строку над списком, остальное — под «Advanced search». -->
+      <form class="auto-search" id="auto-search" novalidate>
+        <div class="auto-search-row">
+          <div class="field">
+            <label for="f-make">Make</label>
+            <select id="f-make"><option value="">All makes</option></select>
           </div>
+          <div class="field">
+            <label for="f-model">Model</label>
+            <select id="f-model"><option value="">All models</option></select>
+          </div>
+          <div class="field auto-field-pair">
+            <label for="f-price-min">Price, $</label>
+            <div>
+              <select id="f-price-min" aria-label="Minimum price"><option value="">from</option></select>
+              <span aria-hidden="true">&ndash;</span>
+              <select id="f-price-max" aria-label="Maximum price"><option value="">to</option></select>
+            </div>
+          </div>
+          <div class="field auto-field-pair">
+            <label for="f-year-min">Year</label>
+            <div>
+              <select id="f-year-min" aria-label="Earliest year"><option value="">from</option></select>
+              <span aria-hidden="true">&ndash;</span>
+              <select id="f-year-max" aria-label="Latest year"><option value="">to</option></select>
+            </div>
+          </div>
+          <button class="btn" type="submit" id="f-find">Find</button>
+        </div>
+
+        <button type="button" class="auto-search-more" id="auto-search-more">Advanced search</button>
+
+        <div class="auto-search-adv" id="auto-search-adv">
+          <div class="field">
+            <label for="f-body">Body type</label>
+            <select id="f-body"><option value="">Any body</option></select>
+          </div>
+          <div class="field">
+            <label for="f-transmission">Transmission</label>
+            <select id="f-transmission"><option value="">Any transmission</option></select>
+          </div>
+          <div class="field">
+            <label for="f-fuel">Fuel</label>
+            <select id="f-fuel"><option value="">Any fuel</option></select>
+          </div>
+          <div class="field">
+            <label for="f-mileage">Max mileage</label>
+            <select id="f-mileage">
+              <option value="">Any mileage</option>
+              <option value="25000">Under 25,000 mi</option>
+              <option value="40000">Under 40,000 mi</option>
+              <option value="60000">Under 60,000 mi</option>
+              <option value="80000">Under 80,000 mi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-sort">Sort by</label>
+            <select id="f-sort">
+              <option value="default">Newest listed</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="year-desc">Year: Newest first</option>
+              <option value="mileage-asc">Mileage: Lowest first</option>
+            </select>
+          </div>
+          <button class="btn btn-outline btn-sm" id="f-reset" type="button">Reset filters</button>
+        </div>
+      </form>
+
+      <div class="auto-layout">
+        <aside class="auto-rail auto-rail--left">
+          <div class="widget" id="widget-car-catalog"></div>
         </aside>
 
         <div class="auto-results">
-          <p class="muted" id="auto-results-count" style="margin-bottom:14px;"></p>
-          <div class="grid car-grid" id="car-grid"></div>
+          <p class="result-count" id="auto-results-count"></p>
+          <div class="car-list" id="car-list"></div>
+        </div>
+
+        <aside class="auto-rail auto-rail--right">
+          <div data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="auto-side-1"></div>
+          <div data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="auto-filter-ad"></div>
+        </aside>
+      </div>
+
+      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="auto-mid" class="auto-mid-ad"></div>
+    </div>
+  </section>
+
+  <!-- «Directory of enterprises» из макета: слева темы, справа сами компании.
+       Компании берутся из справочника — это единственный их источник на
+       сайте, отдельного списка для Auto не заводим. -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Auto Services</span>
+          <h2>Directory of Enterprises</h2>
+        </div>
+        <a href="../directory.html?q=auto" class="btn btn-outline btn-sm">All auto businesses</a>
+      </div>
+
+      <div class="auto-layout auto-layout--firms">
+        <aside class="auto-rail auto-rail--left">
+          <div class="widget" id="widget-auto-topics"></div>
+        </aside>
+
+        <div class="auto-results">
+          <div class="biz-list" id="auto-firms"></div>
         </div>
       </div>
     </div>

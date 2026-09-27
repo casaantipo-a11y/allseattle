@@ -153,15 +153,17 @@ that neither `.nav-links` nor `.nav-secondary` has `scrollWidth > clientWidth` a
 A pass covers 17 pages, not 9 — a harness with a stale page list will happily report that
 everything is fine.
 
-### Known issue, not yours
+### Fixed: the console error on `auto/listing.html`
 
-`auto/listing.html` throws `Cannot read properties of null (reading 'appendChild')` at
-`js/pages/auto-catalog.js:33` on every load, in both viewports. It predates the current work.
-Cause: `auto-listing.js` imports `carCardTemplate` from `auto-catalog.js`, and that import also
-runs the catalog module's top-level `DOMContentLoaded` handler, whose `populateMakes()` looks for
-the `#f-make` filter select that only exists on the catalog page. The two handlers are
-independent, so the listing page still renders fully — the error is noise, not breakage. Treat a
-*clean* console on that page as the surprise.
+For a long time that page threw `Cannot read properties of null` on every load, because
+`auto-listing.js` imports `carCardTemplate` from `auto-catalog.js` and the import ran the catalog
+module's `DOMContentLoaded` too, which then went looking for filter controls that only exist on
+the catalog page. The handler now returns early unless `#car-list` is present. **Every page's
+console should be clean** — an error anywhere is a real finding now, not the known noise.
+
+The import itself is still the one cross-page-module import in the codebase, and the trap it
+represents has not gone away: a new page module must never import from another page module
+without that guard, which is why `bizRowTemplate()` is copied into `auto-catalog.js` instead.
 
 ## Architecture
 
@@ -576,14 +578,47 @@ keyboard and screen readers work on their own.
 
 **`auto/index.html` — Auto catalog**
 
-**Code:** [auto/index.html](auto/index.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-catalog.js](js/pages/auto-catalog.js) (`populateMakes`, `applyFilters`, `carCardTemplate`) · data [js/mock-data/cars.js](js/mock-data/cars.js)
+**Code:** [auto/index.html](auto/index.html) · [css/pages/auto.css](css/pages/auto.css) · [js/pages/auto-catalog.js](js/pages/auto-catalog.js) (`carRowTemplate`, `renderCatalog`, `renderList`, `renderTopics`, `renderFirms`) · data [js/mock-data/cars.js](js/mock-data/cars.js) · [js/mock-data/businesses.js](js/mock-data/businesses.js)
 
 1. Auto subnav — Catalog / Add a Car / My Listings (on all four Auto pages).
-2. 728×90 ad.
+2. 728×90 ad (`auto-top`).
 3. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
-4. `.auto-layout` — filter aside (Make, Max price, Min year, Max mileage, Sort by, Reset, plus a
-   300×600 ad; collapses into an accordion below 768px) | results: count line + car grid *(JS)*,
-   inline ad after card 4.
+4. **A full-width search bar** on navy, not a filter column: Make, Model, Price from–to, Year
+   from–to, Find, plus an "Advanced search" disclosure holding body, transmission, fuel, mileage
+   and sort. Everything filters as you pick; submit is swallowed.
+5. `.auto-layout` — the same column ladder as the Directory: **left rail** (Car catalog — 13
+   models in two columns with counts) | **main** (count line + 48 `.car-row` listings) |
+   **right rail** (300×250, 300×600).
+6. 728×90 (`auto-mid`), then a second `<section>`: **Directory of Enterprises** — auto topics on
+   the left linking into `directory.html?q=…`, the Auto Services companies as `.biz-row` on the
+   right.
+
+**The page was rebuilt to a mockup the client sent** (27.09.2026), and one conflict inside it had
+to be settled out loud: the mockup lists 40+ makes *and* shows no photos, while the user asked for
+full-size photos in the rows. There are exactly 13 photo sets, one per model, every one
+identifiable by badge (`c1-1.webp` is unmistakably a Toyota Camry), and no way to get more — the
+demo has to work offline. **The user chose photos**, so `cars.js` grew to 48 listings *within
+those 13 models* (different year, mileage, price, colour, trim, seller) and the left catalog
+lists **models, not makes** — there are only eight makes and they do not fill two columns.
+Every listing references its own model's photo set, so the picture always matches the title;
+a script checks that rather than an eye.
+
+`cars.js` gained `color`, `fuel`, `postedAt` and `ref` on every entry — the mockup's spec line and
+the date/number in the meta column. The mockup's "add to notebook" and "print" links were dropped:
+they would be controls that do nothing.
+
+**`carCardTemplate()` is still exported and still used** — `auto-listing.js` builds "Similar Cars"
+from it — but the catalog itself no longer calls it, and `.car-grid` survives only for that block.
+The module's `DOMContentLoaded` now returns early when `#car-list` is missing, **which fixes the
+console error `auto/listing.html` used to throw on every load** (the one this file documented
+under "Known issue"); a clean console there is now the correct state.
+
+**`.biz-row*` moved from `directory.css` to `components.css`** — the same row now renders on two
+pages, and a second copy of the style is what §9 bans. `bizRowTemplate()` is **copied** into
+`auto-catalog.js` rather than imported, for the reason above: importing a page module runs its
+`DOMContentLoaded` too.
+
+**`directory.js` reads `?q=`** so the enterprise topics can link into a pre-filled search.
 
 **`auto/listing.html` — Car detail** (reads `?id=` — an unknown id silently falls back to the
 first car)
@@ -715,7 +750,16 @@ because the second copy of that list would have drifted from the first — the s
 weather and the Weather section once disagreed.
 
 `businesses.js` carries `views` and `address` per business. Only the Directory renders them today;
-other sections get the same treatment when the user asks for it, not automatically.
+other sections get the same treatment when the user asks for it, not automatically. It also holds
+**nine Auto Services companies**, eight of them added for the Auto page's "Directory of
+Enterprises" block — they live here because the directory is the site's only source of companies,
+and `shopping.js` and `stats.js` both read from it. Their photos come from `img/cars/`, not the
+`img/business/` pool: that pool is cafés, salons and bookshops, and a fitness-studio photo over
+"Emerald Shine Car Wash" reads as a mistake on a demo.
+
+**Both showcase numbers moved when that data grew**, and they move together because `stats.js` is
+the single source: 15 businesses → 23 (`615+` → `943+` listed) and 13 cars → 48 (`351+` → `1296+`
+active listings), on Home and the Directory alike.
 
 Three of them are deliberately joined to their neighbours rather than self-contained, which is
 what stops the sections reading as separate sites: `shopping.js` holds a `businessId` and
@@ -957,8 +1001,9 @@ that needs an offset from the header to read it from there too.
 
 Two adjacent `<section class="section">` elements would otherwise stack their own vertical
 padding and put 192px between them, twice what §1 allows. `main > .section + .section` zeroes
-the second one's top, so the gap is the single `--section-y`. Home is currently the only page
-with two sections; the rule is there so the next one doesn't have to rediscover this.
+the second one's top, so the gap is the single `--section-y`. Home and the Auto catalog are the
+two pages with two sections — Auto's second one is "Directory of Enterprises" — and neither had
+to rediscover this.
 
 **One centimetre is the vertical seam everywhere now** — 36px, the nearest sum of scale steps to
 1cm's 37.8. The user measured it with a ruler twice (Home's two sections, then News's gap to the

@@ -141,8 +141,14 @@ function wire(state) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const state = { category: "All", query: "" };
+  // ?q= подставляется в поиск: по таким ссылкам приходят темы из блока
+  // «Directory of enterprises» в разделе Auto. Рубрику так не выбираем —
+  // поиск и без того сверяет её вместе с названием, описанием и адресом.
+  const query = (new URLSearchParams(location.search).get("q") || "").trim();
+  const state = { category: "All", query };
   const form = document.getElementById("dir-search");
+  const input = document.getElementById("dir-q");
+  if (input && query) input.value = query;
   if (form) form.insertAdjacentHTML("afterbegin", `<span class="dir-search-icon">${UI_ICONS.search}</span>`);
   renderCategories(state.category);
   renderList(state);
