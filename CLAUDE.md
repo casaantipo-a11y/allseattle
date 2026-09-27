@@ -425,8 +425,8 @@ counts: the site has neither, and the user asked for "the big stories", not the 
    card went *under* the categories rather than above them or above the 300×250, for two measured
    reasons: the left rail ends at y=1109 while the list runs to 3432, so that column was empty for
    2323px, and anything placed at the top of either rail pushes the first (most expensive)
-   placement down ~130px and breaks the column tops' alignment with the search bar, which the user
-   asked for. The card's `.widget-body` takes 16px of padding instead of `--card-pad` — at 32px
+   placement down ~130px and pushes the rails' tops out of the relationship with the search bar
+   that the user set by hand. The card's `.widget-body` takes 16px of padding instead of `--card-pad` — at 32px
    the 240px column leaves 172px and the button's label wraps.
    **This page's `h1` is smaller than the rest of the site** — the clamp's ceiling is 40px
    instead of 48, at the user's request; the floor stays 30 so the phone is unchanged. 40 is
@@ -437,6 +437,14 @@ counts: the site has neither, and the user asked for "the big stories", not the 
 2. `.dir-layout` — three columns, built to a mockup the client sent: **left rail** (Headings —
    the category list, then the Add Your Business card) | **main** (search, the business list) |
    **right rail** (300×250, Statistics, 300×600).
+
+**From 1440px both rails sit 38px above the middle column**, at the user's request — their tops
+line up with the heading's line rather than with the search bar. **That rise is scoped to 1440
+and it is a measurement, not caution:** at 1280–1439 the heading is only shifted 136px, so its
+letters start at x=176 while the left rail occupies 32–272, and a raised rail covers them by 96px
+horizontally and 40 vertically — the Headings widget lands on top of "Find a S…". Below 1280 the
+rails stack instead of sitting side by side, and raising the left one would run it into the ad
+above it.
 
 **The listing is rows, not photo cards** — `.biz-row`: a 72px thumbnail (96 from 768), the tier
 badge, the month's views, name, category, description, address and phone. The client's mockup had
