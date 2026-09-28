@@ -577,13 +577,15 @@ below 768px, a plain column from 768px. A third one moves the pattern into `comp
 earlier, and only `jobs-top` remains on the page.
 
 **Desktop geometry the user set (27.09.2026, from 1024px, in `jobs.css`):** `.jobs-head` takes
-the page's own grid (`300px 1fr`, same gap), so "Work in Seattle" sits in the first column above
-Filters, while "Job Board" sits in the second in a box as wide as a card (`calc(100% - 208px)`)
-with `text-align: center` — centred over the job card, not the page. The button stays at the
+the page's own grid (`300px 1fr`, same gap); "Work in Seattle" and "Job Board" both sit in the
+second column, stacked as on every other page, each in a box as wide as a card
+(`calc(100% - 208px)`) with `text-align: center` — centred over the job card, not the page
+(the eyebrow has `padding-left: 0.14em` to cancel its trailing letter-spacing). The button stays at the
 column's right edge, inside the 208px strip the cards leave free, so it never meets the heading
 (measured at 1024–1920). Every `.job-card` is 5.5 cm (208px) shorter than the results column.
-On top of that the eyebrow sits 32px lower (`top` 48px instead of 16 — 18px above Filters at
-1440, 9px at 1024) and the heading 8px higher, desktop only — in one column on a phone the lowered eyebrow would land on the heading.
+Both lines are lifted 8px (eyebrow `top: 16px - 8px`, heading `top: -8px`), so the gap between
+them is the site-wide one. (Until 28.09.2026 the eyebrow sat in the first column above Filters;
+the user asked for it back over the heading.)
 **There is no result count on this page** — the user had "14 openings in Seattle" removed, so
 the sort control is the toolbar's only item; from 1024px the toolbar is card-wide
 (`calc(100% - 208px)`) with `justify-content: center`, so the sort is centred over the card
