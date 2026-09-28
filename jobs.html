@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="css/tokens.css?v=20260928l">
-<link rel="stylesheet" href="css/base.css?v=20260928l">
-<link rel="stylesheet" href="css/header.css?v=20260928l">
-<link rel="stylesheet" href="css/footer.css?v=20260928l">
-<link rel="stylesheet" href="css/components.css?v=20260928l">
-<link rel="stylesheet" href="css/pages/jobs.css?v=20260928l">
+<link rel="stylesheet" href="css/tokens.css?v=20260928m">
+<link rel="stylesheet" href="css/base.css?v=20260928m">
+<link rel="stylesheet" href="css/header.css?v=20260928m">
+<link rel="stylesheet" href="css/footer.css?v=20260928m">
+<link rel="stylesheet" href="css/components.css?v=20260928m">
+<link rel="stylesheet" href="css/pages/jobs.css?v=20260928m">
 </head>
 <body data-page-type="inner" data-page="jobs">
 
@@ -32,6 +32,19 @@
           <h1>Job Board</h1>
         </div>
         <a href="pricing.html" class="btn">Post a Job</a>
+        <!-- Сортировка — часть шапки: с 1024px она стоит по центру страницы под
+             заголовком, а «Post a Job» — в её строке у правого края. -->
+        <div class="jobs-toolbar">
+          <label class="jobs-sort">
+            <span>Sort by</span>
+            <select id="jobs-sort">
+              <option value="newest">Newest first</option>
+              <option value="salary-desc">Salary: high to low</option>
+              <option value="salary-asc">Salary: low to high</option>
+              <option value="company">Company A–Z</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       <!-- Раздел собран по образцу work.ua, который прислал клиент: колонка
@@ -52,17 +65,6 @@
         </aside>
 
         <div class="jobs-results">
-          <div class="jobs-toolbar">
-            <label class="jobs-sort">
-              <span>Sort by</span>
-              <select id="jobs-sort">
-                <option value="newest">Newest first</option>
-                <option value="salary-desc">Salary: high to low</option>
-                <option value="salary-asc">Salary: low to high</option>
-                <option value="company">Company A–Z</option>
-              </select>
-            </label>
-          </div>
           <div class="job-list" id="job-list"></div>
         </div>
       </div>

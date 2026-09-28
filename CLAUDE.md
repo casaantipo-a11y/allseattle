@@ -576,21 +576,20 @@ below 768px, a plain column from 768px. A third one moves the pattern into `comp
 **No ads live in it**: the side placements were removed from all eight secondary sections an hour
 earlier, and only `jobs-top` remains on the page.
 
-**Desktop geometry the user set (27–28.09.2026, from 1024px, in `jobs.css`):** the section head
-sits above the whole layout and is one column: "Work in Seattle" and "Job Board" are stacked with
-`text-align: center` — centred on the **page width**, not the card (the eyebrow has
-`padding-left: 0.14em` to cancel its trailing letter-spacing) — and the button shares the
-heading's cell, `justify-self: end`. Both lines are 16px below the site default (eyebrow
-`top: 24px`, heading `top: 8px`); the head has `margin-bottom: 24px` for more air above the sort.
-Every `.job-card` is 5.5 cm (208px) shorter than the results column. `.jobs-filters` has
-`margin-top: 44px + 16px` (the sort row's height — the select's `min-height` — plus its
-`margin-bottom`), so the Filters panel's top is level with the first job card's top (measured
-567 = 567 at 1024, 575 = 575 at 1440/1920). Change the toolbar's height or margin and that
-margin together.
+**Desktop geometry the user set (27–28.09.2026, from 1024px, in `jobs.css`):** the sort toolbar
+lives **inside `.jobs-head`** in `jobs.html` (after the button), so the head is eyebrow / heading /
+sort row, all above the two-column layout. Note `.jobs-head > .jobs-toolbar` sets
+`display: flex` explicitly — the shared `.section-head > div { display: contents }` would
+otherwise dissolve it. From 1024 the head is one column: "Work in Seattle", "Job Board" and the
+sort are centred on the **page width** (the eyebrow has `padding-left: 0.14em` to cancel its
+trailing letter-spacing), and "Post a Job" shares the sort's grid row with `justify-self: end;
+align-self: center` and identical margins (24px above, 16px below), so its centre is level with
+the select's (measured 539 = 539 at 1440). Both text lines are 16px below the site default
+(eyebrow `top: 24px`, heading `top: 8px`). Because nothing sits above the layout's columns any
+more, the Filters panel's top and the first job card's top coincide by construction. Every
+`.job-card` is 104px shorter than the results column (was 208; "a little wider").
 **There is no result count on this page** — the user had "14 openings in Seattle" removed, so
-the sort control is the toolbar's only item; from 1024px the toolbar is card-wide
-(`calc(100% - 208px)`) with `justify-content: center`, so the sort is centred over the card
-like the heading (below 1024 it sits at the start of the row). `jobs.js` no longer writes a
+the sort control is the toolbar's only item; `jobs.js` no longer writes a
 count either. (A first try put the whole head in the page
 centre shifted 200px left; the user replaced that with this.)
 
