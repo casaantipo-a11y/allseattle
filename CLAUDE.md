@@ -576,16 +576,18 @@ below 768px, a plain column from 768px. A third one moves the pattern into `comp
 **No ads live in it**: the side placements were removed from all eight secondary sections an hour
 earlier, and only `jobs-top` remains on the page.
 
-**Desktop geometry the user set (27.09.2026, from 1024px, in `jobs.css`):** `.jobs-head` takes
-the page's own grid (`300px 1fr`, same gap); "Work in Seattle" and "Job Board" both sit in the
-second column, stacked as on every other page, each in a box as wide as a card
-(`calc(100% - 208px)`) with `text-align: center` — centred over the job card, not the page
-(the eyebrow has `padding-left: 0.14em` to cancel its trailing letter-spacing). The button stays at the
-column's right edge, inside the 208px strip the cards leave free, so it never meets the heading
-(measured at 1024–1920). Every `.job-card` is 5.5 cm (208px) shorter than the results column.
-Both lines are lifted 8px (eyebrow `top: 16px - 8px`, heading `top: -8px`), so the gap between
-them is the site-wide one. (Until 28.09.2026 the eyebrow sat in the first column above Filters;
-the user asked for it back over the heading.)
+**Desktop geometry the user set (27–28.09.2026, from 1024px, in `jobs.css`):** the section head
+lives **inside `.jobs-results`** in `jobs.html`, not above the whole layout, so the filters column
+and the head start at the same y at every width. The head's grid is `minmax(0,1fr) 208px`:
+"Work in Seattle" and "Job Board" are stacked in column 1 with `text-align: center` — centred
+over the job card, not the page (the eyebrow has `padding-left: 0.14em` to cancel its trailing
+letter-spacing) — and the button sits in the 208px strip at the right edge, so it never meets
+the heading. Every `.job-card` is 5.5 cm (208px) shorter than the results column. The eyebrow
+is at `top: 24px` and the heading at `top: 8px` (both 16px lower than the site default the user
+asked for), and `.jobs-filters` has `margin-top: 24px + 4px` so the top of the dark Filters bar
+is level with the top of the "WORK IN SEATTLE" capitals (measured 433 = 433 at 1024/1440/1920).
+Change the eyebrow's `top` and that margin together. Below 1024 the order is unchanged: head,
+list, filters.
 **There is no result count on this page** — the user had "14 openings in Seattle" removed, so
 the sort control is the toolbar's only item; from 1024px the toolbar is card-wide
 (`calc(100% - 208px)`) with `justify-content: center`, so the sort is centred over the card

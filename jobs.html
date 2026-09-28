@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="css/tokens.css?v=20260928j">
-<link rel="stylesheet" href="css/base.css?v=20260928j">
-<link rel="stylesheet" href="css/header.css?v=20260928j">
-<link rel="stylesheet" href="css/footer.css?v=20260928j">
-<link rel="stylesheet" href="css/components.css?v=20260928j">
-<link rel="stylesheet" href="css/pages/jobs.css?v=20260928j">
+<link rel="stylesheet" href="css/tokens.css?v=20260928k">
+<link rel="stylesheet" href="css/base.css?v=20260928k">
+<link rel="stylesheet" href="css/header.css?v=20260928k">
+<link rel="stylesheet" href="css/footer.css?v=20260928k">
+<link rel="stylesheet" href="css/components.css?v=20260928k">
+<link rel="stylesheet" href="css/pages/jobs.css?v=20260928k">
 </head>
 <body data-page-type="inner" data-page="jobs">
 
@@ -25,14 +25,6 @@
   <section class="section">
     <div class="container">
       <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="jobs-top" class="ad-slot-top"></div>
-
-      <div class="section-head section-head--sub jobs-head">
-        <div>
-          <span class="eyebrow">Work in Seattle</span>
-          <h1>Job Board</h1>
-        </div>
-        <a href="pricing.html" class="btn">Post a Job</a>
-      </div>
 
       <!-- Раздел собран по образцу work.ua, который прислал клиент: колонка
            фильтров и плотные карточки вакансий. Колонка слева, а не справа как
@@ -52,6 +44,16 @@
         </aside>
 
         <div class="jobs-results">
+          <!-- Шапка внутри колонки вакансий, а не над всей сеткой: так верх
+               колонки фильтров совпадает с верхом шапки, и Filters стоит на
+               одной линии с «Work in Seattle» на любой ширине. -->
+          <div class="section-head section-head--sub jobs-head">
+            <div>
+              <span class="eyebrow">Work in Seattle</span>
+              <h1>Job Board</h1>
+            </div>
+            <a href="pricing.html" class="btn">Post a Job</a>
+          </div>
           <div class="jobs-toolbar">
             <label class="jobs-sort">
               <span>Sort by</span>
