@@ -586,8 +586,12 @@ trailing letter-spacing), and "Post a Job" shares the sort's grid row with `just
 align-self: center` and identical margins (24px above, 16px below), so its centre is level with
 the select's (measured 539 = 539 at 1440). Both text lines are 16px below the site default
 (eyebrow `top: 24px`, heading `top: 8px`). Because nothing sits above the layout's columns any
-more, the Filters panel's top and the first job card's top coincide by construction. Every
-`.job-card` is 104px shorter than the results column (was 208; "a little wider").
+more, the columns start together; then `.jobs-filters` gets `margin-top: -(44px + 16px + 2px)`
+(the select's `min-height`, the toolbar's `margin-bottom`, and 2px the head row adds — measured)
+so the Filters panel's top is level with the **sort select's top** (517 = 517 at 1440, 509 = 509
+at 1024) — change them together. Every `.job-card` is 104px shorter than the results column
+(was 208; "a little wider"), and from 1024 its text is one scale step larger (title xl, salary
+base, the rest sm, monogram 56px, description max 90ch) — the wide cards looked empty.
 **There is no result count on this page** — the user had "14 openings in Seattle" removed, so
 the sort control is the toolbar's only item; `jobs.js` no longer writes a
 count either. (A first try put the whole head in the page

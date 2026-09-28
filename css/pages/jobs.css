@@ -495,4 +495,28 @@
   .job-card {
     max-width: calc(100% - 104px);
   }
+  /* Filters на одной горизонтали с сортировкой (28.09.2026): колонку
+     поднимаем на высоту строки сортировки (select, min-height 44px) и её
+     нижний отступ, и ещё 2px — столько добавляет строка шапки под select
+     (замер 28.09.2026: без них плашка на 2px ниже). Слева от сортировки в
+     шапке пусто — она по центру страницы, уже 300px колонки. */
+  .jobs-filters {
+    margin-top: calc(-1 * (44px + var(--space-4) + 2px));
+  }
+  /* Текст карточки на шаг шкалы крупнее: на широкой карточке мелкий шрифт
+     оставлял много пустого места (просьба клиента 28.09.2026). */
+  .job-card-title { font-size: var(--text-xl); }
+  .job-card-salary { font-size: var(--text-base); }
+  .job-card-company,
+  .job-card-place,
+  .job-card-checks li,
+  .job-card-desc,
+  .job-card-posted,
+  .job-card-save { font-size: var(--text-sm); }
+  .job-card-desc { max-width: 90ch; }
+  .job-card-logo {
+    width: 56px;
+    height: 56px;
+    font-size: var(--text-base);
+  }
 }
