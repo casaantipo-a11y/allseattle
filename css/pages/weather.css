@@ -551,6 +551,14 @@
   color: var(--color-slate);
 }
 
+/* Иконка на 2px ниже: по центру блока рисунок облака (y 5.6–18.4 из 24)
+   стоял на 2px выше букв «Cloudy» — замерено по краю рисунка и букв на
+   1440. Клиент попросил выровнять начало иконки с текстом (28.09.2026). */
+.weather-region-cond .weather-icon-sm {
+  position: relative;
+  top: 2px;
+}
+
 .weather-region-temp {
   font-family: var(--font-heading);
   font-weight: 800;
