@@ -577,17 +577,16 @@ below 768px, a plain column from 768px. A third one moves the pattern into `comp
 earlier, and only `jobs-top` remains on the page.
 
 **Desktop geometry the user set (27–28.09.2026, from 1024px, in `jobs.css`):** the section head
-lives **inside `.jobs-results`** in `jobs.html`, not above the whole layout, so the filters column
-and the head start at the same y at every width. The head's grid is `minmax(0,1fr) 208px`:
-"Work in Seattle" and "Job Board" are stacked in column 1 with `text-align: center` — centred
-over the job card, not the page (the eyebrow has `padding-left: 0.14em` to cancel its trailing
-letter-spacing) — and the button sits in the 208px strip at the right edge, so it never meets
-the heading. Every `.job-card` is 5.5 cm (208px) shorter than the results column. The eyebrow
-is at `top: 24px` and the heading at `top: 8px` (both 16px lower than the site default the user
-asked for), and `.jobs-filters` has `margin-top: 24px + 4px` so the top of the dark Filters bar
-is level with the top of the "WORK IN SEATTLE" capitals (measured 433 = 433 at 1024/1440/1920).
-Change the eyebrow's `top` and that margin together. Below 1024 the order is unchanged: head,
-list, filters.
+sits above the whole layout and is one column: "Work in Seattle" and "Job Board" are stacked with
+`text-align: center` — centred on the **page width**, not the card (the eyebrow has
+`padding-left: 0.14em` to cancel its trailing letter-spacing) — and the button shares the
+heading's cell, `justify-self: end`. Both lines are 16px below the site default (eyebrow
+`top: 24px`, heading `top: 8px`); the head has `margin-bottom: 24px` for more air above the sort.
+Every `.job-card` is 5.5 cm (208px) shorter than the results column. `.jobs-filters` has
+`margin-top: 44px + 16px` (the sort row's height — the select's `min-height` — plus its
+`margin-bottom`), so the Filters panel's top is level with the first job card's top (measured
+567 = 567 at 1024, 575 = 575 at 1440/1920). Change the toolbar's height or margin and that
+margin together.
 **There is no result count on this page** — the user had "14 openings in Seattle" removed, so
 the sort control is the toolbar's only item; from 1024px the toolbar is card-wide
 (`calc(100% - 208px)`) with `justify-content: center`, so the sort is centred over the card
