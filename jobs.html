@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="css/tokens.css?v=20260928r">
-<link rel="stylesheet" href="css/base.css?v=20260928r">
-<link rel="stylesheet" href="css/header.css?v=20260928r">
-<link rel="stylesheet" href="css/footer.css?v=20260928r">
-<link rel="stylesheet" href="css/components.css?v=20260928r">
-<link rel="stylesheet" href="css/pages/jobs.css?v=20260928r">
+<link rel="stylesheet" href="css/tokens.css?v=20260928s">
+<link rel="stylesheet" href="css/base.css?v=20260928s">
+<link rel="stylesheet" href="css/header.css?v=20260928s">
+<link rel="stylesheet" href="css/footer.css?v=20260928s">
+<link rel="stylesheet" href="css/components.css?v=20260928s">
+<link rel="stylesheet" href="css/pages/jobs.css?v=20260928s">
 </head>
 <body data-page-type="inner" data-page="jobs">
 
@@ -54,6 +54,10 @@
            сняты отдельной просьбой. -->
       <div class="jobs-layout">
         <aside class="jobs-filters">
+          <!-- С 1024px «Post a Job» стоит здесь, над Filters, на всю ширину
+               колонки, а кнопка в шапке скрыта (jobs.css). Ниже 1024 наоборот:
+               колонка уходит под список, и кнопка остаётся в шапке. -->
+          <a href="pricing.html" class="btn btn-block jobs-post-side">Post a Job</a>
           <button class="jobs-filters-toggle" id="jobs-filters-toggle" type="button"
                   aria-expanded="false" aria-controls="jobs-filters-body">Filters</button>
           <div class="jobs-filters-body" id="jobs-filters-body">

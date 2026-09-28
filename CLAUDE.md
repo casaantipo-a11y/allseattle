@@ -582,9 +582,11 @@ sort row, all above the two-column layout. Note `.jobs-head > .jobs-toolbar` set
 `display: flex` explicitly — the shared `.section-head > div { display: contents }` would
 otherwise dissolve it. From 1024 the head is one column: "Work in Seattle", "Job Board" and the
 sort are centred on the **page width** (the eyebrow has `padding-left: 0.14em` to cancel its
-trailing letter-spacing), and "Post a Job" shares the sort's grid row with `justify-self: end;
-align-self: center` and identical margins (24px above, 16px below), so its centre is level with
-the select's (measured 539 = 539 at 1440). Both text lines are 16px below the site default
+trailing letter-spacing). **"Post a Job" exists twice in `jobs.html`:** the head's button (shown
+below 1024, where the filters column drops under the list) and `.jobs-post-side`, the first child
+of `.jobs-filters`, shown only from 1024 — full column width (300px), 16px above the Filters
+panel, its top level with the first job card; the head's copy is `display: none` there. The
+user's reason: aligned to the left column, it no longer competes with the heading. Both text lines are 16px below the site default
 (eyebrow `top: 24px`, heading `top: 8px`). Because nothing sits above the layout's columns any
 more, the Filters panel's top and the first job card's top coincide by construction (the user
 tried Filters level with the sort row and asked for it back down, 28.09.2026). Every `.job-card` is 104px shorter than the results column
