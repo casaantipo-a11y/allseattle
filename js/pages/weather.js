@@ -4,7 +4,8 @@ import { mountAdSlots } from "../banner-ads.js";
 
 // Вкладка и единицы живут только в памяти страницы: localStorage на сайте
 // разрешён одному конкурсу (CLAUDE.md, «The demo contract»).
-const state = { view: "week", unit: "f" };
+// Открывается на Today (по часам) — просьба клиента 28.09.2026.
+const state = { view: "today", unit: "f" };
 
 const toUnit = (f) => (state.unit === "c" ? Math.round(((f - 32) * 5) / 9) : f);
 const deg = (f) => `${toUnit(f)}&deg;`;

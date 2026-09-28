@@ -650,6 +650,9 @@ and the active tab; the emoji became words; the avatar and "Search for places" w
 
 Things worth knowing before touching it:
 
+- **The page opens on Today** (the hourly strip), not Week as in the mockup — the user asked
+  for that on 28.09.2026; the default is `state.view` in `weather.js` plus the matching
+  `aria-selected` in the HTML.
 - **Tab and unit state is in memory only** (`state` in `weather.js`) — `localStorage` belongs
   to the contest alone. Every temperature in `weather.js` is °F; `toUnit()` converts on render,
   there are no stored Celsius numbers.
