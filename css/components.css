@@ -224,16 +224,21 @@
   .section-head--btn-low .btn {
     top: calc(-1 * var(--space-1) + 10px);
   }
-  /* Семь малых разделов от Events до Q&A: кнопка ещё на 8px ниже, чем была
-     (просьба клиента 28.09.2026). Через translate, а не top — он
+  /* Events, Shopping, Entertainment, Real Estate, Q&A: кнопка ещё на 8px
+     ниже, чем была (просьба клиента 28.09.2026). Через translate, а не top — он
      складывается с уже заданными top/left, и правило одно для страниц с
      --btn-low и без него. Jobs класса не носит: там кнопка стоит в строке
      сортировки. */
-  .section-head--btn-down .btn {
-    translate: var(--head-btn-dx, 0) var(--space-2);
+  .section-head .btn {
+    translate: var(--head-btn-dx, 0) var(--head-btn-dy, 0);
+  }
+  .section-head--btn-down {
+    --head-btn-dy: var(--space-2);
   }
   /* Weather и разделы после неё (Real Estate, City Map, Q&A): кнопка на
-     12px левее — просьба клиента 28.09.2026. */
+     12px левее — просьба клиента 28.09.2026. На Weather и City Map клиент
+     потом вернул кнопку на прежнюю высоту — там только этот класс, без
+     --btn-down. */
   .section-head--nudge {
     --head-btn-dx: -12px;
   }

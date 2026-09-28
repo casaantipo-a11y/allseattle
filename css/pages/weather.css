@@ -579,3 +579,14 @@
 @media (min-width: 1440px) {
   .weather-region { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* Надзаголовок и заголовок раздела ещё на 4px правее общего для четырёх
+   разделов сдвига (components.css, .section-head--nudge): 4 + 4 = 8px —
+   просьба клиента 28.09.2026, только на Weather. С 640px: на 320px лишние
+   4px выталкивали «Seattle Forecast» за край экрана (замер: ширина 322). */
+@media (min-width: 640px) {
+  .section-head--nudge .eyebrow,
+  .section-head--nudge h1 {
+    translate: var(--space-2) 0;
+  }
+}

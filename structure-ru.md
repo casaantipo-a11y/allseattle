@@ -359,10 +359,11 @@ Listings» (localStorage трогает только конкурс); **лого
 
 ---
 
-**Шапки малых разделов от Events до Q&A (28.09.2026):** кнопка справа от
-заголовка на всех семи на 8px ниже, чем была (с 640px, класс
-`section-head--btn-down`). На Weather, Real Estate, City Map и Q&A, кроме
-того, надпись и заголовок чуть правее (на 4px), а кнопка на 12px левее
+**Шапки малых разделов (28.09.2026):** на Events, Shopping, Entertainment,
+Real Estate и Q&A кнопка справа от заголовка на 8px ниже, чем была (с 640px,
+класс `section-head--btn-down`); на Weather и City Map кнопка осталась на
+прежней высоте. На Weather, Real Estate, City Map и Q&A надпись и заголовок
+чуть правее (на 4px, на Weather с 640px — на 8px), а кнопка на 12px левее
 (класс `section-head--nudge`). Jobs устроен отдельно, см. выше.
 
 ## События — `events.html` `#events`
