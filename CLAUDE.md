@@ -1230,6 +1230,14 @@ eyebrow sideways to sit flush over the heading — it keeps the shared 10px `--s
 described in its section above. Below 640px the button is its own row above the chips, which is
 why the 10px stops there.
 
+**28.09.2026, two more head classes in `components.css`, both via the `translate` property** (it
+composes with the `top`/`left` offsets the heads already carry, so one rule serves pages with and
+without `--btn-low`): `.section-head--btn-down` (Events, Shopping, Entertainment, Weather, Real
+Estate, City Map, Q&A; from 640px) moves the button 8px further down; `.section-head--nudge`
+(Weather and the pages after it — Real Estate, City Map, Q&A) moves eyebrow and heading 4px right
+at every width and, via `--head-btn-dx`, the button 12px left from 640px. Jobs carries neither.
+Measured: no horizontal overflow at 320/640/1440.
+
 **Two places are tight by design and worth knowing before you add anything to a head:** Pricing's
 "What's Included" (`--spaced`, a smaller `h2`) leaves 2.3px between the labels at 1440 and 1.2px
 at 375, and the chip rows on Shopping, City Map and Q&A sit 1.6–3.6px under the heading at 1024.

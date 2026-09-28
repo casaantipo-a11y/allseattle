@@ -224,6 +224,26 @@
   .section-head--btn-low .btn {
     top: calc(-1 * var(--space-1) + 10px);
   }
+  /* Семь малых разделов от Events до Q&A: кнопка ещё на 8px ниже, чем была
+     (просьба клиента 28.09.2026). Через translate, а не top — он
+     складывается с уже заданными top/left, и правило одно для страниц с
+     --btn-low и без него. Jobs класса не носит: там кнопка стоит в строке
+     сортировки. */
+  .section-head--btn-down .btn {
+    translate: var(--head-btn-dx, 0) var(--space-2);
+  }
+  /* Weather и разделы после неё (Real Estate, City Map, Q&A): кнопка на
+     12px левее — просьба клиента 28.09.2026. */
+  .section-head--nudge {
+    --head-btn-dx: -12px;
+  }
+}
+
+/* Там же: надзаголовок и заголовок «на миллиметр» правее — на 4px, на всех
+   ширинах (на телефоне сдвиг текста ничему не мешает, в отличие от кнопки). */
+.section-head--nudge .eyebrow,
+.section-head--nudge h1 {
+  translate: var(--space-1) 0;
 }
 
 /* ---------- News card ---------- */
