@@ -1,88 +1,31 @@
-// The AllSeattle mark, rebuilt as vector so it works on any background.
+// The AllSeattle logo is the client's own artwork, used as is.
 //
-// The site used to render the lockup from img/icons/logo-lockup.png, a flat
-// 24-bit PNG with an opaque near-white background baked in — which is why
-// both the hero and the footer had to hide it inside a white box. Everything
-// here is transparent and recolorable, so the lockup sits straight on the
-// photo hero and on the navy footer with no plate behind it. That PNG still
-// exists, but nothing on the site loads it, and it predates the 29.09.2026
-// redraw of the pin — regenerate it from this vector before using it for
-// decks/email.
+// 29.09.2026 the client sent the reference lockup and asked for the logo to
+// be exactly that ("точь в точь"). A vector redraw came close but not close
+// enough, so the site now shows the reference itself: img/icons/logo.webp is
+// cut from it — background made transparent, the white disc inside the pin
+// kept white, 560x180 so it stays sharp at 3x on the 60px header size — and
+// img/icons/logo-dark.webp is the same with the navy lettering turned white,
+// for the navy footer. The accessible name lives on the link, the image alt
+// is empty so a screen reader doesn't read the name twice.
 //
-// The pin is SVG; the wordmark is real HTML text in Libre Franklin (already
-// loaded by every page), so it stays crisp at any size and the tagline is
-// legible instead of a smudge of downscaled pixels.
+// img/icons/logo-lockup.png (the old flat PNG) and img/icons/favicon.svg
+// (a vector redraw of the pin) are separate: the favicon has to be a tiny
+// standalone file, and nothing on the page loads the PNG.
 
-let pinInstance = 0;
+const ICONS_ROOT = new URL("../img/icons/", import.meta.url);
 
 /**
- * The map-pin mark: red teardrop, white disc, navy Space Needle.
- * Redrawn 29.09.2026 from the client's reference lockup: a taller pin
- * (100×127), a wider disc with a thinner red ring, and a bigger needle whose
- * legs run into the bottom of the disc and are cut off by it (clipPath).
- * Ids are per-instance because the pin is rendered more than once per page
- * (header + footer) and duplicate ids would collide.
- * Always aria-hidden — the surrounding link carries the accessible name.
+ * Full lockup as a link back to Home. `variant: "dark"` picks the copy with
+ * white lettering for a dark background (the footer).
  */
-export function pinSvg({ className = "" } = {}) {
-  const n = ++pinInstance;
-  const gradId = `as-pin-grad-${n}`;
-  const clipId = `as-pin-clip-${n}`;
-  return `<svg class="${className}" viewBox="0 0 100 127" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-  <defs>
-    <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FF1A1A"/><stop offset="0.55" stop-color="#E4141B"/><stop offset="1" stop-color="#B8101C"/>
-    </linearGradient>
-    <clipPath id="${clipId}"><circle cx="50" cy="47" r="33"/></clipPath>
-  </defs>
-  <path fill="url(#${gradId})" d="${PIN_PATH}"/>
-  <circle cx="50" cy="47" r="33" fill="#FFFFFF"/>
-  <g fill="#0D1B2A" clip-path="url(#${clipId})">${NEEDLE_PATHS}</g>
-</svg>`;
-}
-
-// Outer teardrop: a half-circle top (centre 50,49, r 49) whose sides bulge
-// slightly on the way down to the tip at 50,126, as in the reference.
-// Shared with img/icons/favicon.svg — edit both together.
-const PIN_PATH = "M50 126 C42 114 3 84 1 49 A49 49 0 0 1 99 49 C97 84 58 114 50 126 Z";
-
-// Space Needle, top to bottom: spike, cap, upper tier, the wide saucer, the
-// ring under it, the underside, then three legs converging down to the
-// bottom of the disc, where the clipPath cuts them.
-const NEEDLE_PATHS = `<g transform="translate(0 2.4)">
-    <path d="M50 17.6 L51.2 28.4 H48.8 Z"/>
-    <path d="M44.4 31.2 Q45 27.4 50 27.2 Q55 27.4 55.6 31.2 Z"/>
-    <path d="M40.5 33 Q41 30.8 45 30.8 H55 Q59 30.8 59.5 33 Q59 35.2 55 35.2 H45 Q41 35.2 40.5 33 Z"/>
-    <path d="M25.6 39.2 C26.8 35.4 35 34.4 42 34.4 H58 C65 34.4 73.2 35.4 74.4 39.2 C73.2 42.8 65 43.8 58 43.8 H42 C35 43.8 26.8 42.8 25.6 39.2 Z"/>
-    <path d="M31.5 46.2 C32.5 44.4 36 44 40 44 H60 C64 44 67.5 44.4 68.5 46.2 C67.5 48 64 48.4 60 48.4 H40 C36 48.4 32.5 48 31.5 46.2 Z"/>
-    <path d="M37 48.2 H63 L60.4 51.6 H39.6 Z"/>
-    <path d="M38 51.4 H42.6 L47.2 82 H42.6 Z"/>
-    <path d="M47.7 51.4 H52.3 V82 H47.7 Z"/>
-    <path d="M57.4 51.4 H62 L57.4 82 H52.8 Z"/>
-    </g>`;
-
-/**
- * Full lockup: pin + "AllSeattle" + tagline, as a link back to Home.
- * `variant: "dark"` is for placement on a dark background (the photo hero,
- * the navy footer) — it flips the wordmark and tagline to white and leaves
- * the red "All" and the pin alone, which read fine either way.
- */
-export function logoLockupMarkup({ href = "#", variant = "light", size = "" } = {}) {
-  const classes = ["site-logo", variant === "dark" ? "site-logo--dark" : "", size ? `site-logo--${size}` : ""]
-    .filter(Boolean)
-    .join(" ");
-  return `<a href="${href}" class="${classes}" aria-label="AllSeattle — Seattle City Website">
-  ${pinSvg({ className: "site-logo-pin" })}
-  <span class="site-logo-text">
-    <span class="site-logo-word"><span class="lw-all">All</span><span class="lw-seattle">Seattle</span></span>
-    <span class="site-logo-tag">Seattle City Website</span>
-  </span>
+export function logoLockupMarkup({ href = "#", variant = "light" } = {}) {
+  const dark = variant === "dark";
+  const file = dark ? "logo-dark.webp" : "logo.webp";
+  return `<a href="${href}" class="site-logo${dark ? " site-logo--dark" : ""}" aria-label="AllSeattle — Seattle City Website">
+  <img src="${new URL(file, ICONS_ROOT)}" alt="" width="560" height="180" class="site-logo-img">
 </a>`;
 }
-
-// The favicon is the same pin, kept as its own file at
-// img/icons/favicon.svg so the nine <head>s can point at one asset instead
-// of each carrying a copy of the path data. Edit both if the mark changes.
 
 export const SOCIAL_ICONS = {
   facebook: `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M13.5 21v-8.1h2.72l.41-3.16h-3.13V7.71c0-.92.25-1.54 1.57-1.54h1.68V3.35C15.98 3.24 15 3.15 13.87 3.15c-2.55 0-4.3 1.56-4.3 4.42v2.17H6.83v3.16h2.74V21h3.93z"/></svg>`,

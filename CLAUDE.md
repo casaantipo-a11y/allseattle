@@ -744,6 +744,8 @@ keyboard and screen readers work on their own.
    the user's request) — auto topics plus a 300×250 on the left, the Auto Services companies as
    `.biz-row` in the middle, a 300×600 on the right. Its head sits where "Cars for Sale" used to,
    so the 10px subnav-to-eyebrow rule below now applies to "Auto Services".
+   `.auto-firms-head` has `margin-bottom: 24px` (29.09.2026, "more space" under the heading and
+   the button) — measured 26px from the heading, 28px from the button to the rows.
 4. 728×90 (`auto-mid`) between the two blocks — `margin: 32px 0 24px`.
 5. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
 6. **A full-width search bar** on navy, not a filter column: Make, Model, Price from–to, Year
@@ -1118,22 +1120,24 @@ was an illegible smudge once downscaled to header size, and the opaque near-whit
 forced a white plate behind the logo on both the photo hero and the navy footer. Live text stays
 crisp and recolors with CSS, which is what makes the plates unnecessary.
 
-- **Redrawn 29.09.2026 from the client's reference lockup**: the pin is 100×127 with bulging
-  sides, a wider white disc (r 33) and a bigger Space Needle — lens-shaped tiers, legs converging
-  into the bottom of the disc and cut off there by a `clipPath`. The pin is **1.3× `--logo-h`**
-  (about 1.5× the text block), the text sits close to it (`gap` 0.1) and 0.1 lower than its
-  centre, the tagline is weight 500 with 0.235em tracking so it runs almost the full width of
-  the wordmark, and "All" is the pin's own red `#E4141B` rather than `--color-accent` — the
-  reference is more saturated than the UI red. Compared side by side with the reference image at
-  4× before shipping.
-- **One knob for size**: every part scales off `--logo-h` on `.site-logo`. Mobile-first, so 34px
-  is the base (34 × 1.3 = 44, the header row's height — at 36 the pin grew the row to 47) and
-  46px arrives at 640px, where the taller pin makes the 640–1023 header 128px instead of 114;
-  the footer pins its own 40px. Don't set pixel sizes on the pieces.
+- **SUPERSEDED 29.09.2026 — the logo is now the client's own image, not SVG + text.** The user
+  sent a reference lockup and, after a close vector redraw, asked for it "exactly" ("точь в
+  точь"). `logoLockupMarkup()` now renders one `<img>`: `img/icons/logo.webp` (cut from the
+  reference in headless Edge — white background turned to alpha, the white disc inside the pin
+  kept opaque by flood-filling only from the image edges, 560×180) or, with `variant: "dark"`,
+  `img/icons/logo-dark.webp` (the same with the navy lettering turned white) for the footer. The
+  link carries the accessible name, the image `alt=""`. `pinSvg()` and the text lockup CSS are
+  gone. The notes below about live text describe the previous version.
+- **One knob for size**: `.site-logo-img` is `1.3 × --logo-h` tall, width by aspect. Mobile-first,
+  so 34px is the base (34 × 1.3 = 44, the header row's height) and 46px arrives at 640px (60px
+  image, which makes the 640–1023 header 128px instead of 114); the footer pins its own 40px.
+  The image has `max-width: none; flex: none` — the global `img { max-width: 100% }` squeezed it
+  to the 180px logo column at 1024 and distorted it; it now overhangs by 6px, 10px short of the
+  nav.
 - **`variant: "dark"`** (`.site-logo--dark`) flips the wordmark and tagline to white for the photo
   hero and the navy footer. The red "All" and the pin are left alone — they read on either.
-- **Path data lives in two constants** in `logo.js`, `PIN_PATH` and `NEEDLE_PATHS`; the needle
-  group carries one `translate` so its height in the disc can be tuned without rewriting paths.
+- **`img/icons/favicon.svg` is still the vector redraw** of the pin (close to the reference, not
+  identical) — a 16px tab icon can't carry the raster lockup.
 - **Two copies of the path data exist**: `js/logo.js` and `img/icons/favicon.svg`. The favicon has
   to be standalone (no font, no gradient, and a square viewBox so browsers don't distort it into a
   square tab slot), so it can't import from the module — **edit both if the mark changes.** All 9

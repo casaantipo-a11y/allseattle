@@ -29,69 +29,28 @@
 }
 
 /* ---------- Логотип ---------- */
-/* Pin (SVG) + wordmark (живой текст, поэтому тэглайн читается, а не мылится
-   уменьшенным растром). Всё масштабируется от --logo-h, так что размещению
-   достаточно задать одно значение. */
-/* Пропорции сняты с логотипа, который прислал клиент 29.09.2026: булавка в
-   1.3 раза выше --logo-h (примерно в полтора раза выше блока текста), текст
-   близко к ней и чуть ниже её середины — на уровне белого круга и ниже. */
+/* Картинка — присланный клиентом логотип как есть (js/logo.js). Размер
+   задаёт одна ручка --logo-h: высота картинки 1.3 × --logo-h, ширина по
+   пропорции. На телефоне 34 × 1.3 = 44px — ровно высота строки шапки, с
+   640px 46 × 1.3 ≈ 60px; подвал задаёт свои 40px. */
 .site-logo {
-  /* 34, а не 36: булавка в 1.3 раза выше --logo-h, и при 36 она поднимала
-     строку шапки на телефоне с 44 до 47px. 34 × 1.3 = 44. */
   --logo-h: 34px;
   grid-area: logo;
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--logo-h) * 0.1);
   text-decoration: none;
-  line-height: 1;
   min-height: 44px;
 }
 
-.site-logo-pin {
-  height: calc(var(--logo-h) * 1.3);
-  width: auto;
+/* max-width: none — общее img { max-width: 100% } сжимало картинку по
+   ширине колонки: на 1024 колонка логотипа 180px, картинке нужно 186, и
+   логотип искажался. Лишние 6px уходят в зазор, до меню остаётся 10px. */
+.site-logo-img {
   display: block;
   flex: none;
-}
-
-.site-logo-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  top: calc(var(--logo-h) * 0.1);
-}
-
-.site-logo-word {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: calc(var(--logo-h) * 0.62);
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-/* Красный марки — тот же, что в середине градиента булавки: в присланном
-   логотипе «All» насыщеннее акцента сайта. Цвет логотипа, не интерфейса. */
-.lw-all { color: #E4141B; }
-.lw-seattle { color: var(--color-navy); }
-
-/* Тэглайн марки намеренно вне шкалы кеглей (design.md §2): часть логотипа,
-   а не текст для чтения. */
-.site-logo-tag {
-  font-family: var(--font-heading);
-  font-weight: 500;
-  font-size: calc(var(--logo-h) * 0.19);
-  letter-spacing: 0.235em;
-  color: var(--color-navy);
-  white-space: nowrap;
-  margin-top: calc(var(--logo-h) * 0.12);
-}
-
-/* Тёмный вариант остался только у футера: шапка теперь всегда белая. */
-.site-logo--dark .lw-seattle,
-.site-logo--dark .site-logo-tag {
-  color: var(--color-white);
+  max-width: none;
+  height: calc(var(--logo-h) * 1.3);
+  width: auto;
 }
 
 /* ---------- Меню: два ряда ---------- */
