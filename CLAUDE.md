@@ -663,12 +663,14 @@ Things worth knowing before touching it:
 - **Day names are computed from today's date**, not stored — `WEATHER_WEEK` has no `day`/`date`
   fields any more, so the strip can't go stale. `WEATHER_WEEK[0].pop` is also the left panel's
   "Rain – N%" (one number, one source).
-- **The city photo fills the "now" panel's free height on desktop** (`flex: 1`, no aspect
-  ratio, `object-fit: cover`), centred between the facts and the panel's bottom edge — 64px
-  each side (16px column gap + 48px `margin-top` above, 32px `margin-bottom` + 32px panel
-  padding below). 288px wide, 304px tall at 1440, 537 at 1024 where the main panel is taller.
-  The user asked for it to run "from the Rain line down to the bottom", then to be centred
-  there.
+- **The city photo has a fixed height on desktop and must not move** (29.09.2026). It used to
+  fill the "now" panel's free height (`flex: 1`), but the panel's height follows the strip on the
+  right — Today (12 hours) and Week (7 days) differ — so switching tabs resized the photo and the
+  `object-fit: cover` crop visibly zoomed. Now `flex: none` with `height: 280px` from 1280
+  (exactly its old Today height) and `520px` at 1024–1279, where hours wrap to two rows and the
+  panel is 1032–1115px tall; `margin-top: 48px` pins it 64px under the "Rain" line in both views
+  and the height difference goes below it. 288px wide. Measured identical in both tabs at
+  1024/1280/1920. Don't give it back a flexible height.
 - **The strip is a grid, not a scroller** — the user asked for the scrollbar under the hourly
   forecast to go. `renderStrip()` sets `.wx-strip--days` / `--hours`: 12 hours in one row from
   1280 (74px cells at 1440, 24px icons), 6 per row at 640–1279, 4 on phones; 7 days in one row
