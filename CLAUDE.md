@@ -744,8 +744,9 @@ keyboard and screen readers work on their own.
    the user's request) — auto topics plus a 300×250 on the left, the Auto Services companies as
    `.biz-row` in the middle, a 300×600 on the right. Its head sits where "Cars for Sale" used to,
    so the 10px subnav-to-eyebrow rule below now applies to "Auto Services".
-   `.auto-firms-head` has `margin-bottom: 24px` (29.09.2026, "more space" under the heading and
-   the button) — measured 26px from the heading, 28px from the button to the rows.
+   `.auto-firms-head` has `margin-bottom: 16px` (29.09.2026, "more space" under the heading and
+   the button, then "a bit less" than 24) — measured 18px from the heading, 20px from the button
+   to the rows.
 4. 728×90 (`auto-mid`) between the two blocks — `margin: 32px 0 24px`.
 5. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
 6. **A full-width search bar** on navy, not a filter column: Make, Model, Price from–to, Year
