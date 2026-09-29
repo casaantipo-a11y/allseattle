@@ -12,9 +12,9 @@ shows a fake success state instead of sending anywhere (see README.md's "What's 
 table). Don't add a fetch/XHR call or a real backend integration unless explicitly asked — that
 would break the demo's offline guarantee.
 
-Two exceptions to "no network". Every HTML `<head>` pulls Libre Franklin / Public Sans /
-Pacifico from the Google Fonts CDN — the local fallbacks in `--font-heading`/`--font-body` cover
-the body text offline, but the Pacifico script wordmark won't render as designed. And City Map
+Two exceptions to "no network". Every HTML `<head>` pulls Libre Franklin / Public Sans from the
+Google Fonts CDN — the local fallbacks in `--font-heading`/`--font-body` cover the text offline,
+just not in the brand faces. And City Map
 draws a real map from **OpenStreetMap tiles** (`tile.openstreetmap.org`); offline it degrades to
 a grey panel with the neighborhood pins still on it. Everything else (images, CSS, JS — including
 the Leaflet library itself, vendored in `js/vendor/leaflet/`) is local.
@@ -35,10 +35,10 @@ padding all come from tokens, and the breakpoints are its mobile-first 640/768/1
 work has no excuse to drift — match the tokens, don't invent values. The agreed exceptions are
 listed under "CSS structure" below.
 
-Two deliberate deviations already ruled on by the user: **more than two font families is fine**
-here (Libre Franklin / Public Sans / Pacifico — Pacifico is the brand script in the inner hero,
-not a stray), and inline `style="..."` in JS templates stays acceptable per the CSS section below,
-despite `design.md` §9.
+One deliberate deviation already ruled on by the user: inline `style="..."` in JS templates stays
+acceptable per the CSS section below, despite `design.md` §9. (There used to be a third font,
+Pacifico, for the inner hero's script wordmark; that wordmark was removed on 29.09.2026 and the
+font with it — two families now, as §2 asks.)
 
 ## Section tags (`structure-ru.md`)
 
@@ -183,13 +183,11 @@ inner" data-page="...">` with two empty mount points (`<div id="site-header">`,
 All real content is injected by JS at `DOMContentLoaded` — there's very little to see in the
 HTML source itself.
 
-- `data-page-type` picks the tall photo frame (`"home"`, 340px) vs. the short one carrying the
-  script wordmark (anything else, 170px) in `partials.js`. **The short frame's height is one
-  token, `--hero-inner-h`** on `.hero-banner--inner` — 140 / 150 / 160 / 170px by breakpoint in
-  `header.css`. A page adds to it instead of restating the ladder: News does
-  `height: calc(var(--hero-inner-h) + var(--space-3))` from `news.css`, so its banner is 12px
-  (3mm, the user's ruler again) taller than the other fifteen inner pages at every width. If you
-  change the ladder, that page follows on its own.
+- `data-page-type` no longer changes the photo banner: since 29.09.2026 every page gets Home's
+  full frame (200 / 230 / 270 / 340px by breakpoint in `header.css`), at the user's request. The
+  short inner frame (`.hero-banner--inner`, `--hero-inner-h`), its "Seattle / THE EMERALD CITY"
+  script wordmark and News's +12px override are gone. The attribute is still set on every page
+  and still read by `partials.js`, so it's there if a page ever needs to differ again.
 - `data-page` drives active-nav-link highlighting (`nav-active.js` matches it against each nav
   link's own `data-page`).
 - Pages under `auto/` load CSS/JS via `../` relative paths; root pages use plain relative paths.
@@ -226,16 +224,16 @@ worse than no pointer.
    centre.
 2. **Photo banner** — the skyline inside `.container`, rounded, with three things laid over it:
    the **weather plate bottom-left** (`.hero-weather`, a link to `weather.html`), the search box,
-   and — on inner pages — the "Seattle / THE EMERALD CITY" wordmark top-left. Tall on Home, short
-   everywhere else. This is page content, not chrome: its edges line up with every other block
-   on the page.
+   and nothing else (the inner pages' "Seattle / THE EMERALD CITY" wordmark was removed on
+   29.09.2026). The same tall frame on every page. This is page content, not chrome: its edges
+   line up with every other block on the page.
 
-   Those three have to share 140–340px of height, and the arrangement is the result of measuring
-   collisions rather than taste:
+   They share 200–340px of height, and the arrangement is the result of measuring collisions
+   rather than taste:
 
-   - **The weather plate is one line everywhere except Home at 1024px and up.** Its full
-     three-line form is 79px tall and hit the search bar on a 140px inner frame and the wordmark
-     on a 170px one.
+   - **The weather plate is one line below 1024px and three lines from 1024px up**, on every
+     page. Below 1024 the search bar runs along the bottom and the full 79px plate would sit on
+     it.
    - **The plate is translucent white (0.7) over `backdrop-filter: blur(10px)`.** The blur is
      load-bearing, not decoration: dark patches of the photo otherwise show through in blotches
      right under the letters. Measured against the darkest 5% of the backdrop, the readable text
@@ -742,16 +740,21 @@ keyboard and screen readers work on their own.
 
 1. 728×90 ad (`auto-top`) — **above** the subnav on this page, see the geometry note below.
 2. Auto subnav — Catalog / Add a Car / My Listings (on all four Auto pages).
-3. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
-4. **A full-width search bar** on navy, not a filter column: Make, Model, Price from–to, Year
+3. **Directory of Enterprises** (since 29.09.2026 the first block, right under the subnav, at
+   the user's request) — auto topics plus a 300×250 on the left, the Auto Services companies as
+   `.biz-row` in the middle, a 300×600 on the right. Its head sits where "Cars for Sale" used to,
+   so the 10px subnav-to-eyebrow rule below now applies to "Auto Services".
+4. 728×90 (`auto-mid`) between the two blocks — `margin: 32px 0 24px`.
+5. Section head — "AllSeattle Auto" / **Cars for Sale** + "+ Post a Listing".
+6. **A full-width search bar** on navy, not a filter column: Make, Model, Price from–to, Year
    from–to, Find, plus an "Advanced search" disclosure holding body, transmission, fuel, mileage
    and sort. Everything filters as you pick; submit is swallowed.
-5. `.auto-layout` — the same column ladder as the Directory: **left rail** (Car catalog — 13
-   models in two columns with counts) | **main** (count line + 12 `.car-row` listings) |
+7. `.auto-layout` — the same column ladder as the Directory: **left rail** (Car catalog — the 6
+   models in two columns with counts) | **main** (count line + 6 `.car-row` listings) |
    **right rail** (300×250, 300×600).
-6. 728×90 (`auto-mid`), then a second `<section>`: **Directory of Enterprises** — auto topics plus
-   a 300×250 on the left, the Auto Services companies as `.biz-row` in the middle, a 300×600 on
-   the right.
+
+Everything is one `<section class="section auto-catalog">` now — the Directory block moved out of
+its own second section into the first one, above the cars.
 
 **The top of this page is hand-set, and the order in the markup is load-bearing.** The user first
 asked for the top banner 90px higher and the subnav 120px lower, which relative offsets cannot do —
@@ -830,7 +833,13 @@ and the left catalog lists **models, not makes** — there are only eight makes 
 two columns. Every listing references its own model's photo set, so the picture always matches the
 title; a script checks that rather than an eye.
 
-**There are 12 listings, one per model.** It went 13 → 48 → 24 → 12: the user built it up for the
+**There are 6 listings** (29.09.2026: the user cut 12 → 6): Camry `c16`, Accord `c2`, Outback
+`c4`, RAV4 `c5`, F-150 `c36`, Mustang `c12` — two sedans, two SUVs, a truck and a coupe, and the
+three `MY_LISTING_IDS` all kept. `renderSimilar()` in `auto-listing.js` now takes the same make or
+body type first and then tops up with any other car to three, since six cars can't guarantee
+neighbours. The history below explains the earlier cuts.
+
+**Earlier there were 12 listings, one per model.** It went 13 → 48 → 24 → 12: the user built it up for the
 mockup and then cut it twice as too much. One model had to go, and it is **Chevrolet Camaro** —
 with any other choice some car ends up with an empty "Similar Cars" block, which matches on make
 or body type (drop the Fit and the Golf has no neighbour at all). The hybrid, the diesel and three
@@ -924,8 +933,8 @@ stay pinned, so it silently degrades to acting like `position: static` despite t
 correct. Keep the header a sibling of `<main>` if you touch this again, and verify it the way
 "Checking a layout change" describes rather than by eye.
 
-- `heroMarkup(pageType)`: one component, two heights. `.hero-frame` holds the photo, a shade
-  gradient, the weather plate, the search form, and — on inner pages only — the script wordmark.
+- `heroMarkup()`: one component, one height ladder for every page. `.hero-frame` holds the
+  photo, a shade gradient, the weather plate and the search form.
   There is no second hero function and no dark/light variant of the top bar any more: the header
   is always white, so `logoLockupMarkup`'s `variant: "dark"` has exactly one caller left, the
   footer.
@@ -1109,20 +1118,28 @@ was an illegible smudge once downscaled to header size, and the opaque near-whit
 forced a white plate behind the logo on both the photo hero and the navy footer. Live text stays
 crisp and recolors with CSS, which is what makes the plates unnecessary.
 
-- **One knob for size**: every part scales off `--logo-h` on `.site-logo`. Mobile-first, so 36px
-  is the base and 46px arrives at 640px; the footer pins its own 40px. Don't set pixel sizes on
-  the pieces.
+- **Redrawn 29.09.2026 from the client's reference lockup**: the pin is 100×127 with bulging
+  sides, a wider white disc (r 33) and a bigger Space Needle — lens-shaped tiers, legs converging
+  into the bottom of the disc and cut off there by a `clipPath`. The pin is **1.3× `--logo-h`**
+  (about 1.5× the text block), the text sits close to it (`gap` 0.1) and 0.1 lower than its
+  centre, the tagline is weight 500 with 0.235em tracking so it runs almost the full width of
+  the wordmark, and "All" is the pin's own red `#E4141B` rather than `--color-accent` — the
+  reference is more saturated than the UI red. Compared side by side with the reference image at
+  4× before shipping.
+- **One knob for size**: every part scales off `--logo-h` on `.site-logo`. Mobile-first, so 34px
+  is the base (34 × 1.3 = 44, the header row's height — at 36 the pin grew the row to 47) and
+  46px arrives at 640px, where the taller pin makes the 640–1023 header 128px instead of 114;
+  the footer pins its own 40px. Don't set pixel sizes on the pieces.
 - **`variant: "dark"`** (`.site-logo--dark`) flips the wordmark and tagline to white for the photo
   hero and the navy footer. The red "All" and the pin are left alone — they read on either.
-- **Needle sizing**: the Space Needle paths are drawn at a convenient size and then scaled about
-  the white disc's centre with a `transform` on the `<g>`, so the disc radius and the needle size
-  can be tuned independently instead of rewriting every path.
+- **Path data lives in two constants** in `logo.js`, `PIN_PATH` and `NEEDLE_PATHS`; the needle
+  group carries one `translate` so its height in the disc can be tuned without rewriting paths.
 - **Two copies of the path data exist**: `js/logo.js` and `img/icons/favicon.svg`. The favicon has
   to be standalone (no font, no gradient, and a square viewBox so browsers don't distort it into a
   square tab slot), so it can't import from the module — **edit both if the mark changes.** All 9
   pages point at that one file; don't go back to inlining a `data:` URI per page.
-- `img/icons/logo-lockup.png` is now an unused raster export of the same vector (transparent,
-  1165×302), kept only for decks/email. Nothing on the site loads it — if the mark changes, either
+- `img/icons/logo-lockup.png` is an unused raster export (transparent, 1165×302) of the **old**
+  pin, from before the 29.09.2026 redraw, kept only for decks/email. Nothing on the site loads it — if the mark changes, either
   re-export it from the vector or ignore it, but don't wire it back into a page.
 
 ### CSS structure
@@ -1287,8 +1304,8 @@ that needs an offset from the header to read it from there too.
 Two adjacent `<section class="section">` elements would otherwise stack their own vertical
 padding and put 192px between them, twice what §1 allows. `main > .section + .section` zeroes
 the second one's top, so the gap is the single `--section-y`. Home and the Auto catalog are the
-two pages with two sections — Auto's second one is "Directory of Enterprises" — and neither had
-to rediscover this.
+pages that had two sections (Auto's Directory block has since moved into its first one), and
+neither had to rediscover this.
 
 **One centimetre is the vertical seam everywhere now** — 36px, the nearest sum of scale steps to
 1cm's 37.8. The user measured it with a ruler twice (Home's two sections, then News's gap to the
@@ -1356,7 +1373,8 @@ Each of these was decided explicitly. Don't "fix" them back:
   to 44px. **If you add a nav item, lengthen a label, or put anything back into the cluster,
   re-measure** — the first thing that breaks is `.nav-links` quietly turning into a horizontal
   scroller at desktop width, and the second is the nav sliding off centre.
-- **Three font families**, not two (§2) — Pacifico is the brand script in the inner hero.
+- **Two font families** (§2): Libre Franklin and Public Sans. Pacifico went with the inner hero's
+  script wordmark on 29.09.2026.
 
 ### Images (`img/`)
 

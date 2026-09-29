@@ -5,8 +5,9 @@
 // both the hero and the footer had to hide it inside a white box. Everything
 // here is transparent and recolorable, so the lockup sits straight on the
 // photo hero and on the navy footer with no plate behind it. That PNG still
-// exists, regenerated from this vector with an alpha channel, but nothing on
-// the site loads it — it's only there as a raster for decks/email.
+// exists, but nothing on the site loads it, and it predates the 29.09.2026
+// redraw of the pin — regenerate it from this vector before using it for
+// decks/email.
 //
 // The pin is SVG; the wordmark is real HTML text in Libre Franklin (already
 // loaded by every page), so it stays crisp at any size and the tagline is
@@ -16,31 +17,49 @@ let pinInstance = 0;
 
 /**
  * The map-pin mark: red teardrop, white disc, navy Space Needle.
- * The gradient id is per-instance because the pin is rendered more than once
- * per page (header + footer) and duplicate ids would collide.
+ * Redrawn 29.09.2026 from the client's reference lockup: a taller pin
+ * (100×127), a wider disc with a thinner red ring, and a bigger needle whose
+ * legs run into the bottom of the disc and are cut off by it (clipPath).
+ * Ids are per-instance because the pin is rendered more than once per page
+ * (header + footer) and duplicate ids would collide.
  * Always aria-hidden — the surrounding link carries the accessible name.
  */
 export function pinSvg({ className = "" } = {}) {
-  const gradId = `as-pin-grad-${++pinInstance}`;
-  return `<svg class="${className}" viewBox="0 0 64 84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-  <defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0.35" y2="1">
-      <stop offset="0" stop-color="#FF2A22"/><stop offset="1" stop-color="#C1121F"/>
-    </linearGradient></defs>
-  <path fill="url(#${gradId})" d="M32 2C17.1 2 5 14.1 5 29c0 18.6 21.1 42.1 25.4 49.7a1.9 1.9 0 0 0 3.2 0C38 71.1 59 47.6 59 29 59 14.1 46.9 2 32 2z"/>
-  <circle cx="32" cy="29" r="18" fill="#FFFFFF"/>
-  <!-- The needle is drawn at a comfortable size then scaled about the disc's
-       centre, so the disc radius and the needle size can be tuned
-       independently without redoing every path. -->
-  <g fill="#0D1B2A" transform="translate(32 28.6) scale(1.12) translate(-32 -28.6)">
-    <path d="M32 13.1l.63 2.3v4.3h-1.26v-4.3z"/>
-    <path d="M30.85 19.8h2.3l.55 2.4h-3.4z"/>
-    <path d="M26.4 22.2h11.2l3.2 1.8h3.4l-2 1.6-5 2.2H26.8l-5-2.2-2-1.6h3.4l3.2-1.8z"/>
-    <path d="M30.6 27.8h2.8l.4 15.4h-3.6z"/>
-    <path d="M28.4 27.8h2.2c-.5 5.6-2.1 10.9-4.3 15.4h-2.6c2.5-4.7 4.2-10 4.7-15.4z"/>
-    <path d="M35.6 27.8h-2.2c.5 5.6 2.1 10.9 4.3 15.4h2.6c-2.5-4.7-4.2-10-4.7-15.4z"/>
-  </g>
+  const n = ++pinInstance;
+  const gradId = `as-pin-grad-${n}`;
+  const clipId = `as-pin-clip-${n}`;
+  return `<svg class="${className}" viewBox="0 0 100 127" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF1A1A"/><stop offset="0.55" stop-color="#E4141B"/><stop offset="1" stop-color="#B8101C"/>
+    </linearGradient>
+    <clipPath id="${clipId}"><circle cx="50" cy="47" r="33"/></clipPath>
+  </defs>
+  <path fill="url(#${gradId})" d="${PIN_PATH}"/>
+  <circle cx="50" cy="47" r="33" fill="#FFFFFF"/>
+  <g fill="#0D1B2A" clip-path="url(#${clipId})">${NEEDLE_PATHS}</g>
 </svg>`;
 }
+
+// Outer teardrop: a half-circle top (centre 50,49, r 49) whose sides bulge
+// slightly on the way down to the tip at 50,126, as in the reference.
+// Shared with img/icons/favicon.svg — edit both together.
+const PIN_PATH = "M50 126 C42 114 3 84 1 49 A49 49 0 0 1 99 49 C97 84 58 114 50 126 Z";
+
+// Space Needle, top to bottom: spike, cap, upper tier, the wide saucer, the
+// ring under it, the underside, then three legs converging down to the
+// bottom of the disc, where the clipPath cuts them.
+const NEEDLE_PATHS = `<g transform="translate(0 2.4)">
+    <path d="M50 17.6 L51.2 28.4 H48.8 Z"/>
+    <path d="M44.4 31.2 Q45 27.4 50 27.2 Q55 27.4 55.6 31.2 Z"/>
+    <path d="M40.5 33 Q41 30.8 45 30.8 H55 Q59 30.8 59.5 33 Q59 35.2 55 35.2 H45 Q41 35.2 40.5 33 Z"/>
+    <path d="M25.6 39.2 C26.8 35.4 35 34.4 42 34.4 H58 C65 34.4 73.2 35.4 74.4 39.2 C73.2 42.8 65 43.8 58 43.8 H42 C35 43.8 26.8 42.8 25.6 39.2 Z"/>
+    <path d="M31.5 46.2 C32.5 44.4 36 44 40 44 H60 C64 44 67.5 44.4 68.5 46.2 C67.5 48 64 48.4 60 48.4 H40 C36 48.4 32.5 48 31.5 46.2 Z"/>
+    <path d="M37 48.2 H63 L60.4 51.6 H39.6 Z"/>
+    <path d="M38 51.4 H42.6 L47.2 82 H42.6 Z"/>
+    <path d="M47.7 51.4 H52.3 V82 H47.7 Z"/>
+    <path d="M57.4 51.4 H62 L57.4 82 H52.8 Z"/>
+    </g>`;
 
 /**
  * Full lockup: pin + "AllSeattle" + tagline, as a link back to Home.

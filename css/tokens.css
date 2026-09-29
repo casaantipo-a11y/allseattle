@@ -48,7 +48,6 @@
   /* Typography */
   --font-heading: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
-  --font-script: "Pacifico", cursive;
 
   /* Модульная шкала кеглей, шаг 1.25 (design.md §2). Других размеров нет. */
   --text-xs: 14px;

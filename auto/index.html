@@ -8,14 +8,14 @@
 <link rel="icon" type="image/svg+xml" href="../img/icons/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="../img/hero/skyline-panorama.webp">
-<link rel="stylesheet" href="../css/tokens.css?v=20260928s">
-<link rel="stylesheet" href="../css/base.css?v=20260928s">
-<link rel="stylesheet" href="../css/header.css?v=20260928s">
-<link rel="stylesheet" href="../css/footer.css?v=20260928s">
-<link rel="stylesheet" href="../css/components.css?v=20260928s">
-<link rel="stylesheet" href="../css/pages/auto.css?v=20260928s">
+<link rel="stylesheet" href="../css/tokens.css?v=20260929b">
+<link rel="stylesheet" href="../css/base.css?v=20260929b">
+<link rel="stylesheet" href="../css/header.css?v=20260929b">
+<link rel="stylesheet" href="../css/footer.css?v=20260929b">
+<link rel="stylesheet" href="../css/components.css?v=20260929b">
+<link rel="stylesheet" href="../css/pages/auto.css?v=20260929b">
 </head>
 <body data-page-type="inner" data-page="auto">
 
@@ -31,6 +31,37 @@
         <a href="add-listing.html">Add a Car</a>
         <a href="my-listings.html">My Listings</a>
       </div>
+
+      <!-- «Directory of enterprises» из макета: слева темы, справа сами компании.
+           Компании берутся из справочника — это единственный их источник на
+           сайте, отдельного списка для Auto не заводим. С 29.09.2026 блок стоит
+           первым, сразу под подменю и над «Cars for Sale» — просьба клиента. -->
+      <div class="section-head auto-firms-head">
+        <div>
+          <span class="eyebrow">Auto Services</span>
+          <h2>Directory of Enterprises</h2>
+        </div>
+        <a href="../directory.html?q=auto" class="btn btn-outline btn-sm">All auto businesses</a>
+      </div>
+
+      <div class="auto-layout auto-layout--firms auto-firms-block">
+        <aside class="auto-rail auto-rail--left">
+          <div class="widget" id="widget-auto-topics"></div>
+          <div data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="auto-firms-side-1"></div>
+        </aside>
+
+        <div class="auto-results">
+          <div class="biz-list" id="auto-firms"></div>
+        </div>
+
+        <aside class="auto-rail auto-rail--right">
+          <div data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="auto-firms-side-2"></div>
+        </aside>
+      </div>
+
+      <!-- Средний баннер теперь разделяет два блока: предприятия сверху,
+           машины снизу. -->
+      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="auto-mid" class="auto-mid-ad"></div>
 
       <div class="section-head auto-head">
         <div>
@@ -126,37 +157,6 @@
         </aside>
       </div>
 
-      <div data-ad-slot="728x90" data-ad-slot-mobile="320x100" data-ad-seed="auto-mid" class="auto-mid-ad"></div>
-    </div>
-  </section>
-
-  <!-- «Directory of enterprises» из макета: слева темы, справа сами компании.
-       Компании берутся из справочника — это единственный их источник на
-       сайте, отдельного списка для Auto не заводим. -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head auto-firms-head">
-        <div>
-          <span class="eyebrow">Auto Services</span>
-          <h2>Directory of Enterprises</h2>
-        </div>
-        <a href="../directory.html?q=auto" class="btn btn-outline btn-sm">All auto businesses</a>
-      </div>
-
-      <div class="auto-layout auto-layout--firms">
-        <aside class="auto-rail auto-rail--left">
-          <div class="widget" id="widget-auto-topics"></div>
-          <div data-ad-slot="300x250" data-ad-slot-mobile="320x100" data-ad-seed="auto-firms-side-1"></div>
-        </aside>
-
-        <div class="auto-results">
-          <div class="biz-list" id="auto-firms"></div>
-        </div>
-
-        <aside class="auto-rail auto-rail--right">
-          <div data-ad-slot="300x600" data-ad-slot-mobile="320x100" data-ad-seed="auto-firms-side-2"></div>
-        </aside>
-      </div>
     </div>
   </section>
 </main>

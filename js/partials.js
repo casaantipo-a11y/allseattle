@@ -32,13 +32,13 @@ const NAV_SECONDARY = [
 
 // The photo is page content, not chrome: it sits inside .container so its
 // edges line up with every other block on the page, and the only thing laid
-// over it is the search box. Home gets the tall frame; every other page gets
-// the same component at a fraction of the height, with the script wordmark.
-function heroMarkup(pageType) {
-  const inner = pageType !== "home";
+// over it is the weather and the search box. Since 29.09.2026 every page gets
+// the same full-height frame as Home (the client's request); the short inner
+// frame with the "Seattle / THE EMERALD CITY" caption is gone.
+function heroMarkup() {
   const w = weatherHeaderLine();
   return `
-  <div class="hero-banner${inner ? " hero-banner--inner" : ""}" id="hero-banner">
+  <div class="hero-banner" id="hero-banner">
     <div class="container">
       <div class="hero-frame">
         <img src="${SITE_ROOT}img/hero/skyline-panorama.webp" alt="Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market" class="hero-photo">
@@ -51,11 +51,6 @@ function heroMarkup(pageType) {
             <span class="weather-note">${w.note}</span>
           </span>
         </a>
-        ${inner ? `
-        <div class="hero-caption">
-          <span class="hero-script">Seattle</span>
-          <span class="hero-sub">THE EMERALD CITY</span>
-        </div>` : ""}
         <form class="search-stub" id="search-stub" role="search">
           <input type="search" placeholder="Search AllSeattle..." aria-label="Search">
           <button type="submit" aria-label="Search">${UI_ICONS.search}</button>
@@ -108,7 +103,7 @@ export function renderHeader(pageType) {
   // zero room to stick, and it would silently behave like `position: static`
   // despite the CSS being correct. Body order ends up:
   // header -> mount (hero banner) -> main -> footer.
-  mount.innerHTML = heroMarkup(pageType);
+  mount.innerHTML = heroMarkup();
   mount.insertAdjacentHTML("beforebegin", siteHeaderMarkup());
   markActiveNav();
   wireSearchStub();

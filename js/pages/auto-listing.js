@@ -119,10 +119,12 @@ function wireContactSeller() {
   });
 }
 
+// Сначала та же марка или тот же кузов, потом — любые другие: машин всего
+// шесть, и без добора блок показывал бы одну карточку.
 function renderSimilar(car) {
-  const similar = CAR_LISTINGS
-    .filter((c) => c.id !== car.id && (c.make === car.make || c.bodyType === car.bodyType))
-    .slice(0, 3);
+  const others = CAR_LISTINGS.filter((c) => c.id !== car.id);
+  const close = (c) => c.make === car.make || c.bodyType === car.bodyType;
+  const similar = [...others.filter(close), ...others.filter((c) => !close(c))].slice(0, 3);
   document.getElementById("similar-cars-grid").innerHTML = similar.map(carCardTemplate).join("");
 }
 

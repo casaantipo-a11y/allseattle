@@ -32,19 +32,24 @@
 /* Pin (SVG) + wordmark (живой текст, поэтому тэглайн читается, а не мылится
    уменьшенным растром). Всё масштабируется от --logo-h, так что размещению
    достаточно задать одно значение. */
+/* Пропорции сняты с логотипа, который прислал клиент 29.09.2026: булавка в
+   1.3 раза выше --logo-h (примерно в полтора раза выше блока текста), текст
+   близко к ней и чуть ниже её середины — на уровне белого круга и ниже. */
 .site-logo {
-  --logo-h: 36px;
+  /* 34, а не 36: булавка в 1.3 раза выше --logo-h, и при 36 она поднимала
+     строку шапки на телефоне с 44 до 47px. 34 × 1.3 = 44. */
+  --logo-h: 34px;
   grid-area: logo;
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--logo-h) * 0.17);
+  gap: calc(var(--logo-h) * 0.1);
   text-decoration: none;
   line-height: 1;
   min-height: 44px;
 }
 
 .site-logo-pin {
-  height: var(--logo-h);
+  height: calc(var(--logo-h) * 1.3);
   width: auto;
   display: block;
   flex: none;
@@ -54,6 +59,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  top: calc(var(--logo-h) * 0.1);
 }
 
 .site-logo-word {
@@ -64,19 +71,21 @@
   white-space: nowrap;
 }
 
-.lw-all { color: var(--color-accent); }
+/* Красный марки — тот же, что в середине градиента булавки: в присланном
+   логотипе «All» насыщеннее акцента сайта. Цвет логотипа, не интерфейса. */
+.lw-all { color: #E4141B; }
 .lw-seattle { color: var(--color-navy); }
 
 /* Тэглайн марки намеренно вне шкалы кеглей (design.md §2): часть логотипа,
    а не текст для чтения. */
 .site-logo-tag {
   font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: calc(var(--logo-h) * 0.195);
-  letter-spacing: 0.115em;
+  font-weight: 500;
+  font-size: calc(var(--logo-h) * 0.19);
+  letter-spacing: 0.235em;
   color: var(--color-navy);
   white-space: nowrap;
-  margin-top: calc(var(--logo-h) * 0.07);
+  margin-top: calc(var(--logo-h) * 0.12);
 }
 
 /* Тёмный вариант остался только у футера: шапка теперь всегда белая. */
@@ -261,17 +270,6 @@
   pointer-events: none;
 }
 
-.hero-banner--inner {
-  /* Высота короткого кадра — одна ручка на все брейкпоинты. Страница может
-     добавить к ней своё (так news.css делает кадр на 12px выше), не повторяя
-     всю лестницу. */
-  --hero-inner-h: 140px;
-}
-
-.hero-banner--inner .hero-frame {
-  height: var(--hero-inner-h);
-}
-
 /* Погода лежит в левом нижнем углу кадра. Белая плашка, а не белый текст:
    фотография светлая сверху и тёмная снизу, на плашке читается везде.
    Ниже 1024px нижний край занимает строка поиска, поэтому плашка садится
@@ -305,40 +303,10 @@
 }
 
 /* По умолчанию плашка однострочная: дата и температура. Полная в три строки
-   занимает 79px, а на внутреннем кадре высотой 140-170px рядом с ней ещё
-   стоят поиск и скриптовая надпись — замерено, накладывались обе. */
+   (79px) — с 1024px, где кадр 340px высотой (ниже неё там поиск). */
 .hero-weather .weather-text strong,
 .hero-weather .weather-note {
   display: none;
-}
-
-/* Скриптовая надпись стоит в левом верхнем углу — он освободился, когда
-   погода ушла вниз. Ниже 1024px её не видно: на кадре 140px высоты рядом с
-   погодой и поиском третий элемент не помещается (замерено). Логотип в шапке
-   несёт ту же марку. */
-.hero-caption {
-  position: absolute;
-  left: var(--space-4);
-  top: var(--space-4);
-  display: none;
-  flex-direction: column;
-  color: var(--color-white);
-}
-
-.hero-script {
-  font-family: var(--font-script);
-  font-size: var(--text-2xl);
-  line-height: 1;
-  text-shadow: 0 4px 24px rgba(0,0,0,0.45);
-}
-
-.hero-sub {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  font-size: var(--text-xs);
-  margin-top: var(--space-2);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
 /* Поиск лежит поверх кадра: на узких экранах полосой по низу, с 1024px —
@@ -383,14 +351,11 @@
 @media (min-width: 640px) {
   .site-logo { --logo-h: 46px; }
   .hero-frame { height: 230px; }
-  .hero-banner--inner { --hero-inner-h: 150px; }
 }
 
 /* ---------- 768 ---------- */
 @media (min-width: 768px) {
   .hero-frame { height: 270px; }
-  .hero-banner--inner { --hero-inner-h: 160px; }
-  .hero-script { font-size: var(--text-3xl); }
 }
 
 /* ---------- 1024: шапка в одну строку, меню по центру ----------
@@ -438,16 +403,13 @@
   .lang-switch { min-width: 36px; min-height: 32px; }
 
   .hero-frame { height: 340px; }
-  .hero-banner--inner { --hero-inner-h: 170px; }
   .hero-weather { left: var(--space-6); bottom: var(--space-6); }
 
-  /* Полная плашка — только на главной: там кадр 340px и рядом с погодой
-     ничего больше не стоит. */
-  .hero-banner:not(.hero-banner--inner) .hero-weather .weather-text strong,
-  .hero-banner:not(.hero-banner--inner) .hero-weather .weather-note {
+  /* Полная плашка: кадр 340px, рядом с погодой ничего больше не стоит. */
+  .hero-weather .weather-text strong,
+  .hero-weather .weather-note {
     display: block;
   }
-  .hero-caption { display: flex; left: var(--space-6); top: var(--space-6); }
 
   .search-stub {
     left: auto;
