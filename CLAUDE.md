@@ -111,7 +111,7 @@ No build step, no package.json, no test suite — verification is always manual.
 
 ```powershell
 # from inside this folder — relative asset paths and ES modules need real HTTP, not file://
-python -m http.server 8000          # Python 3.13 is on PATH on this machine
+python -m http.server 8000          # any Python 3 works (3.12 is on PATH; a bare `python` may be reputation_bot's venv — harmless here)
 # then open http://localhost:8000/
 # for a phone on the same LAN: add --bind 0.0.0.0, browse to the machine's LAN IP instead of localhost
 ```
@@ -125,7 +125,7 @@ shows. Two false bugs have already been chased this way.
 
 A trustworthy pass drives Chrome over CDP instead:
 
-1. Launch with `--headless=new --disable-gpu --no-sandbox --user-data-dir=<tmp> --remote-debugging-port=9222 about:blank`.
+1. Launch Chrome or Edge (`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe` is installed and works the same) with `--headless=new --disable-gpu --no-sandbox --user-data-dir=<tmp> --remote-debugging-port=9222 about:blank`.
 2. `PUT http://localhost:9222/json/new?about:blank`, take `webSocketDebuggerUrl`.
 3. On that socket (Node 24 has a global `WebSocket`; nothing to install) send
    `Emulation.setDeviceMetricsOverride {width:375,height:812,deviceScaleFactor:1,mobile:true}`,
@@ -1099,9 +1099,9 @@ abstraction — each file is self-contained and safe to read in isolation.
 - `modal.js` — generic overlay open/close/Escape/backdrop-click wiring by element id
   (`wireModal(overlayId, openBtnId, closeBtnId)`; pass `null` for the open button when the page
   opens it itself, as `pricing.js` does per tier card).
-- `logo.js` — the brand mark, as vector, plus every icon on the site. `pinSvg()` draws the red
-  teardrop + white disc + navy Space Needle; `logoLockupMarkup({href, variant})` wraps it with
-  the wordmark (see "The logo" below). It also exports three icon maps as inline SVG strings:
+- `logo.js` — the logo markup plus every icon on the site. `logoLockupMarkup({href, variant})`
+  returns the logo image as a link (see "The logo" below). It also exports three icon maps as
+  inline SVG strings:
   `SOCIAL_ICONS` (facebook / twitter / instagram / telegram — the header shows the last three,
   and the footer's "Follow us" list matches), `NAV_ICONS` (one per real nav link) and `UI_ICONS`
   (account / globe / search / weather). `NAV_ICONS` and `UI_ICONS` are built by one local
@@ -1114,38 +1114,32 @@ abstraction — each file is self-contained and safe to read in isolation.
 
 ### The logo
 
-The lockup is **half SVG, half live text**, and that split is deliberate: `pinSvg()` draws the
-pin, but "AllSeattle" and the "Seattle City Website" tagline are real HTML in Libre Franklin
-(`.site-logo-word` / `.site-logo-tag`). It used to be a single flat PNG, which meant the tagline
-was an illegible smudge once downscaled to header size, and the opaque near-white background
-forced a white plate behind the logo on both the photo hero and the navy footer. Live text stays
-crisp and recolors with CSS, which is what makes the plates unnecessary.
+**The logo is the client's own artwork, as an image** — not something to redraw. On 29.09.2026
+the user sent a reference lockup and, after a close SVG + live-text redraw, asked for it
+"exactly" ("точь в точь"). `logoLockupMarkup()` renders one `<img>` inside the link:
 
-- **SUPERSEDED 29.09.2026 — the logo is now the client's own image, not SVG + text.** The user
-  sent a reference lockup and, after a close vector redraw, asked for it "exactly" ("точь в
-  точь"). `logoLockupMarkup()` now renders one `<img>`: `img/icons/logo.webp` (cut from the
-  reference in headless Edge — white background turned to alpha, the white disc inside the pin
-  kept opaque by flood-filling only from the image edges, 560×180) or, with `variant: "dark"`,
-  `img/icons/logo-dark.webp` (the same with the navy lettering turned white) for the footer. The
-  link carries the accessible name, the image `alt=""`. `pinSvg()` and the text lockup CSS are
-  gone. The notes below about live text describe the previous version.
+- `img/icons/logo.webp` — cut from the reference: white background turned to alpha, the white
+  disc inside the pin kept opaque (the transparency flood-fills only from the image edges, and
+  everything right of the pin is colour-to-alpha'd, so letter counters are clear too). 560×180,
+  enough for 3× at the 60px header size.
+- `img/icons/logo-dark.webp` (`variant: "dark"`, the navy footer) — the same with the navy
+  lettering turned white; "All" and the pin are unchanged.
+- The link carries the accessible name; the image is `alt=""` so it isn't read twice.
+
+If the client sends a new logo, regenerate both files the same way rather than editing pixels
+or going back to a vector imitation.
+
 - **One knob for size**: `.site-logo-img` is `1.3 × --logo-h` tall, width by aspect. Mobile-first,
   so 34px is the base (34 × 1.3 = 44, the header row's height) and 46px arrives at 640px (60px
   image, which makes the 640–1023 header 128px instead of 114); the footer pins its own 40px.
-  The image has `max-width: none; flex: none` — the global `img { max-width: 100% }` squeezed it
-  to the 180px logo column at 1024 and distorted it; it now overhangs by 6px, 10px short of the
-  nav.
-- **`variant: "dark"`** (`.site-logo--dark`) flips the wordmark and tagline to white for the photo
-  hero and the navy footer. The red "All" and the pin are left alone — they read on either.
-- **`img/icons/favicon.svg` is still the vector redraw** of the pin (close to the reference, not
-  identical) — a 16px tab icon can't carry the raster lockup.
-- **Two copies of the path data exist**: `js/logo.js` and `img/icons/favicon.svg`. The favicon has
-  to be standalone (no font, no gradient, and a square viewBox so browsers don't distort it into a
-  square tab slot), so it can't import from the module — **edit both if the mark changes.** All 9
-  pages point at that one file; don't go back to inlining a `data:` URI per page.
-- `img/icons/logo-lockup.png` is an unused raster export (transparent, 1165×302) of the **old**
-  pin, from before the 29.09.2026 redraw, kept only for decks/email. Nothing on the site loads it — if the mark changes, either
-  re-export it from the vector or ignore it, but don't wire it back into a page.
+- The image has **`max-width: none; flex: none`** — the global `img { max-width: 100% }` squeezed
+  it to the 180px logo column at 1024 and distorted it; it now overhangs by 6px, 10px short of
+  the nav.
+- **`img/icons/favicon.svg` is a vector redraw** of the pin (close to the reference, not
+  identical) — a 16px tab icon can't carry the raster lockup, and a standalone file is what every
+  `<head>` points at. Don't go back to inlining a `data:` URI per page.
+- `img/icons/logo-lockup.png` is an old, unused raster of the previous mark. Nothing loads it;
+  don't wire it back into a page.
 
 ### CSS structure
 
@@ -1358,10 +1352,10 @@ Each of these was decided explicitly. Don't "fix" them back:
   sections is untouched at 96px.
 - **Base text is 16px on mobile, 18px from 1024px** (§2) — but the site keeps a dense,
   portal-like feel, so most secondary text sits at `--text-xs` (14px), the floor of the scale.
-- **Text below 14px survives in exactly two places**, both marked in the CSS: the captions inside
+- **Text below 14px survives in exactly one place**, marked in the CSS: the captions inside
   ad placeholders (`.ad-slot-label` / `-tier` / `-status`), which otherwise stop fitting a
-  320×100 box, and `.site-logo-tag` plus `.hero-script`, which are brand artwork rather than
-  text to read.
+  320×100 box. (The logo's tagline is now part of the logo image, and the inner hero's script
+  wordmark is gone.)
 - **`.btn-sm` is 40px tall**, which §6 explicitly allows for buttons even though §8 asks for
   44px touch targets generally.
 - **Inline text links inside prose are not padded out to 44px** (footer contact lines,
