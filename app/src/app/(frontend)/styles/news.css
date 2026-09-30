@@ -1,0 +1,151 @@
+/* Перенесено из прототипа (css/pages/news.css). Весь файл вложен в
+   [data-page="news"] — атрибут стоит на <main> этой страницы: в Next.js
+   CSS всех посещённых страниц остаётся подключённым, и без обёртки правила
+   главной (например, .section-head .eyebrow) задели бы остальные разделы. */
+[data-page="news"] {
+/* Раскладка раздела новостей — по макету клиента: слева реклама 300x600,
+   подписка и архив, в середине плотная лента, справа реклама 300x250 и
+   редакционная подборка Top News.
+
+   Mobile-first: базово одна колонка — лента, под ней обе боковые колонки
+   строкой. Сами колонки шириной 300px, потому что это нативная ширина
+   баннеров 300x600 и 300x250 (так же, как у Auto и Real Estate). */
+.news-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  align-items: start;
+  margin-bottom: var(--space-12);
+}
+
+/* Пока колонка одна, лента идёт первой: в разметке левая колонка стоит перед
+   ней (так она встаёт слева на широком экране), но на телефоне человек пришёл
+   за новостями, а не за подпиской и архивом. */
+.news-feed {
+  order: -1;
+}
+
+.news-rail {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--grid-gap);
+  /* Реклама уезжает вместе со страницей, как и на остальных страницах:
+     пользователь просил, чтобы при скролле двигались не только новости,
+     но и баннеры. Не «чинить» обратно на sticky без просьбы. */
+  position: static;
+}
+
+.news-rail > * {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+/* Планшет и узкий десктоп: на три колонки ширины ещё нет (середина ушла бы
+   под 400px), поэтому колонки две — лента и один столбец справа, в который
+   ложатся обе боковые. Правая встаёт первой: в ней реклама 300x250 и
+   Top News, то есть то, что ближе к содержанию ленты. */
+@media (min-width: 1024px) {
+  .news-layout {
+    grid-template-columns: 1fr 300px;
+  }
+  .news-feed {
+    order: 0;
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .news-rail--right {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .news-rail--left {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .news-rail {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .news-rail > * {
+    flex: 0 0 auto;
+  }
+}
+
+/* Три колонки, как в макете. Порог 1280, а не 1024: середина тогда
+   получается 568px и держит заголовок строки в одну-две строки. */
+@media (min-width: 1280px) {
+  .news-layout {
+    grid-template-columns: 300px 1fr 300px;
+  }
+  .news-rail--left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .news-feed {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .news-rail--right {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+/* Строка Top News — та же .news-list-row, но без рубрики и описания:
+   в виджете шириной 300px на них нет места. Модификатор лежит здесь, а не
+   в общем файле, по образцу .news-card--tile у главной. */
+.news-list-row--mini {
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.news-list-row--mini .news-list-thumb {
+  width: 56px;
+}
+
+.news-list-row--mini:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Архив: «месяц» и «год» стоят рядом, как в макете. Колонка узкая (300px),
+   поэтому у этого виджета поля тела 16px вместо 32 — иначе на селект остаётся
+   114px и «September» обрезается на середине. */
+#widget-archive .widget-body {
+  padding: var(--space-4);
+}
+
+/* Месяцу колонка шире года: «September» просит 93px внутренней ширины, «2026»
+   — 44. Поровну месяц вставал впритык, с запасом в два пикселя. */
+.news-archive-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-2);
+}
+
+.news-archive-row .field {
+  margin-bottom: 0;
+}
+
+/* Две кнопки рассылки в одну строку — тоже как в макете. */
+.newsletter-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+/* Зазор от тизера конкурса до подвала — 36px, и это теперь поведение по
+   умолчанию для всех страниц (css/base.css и css/footer.css). Правил для
+   .site-footer и нижнего отступа секции здесь больше нет. */
+
+/* Зазоры вокруг шапки этого раздела — 21.4px над надписью «Seattle News» и
+   10.8px под «Latest Stories» — с этой страницы и снято общее правило
+   положения шапки (css/components.css). Своих правил здесь больше нет:
+   обнулённые отступы, сдвиг надзаголовка и подъём кнопки теперь общие. */
+
+
+}

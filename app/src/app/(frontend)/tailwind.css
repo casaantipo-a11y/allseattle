@@ -1,0 +1,17 @@
+/* Tailwind for the parts that are new in stage 2 (announcements, cookie
+   banner, pagination, article body, …). Everything ported from the prototype
+   keeps its own CSS in ./styles, which is why Tailwind's preflight reset is
+   NOT imported: it would restyle the prototype's elements. Theme and
+   utilities only, in cascade layers, so the unlayered prototype CSS wins any
+   tie. Brand colours are the approved palette from the spec. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@theme {
+  --color-brand-red: #e53935;
+  --color-brand-navy: #0d1b2a;
+  --color-brand-slate: #4a5568;
+  --color-brand-line: #e2e8f0;
+  --font-display: var(--font-libre-franklin), 'Helvetica Neue', Arial, sans-serif;
+  --font-text: var(--font-public-sans), 'Helvetica Neue', Arial, sans-serif;
+}

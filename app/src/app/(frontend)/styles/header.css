@@ -1,0 +1,387 @@
+/* Mobile-first. Базовые правила — для узких экранов; блоки @media (min-width)
+   только добавляют то, что появляется на широких.
+   Брейкпоинты 640 / 768 / 1024 (design.md §8).
+
+   Порядок на странице: липкая белая шапка → фото-баннер → контент.
+   Фото больше не шапка: оно лежит внутри .container и выровнено по тем же
+   краям, что и всё остальное на странице (design.md §3). */
+
+/* ---------- Липкая шапка ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-white);
+  box-shadow: var(--shadow);
+}
+
+/* База: логотип и утилиты в первой строке, меню — во второй на всю ширину.
+   С 1024px всё выстраивается в одну строку: логотип | меню | утилиты. */
+.header-top {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "logo  utils"
+    "nav   nav";
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--gutter);
+}
+
+/* ---------- Логотип ---------- */
+/* Картинка — присланный клиентом логотип как есть (js/logo.js). Размер
+   задаёт одна ручка --logo-h: высота картинки 1.3 × --logo-h, ширина по
+   пропорции. На телефоне 34 × 1.3 = 44px — ровно высота строки шапки, с
+   640px 46 × 1.3 ≈ 60px; подвал задаёт свои 40px. */
+.site-logo {
+  --logo-h: 34px;
+  grid-area: logo;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+/* max-width: none — общее img { max-width: 100% } сжимало картинку по
+   ширине колонки: на 1024 колонка логотипа 180px, картинке нужно 186, и
+   логотип искажался. Лишние 6px уходят в зазор, до меню остаётся 10px. */
+.site-logo-img {
+  display: block;
+  flex: none;
+  max-width: none;
+  height: calc(var(--logo-h) * 1.3);
+  width: auto;
+}
+
+/* ---------- Меню: два ряда ---------- */
+/* Ниже 1024px оба ряда сливаются в одну прокручиваемую строку из 13 пунктов:
+   третий ряд поднял бы липкую шапку со 112px до 148px, а прятать восемь
+   настоящих разделов на телефоне нельзя. Скроллит сам .nav-stack, списки
+   внутри него просто не сжимаются. */
+.nav-stack {
+  grid-area: nav;
+  min-width: 0;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-stack::-webkit-scrollbar { display: none; }
+
+.nav-links,
+.nav-secondary {
+  display: flex;
+  gap: var(--space-1);
+  flex: none;
+}
+
+.nav-links li a,
+.nav-secondary li a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-icon {
+  display: flex;
+  flex: none;
+  color: var(--color-slate);
+}
+
+.nav-links li a:hover,
+.nav-links li a:hover .nav-icon,
+.nav-secondary li a:hover {
+  color: var(--color-accent);
+}
+
+.nav-links li a.active,
+.nav-links li a.active .nav-icon,
+.nav-secondary li a.active {
+  color: var(--color-accent);
+}
+
+.nav-links li a.active,
+.nav-secondary li a.active {
+  border-bottom-color: var(--color-accent);
+}
+
+/* ---------- Правый блок утилит ---------- */
+.header-utils {
+  grid-area: utils;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* Register Business появляется только с 1280px: ниже он забирает ширину у
+   ряда меню, который и так самый широкий элемент шапки. */
+.header-utils .nav-stub {
+  display: none;
+}
+
+.weather-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
+
+.weather-text strong {
+  color: var(--color-navy);
+  font-size: var(--text-xs);
+}
+
+.weather-note {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.weather-icon {
+  display: flex;
+  flex: none;
+  color: var(--color-slate);
+}
+
+.lang-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  cursor: default;
+}
+
+.account-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--color-slate);
+}
+
+.account-btn:hover {
+  color: var(--color-accent);
+}
+
+.nav-stub {
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-slate);
+  white-space: nowrap;
+}
+
+.nav-stub--accent {
+  color: var(--color-accent);
+}
+
+.nav-stub:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Фото-баннер ---------- */
+.hero-banner {
+  padding-top: var(--space-4);
+}
+
+.hero-frame {
+  /* 44px внутреннего поля + 1.5px рамки сверху и снизу. Объявлено здесь,
+     потому что от этой высоты считает свой отступ и плашка погоды. */
+  --search-h: 47px;
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-navy);
+}
+
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  display: block;
+}
+
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13,27,42,0.42) 0%, rgba(13,27,42,0) 45%, rgba(13,27,42,0.42) 100%);
+  pointer-events: none;
+}
+
+/* Погода лежит в левом нижнем углу кадра. Белая плашка, а не белый текст:
+   фотография светлая сверху и тёмная снизу, на плашке читается везде.
+   Ниже 1024px нижний край занимает строка поиска, поэтому плашка садится
+   ровно над ней: её отступ + её высота + зазор. С 1024px поиск уезжает в
+   правый верхний угол и плашка встаёт в сам угол. */
+.hero-weather {
+  position: absolute;
+  left: var(--space-4);
+  bottom: calc(var(--space-4) + var(--search-h) + var(--space-2));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  /* Плашка прозрачная: фотография сквозь неё видна. Размытие подложки —
+     не украшение, а то, что удерживает текст читаемым: без него тёмные
+     участки фото просвечивают пятнами прямо под буквами. Замерено: на 0.7
+     без размытия контраст строки даты падает до 3.9:1 при норме 4.5. */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: var(--text-xs);
+  /* navy, а не slate: на просвечивающем фоне серый текст уходит под норму. */
+  color: var(--color-navy);
+}
+
+.hero-weather:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* По умолчанию плашка однострочная: дата и температура. Полная в три строки
+   (79px) — с 1024px, где кадр 340px высотой (ниже неё там поиск). */
+.hero-weather .weather-text strong,
+.hero-weather .weather-note {
+  display: none;
+}
+
+/* Поиск лежит поверх кадра: на узких экранах полосой по низу, с 1024px —
+   в правом верхнем углу, как в макете. */
+.search-stub {
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  align-items: stretch;
+  min-height: var(--search-h);
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: rgba(255,255,255,0.94);
+}
+
+.search-stub input {
+  border: none;
+  background: transparent;
+  padding: 0 var(--space-4);
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  font-size: var(--text-sm);
+}
+
+.search-stub button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--color-slate);
+  color: var(--color-white);
+  width: 44px;
+  flex: none;
+  cursor: pointer;
+}
+
+/* ---------- 640 ---------- */
+@media (min-width: 640px) {
+  .site-logo { --logo-h: 46px; }
+  .hero-frame { height: 230px; }
+}
+
+/* ---------- 768 ---------- */
+@media (min-width: 768px) {
+  .hero-frame { height: 270px; }
+}
+
+/* ---------- 1024: шапка в одну строку, меню по центру ----------
+   Колонки 1fr auto 1fr: средняя берёт ровно ширину блока меню, а боковые
+   равны между собой — поэтому меню стоит по центру шапки, а не просто следом
+   за логотипом. Ширина рядов и кегль не меняются, центрируется готовый блок.
+
+   Замерено: логотип 178px, самый широкий ряд меню 553px. Место под это
+   появилось ровно потому, что погода уехала на баннер, а соцсети в футер:
+   раньше блок утилит занимал 564px и центрировать было нечего. */
+@media (min-width: 1024px) {
+  .header-top {
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "logo nav utils";
+    gap: var(--space-4);
+  }
+
+  .site-logo { justify-self: start; }
+
+  /* Снова два ряда: .nav-stack перестаёт быть скроллером, а второй ряд
+     уходит в мелкий серый. Подсветка активного — только цветом: рамка
+     добавила бы ряду высоты, а он и так самый широкий элемент шапки. */
+  .nav-stack {
+    display: block;
+    overflow: visible;
+    justify-self: center;
+  }
+
+  .nav-secondary li a {
+    min-height: 36px;
+    padding: 0 var(--space-1);
+    font-weight: 600;
+    color: #a7b1bd;
+    border-bottom: none;
+  }
+
+  .nav-secondary li a:hover,
+  .nav-secondary li a.active {
+    color: var(--color-accent);
+  }
+
+  /* Правило 44x44 (design.md §8) — про касания, оно в разделе адаптивности.
+     На широком экране указатель мышиный, поэтому служебные контролы ужимаем,
+     сохраняя высоту 44px у самой навигации. */
+  .lang-switch { min-width: 36px; min-height: 32px; }
+
+  .hero-frame { height: 340px; }
+  .hero-weather { left: var(--space-6); bottom: var(--space-6); }
+
+  /* Полная плашка: кадр 340px, рядом с погодой ничего больше не стоит. */
+  .hero-weather .weather-text strong,
+  .hero-weather .weather-note {
+    display: block;
+  }
+
+  .search-stub {
+    left: auto;
+    bottom: auto;
+    top: var(--space-6);
+    right: var(--space-6);
+    width: 320px;
+  }
+}
+
+/* ---------- 1280: в утилитах появляется Register Business ---------- */
+@media (min-width: 1280px) {
+  .header-top { gap: var(--space-6); }
+  .header-utils { gap: var(--space-3); }
+  .header-utils .nav-stub { display: flex; }
+}

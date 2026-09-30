@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Two projects in this repository
+
+- **The repository root is the stage 1 prototype** — everything below this section is about it.
+  It stays deployed on GitHub Pages as the sales demo.
+- **`app/` is stage 2**, the real portal: Next.js 16 + Payload CMS 3 + PostgreSQL, built in phases
+  from the client's spec (`prompt_allseattle_stage2.md`, not in the repo). **Read `app/README.md`
+  before touching it.** It has its own toolchain (pnpm, `pnpm db` for a local embedded Postgres,
+  `pnpm seed`, `pnpm typecheck / lint / build`) and none of the prototype's rules about "no
+  backend" or `?v=` cache-busting apply there. What carries over: the prototype's CSS, copied
+  unchanged into `app/src/app/(frontend)/styles/` (home.css and news.css wrapped in
+  `[data-page="…"]`, set on each page's `<main>`), the fonts (Libre Franklin + Public Sans — the
+  user kept them over the spec's Montserrat + Inter) and the uppercase red eyebrows. Tailwind is
+  only for parts that are new in stage 2, without its reset. `pnpm seed` reads this prototype's
+  `js/mock-data/news.js` and `img/` directly, so moving those breaks the seed.
+- Phase status and deviations from the spec are in `app/README.md`. Decisions so far: code in
+  `app/` of this repo (so Pages keeps serving the demo), local DB now and Neon later, prototype
+  CSS kept as is, redirects for renamed slugs answer 308 (Next's permanent redirect; Google treats
+  it like 301).
+
 ## What this is
 
 AllSeattle is a closed, in-person sales-demo prototype of a Seattle city portal (news, business

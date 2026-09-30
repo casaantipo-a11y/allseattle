@@ -1,0 +1,132 @@
+import Link from 'next/link'
+
+import { AdSlot, InlineMobileAd } from '@/components/AdSlot'
+import { JsonLd } from '@/components/JsonLd'
+import { NewsListRow, NewsTile, TopNewsWidget } from '@/components/news'
+import { getNewsPage, getSiteSettings, getTopNews } from '@/lib/queries'
+import { absoluteUrl } from '@/lib/site'
+
+export const revalidate = 3600
+
+// Home, phase 1: the prototype's layout on real news. The top leaderboard
+// (HOME_TOP) is back — it had gone missing in the prototype. Stats, jobs,
+// events, cars and the contest block arrive with their collections in
+// phases 2–3; phase 4 fills every slot with real banners.
+
+const TILE_COUNT = 20
+// Mobile echoes of the left-column slots, after full rows of tiles.
+const INLINE_AFTER = new Map([
+  [6, 'HOME_SIDEBAR_1'],
+  [12, 'HOME_SIDEBAR_2'],
+])
+
+export default async function HomePage() {
+  const [settings, feed, top] = await Promise.all([
+    getSiteSettings(),
+    getNewsPage({ page: 1, limit: 32 }),
+    getTopNews(6),
+  ])
+  const tiles = feed.docs.slice(0, TILE_COUNT)
+  const list = feed.docs.slice(TILE_COUNT)
+  const name = settings.siteName || 'AllSeattle'
+
+  return (
+    <main id="content" data-page="home">
+
+      <section className="section">
+        <div className="container">
+          <AdSlot code="HOME_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
+        </div>
+        <div className="container home-layout">
+          <aside className="home-sidebar home-sidebar-left" aria-label="Advertising">
+            <AdSlot code="HOME_SIDEBAR_1" size="300x250" className="ad-desktop-slot" />
+            <AdSlot code="HOME_SIDEBAR_2" size="300x250" className="ad-desktop-slot" />
+            <AdSlot code="HOME_SIDEBAR_3" size="300x600" className="ad-desktop-slot" />
+          </aside>
+
+          <div className="home-main">
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Today in Seattle</span>
+                <h1>Latest news</h1>
+              </div>
+              <Link href="/news" className="btn btn-outline btn-sm">
+                All news
+              </Link>
+            </div>
+            {tiles.length ? (
+              <div className="grid news-grid">
+                {tiles.flatMap((a, i) => {
+                  const inline = INLINE_AFTER.get(i + 1)
+                  const tile = <NewsTile key={a.id} article={a} />
+                  return inline ? [tile, <InlineMobileAd key={`ad-${inline}`} code={inline} />] : [tile]
+                })}
+              </div>
+            ) : (
+              <p className="muted">No news published yet.</p>
+            )}
+            <AdSlot code="HOME_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-bottom" />
+          </div>
+
+          <aside className="home-sidebar home-sidebar-right">
+            <div className="flex flex-col gap-3">
+              <Link href="/add-business" className="btn btn-block">
+                Add your business
+              </Link>
+              <Link href="/share-news" className="btn btn-navy btn-block">
+                Share the news
+              </Link>
+            </div>
+            <TopNewsWidget articles={top} />
+          </aside>
+        </div>
+      </section>
+
+      {list.length ? (
+        <section className="section home-feed">
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">More from Seattle</span>
+                <h2>City newsfeed</h2>
+              </div>
+            </div>
+            <div className="news-list">
+              {list.map((a) => (
+                <NewsListRow key={a.id} article={a} />
+              ))}
+            </div>
+            <AdSlot code="HOME_INFEED_2" size="728x90" mobileSize="320x100" className="ad-slot-bottom" />
+          </div>
+        </section>
+      ) : null}
+      {/* After the content: base.css styles `main > .section:first-child`, and a
+          leading <script> would stop the first section from matching. */}
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name,
+            url: absoluteUrl('/'),
+            logo: absoluteUrl('/brand/logo.webp'),
+            ...(settings.phone ? { telephone: settings.phone } : {}),
+            ...(settings.email ? { email: settings.email } : {}),
+            sameAs: [settings.socials?.facebook, settings.socials?.instagram].filter(Boolean),
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name,
+            url: absoluteUrl('/'),
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: { '@type': 'EntryPoint', urlTemplate: `${absoluteUrl('/search')}?q={search_term_string}` },
+              'query-input': 'required name=search_term_string',
+            },
+          },
+        ]}
+      />
+    </main>
+  )
+}

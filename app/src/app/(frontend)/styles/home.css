@@ -1,0 +1,203 @@
+/* Перенесено из прототипа (css/pages/home.css). Весь файл вложен в
+   [data-page="home"] — атрибут стоит на <main> этой страницы: в Next.js
+   CSS всех посещённых страниц остаётся подключённым, и без обёртки правила
+   главной (например, .section-head .eyebrow) задели бы остальные разделы. */
+[data-page="home"] {
+/* Mobile-first: базово одна колонка, сайдбары в строку; трёхколоночник
+   включается только на широких экранах. */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  align-items: start;
+}
+
+.home-sidebar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--grid-gap);
+  /* Deliberately not sticky, unlike the sidebars on every other page — on
+     Home both sidebars (ads and the widgets) scroll away with the page. */
+  position: static;
+}
+
+.home-sidebar > * {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.ad-slot-bottom {
+  margin-top: var(--space-6);
+  display: flex;
+  justify-content: center;
+}
+
+/* Сетка новостей главной. Карточка здесь — компактная плитка (ниже по файлу),
+   она рассчитана примерно на 220px, и лестница колонок подобрана так, чтобы
+   держать её около этой ширины. Замерено: 343px на 375, 296 на 640, 219 на
+   768, 207 на 1024, 188 на 1280, 175 на 1440 и 219 на 1600 и шире. */
+.news-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Планшет: сайдбаров ещё нет, под сеткой вся ширина контейнера. Двумя
+   колонками плитка растянулась бы до 468px и выглядела бы полупустой. */
+@media (min-width: 768px) {
+  .news-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-layout {
+    grid-template-columns: 220px 1fr 240px;
+  }
+  /* Средняя колонка здесь всего 437px — ровно на две плитки по 207px. */
+  .home-main .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .home-sidebar {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .home-sidebar > * {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  .home-layout {
+    grid-template-columns: 260px 1fr 280px;
+  }
+  /* Четвёртая колонка здесь не помещается: середина 613px даёт плитку в
+     135px, а это 103px под текст — заголовок обрывается на третьем слове,
+     от лида остаются два. Замерено и снято. Три колонки дают 188px. */
+  .home-main .news-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Четыре в ряд — то, ради чего всё затевалось. Порог 1440, а не 1280:
+   середина вырастает до 773px и плитка становится 175px, с 1600px — 219px. */
+@media (min-width: 1440px) {
+  .home-main .news-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------- Плитка новости ----------
+   Собственный компонент главной. Общий .news-card из components.css не
+   трогаем — он продолжает работать на news.html в полном виде; здесь он
+   ужимается под сетку в четыре колонки. Значения только из шкал. */
+.news-card--tile .news-card-body {
+  padding: var(--space-4);
+}
+
+/* С 768px время уходит под рубрику. Замерено: в одну строку «Community
+   2 days ago» просит 192px при 187px доступных даже на 1920, а на 1440 из
+   восьми карточек влезают две. То есть перенос всё равно случится — но по
+   случайному признаку, и заголовок на такой карточке съедет вниз
+   относительно соседей. Две строки всегда — это на 19px выше, зато ряд
+   ровный. Ужать текст нельзя: 14px — пол шкалы (design.md §2).
+   Ниже 768px плитка шире 296px и строка помещается целиком, там не трогаем. */
+@media (min-width: 768px) {
+  .news-card--tile .news-card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    line-height: 1.35;
+  }
+}
+
+.news-card--tile h3 {
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  margin-bottom: var(--space-2);
+  -webkit-line-clamp: 3;
+}
+
+/* flex: 1 из components.css растягивает бокс выше двух строк, и тогда
+   -webkit-line-clamp рисует многоточие на второй строке, но продолжает
+   показывать остальные. Обрезка работает только когда высота равна клампу. */
+.news-card--tile .news-card-excerpt {
+  -webkit-line-clamp: 2;
+  flex: none;
+}
+
+/* Обрезка по числу строк — единственное место в проекте, где она нужна: на
+   175px заголовок иначе уходит в пять строк и рвёт выравнивание ряда.
+   Работает только в связке с display: -webkit-box и -webkit-box-orient,
+   поодиночке -webkit-line-clamp игнорируется. */
+.news-card--tile h3,
+.news-card--tile .news-card-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---------- Нижняя секция (#home-feed) ----------
+   Зазор от баннера #home-ad-mid до надписи «MORE FROM SEATTLE» клиент
+   задал в сантиметре. 1см = 37.8px, ближайшая сумма шагов шкалы — 36px
+   (32 + 4), промах 1.8px. Складывается он из трёх слагаемых, и крутить
+   надо то, которое больше ни за что не отвечает:
+
+      8px  нижний отступ первой секции   ← эта ручка
+     20px  сдвиг всей шапки вниз (5мм, закрывает пустоту до линии)
+      8px  сдвиг надзаголовка вниз (просьба «на 8мм ниже»)
+     ----
+     36px
+
+   Ушли два слагаемых: 96px, которые секция брала из --section-y, и
+   margin-top в 24px у шапки (просьба «City Newsfeed на 6мм ниже»). Они и
+   давали те лишние 112px, которые теперь попросили убрать; ничего другого
+   та правка не меняла — список ехал вместе с заголовком, и расстояние от
+   заголовка до линии от неё не зависело.
+
+   Отступ переопределяем только снизу: верхние 32px первой секции из
+   base.css — согласованное отступление, их не трогаем. */
+& > .section:first-child {
+  padding-bottom: var(--space-2);
+}
+
+/* Главная выведена из общего правила положения шапки (css/components.css):
+   обе её шапки клиент настраивал отдельно. Возвращаем нижний отступ и снимаем
+   общий сдвиг надзаголовка — у «Today in Seattle» его нет вовсе, а у ленты
+   ниже свой. Это исключение, а не забытый код. */
+.section-head {
+  margin-bottom: var(--space-6);
+}
+
+.section-head .eyebrow {
+  top: 0;
+  left: 0;
+}
+
+/* Шапку двигаем поверх потока, а не отступом: отступом она утащила бы за
+   собой и список, а зазор от заголовка до линии должен остаться 16px. */
+.home-feed .section-head {
+  position: relative;
+  top: calc(var(--space-4) + var(--space-1));
+}
+
+/* Надзаголовок — ещё на 8px ниже и на 8px правее заголовка (2мм вправо). */
+.home-feed .eyebrow {
+  position: relative;
+  top: var(--space-2);
+  left: var(--space-2);
+}
+
+/* Зазор от конца ленты до подвала — те же 36px, но теперь это поведение по
+   умолчанию для всех страниц (css/base.css и css/footer.css). Своих правил
+   здесь больше не нужно; на главной остаётся только арифметика шва между
+   двумя её секциями — 8px паддинга выше плюс 28px сдвигов заголовка. */
+
+}
