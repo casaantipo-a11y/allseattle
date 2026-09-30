@@ -2,7 +2,21 @@ import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload, type Where } from 'payload'
 
-import type { Footer, Header, Media, News, NewsCategory, Page, SiteSetting } from '@/payload-types'
+import type {
+  BusinessCategory,
+  Footer,
+  Header,
+  Media,
+  News,
+  NewsCategory,
+  Package,
+  Page,
+  Product,
+  Promotion,
+  SiteSetting,
+} from '@/payload-types'
+
+import type { BusinessFull } from './business'
 
 // Every public read goes through unstable_cache with a tag. Payload hooks
 // expire the tag on save (src/hooks/revalidate.ts); the time-based
@@ -171,4 +185,138 @@ export const getPagesForSitemap = unstable_cache(
     ).docs,
   ['pages-sitemap'],
   { tags: ['pages'], revalidate: HOUR },
+)
+
+// ---------------------------------------------------------------------------
+// Businesses (phase 2)
+
+
+const asBusiness = (doc: Pick<BusinessFull, 'id'>) => doc as unknown as BusinessFull
+
+export const getBusinessCategories = unstable_cache(
+  async (): Promise<BusinessCategory[]> =>
+    (await (await payload()).find({ collection: 'business-categories', limit: 1000, sort: 'order', depth: 0 })).docs,
+  ['business-categories'],
+  { tags: ['business-categories'], revalidate: HOUR },
+)
+
+export const getPackages = unstable_cache(
+  async (): Promise<Package[]> =>
+    (await (await payload()).find({ collection: 'packages', limit: 20, sort: 'order', depth: 0 })).docs,
+  ['packages'],
+  { tags: ['packages'], revalidate: HOUR },
+)
+
+/**
+ * Every published business with its package, categories and pictures. The
+ * directory filters and sorts this in memory — ordering depends on package
+ * expiry "today", which a database sort can't express, and a city directory
+ * stays in the low thousands.
+ */
+export const getAllBusinesses = unstable_cache(
+  async (): Promise<BusinessFull[]> =>
+    (
+      await (await payload()).find({
+        collection: 'businesses',
+        where: published,
+        limit: 5000,
+        depth: 1,
+        select: {
+          name: true,
+          slug: true,
+          summary: true,
+          categories: true,
+          cover: true,
+          logo: true,
+          address: true,
+          lat: true,
+          lng: true,
+          phone: true,
+          package: true,
+          packageExpiresAt: true,
+          priority: true,
+          viewsCount: true,
+          updatedAt: true,
+        },
+      })
+    ).docs.map(asBusiness),
+  ['businesses-all'],
+  { tags: ['businesses', 'packages', 'business-categories'], revalidate: HOUR },
+)
+
+export const getBusiness = unstable_cache(
+  async (slug: string): Promise<BusinessFull | null> => {
+    const res = await (await payload()).find({
+      collection: 'businesses',
+      where: { and: [published, { slug: { equals: slug } }] },
+      limit: 1,
+      depth: 2,
+    })
+    return res.docs[0] ? asBusiness(res.docs[0]) : null
+  },
+  ['business'],
+  { tags: ['businesses', 'packages'], revalidate: HOUR },
+)
+
+export const findBusinessByOldSlug = unstable_cache(
+  async (slug: string): Promise<BusinessFull | null> => {
+    const res = await (await payload()).find({
+      collection: 'businesses',
+      where: { and: [published, { 'slugHistory.slug': { equals: slug } }] },
+      limit: 1,
+      depth: 0,
+    })
+    return res.docs[0] ? asBusiness(res.docs[0]) : null
+  },
+  ['business-old-slug'],
+  { tags: ['businesses'], revalidate: HOUR },
+)
+
+export const getBusinessBySubdomain = unstable_cache(
+  async (subdomain: string): Promise<BusinessFull | null> => {
+    const res = await (await payload()).find({
+      collection: 'businesses',
+      where: { and: [published, { subdomain: { equals: subdomain } }] },
+      limit: 1,
+      depth: 2,
+    })
+    return res.docs[0] ? asBusiness(res.docs[0]) : null
+  },
+  ['business-subdomain'],
+  { tags: ['businesses', 'packages'], revalidate: HOUR },
+)
+
+/** Promotions still running today; expired ones never show. */
+export const getActivePromotions = unstable_cache(
+  async (businessId?: number): Promise<Promotion[]> => {
+    const today = new Date()
+    today.setUTCHours(0, 0, 0, 0)
+    const where: Where = {
+      and: [
+        { validUntil: { greater_than_equal: today.toISOString() } },
+        { validFrom: { less_than_equal: new Date().toISOString() } },
+        ...(businessId ? [{ business: { equals: businessId } }] : []),
+      ],
+    }
+    return (
+      await (await payload()).find({ collection: 'promotions', where, sort: 'validUntil', limit: 200, depth: 1 })
+    ).docs
+  },
+  ['promotions-active'],
+  { tags: ['promotions'], revalidate: HOUR },
+)
+
+export const getProducts = unstable_cache(
+  async (businessId: number): Promise<Product[]> =>
+    (
+      await (await payload()).find({
+        collection: 'products',
+        where: { business: { equals: businessId } },
+        sort: 'name',
+        limit: 1000,
+        depth: 1,
+      })
+    ).docs,
+  ['products'],
+  { tags: ['products'], revalidate: HOUR },
 )

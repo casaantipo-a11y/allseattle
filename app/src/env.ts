@@ -23,6 +23,7 @@ const schema = z.object({
   S3_PUBLIC_URL: optional,
   TELEGRAM_BOT_TOKEN: optional,
   RESEND_API_KEY: optional,
+  RESEND_FROM: optional,
   NOTIFY_EMAIL: optional,
   TURNSTILE_SITE_KEY: optional,
   TURNSTILE_SECRET_KEY: optional,

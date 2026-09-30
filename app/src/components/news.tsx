@@ -115,9 +115,22 @@ export function CategoriesWidget({
   )
 }
 
-export function Pagination({ page, totalPages, base }: { page: number; totalPages: number; base: string }) {
+export function Pagination({
+  page,
+  totalPages,
+  base,
+  params = {},
+}: {
+  page: number
+  totalPages: number
+  base: string
+  params?: Record<string, string>
+}) {
   if (totalPages <= 1) return null
-  const href = (p: number) => (p === 1 ? base : `${base}?page=${p}`)
+  const href = (p: number) => {
+    const qs = new URLSearchParams({ ...params, ...(p > 1 ? { page: String(p) } : {}) }).toString()
+    return qs ? `${base}?${qs}` : base
+  }
   return (
     <nav className="mt-6 flex items-center justify-between gap-3" aria-label="Pagination">
       {page > 1 ? (

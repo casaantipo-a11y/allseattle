@@ -19,7 +19,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Phase status and deviations from the spec are in `app/README.md`. Decisions so far: code in
   `app/` of this repo (so Pages keeps serving the demo), local DB now and Neon later, prototype
   CSS kept as is, redirects for renamed slugs answer 308 (Next's permanent redirect; Google treats
-  it like 301).
+  it like 301). Phase 2 (directory, packages, business pages, map, forms) is done; the user asked
+  to build all phases locally first and choose hosting afterwards.
 
 ## What this is
 

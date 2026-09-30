@@ -9,10 +9,17 @@ import { buildConfig, type Plugin } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { BusinessCategories } from './collections/BusinessCategories'
+import { Businesses } from './collections/Businesses'
+import { Documents } from './collections/Documents'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
 import { NewsCategories } from './collections/NewsCategories'
+import { Packages } from './collections/Packages'
 import { Pages } from './collections/Pages'
+import { Products } from './collections/Products'
+import { Promotions } from './collections/Promotions'
+import { Submissions } from './collections/Submissions'
 import { Users } from './collections/Users'
 import { env, s3Enabled } from './env'
 import { Footer } from './globals/Footer'
@@ -24,13 +31,15 @@ const dirname = path.dirname(filename)
 
 const plugins: Plugin[] = [
   seoPlugin({
-    collections: ['news', 'pages'],
+    collections: ['news', 'pages', 'businesses'],
     uploadsCollection: 'media',
     tabbedUI: true,
-    generateTitle: ({ doc }) => `${(doc as { title?: string }).title ?? ''} | AllSeattle`,
+    generateTitle: ({ doc }) =>
+      `${(doc as { title?: string; name?: string }).title ?? (doc as { name?: string }).name ?? ''} | AllSeattle`,
     generateDescription: ({ doc }) =>
-      (doc as { excerpt?: string; intro?: string }).excerpt ??
+      (doc as { excerpt?: string }).excerpt ??
       (doc as { intro?: string }).intro ??
+      (doc as { summary?: string }).summary ??
       '',
   }),
 ]
@@ -84,7 +93,20 @@ export default buildConfig({
     supportedLanguages: { en, ru },
     fallbackLanguage: 'en',
   },
-  collections: [News, NewsCategories, Pages, Media, Users],
+  collections: [
+    News,
+    NewsCategories,
+    Businesses,
+    BusinessCategories,
+    Packages,
+    Promotions,
+    Products,
+    Submissions,
+    Pages,
+    Media,
+    Documents,
+    Users,
+  ],
   globals: [SiteSettings, Header, Footer],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,

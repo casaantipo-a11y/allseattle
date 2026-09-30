@@ -19,6 +19,9 @@ import './styles/footer.css'
 import './styles/components.css'
 import './styles/home.css'
 import './styles/news.css'
+import './styles/directory.css'
+import './styles/pricing.css'
+import './styles/business.css'
 import './tailwind.css'
 
 // The prototype's faces (the user chose to keep them over the spec's

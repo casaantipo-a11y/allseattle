@@ -1,6 +1,13 @@
 import { notFound } from 'next/navigation'
 
-import { getNewsCategories, getNewsForSitemap, getPagesForSitemap } from '@/lib/queries'
+import { bizPath } from '@/lib/business'
+import {
+  getAllBusinesses,
+  getBusinessCategories,
+  getNewsCategories,
+  getNewsForSitemap,
+  getPagesForSitemap,
+} from '@/lib/queries'
 import { absoluteUrl, articlePath } from '@/lib/site'
 import { SITEMAP_TYPES, type SitemapType, type UrlEntry, urlset, xml } from '@/lib/sitemap'
 
@@ -19,6 +26,22 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
       ...categories
         .filter((c) => c.slug)
         .map((c) => ({ loc: absoluteUrl(`/news/${c.slug}`), changefreq: 'daily', priority: 0.7 })),
+      ...['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business'].map((path) => ({
+        loc: absoluteUrl(path),
+        changefreq: 'daily',
+        priority: 0.8,
+      })),
+    ]
+  }
+  if (type === 'businesses') {
+    const [businesses, categories] = await Promise.all([getAllBusinesses(), getBusinessCategories()])
+    return [
+      ...categories
+        .filter((c) => c.slug)
+        .map((c) => ({ loc: absoluteUrl(`/${c.section}/${c.slug}`), changefreq: 'daily', priority: 0.6 })),
+      ...businesses
+        .filter((b) => b.slug)
+        .map((b) => ({ loc: absoluteUrl(bizPath(b.slug)), lastmod: new Date(b.updatedAt).toISOString(), priority: 0.7 })),
     ]
   }
   if (type === 'news') {

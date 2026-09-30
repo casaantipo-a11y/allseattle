@@ -5,12 +5,26 @@ The live city portal: Next.js 16 (App Router) with Payload CMS 3 embedded in the
 mock data) lives one folder up and stays deployed on GitHub Pages as the sales demo; its CSS was
 ported here unchanged (`src/app/(frontend)/styles/`).
 
-**Status: phase 1** — users and roles, media, news (categories, articles, Top news), static pages,
-site settings / header / footer globals, the header with live Seattle weather and time, the home
-page and news section on real data, SEO (metadata, OG images, sitemaps, Google News sitemap,
-robots, JSON-LD, 301s for renamed slugs, on-save revalidation), cookie banner with GA4 Consent
-Mode v2, `seed` / `purge-demo`. Directory, cars, jobs, events, contest, search, forms and banners
-come in phases 2–4; their menu links 404 until then.
+**Status: phases 1–2 done.**
+
+- **Phase 1** — users and roles, media, news (categories, articles, Top news), static pages, site
+  settings / header / footer, the header with live Seattle weather and time, the home page and news
+  on real data, SEO (metadata, OG images, sitemaps, Google News sitemap, robots, JSON-LD, redirects
+  for renamed slugs, on-save revalidation), cookie banner with GA4 Consent Mode v2,
+  `seed` / `purge-demo`.
+- **Phase 2** — packages with limits (enforced on save with messages like "Standard package allows
+  up to 2 categories"), a category tree for three storefronts (`/directory`, `/shopping`,
+  `/leisure`, each with `/[category]` pages and search), businesses with automatic geocoding
+  (Nominatim, 1 request/second; a failed lookup never blocks saving), promotions, products,
+  documents (price lists, certificates), the business page `/biz/[slug]` in three designs
+  (Standard / Luxury with tabs and a big gallery / Premium branded: header image, the business's
+  colour, no other ads — an expired package falls back to Standard), `/map` (clustered, filtered
+  by category), `/advertise` (packages from the database, price 0 = "Contact us", comparison
+  table, inquiry form), `/add-business`, subdomains behind `ENABLE_SUBDOMAINS`, and the public
+  forms pipeline (zod, honeypot, Turnstile, 5 per IP per hour, Submissions, Telegram + email).
+
+Cars, jobs, events, contest, weather page, search and "Share the news" come in phase 3, banners
+and statistics in phase 4; their links 404 until then.
 
 ## Local development
 
@@ -38,6 +52,10 @@ Useful scripts:
 | `pnpm db` | local PostgreSQL (embedded, no install) |
 | `pnpm seed` | admin user, demo news with photos (`isDemo`), settings, header, footer, placeholder pages. Safe to re-run |
 | `pnpm purge-demo` | deletes everything marked `isDemo` after typing `DELETE` (`PURGE_DEMO_YES=1` skips the question) |
+
+`seed` and `purge-demo` run outside Next.js, so at the end they call `POST /api/revalidate` on
+`NEXT_PUBLIC_SITE_URL` (guarded by `PAYLOAD_SECRET`) to drop the site's cached data; if the site
+isn't running there is nothing to refresh.
 | `pnpm generate:types` | regenerates `src/payload-types.ts` after changing collections |
 | `pnpm migrate` / `pnpm migrate:create` | run / create database migrations |
 
@@ -75,7 +93,9 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
 ## How it fits together
 
 - `src/collections`, `src/globals` — the Payload schema. Access by role (`src/access/roles.ts`):
-  **admin** everything, **editor** news/pages/header, **sales** (businesses, banners — phases 2 and 4).
+  **admin** everything, **editor** news/pages/header and news tips, **sales** businesses,
+  categories, promotions, products and business/ad inquiries (banners in phase 4). Only admins
+  change package prices and limits.
   The admin UI is English with Russian available per user (account settings → Language).
 - Public content has `slug`, `status` (draft/published), `isDemo`, an SEO tab, and a hidden
   `slugHistory`: renaming a slug keeps the old URL working as a permanent redirect.
@@ -84,4 +104,12 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
   article appears on the site at once; pages are ISR otherwise.
 - `src/app/(frontend)` — the site. Prototype markup and CSS for everything that existed in stage 1;
   Tailwind (theme + utilities only, no reset, in cascade layers) for the new parts.
-- `src/scripts` — `seed.ts` reads the prototype's `js/mock-data/news.js` and `img/` directly.
+- `src/scripts` — `seed.ts` / `seed-businesses.ts` read the prototype's `js/mock-data/*.js` and
+  `img/` directly. Demo businesses get coordinates from neighbourhood centres, not geocoding.
+- Directory order (`src/lib/business.ts`): packages with priority placement first, higher package
+  `order` ahead (Premium, then Luxury), then the manual `priority` (higher first), then name. The
+  package in force is decided at render time, so an expired one drops without anyone touching it.
+- Forms: `src/lib/forms.ts` + `POST /api/forms/{business-registration|ad-inquiry}`; the REST API
+  itself refuses to create submissions. Notifications (`src/lib/notify.ts`) never block saving.
+- Leaflet only runs in the browser: `components/map/MapClient.tsx` loads it with `ssr: false`; pins
+  are CSS divIcons (`styles/business.css`).

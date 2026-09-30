@@ -14,9 +14,20 @@ import readline from 'node:readline/promises'
 import { getPayload, type CollectionSlug } from 'payload'
 
 import config from '../payload.config'
+import { revalidateSite } from './revalidate-site'
 
 // Collections added in later phases join this list, content before its media.
-const ORDER: CollectionSlug[] = ['news', 'news-categories', 'pages', 'media']
+const ORDER: CollectionSlug[] = [
+  'products',
+  'promotions',
+  'news',
+  'businesses',
+  'news-categories',
+  'business-categories',
+  'pages',
+  'documents',
+  'media',
+]
 
 async function run() {
   const payload = await getPayload({ config })
@@ -53,7 +64,8 @@ async function run() {
     })
     console.log(`  deleted ${res.docs.length} from ${slug}${res.errors.length ? `, ${res.errors.length} failed` : ''}`)
   }
-  console.log('\nDone. Pages on the live site refresh within an hour, or immediately after the next deploy.')
+  await revalidateSite((m) => console.log(`  ${m}`))
+  console.log('\nDone.')
 }
 
 await run()

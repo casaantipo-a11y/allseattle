@@ -69,8 +69,15 @@ export interface Config {
   collections: {
     news: News;
     'news-categories': NewsCategory;
+    businesses: Business;
+    'business-categories': BusinessCategory;
+    packages: Package;
+    promotions: Promotion;
+    products: Product;
+    submissions: Submission;
     pages: Page;
     media: Media;
+    documents: Document;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -81,8 +88,15 @@ export interface Config {
   collectionsSelect: {
     news: NewsSelect<false> | NewsSelect<true>;
     'news-categories': NewsCategoriesSelect<false> | NewsCategoriesSelect<true>;
+    businesses: BusinessesSelect<false> | BusinessesSelect<true>;
+    'business-categories': BusinessCategoriesSelect<false> | BusinessCategoriesSelect<true>;
+    packages: PackagesSelect<false> | PackagesSelect<true>;
+    promotions: PromotionsSelect<false> | PromotionsSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -275,6 +289,297 @@ export interface NewsCategory {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "businesses".
+ */
+export interface Business {
+  id: number;
+  name: string;
+  /**
+   * How many are allowed depends on the package.
+   */
+  categories: (number | BusinessCategory)[];
+  logo?: (number | null) | Media;
+  /**
+   * The picture in the directory list.
+   */
+  cover?: (number | null) | Media;
+  /**
+   * One or two sentences for the directory list and search engines.
+   */
+  summary?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Street address in Seattle. Coordinates are filled in from it automatically.
+   */
+  address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  /**
+   * The address could not be placed on the map automatically.
+   */
+  geocodeNote?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  hours?:
+    | {
+        /**
+         * e.g. Mon–Fri
+         */
+        days: string;
+        /**
+         * e.g. 7:00 AM – 6:00 PM, or Closed
+         */
+        time: string;
+        id?: string | null;
+      }[]
+    | null;
+  socials?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    x?: string | null;
+    yelp?: string | null;
+  };
+  /**
+   * How many are allowed depends on the package.
+   */
+  gallery?: (number | Media)[] | null;
+  priceLists?: (number | Document)[] | null;
+  certificates?: (number | Document)[] | null;
+  package?: (number | null) | Package;
+  /**
+   * After this date the business drops to the basic listing automatically.
+   */
+  packageExpiresAt?: string | null;
+  /**
+   * Manual ordering inside the same package: higher shows first.
+   */
+  priority?: number | null;
+  /**
+   * yourname → yourname.<site domain>. Luxury and Premium only.
+   */
+  subdomain?: string | null;
+  /**
+   * Used only with a package that includes a branded page.
+   */
+  branding?: {
+    headerImage?: (number | null) | Media;
+    brandColor?: string | null;
+  };
+  /**
+   * Part of the page address. Leave empty to generate it from the title.
+   */
+  slug?: string | null;
+  status: 'draft' | 'published';
+  viewsCount?: number | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  /**
+   * Old addresses of this page. They redirect here automatically.
+   */
+  slugHistory?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-categories".
+ */
+export interface BusinessCategory {
+  id: number;
+  name: string;
+  /**
+   * Part of the page address. Leave empty to generate it from the title.
+   */
+  slug?: string | null;
+  section: 'directory' | 'shopping' | 'leisure';
+  /**
+   * Leave empty for a top-level category.
+   */
+  parent?: (number | null) | BusinessCategory;
+  icon?: (number | null) | Media;
+  description?: string | null;
+  order?: number | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  /**
+   * Shown as the link text, e.g. "Spring menu 2026"
+   */
+  title: string;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "packages".
+ */
+export interface Package {
+  id: number;
+  name: string;
+  /**
+   * Higher = more expensive tier. Premium ranks above Luxury in the directory.
+   */
+  order: number;
+  /**
+   * 0 = "Contact us"
+   */
+  priceMonthly: number;
+  /**
+   * 0 = "Contact us"
+   */
+  priceYearly: number;
+  currency: 'USD';
+  maxCategories: number;
+  maxPhotos: number;
+  /**
+   * Car listings and job postings together
+   */
+  maxListings: number;
+  maxProducts: number;
+  mapPlacement?: boolean | null;
+  promotions?: boolean | null;
+  priceLists?: boolean | null;
+  subdomain?: boolean | null;
+  priorityPlacement?: boolean | null;
+  categoryBannerFirstMonth?: boolean | null;
+  brandedPage?: boolean | null;
+  /**
+   * Bullet points for the packages table on /advertise.
+   */
+  features?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions".
+ */
+export interface Promotion {
+  id: number;
+  business: number | Business;
+  title: string;
+  description?: string | null;
+  image?: (number | null) | Media;
+  validFrom: string;
+  validUntil: string;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  business: number | Business;
+  name: string;
+  /**
+   * USD. Empty = "Ask for price".
+   */
+  price?: number | null;
+  image?: (number | null) | Media;
+  description?: string | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submissions".
+ */
+export interface Submission {
+  id: number;
+  type: 'news_tip' | 'business_registration' | 'ad_inquiry';
+  status: 'new' | 'in_progress' | 'done' | 'rejected';
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  message?: string | null;
+  businessName?: string | null;
+  category?: (number | null) | BusinessCategory;
+  desiredPackage?: (number | null) | Package;
+  /**
+   * Ad placement the visitor asked about
+   */
+  desiredSlot?: string | null;
+  photos?: (number | Media)[] | null;
+  location?: string | null;
+  /**
+   * Only the team sees this.
+   */
+  internalNotes?: string | null;
+  ip?: string | null;
+  userAgent?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
@@ -421,12 +726,40 @@ export interface PayloadLockedDocument {
         value: number | NewsCategory;
       } | null)
     | ({
+        relationTo: 'businesses';
+        value: number | Business;
+      } | null)
+    | ({
+        relationTo: 'business-categories';
+        value: number | BusinessCategory;
+      } | null)
+    | ({
+        relationTo: 'packages';
+        value: number | Package;
+      } | null)
+    | ({
+        relationTo: 'promotions';
+        value: number | Promotion;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'submissions';
+        value: number | Submission;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'documents';
+        value: number | Document;
       } | null)
     | ({
         relationTo: 'users';
@@ -519,6 +852,170 @@ export interface NewsCategoriesSelect<T extends boolean = true> {
   description?: T;
   order?: T;
   isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "businesses_select".
+ */
+export interface BusinessesSelect<T extends boolean = true> {
+  name?: T;
+  categories?: T;
+  logo?: T;
+  cover?: T;
+  summary?: T;
+  description?: T;
+  address?: T;
+  lat?: T;
+  lng?: T;
+  geocodeNote?: T;
+  phone?: T;
+  email?: T;
+  website?: T;
+  hours?:
+    | T
+    | {
+        days?: T;
+        time?: T;
+        id?: T;
+      };
+  socials?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        x?: T;
+        yelp?: T;
+      };
+  gallery?: T;
+  priceLists?: T;
+  certificates?: T;
+  package?: T;
+  packageExpiresAt?: T;
+  priority?: T;
+  subdomain?: T;
+  branding?:
+    | T
+    | {
+        headerImage?: T;
+        brandColor?: T;
+      };
+  slug?: T;
+  status?: T;
+  viewsCount?: T;
+  isDemo?: T;
+  slugHistory?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-categories_select".
+ */
+export interface BusinessCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  section?: T;
+  parent?: T;
+  icon?: T;
+  description?: T;
+  order?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "packages_select".
+ */
+export interface PackagesSelect<T extends boolean = true> {
+  name?: T;
+  order?: T;
+  priceMonthly?: T;
+  priceYearly?: T;
+  currency?: T;
+  maxCategories?: T;
+  maxPhotos?: T;
+  maxListings?: T;
+  maxProducts?: T;
+  mapPlacement?: T;
+  promotions?: T;
+  priceLists?: T;
+  subdomain?: T;
+  priorityPlacement?: T;
+  categoryBannerFirstMonth?: T;
+  brandedPage?: T;
+  features?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions_select".
+ */
+export interface PromotionsSelect<T extends boolean = true> {
+  business?: T;
+  title?: T;
+  description?: T;
+  image?: T;
+  validFrom?: T;
+  validUntil?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  business?: T;
+  name?: T;
+  price?: T;
+  image?: T;
+  description?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submissions_select".
+ */
+export interface SubmissionsSelect<T extends boolean = true> {
+  type?: T;
+  status?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  businessName?: T;
+  category?: T;
+  desiredPackage?: T;
+  desiredSlot?: T;
+  photos?: T;
+  location?: T;
+  internalNotes?: T;
+  ip?: T;
+  userAgent?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -622,6 +1119,25 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  title?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

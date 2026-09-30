@@ -8,9 +8,10 @@
  *    photos, all marked isDemo (so `pnpm purge-demo` removes them)
  *  - Site settings, Header (menu, announcements), Footer
  *  - placeholder Pages: About, Advertise, Contact, Privacy Policy, Terms of Use
+ *  - phase 2 (seed-businesses.ts): the three packages, business categories,
+ *    the prototype's businesses and venues, promotions, a few products
  *
- * Packages, ad slots and car makes are seeded by the phases that add those
- * collections.
+ * Ad slots and car makes are seeded by the phases that add those collections.
  */
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -18,8 +19,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { getPayload } from 'payload'
 
 import config from '../payload.config'
+import { revalidateSite } from './revalidate-site'
 import { slugify } from '../fields'
 import { doc, h2, p, paragraphsFrom } from './lexical'
+import { seedBusinesses } from './seed-businesses'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 // The stage 1 prototype sits next to the app in the same repository.
@@ -108,6 +111,9 @@ async function run() {
   }
   log(`${created} demo articles created (${mock.NEWS_ARTICLES.length - created} already there)`)
 
+  // ---- Phase 2: packages, business categories, businesses, promotions, products
+  await seedBusinesses(payload, PROTOTYPE, log)
+
   // ---- Globals ------------------------------------------------------------
   await payload.updateGlobal({
     slug: 'site-settings',
@@ -185,7 +191,10 @@ async function run() {
       title: 'Advertise',
       slug: 'advertise',
       intro: 'Put your business in front of Seattle.',
-      content: doc(p('Packages and ad placements will be listed here.')),
+      content: doc(
+        p('Banner placements on the home page, in the news and in every section of the directory are available by the week.'),
+        p('Ask us about combining a package with banners — send the form below and we will prepare options.'),
+      ),
     },
     {
       title: 'Contact',
@@ -219,6 +228,7 @@ async function run() {
     pagesCreated++
   }
   log(`${pagesCreated} pages created`)
+  await revalidateSite(log)
   log('done')
 }
 
