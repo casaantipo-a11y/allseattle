@@ -263,16 +263,6 @@ export function CarsCatalog({
               ))}
             </select>
           </div>
-          <div className="field">
-            <label htmlFor="f-sort">Sort by</label>
-            <select id="f-sort" value={s.sort} onChange={(e) => set({ sort: e.target.value })}>
-              <option value="default">Newest listed</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="year-desc">Year: Newest first</option>
-              <option value="mileage-asc">Mileage: Lowest first</option>
-            </select>
-          </div>
           <button className="btn btn-outline btn-sm" type="button" onClick={() => setS(EMPTY)}>
             Reset filters
           </button>
@@ -304,12 +294,26 @@ export function CarsCatalog({
 
         <div className="auto-results">
           {middleTop}
-          <h2 className="auto-all-cars" id="all-cars">
-            All cars
-          </h2>
-          <p className="result-count" aria-live="polite">
-            {found.length === cars.length ? `${cars.length} cars listed` : `Showing ${found.length} of ${cars.length} cars`}
-          </p>
+          <div className="auto-all-head">
+            <div>
+              <h2 className="auto-all-cars" id="all-cars">
+                All cars
+              </h2>
+              <p className="result-count" aria-live="polite">
+                {found.length === cars.length ? `${cars.length} cars listed` : `Showing ${found.length} of ${cars.length} cars`}
+              </p>
+            </div>
+            <div className="field auto-sort">
+              <label htmlFor="f-sort">Sort by</label>
+              <select id="f-sort" value={s.sort} onChange={(e) => set({ sort: e.target.value })}>
+                <option value="default">Newest listed</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="year-desc">Year: Newest first</option>
+                <option value="mileage-asc">Mileage: Lowest first</option>
+              </select>
+            </div>
+          </div>
           <div className="car-list">
             {found.length ? (
               found.map((c) => (
