@@ -100,3 +100,27 @@
 .search-stub:focus-within {
   box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.45);
 }
+
+/* GOLD — paid placements in the Cars page business list (client's Cars
+   redesign, 01.10.2026): every paid package looks the same there, bright gold,
+   with a gold "Gold" plaque. Navy text on the plaque for contrast (white on
+   gold fails AA). */
+.biz-row--gold {
+  background: var(--color-gold-bright-tint);
+  border-color: var(--color-gold-bright);
+}
+.badge-gold {
+  background: var(--color-gold-bright);
+  color: var(--color-navy);
+}
+
+/* "ALL CARS" over the listings on the Cars page — red caps, as in the client's mockup. */
+.auto-all-cars {
+  margin: var(--space-8) 0 var(--space-2);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}

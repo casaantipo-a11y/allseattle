@@ -80,7 +80,19 @@ const EMPTY: State = {
 
 const uniq = (xs: string[]) => [...new Set(xs.filter(Boolean))].sort()
 
-export function CarsCatalog({ cars, rightRail }: { cars: CarItem[]; rightRail?: ReactNode }) {
+export function CarsCatalog({
+  cars,
+  leftExtra,
+  middleTop,
+  rightRail,
+}: {
+  cars: CarItem[]
+  /** Under the model catalog in the left column. */
+  leftExtra?: ReactNode
+  /** Above the car list in the middle column (the business list, a banner). */
+  middleTop?: ReactNode
+  rightRail?: ReactNode
+}) {
   const [s, setS] = useState<State>(EMPTY)
   const [adv, setAdv] = useState(false)
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }))
@@ -287,9 +299,14 @@ export function CarsCatalog({ cars, rightRail }: { cars: CarItem[]; rightRail?: 
               </button>
             </div>
           </div>
+          {leftExtra}
         </aside>
 
         <div className="auto-results">
+          {middleTop}
+          <h2 className="auto-all-cars" id="all-cars">
+            All cars
+          </h2>
           <p className="result-count" aria-live="polite">
             {found.length === cars.length ? `${cars.length} cars listed` : `Showing ${found.length} of ${cars.length} cars`}
           </p>

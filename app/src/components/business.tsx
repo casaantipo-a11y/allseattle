@@ -10,10 +10,26 @@ import type { BusinessCategory } from '@/payload-types'
 
 /* eslint-disable @next/next/no-img-element -- fixed-size thumbnails from Payload renditions */
 
-export function BizRow({ biz, sectionCategoryIds }: { biz: BusinessFull; sectionCategoryIds?: Set<number> }) {
+/** Paid = a package with priority placement or a branded page (Luxury, Premium). */
+export const isPaid = (biz: BusinessFull) => {
   const pkg = effectivePackage(biz)
-  const badge = badgeFor(pkg)
-  const variant = badge?.cls === 'badge-premium' ? 'premium' : badge?.cls === 'badge-lux' ? 'lux' : 'standard'
+  return Boolean(pkg && (pkg.priorityPlacement || pkg.brandedPage))
+}
+
+export function BizRow({
+  biz,
+  sectionCategoryIds,
+  gold = false,
+}: {
+  biz: BusinessFull
+  sectionCategoryIds?: Set<number>
+  /** One "Gold" look for every paid package (the Cars page list). */
+  gold?: boolean
+}) {
+  const pkg = effectivePackage(biz)
+  const goldRow = gold && isPaid(biz)
+  const badge = goldRow ? { label: 'Gold', cls: 'badge-gold' } : badgeFor(pkg)
+  const variant = goldRow ? 'gold' : badge?.cls === 'badge-premium' ? 'premium' : badge?.cls === 'badge-lux' ? 'lux' : 'standard'
   const img = mediaUrl(biz.cover ?? biz.logo, 'thumb')
   const cats = (biz.categories ?? []).filter((c) => typeof c === 'object' && (!sectionCategoryIds || sectionCategoryIds.has(c.id)))
   const href = bizPath(biz.slug)

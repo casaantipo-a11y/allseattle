@@ -98,11 +98,12 @@ export default async function CarPage({ params }: Props) {
               <CarGallery photos={photos} alt={item.title} />
               {car.description ? (
                 <>
-                  <h3 className="mt-7">Description</h3>
+                  {/* Inline: the prototype's unlayered h3 margin beats Tailwind's mt-*. */}
+                  <h3 style={{ marginTop: 'var(--space-8)' }}>Description</h3>
                   <p className="muted">{car.description}</p>
                 </>
               ) : null}
-              <h3 className="mt-5">Specifications</h3>
+              <h3 style={{ marginTop: 'var(--space-6)' }}>Specifications</h3>
               <table className="spec-table">
                 <tbody>
                   {specs

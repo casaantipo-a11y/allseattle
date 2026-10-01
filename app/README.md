@@ -23,8 +23,11 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   table, inquiry form), `/add-business`, subdomains behind `ENABLE_SUBDOMAINS`, and the public
   forms pipeline (zod, honeypot, Turnstile, 5 per IP per hour, Submissions, Telegram + email).
 
-- **Phase 3** — car makes (popular US makes, seeded) and car listings (`/cars`, `/cars/[slug]`:
-  the prototype's catalog as is, per spec §13, with Vehicle JSON-LD), jobs with categories
+- **Phase 3** — car makes (popular US makes, seeded) and car listings (`/cars` laid out from the
+  client's Cars mockup of 01.10.2026: head and search first; left — model catalog, ad,
+  auto-service headings, ad; middle — auto businesses with every paid package shown as one
+  "Gold" placement, alphabetical, then standard ones, a banner and "All cars"; right — ad, car
+  statistics, ad. `/cars/[slug]` with Vehicle JSON-LD), jobs with categories
   (`/jobs`: the prototype's work.ua-style board; `/jobs/[slug]` with Google Jobs JSON-LD),
   events with categories (`/events` filtered by today / weekend / month and category,
   `/events/[slug]` with Event JSON-LD, events on `/map`), contests (`/contests/[slug]`: entries
