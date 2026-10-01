@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { EventCard } from '@/components/events'
 import { fmtMileage, fmtPrice, toCarItem } from '@/lib/cars'
 import { toJobItem } from '@/lib/jobs'
-import { mediaUrl } from '@/lib/media'
-import type { CarListing, Contest, Event, Job, Media } from '@/payload-types'
+import type { CarListing, Event, Job } from '@/payload-types'
 
 // Home page blocks from spec §3, built from the prototype's components
 // (widgets, stat tiles, mini rows, event and car cards, the contest strip).
@@ -128,24 +127,5 @@ export function FreshCars({ cars }: { cars: CarListing[] }) {
         </div>
       </div>
     </section>
-  )
-}
-
-export function ContestStrip({ contest }: { contest: Contest | null }) {
-  if (!contest?.slug) return null
-  const first = (contest.entries ?? []).find((e) => typeof e.image === 'object')
-  const thumb = first ? mediaUrl(first.image as Media, 'thumb') : null
-  return (
-    <div className="container" style={{ marginTop: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
-      <Link className="contest-strip" href={`/contests/${contest.slug}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- thumbnail */}
-        {thumb ? <img className="contest-strip-thumb" src={thumb} alt="" loading="lazy" /> : null}
-        <span className="contest-strip-text">
-          <span className="contest-strip-label">Contest</span>
-          <span className="contest-strip-title">{contest.title}</span>
-        </span>
-        <span className="contest-strip-more">{contest.status === 'active' ? 'See the entries' : 'Coming soon'} &rarr;</span>
-      </Link>
-    </div>
   )
 }

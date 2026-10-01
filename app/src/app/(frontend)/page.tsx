@@ -2,17 +2,17 @@ import Link from 'next/link'
 
 import { AdSlot, InlineMobileAd } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
-import { ContestStrip, FreshCars, JobsWidget, StatsWidget, UpcomingEvents } from '@/components/home'
+import { FreshCars, JobsWidget, StatsWidget, UpcomingEvents } from '@/components/home'
 import { NewsListRow, NewsTile, TopNewsWidget } from '@/components/news'
 import { getNewsPage, getSiteSettings, getTopNews } from '@/lib/queries'
-import { getCars, getFeaturedContest, getJobs, getSiteStats, getUpcomingEvents } from '@/lib/queries-phase3'
+import { getCars, getJobs, getSiteStats, getUpcomingEvents } from '@/lib/queries-phase3'
 import { absoluteUrl } from '@/lib/site'
 
 export const revalidate = 3600
 
 // Home (spec §3): the prototype's layout on real data. The top leaderboard
-// (HOME_TOP) is back — it had gone missing in the prototype. Under it the
-// contest strip; the latest news with Top news, site statistics and the job
+// (HOME_TOP) is back — it had gone missing in the prototype. The contest is
+// announced in the strip under the banner, like on every page. Then the latest news with Top news, site statistics and the job
 // board on the right; then upcoming events, fresh cars and the newsfeed.
 // Phase 4 fills every ad slot with real banners.
 
@@ -24,7 +24,7 @@ const INLINE_AFTER = new Map([
 ])
 
 export default async function HomePage() {
-  const [settings, feed, top, stats, jobs, events, cars, contest] = await Promise.all([
+  const [settings, feed, top, stats, jobs, events, cars] = await Promise.all([
     getSiteSettings(),
     getNewsPage({ page: 1, limit: 32 }),
     getTopNews(6),
@@ -32,7 +32,6 @@ export default async function HomePage() {
     getJobs(),
     getUpcomingEvents(),
     getCars(),
-    getFeaturedContest(),
   ])
   const tiles = feed.docs.slice(0, TILE_COUNT)
   const list = feed.docs.slice(TILE_COUNT)
@@ -42,10 +41,9 @@ export default async function HomePage() {
     <main id="content" data-page="home">
 
       <section className="section">
-        <div className="container">
+        <div className="container" style={{ marginBottom: 'var(--space-6)' }}>
           <AdSlot code="HOME_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
         </div>
-        <ContestStrip contest={contest} />
         <div className="container home-layout">
           <aside className="home-sidebar home-sidebar-left" aria-label="Advertising">
             <AdSlot code="HOME_SIDEBAR_1" size="300x250" className="ad-desktop-slot" />
