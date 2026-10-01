@@ -125,22 +125,6 @@
   color: var(--color-accent);
 }
 
-/* "All cars" heading with the sort select on its right (client: sorting
-   belongs to the car list, not the search bar). */
-.auto-all-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin: var(--space-8) 0 var(--space-4);
-}
-.auto-all-head .auto-all-cars { margin: 0 0 var(--space-1); }
-.auto-all-head .result-count { margin: 0; }
-.auto-sort { display: flex; align-items: center; gap: var(--space-2); margin: 0; }
-.auto-sort label { margin: 0; font-size: var(--text-xs); font-weight: 600; color: var(--color-slate); white-space: nowrap; }
-.auto-sort select { min-height: 40px; width: auto; }
-
 /* "View & apply" is a link, not a button — center its text like one. */
 .job-card-save {
   display: inline-flex;
@@ -148,4 +132,13 @@
   justify-content: center;
   text-align: center;
   text-decoration: none;
+}
+
+/* The search bar sits under "All cars" in the middle column (client's
+   request), which is too narrow for the prototype's one-row layout: two
+   fields per row there, "Find" on its own row. */
+@media (min-width: 640px) {
+  [data-page="cars"] .auto-results .auto-search-row { grid-template-columns: repeat(2, 1fr); }
+  [data-page="cars"] .auto-results .auto-search-row .btn { grid-column: 1 / -1; justify-self: end; min-width: 160px; }
+  [data-page="cars"] .auto-results .auto-search-adv.open { grid-template-columns: repeat(3, 1fr); }
 }
