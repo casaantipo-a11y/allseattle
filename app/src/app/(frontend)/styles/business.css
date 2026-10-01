@@ -136,4 +136,15 @@
 
 /* Full-width "All cars" block under the three columns. */
 .auto-all { margin-top: var(--space-8); }
+/* The search bar is a bit narrower than the page (client's sketch); the car
+   cards keep the middle column's width, on the same grid as the columns above. */
+@media (min-width: 1024px) {
+  .auto-all-search { margin-inline: 6%; }
+  .auto-all-list { display: grid; grid-template-columns: 1fr 300px; gap: var(--grid-gap); }
+  .auto-all-list > div { grid-column: 1; min-width: 0; }
+}
+@media (min-width: 1280px) {
+  .auto-all-list { grid-template-columns: 240px 1fr 300px; }
+  .auto-all-list > div { grid-column: 2; }
+}
 [data-page="cars"] .auto-head { margin-bottom: var(--space-6); }
