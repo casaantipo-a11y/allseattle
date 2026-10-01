@@ -101,30 +101,6 @@
   box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.45);
 }
 
-/* GOLD — paid placements in the Cars page business list (client's Cars
-   redesign, 01.10.2026): every paid package looks the same there, bright gold,
-   with a gold "Gold" plaque. Navy text on the plaque for contrast (white on
-   gold fails AA). */
-.biz-row--gold {
-  background: var(--color-gold-bright-tint);
-  border-color: var(--color-gold-bright);
-}
-.badge-gold {
-  background: var(--color-gold-bright);
-  color: var(--color-navy);
-}
-
-/* "ALL CARS" over the listings on the Cars page — red caps, as in the client's mockup. */
-.auto-all-cars {
-  margin: var(--space-8) 0 var(--space-2);
-  font-family: var(--font-heading);
-  font-size: var(--text-xl);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-}
-
 /* "View & apply" is a link, not a button — center its text like one. */
 .job-card-save {
   display: inline-flex;
@@ -133,18 +109,3 @@
   text-align: center;
   text-decoration: none;
 }
-
-/* Full-width "All cars" block under the three columns. */
-.auto-all { margin-top: var(--space-8); }
-/* The search bar is a bit narrower than the page (client's sketch); the car
-   cards keep the middle column's width, on the same grid as the columns above. */
-@media (min-width: 1024px) {
-  .auto-all-search { margin-inline: 6%; }
-  .auto-all-list { display: grid; grid-template-columns: 1fr 300px; gap: var(--grid-gap); }
-  .auto-all-list > div { grid-column: 1; min-width: 0; }
-}
-@media (min-width: 1280px) {
-  .auto-all-list { grid-template-columns: 240px 1fr 300px; }
-  .auto-all-list > div { grid-column: 2; }
-}
-[data-page="cars"] .auto-head { margin-bottom: var(--space-6); }
