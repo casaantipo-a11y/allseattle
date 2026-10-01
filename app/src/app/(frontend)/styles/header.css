@@ -343,6 +343,11 @@
     justify-self: center;
   }
 
+  /* Второй ряд — по центру под первым, как попросил клиент. */
+  .nav-secondary {
+    justify-content: center;
+  }
+
   .nav-secondary li a {
     min-height: 36px;
     padding: 0 var(--space-1);
