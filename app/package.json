@@ -13,6 +13,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "seed:prod": "node scripts/seed-prod.mjs",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/seed.ts",
     "purge-demo": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/purge-demo.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",

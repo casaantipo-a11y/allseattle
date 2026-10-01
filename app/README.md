@@ -100,8 +100,20 @@ JSON-LD) is built from `NEXT_PUBLIC_SITE_URL`.
    - Environment variables: everything from `.env.example`; `NEXT_PUBLIC_SITE_URL` = the
      production URL (the `*.vercel.app` one until the domain is chosen), a new long
      `PAYLOAD_SECRET`.
-4. Deploy, then seed once from your machine against Neon:
-   `DATABASE_URL=<neon url> pnpm seed` (add the S3 variables too so demo photos go to R2).
+4. Deploy, then seed once from your machine against Neon with `pnpm seed:prod` — it reads
+   `DATABASE_URL` from `.env.neon.local`, the `S3_*` from `.env.r2.local`, and
+   `PAYLOAD_SECRET`/`SEED_ADMIN_*` from `.env.vercel.local` (all gitignored), and refuses to run
+   unless the database is Neon. Don't `source` those files in a shell: the Neon URL contains
+   `&`, which the shell treats as "run in background", so `DATABASE_URL` silently falls back to
+   the local one.
+
+**Current setup (01.10.2026).** The repository belongs to a friend's account, so Vercel can't
+import it from GitHub. Deploys go from this machine instead: `npx vercel deploy --prod` in `app/`
+(the project is `allseattle` under the `mijckela-4959` Vercel account, live at
+https://allseattle.vercel.app, region `pdx1` from `vercel.json`, next to the Neon database in
+AWS us-west-2). `.vercelignore` keeps local env files, the local database and local uploads out
+of the upload. Schema push (dev mode) only runs against a local database (`push` in
+`payload.config.ts`), so Neon changes through migrations alone.
 5. Open `/admin`, log in with the seeded admin, change the password, fill in **Site settings**
    (GA4 ID, Search Console verification, email, socials).
 6. In Google Search Console add the site and submit `/sitemap.xml` and `/news-sitemap.xml`.

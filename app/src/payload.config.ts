@@ -125,7 +125,13 @@ export default buildConfig({
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
-  db: postgresAdapter({ pool: { connectionString: env.DATABASE_URL } }),
+  // Schema push (dev mode) only against the local database. Anything remote —
+  // Neon — changes through migrations alone, so a script run from this machine
+  // in dev mode can never leave it in "dev pushed" state.
+  db: postgresAdapter({
+    pool: { connectionString: env.DATABASE_URL },
+    push: /@(localhost|127\.0\.0\.1)[:/]/.test(env.DATABASE_URL),
+  }),
   sharp,
   plugins,
 })
