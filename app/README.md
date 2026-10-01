@@ -100,7 +100,8 @@ JSON-LD) is built from `NEXT_PUBLIC_SITE_URL`.
    - Environment variables: everything from `.env.example`; `NEXT_PUBLIC_SITE_URL` = the
      production URL (the `*.vercel.app` one until the domain is chosen), a new long
      `PAYLOAD_SECRET`.
-4. Deploy, then seed once from your machine against Neon with `pnpm seed:prod` — it reads
+4. Deploy, then seed once from your machine against Neon with `pnpm seed:prod`
+   (`pnpm purge-demo:prod` removes the demo content again) — it reads
    `DATABASE_URL` from `.env.neon.local`, the `S3_*` from `.env.r2.local`, and
    `PAYLOAD_SECRET`/`SEED_ADMIN_*` from `.env.vercel.local` (all gitignored), and refuses to run
    unless the database is Neon. Don't `source` those files in a shell: the Neon URL contains

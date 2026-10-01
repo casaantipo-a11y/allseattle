@@ -23,7 +23,10 @@ type MockBiz = {
 type MockVenue = { id: string; name: string; kind: string; neighborhood: string; price: string; hours: string; photo: string; description: string }
 type MockDeal = { id: string; businessId: string; title: string; discount: string; category: string; validUntil: string; terms: string }
 
-const ctx = { disableRevalidate: true, skipGeocode: true }
+// A fresh object per call: Payload hands `context` to hooks by reference, and the
+// R2 storage plugin leaves `skipCloudStorage` set on it after an upload — a
+// shared object made every later upload in the run skip R2.
+const ctx = () => ({ disableRevalidate: true, skipGeocode: true })
 
 // Neighbourhood centres (the prototype's City Map data plus the ones its
 // addresses mention). Demo businesses are placed around them — no geocoding
@@ -182,7 +185,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
           priceLists: true,
           features: pk.features.map((text) => ({ text })),
         },
-        context: ctx,
+        context: ctx(),
       }))
     pkgIds[pk.name] = docu.id
   }
@@ -204,7 +207,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       (await payload.create({
         collection: 'business-categories',
         data: { name, slug, section, order, parent, isDemo: true },
-        context: ctx,
+        context: ctx(),
       }))
     catIds.set(key, docu.id)
     return docu.id
@@ -232,7 +235,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       mediaIds.set(file, existing.docs[0].id)
       return existing.docs[0].id
     }
-    const m = await payload.create({ collection: 'media', data: { alt, isDemo: true }, filePath: path.join(prototypeDir, file), context: ctx })
+    const m = await payload.create({ collection: 'media', data: { alt, isDemo: true }, filePath: path.join(prototypeDir, file), context: ctx() })
     mediaIds.set(file, m.id)
     return m.id
   }
@@ -252,7 +255,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       bizIds.set(mockId, found.docs[0].id)
       return
     }
-    const docu = await payload.create({ collection: 'businesses', data: { ...data, slug } as never, context: ctx })
+    const docu = await payload.create({ collection: 'businesses', data: { ...data, slug } as never, context: ctx() })
     bizIds.set(mockId, docu.id)
     created++
   }
@@ -349,7 +352,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
         validUntil: until.toISOString(),
         isDemo: true,
       },
-      context: ctx,
+      context: ctx(),
     })
     promos++
   }
@@ -371,7 +374,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       await payload.create({
         collection: 'products',
         data: { business, name, price: price ?? undefined, description, image: mediaIds.get(mock!.photo), isDemo: true },
-        context: ctx,
+        context: ctx(),
       })
       products++
     }

@@ -43,7 +43,10 @@ type MockArticle = {
   body: string
 }
 
-const ctx = { disableRevalidate: true }
+// A fresh object per call: Payload hands `context` to hooks by reference, and the
+// R2 storage plugin leaves `skipCloudStorage` set on it after an upload — a
+// shared object made every later upload in the run skip R2.
+const ctx = () => ({ disableRevalidate: true })
 
 async function run() {
   const payload = await getPayload({ config })
@@ -75,7 +78,7 @@ async function run() {
       (await payload.create({
         collection: 'news-categories',
         data: { name, slug, order: i, isDemo: true },
-        context: ctx,
+        context: ctx(),
       }))
     categoryIds.set(name, cat.id)
   }
@@ -90,7 +93,7 @@ async function run() {
       collection: 'media',
       data: { alt: a.title, isDemo: true },
       filePath: path.join(PROTOTYPE, a.photo),
-      context: ctx,
+      context: ctx(),
     })
     // Prototype dates are Seattle wall-clock time without an offset (PDT in September).
     const publishedAt = new Date(`${a.publishedAt}-07:00`).toISOString()
@@ -109,7 +112,7 @@ async function run() {
         status: 'published',
         isDemo: true,
       },
-      context: ctx,
+      context: ctx(),
     })
     created++
   }
@@ -132,7 +135,7 @@ async function run() {
       address: 'Seattle, WA',
       socials: { instagram: '', facebook: '' },
     },
-    context: ctx,
+    context: ctx(),
   })
 
   const menu = [
@@ -161,7 +164,7 @@ async function run() {
         { label: 'Readers', text: 'Saw something newsworthy? Share the news', url: '/share-news', highlight: false },
       ],
     },
-    context: ctx,
+    context: ctx(),
   })
 
   await payload.updateGlobal({
@@ -182,7 +185,7 @@ async function run() {
       ],
       copyright: 'AllSeattle. All rights reserved.',
     },
-    context: ctx,
+    context: ctx(),
   })
   log('site settings, header and footer')
 
@@ -231,7 +234,7 @@ async function run() {
   for (const page of pages) {
     const exists = await payload.find({ collection: 'pages', where: { slug: { equals: page.slug } }, limit: 1 })
     if (exists.totalDocs) continue
-    await payload.create({ collection: 'pages', data: { ...page, status: 'published' }, context: ctx })
+    await payload.create({ collection: 'pages', data: { ...page, status: 'published' }, context: ctx() })
     pagesCreated++
   }
   log(`${pagesCreated} pages created`)

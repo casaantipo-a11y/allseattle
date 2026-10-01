@@ -9,7 +9,10 @@ import { doc, p } from './lexical'
 // Phase 3 seed: car makes (structure, kept by purge-demo), and from the
 // prototype's mock data — car listings, jobs, events, the contest — all isDemo.
 
-const ctx = { disableRevalidate: true, skipGeocode: true }
+// A fresh object per call: Payload hands `context` to hooks by reference, and the
+// R2 storage plugin leaves `skipCloudStorage` set on it after an upload — a
+// shared object made every later upload in the run skip R2.
+const ctx = () => ({ disableRevalidate: true, skipGeocode: true })
 
 // Popular US makes and their main models (spec §4, CarMakes).
 const MAKES: Record<string, string[]> = {
@@ -109,7 +112,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
     const existing = await payload.find({ collection: 'media', where: { filename: { equals: path.basename(rel) } }, limit: 1 })
     const id =
       existing.docs[0]?.id ??
-      (await payload.create({ collection: 'media', data: { alt, isDemo: true }, filePath: path.join(prototypeDir, rel), context: ctx })).id
+      (await payload.create({ collection: 'media', data: { alt, isDemo: true }, filePath: path.join(prototypeDir, rel), context: ctx() })).id
     mediaIds.set(rel, id)
     return id
   }
@@ -120,7 +123,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
   const makeIds = new Map<string, number>()
   for (const [name, models] of Object.entries(MAKES)) {
     const found = await findOne('car-makes', 'name', name)
-    makeIds.set(name, found?.id ?? (await payload.create({ collection: 'car-makes', data: { name, models }, context: ctx })).id)
+    makeIds.set(name, found?.id ?? (await payload.create({ collection: 'car-makes', data: { name, models }, context: ctx() })).id)
   }
   log(`${makeIds.size} car makes`)
 
@@ -159,7 +162,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
         source: 'admin',
         isDemo: true,
       },
-      context: ctx,
+      context: ctx(),
     })
     cars++
   }
@@ -170,7 +173,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
   const jobCat = new Map<string, number>()
   for (const name of [...new Set(JOB_LISTINGS.map((j) => j.category))].sort()) {
     const found = await findOne('job-categories', 'name', name)
-    jobCat.set(name, found?.id ?? (await payload.create({ collection: 'job-categories', data: { name, isDemo: true }, context: ctx })).id)
+    jobCat.set(name, found?.id ?? (await payload.create({ collection: 'job-categories', data: { name, isDemo: true }, context: ctx() })).id)
   }
   let jobs = 0
   for (const [i, j] of JOB_LISTINGS.entries()) {
@@ -210,7 +213,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
         source: 'admin',
         isDemo: true,
       },
-      context: ctx,
+      context: ctx(),
     })
     jobs++
   }
@@ -221,7 +224,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
   const eventCat = new Map<string, number>()
   for (const [i, name] of [...new Set(EVENTS.map((e) => e.category))].sort().entries()) {
     const found = await findOne('event-categories', 'name', name)
-    eventCat.set(name, found?.id ?? (await payload.create({ collection: 'event-categories', data: { name, order: i, isDemo: true }, context: ctx })).id)
+    eventCat.set(name, found?.id ?? (await payload.create({ collection: 'event-categories', data: { name, order: i, isDemo: true }, context: ctx() })).id)
   }
   // The prototype's dates are in the past now; keep their spacing but start tomorrow.
   const earliest = Math.min(...EVENTS.map((e) => new Date(`${e.startsAt}-07:00`).getTime()))
@@ -253,7 +256,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
         status: 'published',
         isDemo: true,
       },
-      context: ctx,
+      context: ctx(),
     })
     events++
   }
@@ -292,7 +295,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
         entries,
         isDemo: true,
       },
-      context: ctx,
+      context: ctx(),
     })
     log(`contest "${CONTEST_TITLE}" with ${entries.length} entries`)
   } else log('contest exists')
