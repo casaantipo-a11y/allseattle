@@ -51,6 +51,10 @@ pnpm seed                     # terminal 2: admin user + demo content from the p
 pnpm dev                      # http://localhost:3000, admin at /admin
 ```
 
+On Windows, `start-local.cmd` (double-click) opens the database and the production build
+(`pnpm start`, needs a prior `pnpm build`) in two windows and then the browser; close both
+windows to stop.
+
 In development Payload updates the database schema automatically. When you change a collection,
 also create a migration for production: `pnpm migrate:create <name>` (commit `src/migrations/`).
 
