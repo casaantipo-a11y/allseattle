@@ -176,8 +176,9 @@
   margin-bottom: var(--space-6);
 }
 
+/* «Today in Seattle» на 8px ниже, чем в прототипе (просьба клиента 01.10.2026). */
 .section-head .eyebrow {
-  top: 0;
+  top: var(--space-2);
   left: 0;
 }
 
