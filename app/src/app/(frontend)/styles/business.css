@@ -135,10 +135,14 @@
 }
 
 /* The search bar sits under "All cars" in the middle column (client's
-   request), which is too narrow for the prototype's one-row layout: two
-   fields per row there, "Find" on its own row. */
+   request). It stays one row like the prototype's, with tighter selects so
+   the "from – to" pairs fit the narrower column. */
 @media (min-width: 640px) {
-  [data-page="cars"] .auto-results .auto-search-row { grid-template-columns: repeat(2, 1fr); }
-  [data-page="cars"] .auto-results .auto-search-row .btn { grid-column: 1 / -1; justify-self: end; min-width: 160px; }
   [data-page="cars"] .auto-results .auto-search-adv.open { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  [data-page="cars"] .auto-results .auto-search-row { grid-template-columns: 1fr 1fr 1.35fr 1.35fr auto; gap: var(--space-2); }
+  [data-page="cars"] .auto-results .auto-search-row select { padding-left: 8px; padding-right: 2px; font-size: 14px; }
+  [data-page="cars"] .auto-results .auto-field-pair > div { gap: 4px; }
+  [data-page="cars"] .auto-results .auto-search-row .btn { padding-inline: var(--space-4); }
 }
