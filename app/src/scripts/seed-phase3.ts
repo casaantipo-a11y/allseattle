@@ -131,7 +131,10 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
     const title = `${c.year} ${c.make} ${c.model}`
     const exists = await payload.find({ collection: 'car-listings', where: { title: { equals: title } }, limit: 1 })
     if (exists.totalDocs) continue
-    const photos = await Promise.all(c.photos.map((f, n) => media(f, `${title} — photo ${n + 1}`)))
+    // One at a time: parallel uploads race on Payload's unique-filename check
+    // (fails against a remote database / R2, where each upload is slower).
+    const photos: number[] = []
+    for (const [n, f] of c.photos.entries()) photos.push(await media(f, `${title} — photo ${n + 1}`))
     await payload.create({
       collection: 'car-listings',
       data: {

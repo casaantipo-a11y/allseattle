@@ -1,0 +1,10 @@
+# Never upload local secrets, the local database or local uploads to Vercel.
+.env
+.env.*
+!.env.example
+.pgdata
+media
+.next
+.next-pages
+.pages-out
+node_modules

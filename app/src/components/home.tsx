@@ -136,7 +136,7 @@ export function ContestStrip({ contest }: { contest: Contest | null }) {
   const first = (contest.entries ?? []).find((e) => typeof e.image === 'object')
   const thumb = first ? mediaUrl(first.image as Media, 'thumb') : null
   return (
-    <div className="container mb-6">
+    <div className="container" style={{ marginTop: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
       <Link className="contest-strip" href={`/contests/${contest.slug}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- thumbnail */}
         {thumb ? <img className="contest-strip-thumb" src={thumb} alt="" loading="lazy" /> : null}
