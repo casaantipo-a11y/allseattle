@@ -10,6 +10,7 @@ import { SeattleClock } from './SeattleClock'
 import { Svg, WEATHER_ICONS } from './icons'
 
 const DEFAULT_PHOTO = '/brand/skyline-panorama.webp'
+const MOBILE_PHOTO = '/brand/skyline-panorama-mobile.webp'
 const DEFAULT_ALT = 'Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market'
 
 // The panorama under the header, as in the prototype (css: header.css):
@@ -26,10 +27,16 @@ export async function HeroBanner() {
     <div className="hero-banner" id="hero-banner">
       <div className="container">
         <div className="hero-frame">
-          {/* eslint-disable-next-line @next/next/no-img-element -- LCP image, CSS-cropped; next/image would add a wrapper the prototype CSS doesn't expect */}
-          <img src={photo} alt={alt} className="hero-photo" fetchPriority="high" />
+          {/* Phones show only the middle of the panorama (object-fit: cover in a
+              200–230px frame), so they get a pre-cropped 686x400 copy of the
+              built-in photo — a third of the bytes of the LCP image. A photo
+              set in the admin has no such crop and is served as is. */}
+          <picture>
+            {header.heroImage ? null : <source media="(max-width: 767px)" srcSet={MOBILE_PHOTO} />}
+            <img src={photo} alt={alt} className="hero-photo" fetchPriority="high" />
+          </picture>
           <div className="hero-shade" />
-          <Link className="hero-weather" href="/weather" aria-label="Seattle weather">
+          <Link className="hero-weather" href="/weather">
             <Svg className="weather-icon" html={icon(24)} />
             <span className="weather-text">
               <strong>Seattle, WA</strong>

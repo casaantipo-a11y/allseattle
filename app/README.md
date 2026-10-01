@@ -38,7 +38,17 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   the Jobs tab on Luxury/Premium business pages, and the shared listing limit (cars + jobs of a
   business ≤ its package's `maxListings`).
 
-Banners, ad slots, statistics of impressions/clicks and `ADMIN_GUIDE.md` come in phase 4.
+- **Phase 4** — banners. `AdSlots` (every `<AdSlot code>` on the pages, seeded with
+  placeholder weekly prices), `Banners` (images checked against the slot sizes ±2px, shown
+  between `startAt` and `endAt`, random rotation when several run in one slot, the "Your ad
+  here" placeholder otherwise) and `BannerStats` (daily rows, unique `(banner, date)`, atomic
+  upsert). Impressions are counted in the browser (≥50% visible for 1s, batched every 10s and
+  with `sendBeacon` on leave → `POST /api/banners/impressions`), clicks through
+  `GET /api/banners/click/[id]` (302 to the advertiser); bots are not counted. Each banner has
+  a "Report" tab in the admin with totals, per-day figures and `Export CSV`
+  (`/api/banners/report/[id]`). `/advertise` lists the placements with price and
+  Available/Booked. GA4 has been in since phase 1 (after cookie consent, Consent Mode v2).
+  The owner's guide is [`ADMIN_GUIDE.md`](ADMIN_GUIDE.md) (Russian).
 
 ## Local development
 
@@ -125,7 +135,7 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
 
 - `src/collections`, `src/globals` — the Payload schema. Access by role (`src/access/roles.ts`):
   **admin** everything, **editor** news/pages/header and news tips, **sales** businesses,
-  categories, promotions, products and business/ad inquiries (banners in phase 4). Only admins
+  categories, promotions, products, banners and business/ad inquiries. Only admins
   change package prices and limits.
   The admin UI is English with Russian available per user (account settings → Language).
 - Public content has `slug`, `status` (draft/published), `isDemo`, an SEO tab, and a hidden

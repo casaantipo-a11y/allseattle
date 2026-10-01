@@ -2,20 +2,42 @@ import type { Metadata } from 'next'
 
 import { RichText } from '@/components/RichText'
 import { SubmissionForm } from '@/components/SubmissionForm'
+import { firstRunning, getAdSlots, getBannerPool } from '@/lib/banners'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
 import type { Package } from '@/payload-types'
 
-// /advertise — the page salespeople show to clients (spec §5). Phase 2: the
-// packages table from the Packages collection and the inquiry form. The map
-// of ad placements with Available/Booked arrives with banners in phase 4.
-// Markup and CSS are the prototype's pricing page (styles/pricing.css).
+// /advertise — the page salespeople show to clients (spec §5): the packages
+// from the Packages collection, the map of banner placements (AdSlots) with
+// their weekly price and whether a banner is running there right now, and the
+// inquiry form. Markup and CSS are the prototype's pricing page
+// (styles/pricing.css).
 
-type Props = { searchParams: Promise<{ package?: string }> }
+type Props = { searchParams: Promise<{ package?: string; slot?: string }> }
+
+const PAGE_LABEL: Record<string, string> = {
+  home: 'Home',
+  news: 'News',
+  directory: 'Business directory',
+  shopping: 'Shopping',
+  leisure: 'Leisure',
+  business: 'Business pages',
+  events: 'Events',
+  cars: 'Cars',
+  jobs: 'Jobs',
+  weather: 'Weather',
+  all: 'All pages',
+}
+const POSITION_LABEL: Record<string, string> = {
+  leaderboard: 'Top banner',
+  sidebar: 'Sidebar',
+  'in-feed': 'In the feed',
+}
 
 export const metadata: Metadata = {
   title: 'Advertise on AllSeattle',
-  description: 'Placement packages for Seattle businesses: directory listing, city map, promotions, products and a branded page.',
+  description:
+    'Placement packages for Seattle businesses: directory listing, city map, promotions, products and a branded page.',
   alternates: { canonical: '/advertise' },
 }
 
@@ -29,7 +51,10 @@ const ROWS: { label: string; value: (p: Package) => boolean | number }[] = [
   { label: 'Price lists & certificates', value: (p) => Boolean(p.priceLists) },
   { label: 'Own subdomain', value: (p) => Boolean(p.subdomain) },
   { label: 'Priority in the directory & search', value: (p) => Boolean(p.priorityPlacement) },
-  { label: 'Banner in your category, first month', value: (p) => Boolean(p.categoryBannerFirstMonth) },
+  {
+    label: 'Banner in your category, first month',
+    value: (p) => Boolean(p.categoryBannerFirstMonth),
+  },
   { label: 'Branded business page', value: (p) => Boolean(p.brandedPage) },
 ]
 
@@ -40,8 +65,23 @@ function Cell({ v }: { v: boolean | number }) {
 }
 
 export default async function AdvertisePage({ searchParams }: Props) {
-  const [packages, page, sp] = await Promise.all([getPackages(), getPage('advertise'), searchParams])
+  const [packages, page, sp, slots, pool] = await Promise.all([
+    getPackages(),
+    getPage('advertise'),
+    searchParams,
+    getAdSlots(),
+    getBannerPool(),
+  ])
   const chosen = packages.find((p) => String(p.id) === sp.package)
+  const booked = (code: string) => firstRunning(pool[code] ?? []) >= 0
+  const slotsByPage: [string, typeof slots][] = []
+  for (const s of slots) {
+    const group = slotsByPage.find(([k]) => k === s.page)
+    if (group) group[1].push(s)
+    else slotsByPage.push([s.page, [s]])
+  }
+  const slotName = (s: (typeof slots)[number]) =>
+    s.name || `${PAGE_LABEL[s.page] ?? s.page} — ${POSITION_LABEL[s.position] ?? s.position}`
   // The middle tier is highlighted, as in the prototype.
   const featuredId = packages.length >= 3 ? packages[1].id : undefined
 
@@ -63,15 +103,26 @@ export default async function AdvertisePage({ searchParams }: Props) {
               const featured = p.id === featuredId
               const badge = badgeFor(p)
               return (
-                <div key={p.id} className={`card pricing-card${featured ? ' pricing-card--featured' : ''}`}>
+                <div
+                  key={p.id}
+                  className={`card pricing-card${featured ? ' pricing-card--featured' : ''}`}
+                >
                   {featured ? <span className="pricing-featured-tag">Most popular</span> : null}
                   <div className="pricing-card-head">
-                    {badge ? <span className={`badge ${badge.cls} self-start`}>{p.name}</span> : null}
+                    {badge ? (
+                      <span className={`badge ${badge.cls} self-start`}>{p.name}</span>
+                    ) : null}
                     <div className="pricing-price">
                       <span className="amount">
-                        {p.priceMonthly > 0 || p.priceYearly <= 0 ? priceText(p.priceMonthly, p.currency) : priceText(p.priceYearly, p.currency)}
+                        {p.priceMonthly > 0 || p.priceYearly <= 0
+                          ? priceText(p.priceMonthly, p.currency)
+                          : priceText(p.priceYearly, p.currency)}
                       </span>
-                      {p.priceMonthly > 0 ? <span className="period">/mo</span> : p.priceYearly > 0 ? <span className="period">/yr</span> : null}
+                      {p.priceMonthly > 0 ? (
+                        <span className="period">/mo</span>
+                      ) : p.priceYearly > 0 ? (
+                        <span className="period">/yr</span>
+                      ) : null}
                     </div>
                   </div>
                   <ul className="pricing-cycles">
@@ -95,7 +146,10 @@ export default async function AdvertisePage({ searchParams }: Props) {
                       </li>
                     ))}
                   </ul>
-                  <a href={`/advertise?package=${p.id}#inquiry`} className={`btn btn-block${featured ? '' : ' btn-outline'}`}>
+                  <a
+                    href={`/advertise?package=${p.id}#inquiry`}
+                    className={`btn btn-block${featured ? '' : ' btn-outline'}`}
+                  >
                     Choose {p.name}
                   </a>
                 </div>
@@ -132,6 +186,71 @@ export default async function AdvertisePage({ searchParams }: Props) {
             </table>
           </div>
 
+          {slots.length ? (
+            <>
+              <div id="placements" className="section-head section-head--spaced scroll-mt-40">
+                <div>
+                  <span className="eyebrow">Banner placements</span>
+                  <h2>Where your banner can run</h2>
+                </div>
+              </div>
+              <p className="muted">
+                Prices are per week. Booked means a banner is running there right now; ask us for
+                the next free dates.
+              </p>
+              <div className="table-scroll">
+                <table className="feature-table placements-table">
+                  <thead>
+                    <tr>
+                      <th>Placement</th>
+                      <th>Desktop</th>
+                      <th>Phone</th>
+                      <th>Per week</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  {slotsByPage.map(([pageKey, list]) => (
+                    <tbody key={pageKey}>
+                      <tr>
+                        <th colSpan={5} className="placements-group">
+                          {PAGE_LABEL[pageKey] ?? pageKey}
+                        </th>
+                      </tr>
+                      {list.map((s) => {
+                        const isBooked = booked(s.code)
+                        return (
+                          <tr key={s.id}>
+                            <td className="feature-label">
+                              <a href={`/advertise?slot=${encodeURIComponent(s.code)}#inquiry`}>
+                                {slotName(s)}
+                              </a>
+                            </td>
+                            <td className="num">{s.desktopSize}</td>
+                            <td className="num">
+                              {s.mobileSize ?? (
+                                <span aria-label="not shown on phones">&mdash;</span>
+                              )}
+                            </td>
+                            <td className="num">
+                              {s.weeklyPrice > 0 ? priceText(s.weeklyPrice, 'USD') : 'Contact us'}
+                            </td>
+                            <td>
+                              <span
+                                className={`ad-slot-status ${isBooked ? 'is-occupied' : 'is-available'}`}
+                              >
+                                {isBooked ? 'Booked' : 'Available'}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  ))}
+                </table>
+              </div>
+            </>
+          ) : null}
+
           {page?.content ? (
             <div className="mt-10">
               <RichText data={page.content} />
@@ -145,7 +264,10 @@ export default async function AdvertisePage({ searchParams }: Props) {
                 <h2>Place an ad</h2>
               </div>
             </div>
-            <p className="muted">Tell us about your business and we&rsquo;ll get back to you with options. Nothing is charged now.</p>
+            <p className="muted">
+              Tell us about your business and we&rsquo;ll get back to you with options. Nothing is
+              charged now.
+            </p>
             <SubmissionForm
               form="ad-inquiry"
               submitLabel="Send request"
@@ -153,7 +275,13 @@ export default async function AdvertisePage({ searchParams }: Props) {
               fields={[
                 { name: 'name', label: 'Your name', required: true, autoComplete: 'name' },
                 { name: 'businessName', label: 'Business name', autoComplete: 'organization' },
-                { name: 'email', label: 'Email', type: 'email', autoComplete: 'email', hint: 'Email or phone — one is enough.' },
+                {
+                  name: 'email',
+                  label: 'Email',
+                  type: 'email',
+                  autoComplete: 'email',
+                  hint: 'Email or phone — one is enough.',
+                },
                 { name: 'phone', label: 'Phone', type: 'tel', autoComplete: 'tel' },
                 {
                   name: 'desiredPackage',
@@ -162,7 +290,26 @@ export default async function AdvertisePage({ searchParams }: Props) {
                   options: packages.map((p) => ({ value: String(p.id), label: p.name })),
                   defaultValue: chosen ? String(chosen.id) : undefined,
                 },
-                { name: 'message', label: 'Message', type: 'textarea', placeholder: 'Where would you like to appear, and from when?' },
+                ...(slots.length
+                  ? [
+                      {
+                        name: 'desiredSlot',
+                        label: 'Banner placement',
+                        type: 'select' as const,
+                        options: slots.map((s) => ({
+                          value: s.code,
+                          label: `${slotName(s)} (${s.desktopSize})`,
+                        })),
+                        defaultValue: slots.some((s) => s.code === sp.slot) ? sp.slot : undefined,
+                      },
+                    ]
+                  : []),
+                {
+                  name: 'message',
+                  label: 'Message',
+                  type: 'textarea',
+                  placeholder: 'Where would you like to appear, and from when?',
+                },
               ]}
             />
           </div>

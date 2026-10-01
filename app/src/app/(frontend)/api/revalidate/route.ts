@@ -22,6 +22,8 @@ const ALL_TAGS = [
   'events',
   'contests',
   'weather',
+  'ad-slots',
+  'banners',
 ]
 
 export async function POST(req: Request) {

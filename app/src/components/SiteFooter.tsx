@@ -59,7 +59,7 @@ export async function SiteFooter() {
                 </li>
               ) : (
                 <li key={s.key}>
-                  <span title={`${s.name}: coming soon`} aria-label={`${s.name}: coming soon`}>
+                  <span title={`${s.name}: coming soon`}>
                     <Svg html={SOCIAL_ICONS[s.key]} />
                     <span className="footer-social-label">{s.name}: coming soon</span>
                   </span>

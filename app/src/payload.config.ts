@@ -25,6 +25,9 @@ import { Pages } from './collections/Pages'
 import { Products } from './collections/Products'
 import { Promotions } from './collections/Promotions'
 import { Submissions } from './collections/Submissions'
+import { AdSlots } from './collections/AdSlots'
+import { Banners } from './collections/Banners'
+import { BannerStats } from './collections/BannerStats'
 import { Users } from './collections/Users'
 import { env, s3Enabled } from './env'
 import { Footer } from './globals/Footer'
@@ -116,6 +119,9 @@ export default buildConfig({
     EventCategories,
     Contests,
     Submissions,
+    AdSlots,
+    Banners,
+    BannerStats,
     Pages,
     Media,
     Documents,

@@ -70,6 +70,21 @@
 .ad-slot--desktop { display: none; }
 .ad-slot--mobile-only { display: flex; }
 
+/* A real banner in the slot (phase 4): the creative fills the same box the
+   placeholder had, without the dashed "for sale" frame. */
+.ad-slot--banner {
+  border: 0;
+  background: none;
+  overflow: hidden;
+}
+
+.ad-slot--banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Desktop sidebar ad slots vs. their mobile inline echoes: exactly one of
    each pair is ever visible at a time, toggled at 1024px — matching the
    breakpoint where .home-sidebar / .news-sidebar / .directory-sidebar

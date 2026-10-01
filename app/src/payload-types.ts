@@ -82,6 +82,9 @@ export interface Config {
     'event-categories': EventCategory;
     contests: Contest;
     submissions: Submission;
+    'ad-slots': AdSlot;
+    banners: Banner;
+    'banner-stats': BannerStat;
     pages: Page;
     media: Media;
     documents: Document;
@@ -109,6 +112,9 @@ export interface Config {
     'event-categories': EventCategoriesSelect<false> | EventCategoriesSelect<true>;
     contests: ContestsSelect<false> | ContestsSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
+    'ad-slots': AdSlotsSelect<false> | AdSlotsSelect<true>;
+    banners: BannersSelect<false> | BannersSelect<true>;
+    'banner-stats': BannerStatsSelect<false> | BannerStatsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -941,6 +947,100 @@ export interface Submission {
   createdAt: string;
 }
 /**
+ * Places on the site where banners appear. The code must match the slot in the page code — do not rename.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-slots".
+ */
+export interface AdSlot {
+  id: number;
+  /**
+   * e.g. HOME_TOP
+   */
+  code: string;
+  /**
+   * Human name for /advertise, e.g. "Home — top banner"
+   */
+  name?: string | null;
+  page:
+    | 'home'
+    | 'news'
+    | 'directory'
+    | 'shopping'
+    | 'leisure'
+    | 'business'
+    | 'events'
+    | 'cars'
+    | 'jobs'
+    | 'weather'
+    | 'all';
+  position: 'leaderboard' | 'sidebar' | 'in-feed';
+  desktopSize: '970x250' | '728x90' | '300x250' | '300x600' | '320x100';
+  /**
+   * Empty = the slot is hidden on phones
+   */
+  mobileSize?: ('970x250' | '728x90' | '300x250' | '300x600' | '320x100') | null;
+  /**
+   * USD per week. 0 = "Contact us"
+   */
+  weeklyPrice: number;
+  sortOrder?: number | null;
+  /**
+   * Off = the slot shows nothing and is not offered on /advertise
+   */
+  isActive?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "banners".
+ */
+export interface Banner {
+  id: number;
+  advertiser: string;
+  /**
+   * Where a click leads, e.g. https://example.com — counted, then redirected.
+   */
+  linkUrl: string;
+  slots: (number | AdSlot)[];
+  /**
+   * Exactly the slot's desktop size (±2px)
+   */
+  imageDesktop: number | Media;
+  /**
+   * For slots shown on phones: the slot's mobile size
+   */
+  imageMobile?: (number | null) | Media;
+  startAt: string;
+  endAt: string;
+  status: 'draft' | 'published';
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Daily impressions and clicks, written by the site. Read-only — see the report on a banner.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "banner-stats".
+ */
+export interface BannerStat {
+  id: number;
+  banner: number | Banner;
+  /**
+   * YYYY-MM-DD, Seattle time
+   */
+  date: string;
+  impressions: number;
+  clicks: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -1177,6 +1277,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'submissions';
         value: number | Submission;
+      } | null)
+    | ({
+        relationTo: 'ad-slots';
+        value: number | AdSlot;
+      } | null)
+    | ({
+        relationTo: 'banners';
+        value: number | Banner;
+      } | null)
+    | ({
+        relationTo: 'banner-stats';
+        value: number | BannerStat;
       } | null)
     | ({
         relationTo: 'pages';
@@ -1643,6 +1755,52 @@ export interface SubmissionsSelect<T extends boolean = true> {
   internalNotes?: T;
   ip?: T;
   userAgent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-slots_select".
+ */
+export interface AdSlotsSelect<T extends boolean = true> {
+  code?: T;
+  name?: T;
+  page?: T;
+  position?: T;
+  desktopSize?: T;
+  mobileSize?: T;
+  weeklyPrice?: T;
+  sortOrder?: T;
+  isActive?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "banners_select".
+ */
+export interface BannersSelect<T extends boolean = true> {
+  advertiser?: T;
+  linkUrl?: T;
+  slots?: T;
+  imageDesktop?: T;
+  imageMobile?: T;
+  startAt?: T;
+  endAt?: T;
+  status?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "banner-stats_select".
+ */
+export interface BannerStatsSelect<T extends boolean = true> {
+  banner?: T;
+  date?: T;
+  impressions?: T;
+  clicks?: T;
   updatedAt?: T;
   createdAt?: T;
 }

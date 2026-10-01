@@ -335,9 +335,10 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   for (const d of SHOPPING_DEALS) {
     const business = bizIds.get(d.businessId)
     if (!business) continue
+    const title = `${d.discount}: ${d.title}`
     const exists = await payload.find({
       collection: 'promotions',
-      where: { and: [{ business: { equals: business } }, { title: { equals: d.title } }] },
+      where: { and: [{ business: { equals: business } }, { title: { equals: title } }] },
       limit: 1,
     })
     if (exists.totalDocs) continue
@@ -346,7 +347,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       collection: 'promotions',
       data: {
         business,
-        title: `${d.discount}: ${d.title}`,
+        title,
         description: d.terms,
         validFrom: new Date().toISOString(),
         validUntil: until.toISOString(),

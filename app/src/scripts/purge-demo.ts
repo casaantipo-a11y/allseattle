@@ -18,6 +18,7 @@ import { revalidateSite } from './revalidate-site'
 
 // Collections added in later phases join this list, content before its media.
 const ORDER: CollectionSlug[] = [
+  'banners',
   'products',
   'promotions',
   'car-listings',

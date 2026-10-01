@@ -214,6 +214,12 @@
   background: var(--color-navy);
 }
 
+/* The <picture> around the photo (mobile crop) must not become a box of its
+   own, or height: 100% below would resolve against it, not the frame. */
+.hero-frame > picture {
+  display: contents;
+}
+
 .hero-photo {
   width: 100%;
   height: 100%;
