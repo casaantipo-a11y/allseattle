@@ -11,13 +11,53 @@ import { useRef, useState, type FormEvent } from 'react'
 export type FieldSpec = {
   name: string
   label: string
-  type?: 'text' | 'email' | 'tel' | 'textarea' | 'select'
+  type?: 'text' | 'email' | 'tel' | 'textarea' | 'select' | 'photos'
   required?: boolean
   placeholder?: string
   autoComplete?: string
   options?: { value: string; label: string }[]
   defaultValue?: string
   hint?: string
+}
+
+/** Up to 5 photos with previews; the server checks type and size again. */
+function PhotoInput(props: { id: string; name: string; 'aria-describedby'?: string; 'aria-invalid'?: boolean }) {
+  const [previews, setPreviews] = useState<string[]>([])
+  const [note, setNote] = useState<string | null>(null)
+  return (
+    <>
+      <input
+        id={props.id}
+        name={props.name}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        aria-describedby={props['aria-describedby']}
+        aria-invalid={props['aria-invalid']}
+        onChange={(e) => {
+          const files = [...(e.target.files ?? [])]
+          previews.forEach((u) => URL.revokeObjectURL(u))
+          setNote(
+            files.length > 5
+              ? 'Up to 5 photos — only the first 5 will be accepted.'
+              : files.some((f) => f.size > 10 * 1024 * 1024)
+                ? 'Each photo must be under 10 MB.'
+                : null,
+          )
+          setPreviews(files.slice(0, 5).map((f) => URL.createObjectURL(f)))
+        }}
+      />
+      {note ? <span className="form-note text-[#c53030]">{note}</span> : null}
+      {previews.length ? (
+        <div className="photo-preview-row mt-2 flex flex-wrap gap-2">
+          {previews.map((u) => (
+            // eslint-disable-next-line @next/next/no-img-element -- local preview
+            <img key={u} src={u} alt="" className="h-20 w-20 rounded object-cover" />
+          ))}
+        </div>
+      ) : null}
+    </>
+  )
 }
 
 declare global {
@@ -105,7 +145,9 @@ export function SubmissionForm({
               {f.label}
               {f.required ? <span aria-hidden="true"> *</span> : null}
             </label>
-            {f.type === 'textarea' ? (
+            {f.type === 'photos' ? (
+              <PhotoInput {...common} />
+            ) : f.type === 'textarea' ? (
               <textarea {...common} rows={5} />
             ) : f.type === 'select' ? (
               <select {...common}>

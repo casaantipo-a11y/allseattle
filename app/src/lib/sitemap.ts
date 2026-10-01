@@ -1,5 +1,5 @@
-/** Child sitemaps under /sitemaps/{type}.xml. Later phases add businesses, events, jobs, cars. */
-export const SITEMAP_TYPES = ['static', 'news', 'businesses', 'pages'] as const
+/** Child sitemaps under /sitemaps/{type}.xml. */
+export const SITEMAP_TYPES = ['static', 'news', 'businesses', 'cars', 'jobs', 'events', 'pages'] as const
 export type SitemapType = (typeof SITEMAP_TYPES)[number]
 
 // Hand-built sitemap XML. Next's metadata sitemap can't produce a sitemap

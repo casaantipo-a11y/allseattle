@@ -11,7 +11,10 @@
  *  - phase 2 (seed-businesses.ts): the three packages, business categories,
  *    the prototype's businesses and venues, promotions, a few products
  *
- * Ad slots and car makes are seeded by the phases that add those collections.
+ *  - phase 3 (seed-phase3.ts): car makes, and the prototype's cars, jobs,
+ *    events (moved forward to upcoming dates) and the contest
+ *
+ * Ad slots are seeded by phase 4.
  */
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -23,6 +26,7 @@ import { revalidateSite } from './revalidate-site'
 import { slugify } from '../fields'
 import { doc, h2, p, paragraphsFrom } from './lexical'
 import { seedBusinesses } from './seed-businesses'
+import { seedPhase3 } from './seed-phase3'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 // The stage 1 prototype sits next to the app in the same repository.
@@ -113,6 +117,9 @@ async function run() {
 
   // ---- Phase 2: packages, business categories, businesses, promotions, products
   await seedBusinesses(payload, PROTOTYPE, log)
+
+  // ---- Phase 3: car makes, cars, jobs, events, the contest -------------------
+  await seedPhase3(payload, PROTOTYPE, log)
 
   // ---- Globals ------------------------------------------------------------
   await payload.updateGlobal({

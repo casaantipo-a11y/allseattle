@@ -2,7 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { z } from 'zod'
 
-import { notifyEmail, notifyTelegram } from './notify'
+import { type NoticePhoto, notifyEmail, notifyTelegram } from './notify'
 import { absoluteUrl } from './site'
 
 // Server side of the public forms (spec §8). Each form is a zod schema plus a
@@ -59,7 +59,24 @@ export const FORMS = {
     thanks: 'Thanks! We received your request and will get back to you with options.',
     title: 'New advertising inquiry',
   },
+  'news-tip': {
+    type: 'news_tip' as const,
+    schema: z
+      .object({
+        ...contact,
+        message: z.string().trim().min(10, 'Tell us a bit more — at least a sentence').max(5000, 'Please keep it under 5000 characters'),
+        location: z.string().trim().max(200).optional(),
+      })
+      .refine(needContact, { message: 'Leave an email or a phone number', path: ['email'] }),
+    thanks: 'Thanks! We received your news tip and will review it shortly.',
+    title: 'New news tip',
+  },
 } as const
+
+// Photos for news tips (spec §8): up to 5, JPEG/PNG/WebP, 10 MB each.
+const MAX_PHOTOS = 5
+const MAX_BYTES = 10 * 1024 * 1024
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 export type FormKey = keyof typeof FORMS
 
@@ -113,6 +130,19 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
     return json({ error: 'Please check the highlighted fields.', fieldErrors }, 400)
   }
 
+  const files = fd.getAll('photos').filter((f): f is File => typeof f === 'object' && f !== null && (f as File).size > 0)
+  if (files.length) {
+    if (form.type !== 'news_tip') return json({ error: 'This form doesn’t take files.' }, 400)
+    if (files.length > MAX_PHOTOS) return json({ error: 'Please check the highlighted fields.', fieldErrors: { photos: `Up to ${MAX_PHOTOS} photos` } }, 400)
+    const bad = files.find((f) => !PHOTO_TYPES.includes(f.type) || f.size > MAX_BYTES)
+    if (bad) {
+      return json(
+        { error: 'Please check the highlighted fields.', fieldErrors: { photos: `${bad.name}: JPEG, PNG or WebP up to 10 MB only` } },
+        400,
+      )
+    }
+  }
+
   const ip = clientIp(req)
   if (!(await turnstileOk(fd.get('cf-turnstile-response'), ip))) {
     return json({ error: 'The anti-spam check failed. Please try again.' }, 400)
@@ -143,6 +173,27 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
   d.category = await exists('business-categories', d.category)
   d.desiredPackage = await exists('packages', d.desiredPackage)
 
+  // Photos go into Media first (resized to WebP like every upload), then the
+  // submission points at them.
+  const photoIds: number[] = []
+  let firstPhoto: NoticePhoto | null = null
+  try {
+    for (const f of files) {
+      const data = Buffer.from(await f.arrayBuffer())
+      const m = await payload.create({
+        collection: 'media',
+        overrideAccess: true,
+        data: { alt: `News tip photo from ${String(d.name).slice(0, 60)}` },
+        file: { data, mimetype: f.type, name: f.name.replace(/[^\w.-]+/g, '-'), size: f.size },
+      })
+      photoIds.push(m.id)
+      firstPhoto ??= { data, name: f.name, mimetype: f.type }
+    }
+  } catch (e) {
+    console.error('[forms] could not store photos', e)
+    return json({ error: 'Could not upload the photos. Please try again.' }, 500)
+  }
+
   let doc
   try {
     doc = await payload.create({
@@ -159,6 +210,8 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
         category: (d.category as number) || undefined,
         desiredPackage: (d.desiredPackage as number) || undefined,
         desiredSlot: (d.desiredSlot as string) || undefined,
+        location: (d.location as string) || undefined,
+        photos: photoIds.length ? photoIds : undefined,
         ip,
         userAgent: req.headers.get('user-agent')?.slice(0, 300) ?? undefined,
       },
@@ -184,9 +237,12 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
         ['Category', cat],
         ['Package', pkg],
         ['Placement', doc.desiredSlot],
+        ['Location', doc.location],
+        ['Photos', photoIds.length ? String(photoIds.length) : null],
         ['Message', doc.message],
       ] as [string, string | null | undefined][],
       adminUrl: absoluteUrl(`/admin/collections/submissions/${doc.id}`),
+      photo: firstPhoto,
     }
     await Promise.all([
       notifyTelegram(settings.telegramChatId, notice),

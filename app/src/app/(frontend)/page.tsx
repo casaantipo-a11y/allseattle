@@ -2,16 +2,19 @@ import Link from 'next/link'
 
 import { AdSlot, InlineMobileAd } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
+import { ContestStrip, FreshCars, JobsWidget, StatsWidget, UpcomingEvents } from '@/components/home'
 import { NewsListRow, NewsTile, TopNewsWidget } from '@/components/news'
 import { getNewsPage, getSiteSettings, getTopNews } from '@/lib/queries'
+import { getCars, getFeaturedContest, getJobs, getSiteStats, getUpcomingEvents } from '@/lib/queries-phase3'
 import { absoluteUrl } from '@/lib/site'
 
 export const revalidate = 3600
 
-// Home, phase 1: the prototype's layout on real news. The top leaderboard
-// (HOME_TOP) is back — it had gone missing in the prototype. Stats, jobs,
-// events, cars and the contest block arrive with their collections in
-// phases 2–3; phase 4 fills every slot with real banners.
+// Home (spec §3): the prototype's layout on real data. The top leaderboard
+// (HOME_TOP) is back — it had gone missing in the prototype. Under it the
+// contest strip; the latest news with Top news, site statistics and the job
+// board on the right; then upcoming events, fresh cars and the newsfeed.
+// Phase 4 fills every ad slot with real banners.
 
 const TILE_COUNT = 20
 // Mobile echoes of the left-column slots, after full rows of tiles.
@@ -21,10 +24,15 @@ const INLINE_AFTER = new Map([
 ])
 
 export default async function HomePage() {
-  const [settings, feed, top] = await Promise.all([
+  const [settings, feed, top, stats, jobs, events, cars, contest] = await Promise.all([
     getSiteSettings(),
     getNewsPage({ page: 1, limit: 32 }),
     getTopNews(6),
+    getSiteStats(),
+    getJobs(),
+    getUpcomingEvents(),
+    getCars(),
+    getFeaturedContest(),
   ])
   const tiles = feed.docs.slice(0, TILE_COUNT)
   const list = feed.docs.slice(TILE_COUNT)
@@ -37,6 +45,7 @@ export default async function HomePage() {
         <div className="container">
           <AdSlot code="HOME_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
         </div>
+        <ContestStrip contest={contest} />
         <div className="container home-layout">
           <aside className="home-sidebar home-sidebar-left" aria-label="Advertising">
             <AdSlot code="HOME_SIDEBAR_1" size="300x250" className="ad-desktop-slot" />
@@ -77,10 +86,15 @@ export default async function HomePage() {
                 Share the news
               </Link>
             </div>
+            <StatsWidget stats={stats} />
             <TopNewsWidget articles={top} />
+            <JobsWidget jobs={jobs} />
           </aside>
         </div>
       </section>
+
+      <UpcomingEvents events={events} />
+      <FreshCars cars={[...cars].sort((a, b) => +new Date(b.bumpedAt || b.createdAt) - +new Date(a.bumpedAt || a.createdAt))} />
 
       {list.length ? (
         <section className="section home-feed">

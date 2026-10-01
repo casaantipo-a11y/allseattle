@@ -1,9 +1,9 @@
-import type { Field, FieldHook } from 'payload'
+import type { Field, FieldHook, PayloadRequest } from 'payload'
 
 export const slugify = (value: string): string =>
   value
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
@@ -73,3 +73,47 @@ export const isDemoField: Field = {
     description: 'Demo content. Removed in one go by `pnpm purge-demo` before launch.',
   },
 }
+
+/** `base`, or `base-2`, `base-3`… — the first one no other document uses. */
+export async function uniqueSlug(req: PayloadRequest, collection: string, source: string, excludeId?: number | string) {
+  const base = slugify(source)
+  let candidate = base
+  for (let i = 2; i < 500; i++) {
+    const { totalDocs } = await req.payload.count({
+      collection: collection as never,
+      where: { and: [{ slug: { equals: candidate } }, ...(excludeId ? [{ id: { not_equals: excludeId } }] : [])] },
+      req,
+    })
+    if (!totalDocs) return candidate
+    candidate = `${base}-${i}`
+  }
+  return `${base}-${Date.now()}`
+}
+
+/**
+ * Slug for collections whose titles repeat (two "2021 Toyota Camry" listings,
+ * many "Barista" jobs): generated from `fromField` when empty and made unique
+ * with -2, -3… instead of failing on the unique index.
+ */
+export const uniqueSlugField = (collection: string, fromField = 'title'): Field => ({
+  name: 'slug',
+  type: 'text',
+  unique: true,
+  index: true,
+  admin: {
+    position: 'sidebar',
+    description: 'Part of the page address. Leave empty to generate it.',
+  },
+  hooks: {
+    beforeValidate: [
+      async ({ value, data, originalDoc, req }) => {
+        // A partial update that doesn't touch the slug keeps it.
+        if (value == null && originalDoc?.slug && data?.slug === undefined) return originalDoc.slug
+        const source = typeof value === 'string' && value.trim() ? value : (data?.[fromField] ?? originalDoc?.[fromField])
+        if (typeof source !== 'string' || !source.trim()) return value
+        if (value && slugify(value) === originalDoc?.slug) return originalDoc.slug
+        return uniqueSlug(req, collection, source, originalDoc?.id)
+      },
+    ],
+  },
+})

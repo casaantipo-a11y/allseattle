@@ -17,6 +17,11 @@ const ALL_TAGS = [
   'packages',
   'promotions',
   'products',
+  'cars',
+  'jobs',
+  'events',
+  'contests',
+  'weather',
 ]
 
 export async function POST(req: Request) {

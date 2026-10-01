@@ -15,6 +15,7 @@ export const Documents: CollectionConfig = {
     delete: canWrite('sales'),
   },
   upload: {
+    staticDir: process.env.MEDIA_DIR ? `${process.env.MEDIA_DIR}-documents` : 'documents',
     mimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
   },
   fields: [

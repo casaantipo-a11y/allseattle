@@ -14,6 +14,9 @@ importers:
       '@payloadcms/next':
         specifier: 3.90.2
         version: 3.90.2(@types/react@19.2.14)(graphql@16.14.2)(monaco-editor@0.57.0)(next@16.3.3(@babel/core@7.29.7)(@playwright/test@1.58.2)(@types/node@22.19.9)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.90.2(graphql@16.14.2)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.7.3)
+      '@payloadcms/plugin-search':
+        specifier: 3.90.2
+        version: 3.90.2(@types/react@19.2.14)(graphql@16.14.2)(monaco-editor@0.57.0)(next@16.3.3(@babel/core@7.29.7)(@playwright/test@1.58.2)(@types/node@22.19.9)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.90.2(graphql@16.14.2)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.7.3)
       '@payloadcms/plugin-seo':
         specifier: 3.90.2
         version: 3.90.2(@types/react@19.2.14)(monaco-editor@0.57.0)(next@16.3.3(@babel/core@7.29.7)(@playwright/test@1.58.2)(@types/node@22.19.9)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.90.2(graphql@16.14.2)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.7.3)
@@ -1467,6 +1470,13 @@ packages:
 
   '@payloadcms/plugin-cloud-storage@3.90.2':
     resolution: {integrity: sha512-1J3bpaG9jHClTgIvHcJXltcjdsC/bgP/wvtAHW8ZZQPtytS0hR8WrHdzpjyRt+aTgaiTiy5Otz7M07aodwguzw==}
+    peerDependencies:
+      payload: 3.90.2
+      react: ^19.0.1 || ^19.1.2 || ^19.2.1
+      react-dom: ^19.0.1 || ^19.1.2 || ^19.2.1
+
+  '@payloadcms/plugin-search@3.90.2':
+    resolution: {integrity: sha512-hGj+RQp4J9W67+q6NfN5Vw4+/3fNOPEOV6C9Lt03BM4b0R5MlAaBx2mHXHJLX68ds+Q0jZdsE4NA2ccO52JQaQ==}
     peerDependencies:
       payload: 3.90.2
       react: ^19.0.1 || ^19.1.2 || ^19.2.1
@@ -5555,6 +5565,21 @@ snapshots:
       react-dom: 19.2.6(react@19.2.6)
     transitivePeerDependencies:
       - '@types/react'
+      - monaco-editor
+      - next
+      - supports-color
+      - typescript
+
+  '@payloadcms/plugin-search@3.90.2(@types/react@19.2.14)(graphql@16.14.2)(monaco-editor@0.57.0)(next@16.3.3(@babel/core@7.29.7)(@playwright/test@1.58.2)(@types/node@22.19.9)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.90.2(graphql@16.14.2)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.7.3)':
+    dependencies:
+      '@payloadcms/next': 3.90.2(@types/react@19.2.14)(graphql@16.14.2)(monaco-editor@0.57.0)(next@16.3.3(@babel/core@7.29.7)(@playwright/test@1.58.2)(@types/node@22.19.9)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.90.2(graphql@16.14.2)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.7.3)
+      '@payloadcms/ui': 3.90.2(@types/react@19.2.14)(monaco-editor@0.57.0)(next@16.3.3(@babel/core@7.29.7)(@playwright/test@1.58.2)(@types/node@22.19.9)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.90.2(graphql@16.14.2)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.7.3)
+      payload: 3.90.2(graphql@16.14.2)(typescript@5.7.3)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+    transitivePeerDependencies:
+      - '@types/react'
+      - graphql
       - monaco-editor
       - next
       - supports-color

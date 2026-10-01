@@ -5,7 +5,7 @@ The live city portal: Next.js 16 (App Router) with Payload CMS 3 embedded in the
 mock data) lives one folder up and stays deployed on GitHub Pages as the sales demo; its CSS was
 ported here unchanged (`src/app/(frontend)/styles/`).
 
-**Status: phases 1–2 done.**
+**Status: phases 1–3 done.**
 
 - **Phase 1** — users and roles, media, news (categories, articles, Top news), static pages, site
   settings / header / footer, the header with live Seattle weather and time, the home page and news
@@ -23,8 +23,20 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   table, inquiry form), `/add-business`, subdomains behind `ENABLE_SUBDOMAINS`, and the public
   forms pipeline (zod, honeypot, Turnstile, 5 per IP per hour, Submissions, Telegram + email).
 
-Cars, jobs, events, contest, weather page, search and "Share the news" come in phase 3, banners
-and statistics in phase 4; their links 404 until then.
+- **Phase 3** — car makes (popular US makes, seeded) and car listings (`/cars`, `/cars/[slug]`:
+  the prototype's catalog as is, per spec §13, with Vehicle JSON-LD), jobs with categories
+  (`/jobs`: the prototype's work.ua-style board; `/jobs/[slug]` with Google Jobs JSON-LD),
+  events with categories (`/events` filtered by today / weekend / month and category,
+  `/events/[slug]` with Event JSON-LD, events on `/map`), contests (`/contests/[slug]`: entries
+  by first name and age only, parental consent required, "Voting opens soon"), `/weather`
+  (the prototype's dashboard on live Open-Meteo data, US AQI, nearby towns), `/share-news`
+  (up to 5 photos into Media, the first one to Telegram), global search through
+  `@payloadcms/plugin-search` (`/search`, grouped by type, plus suggestions in the banner after
+  2 characters), the home page blocks (statistics, jobs, upcoming events, fresh cars, contest),
+  the Jobs tab on Luxury/Premium business pages, and the shared listing limit (cars + jobs of a
+  business ≤ its package's `maxListings`).
+
+Banners, ad slots, statistics of impressions/clicks and `ADMIN_GUIDE.md` come in phase 4.
 
 ## Local development
 
@@ -111,5 +123,10 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
   package in force is decided at render time, so an expired one drops without anyone touching it.
 - Forms: `src/lib/forms.ts` + `POST /api/forms/{business-registration|ad-inquiry}`; the REST API
   itself refuses to create submissions. Notifications (`src/lib/notify.ts`) never block saving.
+- Search: every document of news, businesses, cars, jobs and events gets a row in the `search`
+  collection (`src/search.ts`) with its URL, a type and a short text; drafts stay indexed with
+  `isPublished: false` and are filtered out, so un-publishing hides them at once.
+- `MEDIA_DIR` (optional) moves local uploads to another folder — handy for a throwaway test
+  database that must not touch the real `./media`.
 - Leaflet only runs in the browser: `components/map/MapClient.tsx` loads it with `ssr: false`; pins
   are CSS divIcons (`styles/business.css`).

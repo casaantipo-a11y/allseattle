@@ -8,6 +8,7 @@ import {
   getNewsForSitemap,
   getPagesForSitemap,
 } from '@/lib/queries'
+import { getCars, getContestsForSitemap, getJobs, getUpcomingEvents } from '@/lib/queries-phase3'
 import { absoluteUrl, articlePath } from '@/lib/site'
 import { SITEMAP_TYPES, type SitemapType, type UrlEntry, urlset, xml } from '@/lib/sitemap'
 
@@ -26,7 +27,7 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
       ...categories
         .filter((c) => c.slug)
         .map((c) => ({ loc: absoluteUrl(`/news/${c.slug}`), changefreq: 'daily', priority: 0.7 })),
-      ...['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business'].map((path) => ({
+      ...['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business', '/cars', '/jobs', '/events', '/weather', '/share-news'].map((path) => ({
         loc: absoluteUrl(path),
         changefreq: 'daily',
         priority: 0.8,
@@ -52,6 +53,16 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
         lastmod: new Date(a.updatedAt).toISOString(),
         priority: 0.8,
       }))
+  }
+  const lastmod = (d: { updatedAt: string }) => new Date(d.updatedAt).toISOString()
+  if (type === 'cars') return (await getCars()).filter((c) => c.slug).map((c) => ({ loc: absoluteUrl(`/cars/${c.slug}`), lastmod: lastmod(c), priority: 0.6 }))
+  if (type === 'jobs') return (await getJobs()).filter((j) => j.slug).map((j) => ({ loc: absoluteUrl(`/jobs/${j.slug}`), lastmod: lastmod(j), priority: 0.6 }))
+  if (type === 'events') {
+    const [events, contests] = await Promise.all([getUpcomingEvents(), getContestsForSitemap()])
+    return [
+      ...events.filter((e) => e.slug).map((e) => ({ loc: absoluteUrl(`/events/${e.slug}`), lastmod: lastmod(e), priority: 0.6 })),
+      ...contests.filter((c) => c.slug).map((c) => ({ loc: absoluteUrl(`/contests/${c.slug}`), lastmod: lastmod(c), priority: 0.5 })),
+    ]
   }
   return (await getPagesForSitemap())
     .filter((p) => p.slug)

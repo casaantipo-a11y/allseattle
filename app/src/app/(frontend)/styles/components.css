@@ -345,7 +345,10 @@
   margin-bottom: var(--space-6);
 }
 
-.category-filter button {
+.category-filter :is(button, a) {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
   min-height: 44px;
   border: 1.5px solid var(--color-slate-soft);
   background: var(--color-white);
@@ -357,11 +360,11 @@
   cursor: pointer;
 }
 
-.category-filter button:hover {
+.category-filter :is(button, a):hover {
   border-color: var(--color-accent);
 }
 
-.category-filter button.active {
+.category-filter :is(button, a).active {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-white);

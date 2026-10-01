@@ -5,8 +5,9 @@ import { mediaAlt, mediaUrl } from '@/lib/media'
 import { getHeader } from '@/lib/queries'
 import { getCurrentWeather } from '@/lib/weather'
 
+import { SearchBox } from './SearchBox'
 import { SeattleClock } from './SeattleClock'
-import { Svg, UI_ICONS, WEATHER_ICONS } from './icons'
+import { Svg, WEATHER_ICONS } from './icons'
 
 const DEFAULT_PHOTO = '/brand/skyline-panorama.webp'
 const DEFAULT_ALT = 'Seattle skyline with the Space Needle, Mount Rainier and Pike Place Market'
@@ -39,12 +40,7 @@ export async function HeroBanner() {
               {weather ? <span className="weather-note">{weather.description}</span> : null}
             </span>
           </Link>
-          <form className="search-stub" role="search" action="/search" method="get">
-            <input type="search" name="q" placeholder="Search AllSeattle..." aria-label="Search" minLength={2} />
-            <button type="submit" aria-label="Search">
-              <Svg html={UI_ICONS.search} />
-            </button>
-          </form>
+          <SearchBox />
         </div>
       </div>
     </div>

@@ -8,13 +8,15 @@ import { Tabs } from '@/components/Tabs'
 import { MapClient } from '@/components/map/MapClient'
 import { badgeFor, bizPath, type BusinessFull, effectivePackage, telHref, viewFor } from '@/lib/business'
 import { mediaAlt, mediaUrl } from '@/lib/media'
+import { salaryText, EMPLOYMENT_LABEL } from '@/lib/jobs'
 import { getActivePromotions, getProducts } from '@/lib/queries'
+import { getJobs } from '@/lib/queries-phase3'
 import { absoluteUrl } from '@/lib/site'
 import type { Document, Media, Product, Promotion } from '@/payload-types'
 
 // The business page, in the three designs of spec §5:
 //   standard — contacts, description, map, photos, promotions, price lists
-//   luxury   — plus tabs (Products, Promotions; Jobs arrives in phase 3), a big gallery, the badge
+//   luxury   — plus tabs (Products, Jobs, Promotions), a big gallery, the badge
 //   premium  — branded: full-width header image, the brand colour on every accent,
 //              no third-party ad slots on the page
 // An expired package shows the standard design (effectivePackage()).
@@ -197,10 +199,12 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
   const pkg = effectivePackage(biz)
   const view = viewFor(pkg)
   const badge = badgeFor(pkg)
-  const [promotions, products] = await Promise.all([
+  const [promotions, products, allJobs] = await Promise.all([
     getActivePromotions(biz.id),
     pkg && pkg.maxProducts > 0 ? getProducts(biz.id) : Promise.resolve([] as Product[]),
+    getJobs(),
   ])
+  const jobs = allJobs.filter((j) => (typeof j.business === 'object' ? j.business?.id : j.business) === biz.id)
 
   const photos = (biz.gallery ?? []).filter(isObj<Media>)
   const priceLists = (biz.priceLists ?? []).filter(isObj<Document>)
@@ -237,6 +241,28 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
       : [
           { id: 'overview', label: 'Overview', content: overview },
           ...(products.length ? [{ id: 'products', label: `Products (${products.length})`, content: <Products items={products} /> }] : []),
+          ...(jobs.length
+            ? [
+                {
+                  id: 'jobs',
+                  label: `Jobs (${jobs.length})`,
+                  content: (
+                    <ul className="m-0 grid list-none gap-0 p-0">
+                      {jobs.map((j) => (
+                        <li key={j.id} className="flex flex-wrap items-baseline justify-between gap-2 border-b border-brand-line py-3">
+                          <Link href={`/jobs/${j.slug}`} className="font-display text-base font-bold text-brand-navy hover:text-[var(--color-accent)]">
+                            {j.title}
+                          </Link>
+                          <span className="text-sm text-brand-slate">
+                            {[salaryText(j), EMPLOYMENT_LABEL[j.employmentType]].filter(Boolean).join(' · ')}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ),
+                },
+              ]
+            : []),
           { id: 'promotions', label: `Promotions${promotions.length ? ` (${promotions.length})` : ''}`, content: <Promotions items={promotions} /> },
         ]
 

@@ -21,7 +21,7 @@ export type MapPoint = {
   title: string
   href?: string
   subtitle?: string
-  kind?: 'premium' | 'luxury' | 'standard'
+  kind?: 'premium' | 'luxury' | 'standard' | 'event'
 }
 
 const SEATTLE: [number, number] = [47.6062, -122.3321]

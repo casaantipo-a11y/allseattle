@@ -22,6 +22,11 @@ import './styles/news.css'
 import './styles/directory.css'
 import './styles/pricing.css'
 import './styles/business.css'
+import './styles/auto.css'
+import './styles/jobs.css'
+import './styles/events.css'
+import './styles/weather.css'
+import './styles/contest.css'
 import './tailwind.css'
 
 // The prototype's faces (the user chose to keep them over the spec's

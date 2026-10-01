@@ -30,6 +30,12 @@
   background: var(--color-accent);
 }
 
+/* Events: a white pin ringed in the accent, so they read apart from businesses. */
+.as-pin--event {
+  background: var(--color-white);
+  border-color: var(--color-accent);
+}
+
 .as-map .leaflet-popup-content {
   font-family: var(--font-body);
   font-size: var(--text-xs);
@@ -67,4 +73,30 @@
 .biz-hero-title h1,
 .biz-hero-title a {
   color: var(--color-white);
+}
+
+/* Search suggestions (components/SearchBox.tsx) hang below the search box,
+   outside the banner. The prototype clipped both the frame and the box with
+   overflow: hidden for their rounded corners; the corners now come from the
+   pieces themselves so the list can overflow. */
+.hero-frame {
+  overflow: visible;
+}
+.hero-photo,
+.hero-shade {
+  border-radius: inherit;
+}
+.search-stub {
+  overflow: visible;
+  z-index: 30;
+}
+.search-stub input {
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
+}
+.search-stub button {
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+/* The prototype removes the input's outline; keyboard focus shows on the box. */
+.search-stub:focus-within {
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.45);
 }

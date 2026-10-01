@@ -11,7 +11,12 @@ import { fileURLToPath } from 'url'
 
 import { BusinessCategories } from './collections/BusinessCategories'
 import { Businesses } from './collections/Businesses'
+import { CarListings } from './collections/CarListings'
+import { CarMakes } from './collections/CarMakes'
+import { Contests } from './collections/Contests'
 import { Documents } from './collections/Documents'
+import { EventCategories, Events } from './collections/Events'
+import { JobCategories, Jobs } from './collections/Jobs'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
 import { NewsCategories } from './collections/NewsCategories'
@@ -25,13 +30,15 @@ import { env, s3Enabled } from './env'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { SiteSettings } from './globals/SiteSettings'
+import { search } from './search'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 const plugins: Plugin[] = [
+  search,
   seoPlugin({
-    collections: ['news', 'pages', 'businesses'],
+    collections: ['news', 'pages', 'businesses', 'car-listings', 'jobs', 'events'],
     uploadsCollection: 'media',
     tabbedUI: true,
     generateTitle: ({ doc }) =>
@@ -101,6 +108,13 @@ export default buildConfig({
     Packages,
     Promotions,
     Products,
+    CarListings,
+    CarMakes,
+    Jobs,
+    JobCategories,
+    Events,
+    EventCategories,
+    Contests,
     Submissions,
     Pages,
     Media,

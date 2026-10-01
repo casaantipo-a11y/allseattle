@@ -74,11 +74,19 @@ export interface Config {
     packages: Package;
     promotions: Promotion;
     products: Product;
+    'car-listings': CarListing;
+    'car-makes': CarMake;
+    jobs: Job;
+    'job-categories': JobCategory;
+    events: Event;
+    'event-categories': EventCategory;
+    contests: Contest;
     submissions: Submission;
     pages: Page;
     media: Media;
     documents: Document;
     users: User;
+    search: Search;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -93,11 +101,19 @@ export interface Config {
     packages: PackagesSelect<false> | PackagesSelect<true>;
     promotions: PromotionsSelect<false> | PromotionsSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    'car-listings': CarListingsSelect<false> | CarListingsSelect<true>;
+    'car-makes': CarMakesSelect<false> | CarMakesSelect<true>;
+    jobs: JobsSelect<false> | JobsSelect<true>;
+    'job-categories': JobCategoriesSelect<false> | JobCategoriesSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    'event-categories': EventCategoriesSelect<false> | EventCategoriesSelect<true>;
+    contests: ContestsSelect<false> | ContestsSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -550,6 +566,351 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "car-listings".
+ */
+export interface CarListing {
+  id: number;
+  /**
+   * Leave empty: it is built from year, make and model.
+   */
+  title?: string | null;
+  make: number | CarMake;
+  model: string;
+  year: number;
+  /**
+   * USD
+   */
+  price: number;
+  /**
+   * miles
+   */
+  mileage: number;
+  /**
+   * e.g. 2.5L I4 Hybrid
+   */
+  engine?: string | null;
+  transmission: 'Automatic' | 'CVT Automatic' | 'Manual';
+  fuelType: 'Gasoline' | 'Diesel' | 'Hybrid' | 'Plug-in Hybrid' | 'Electric';
+  drivetrain?: ('FWD' | 'RWD' | 'AWD' | '4WD') | null;
+  bodyType: 'sedan' | 'suv' | 'truck' | 'hatchback' | 'coupe' | 'convertible' | 'wagon' | 'van';
+  exteriorColor?: string | null;
+  vin?: string | null;
+  description?: string | null;
+  /**
+   * The first photo is the cover.
+   */
+  photos?: (number | Media)[] | null;
+  sellerName: string;
+  sellerPhone: string;
+  /**
+   * If a dealership sells it. Counts towards the dealer package’s listing limit.
+   */
+  dealer?: (number | null) | Business;
+  /**
+   * Part of the page address. Leave empty to generate it.
+   */
+  slug?: string | null;
+  status: 'draft' | 'published';
+  isFeatured?: boolean | null;
+  /**
+   * "Bump" a listing to the top of the catalog by setting this to now.
+   */
+  bumpedAt?: string | null;
+  expiresAt?: string | null;
+  /**
+   * User submissions arrive in stage 3.
+   */
+  source: 'admin' | 'user';
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  /**
+   * Old addresses of this page. They redirect here automatically.
+   */
+  slugHistory?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "car-makes".
+ */
+export interface CarMake {
+  id: number;
+  name: string;
+  /**
+   * Type a model and press Enter.
+   */
+  models?: string[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs".
+ */
+export interface Job {
+  id: number;
+  title: string;
+  /**
+   * A business from the directory…
+   */
+  business?: (number | null) | Business;
+  /**
+   * …or just the company name.
+   */
+  companyName?: string | null;
+  category: number | JobCategory;
+  employmentType: 'full-time' | 'part-time' | 'contract' | 'temporary';
+  workMode?: ('on-site' | 'hybrid' | 'remote') | null;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryPeriod?: ('hour' | 'year') | null;
+  /**
+   * Neighbourhood or address, e.g. Capitol Hill
+   */
+  location?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Two lines for the job board list.
+   */
+  summary?: string | null;
+  /**
+   * Email, phone or link — shown on the job page.
+   */
+  howToApply: string;
+  openTo?: ('noExperience' | 'students' | 'accessible' | 'fiftyPlus')[] | null;
+  perks?: string[] | null;
+  languages?: string[] | null;
+  isUrgent?: boolean | null;
+  isFeatured?: boolean | null;
+  /**
+   * Part of the page address. Leave empty to generate it.
+   */
+  slug?: string | null;
+  status: 'draft' | 'published';
+  expiresAt?: string | null;
+  source?: ('admin' | 'user') | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  /**
+   * Old addresses of this page. They redirect here automatically.
+   */
+  slugHistory?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-categories".
+ */
+export interface JobCategory {
+  id: number;
+  name: string;
+  /**
+   * Part of the page address. Leave empty to generate it from the title.
+   */
+  slug?: string | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  title: string;
+  startAt: string;
+  endAt?: string | null;
+  category: number | EventCategory;
+  venueName: string;
+  address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  geocodeNote?: string | null;
+  isFree?: boolean | null;
+  /**
+   * e.g. $35, or $20–60
+   */
+  price?: string | null;
+  ticketUrl?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Two lines for the event card.
+   */
+  summary?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Part of the page address. Leave empty to generate it.
+   */
+  slug?: string | null;
+  status: 'draft' | 'published';
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  /**
+   * Old addresses of this page. They redirect here automatically.
+   */
+  slugHistory?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-categories".
+ */
+export interface EventCategory {
+  id: number;
+  name: string;
+  /**
+   * Part of the page address. Leave empty to generate it from the title.
+   */
+  slug?: string | null;
+  order?: number | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contests".
+ */
+export interface Contest {
+  id: number;
+  title: string;
+  description?: string | null;
+  rules?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  startAt?: string | null;
+  endAt?: string | null;
+  entries?:
+    | {
+        image: number | Media;
+        title: string;
+        /**
+         * First name only — no surname.
+         */
+        participantFirstName: string;
+        participantAge: number;
+        parentConsent: boolean;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Part of the page address. Leave empty to generate it from the title.
+   */
+  slug?: string | null;
+  status: 'upcoming' | 'active' | 'finished';
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  /**
+   * Old addresses of this page. They redirect here automatically.
+   */
+  slugHistory?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
 export interface Submission {
@@ -694,6 +1055,45 @@ export interface User {
   collection: 'users';
 }
 /**
+ * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search".
+ */
+export interface Search {
+  id: number;
+  title?: string | null;
+  priority?: number | null;
+  doc:
+    | {
+        relationTo: 'news';
+        value: number | News;
+      }
+    | {
+        relationTo: 'businesses';
+        value: number | Business;
+      }
+    | {
+        relationTo: 'car-listings';
+        value: number | CarListing;
+      }
+    | {
+        relationTo: 'jobs';
+        value: number | Job;
+      }
+    | {
+        relationTo: 'events';
+        value: number | Event;
+      };
+  url?: string | null;
+  excerpt?: string | null;
+  kind?: string | null;
+  keywords?: string | null;
+  isPublished?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -746,6 +1146,34 @@ export interface PayloadLockedDocument {
         value: number | Product;
       } | null)
     | ({
+        relationTo: 'car-listings';
+        value: number | CarListing;
+      } | null)
+    | ({
+        relationTo: 'car-makes';
+        value: number | CarMake;
+      } | null)
+    | ({
+        relationTo: 'jobs';
+        value: number | Job;
+      } | null)
+    | ({
+        relationTo: 'job-categories';
+        value: number | JobCategory;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'event-categories';
+        value: number | EventCategory;
+      } | null)
+    | ({
+        relationTo: 'contests';
+        value: number | Contest;
+      } | null)
+    | ({
         relationTo: 'submissions';
         value: number | Submission;
       } | null)
@@ -764,6 +1192,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'search';
+        value: number | Search;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -998,6 +1430,200 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "car-listings_select".
+ */
+export interface CarListingsSelect<T extends boolean = true> {
+  title?: T;
+  make?: T;
+  model?: T;
+  year?: T;
+  price?: T;
+  mileage?: T;
+  engine?: T;
+  transmission?: T;
+  fuelType?: T;
+  drivetrain?: T;
+  bodyType?: T;
+  exteriorColor?: T;
+  vin?: T;
+  description?: T;
+  photos?: T;
+  sellerName?: T;
+  sellerPhone?: T;
+  dealer?: T;
+  slug?: T;
+  status?: T;
+  isFeatured?: T;
+  bumpedAt?: T;
+  expiresAt?: T;
+  source?: T;
+  isDemo?: T;
+  slugHistory?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "car-makes_select".
+ */
+export interface CarMakesSelect<T extends boolean = true> {
+  name?: T;
+  models?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs_select".
+ */
+export interface JobsSelect<T extends boolean = true> {
+  title?: T;
+  business?: T;
+  companyName?: T;
+  category?: T;
+  employmentType?: T;
+  workMode?: T;
+  salaryMin?: T;
+  salaryMax?: T;
+  salaryPeriod?: T;
+  location?: T;
+  description?: T;
+  summary?: T;
+  howToApply?: T;
+  openTo?: T;
+  perks?: T;
+  languages?: T;
+  isUrgent?: T;
+  isFeatured?: T;
+  slug?: T;
+  status?: T;
+  expiresAt?: T;
+  source?: T;
+  isDemo?: T;
+  slugHistory?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-categories_select".
+ */
+export interface JobCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  startAt?: T;
+  endAt?: T;
+  category?: T;
+  venueName?: T;
+  address?: T;
+  lat?: T;
+  lng?: T;
+  geocodeNote?: T;
+  isFree?: T;
+  price?: T;
+  ticketUrl?: T;
+  image?: T;
+  summary?: T;
+  description?: T;
+  slug?: T;
+  status?: T;
+  isDemo?: T;
+  slugHistory?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-categories_select".
+ */
+export interface EventCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  order?: T;
+  isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contests_select".
+ */
+export interface ContestsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  rules?: T;
+  startAt?: T;
+  endAt?: T;
+  entries?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        participantFirstName?: T;
+        participantAge?: T;
+        parentConsent?: T;
+        id?: T;
+      };
+  slug?: T;
+  status?: T;
+  isDemo?: T;
+  slugHistory?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions_select".
  */
 export interface SubmissionsSelect<T extends boolean = true> {
@@ -1163,6 +1789,22 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search_select".
+ */
+export interface SearchSelect<T extends boolean = true> {
+  title?: T;
+  priority?: T;
+  doc?: T;
+  url?: T;
+  excerpt?: T;
+  kind?: T;
+  keywords?: T;
+  isPublished?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

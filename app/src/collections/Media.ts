@@ -16,6 +16,9 @@ export const Media: CollectionConfig = {
     delete: isLoggedIn,
   },
   upload: {
+    // Local folder when R2 is off; MEDIA_DIR lets a throwaway test database
+    // keep its files apart from the real ones.
+    staticDir: process.env.MEDIA_DIR || 'media',
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml'],
     formatOptions: { format: 'webp', options: { quality: 82 } },
     imageSizes: [

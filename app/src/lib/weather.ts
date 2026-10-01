@@ -48,3 +48,9 @@ export async function getCurrentWeather(): Promise<CurrentWeather | null> {
     return null
   }
 }
+
+/** describe() plus the night rule: no sun icon after dark. */
+export function describeCode(code: number, isDay: boolean): Pick<CurrentWeather, 'description' | 'icon'> {
+  const d = describe(code)
+  return { description: d.description, icon: !isDay && (d.icon === 'sun' || d.icon === 'cloud-sun') ? 'cloud' : d.icon }
+}
