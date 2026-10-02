@@ -39,7 +39,7 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   business ≤ its package's `maxListings`).
 
 - **Phase 4** — banners. `AdSlots` (every `<AdSlot code>` on the pages, seeded with
-  placeholder weekly prices), `Banners` (images checked against the slot sizes ±2px, shown
+  placeholder weekly prices), `Banners` (images checked against the slot sizes ±2px, also at 2x/3x for sharp screens, shown
   between `startAt` and `endAt`, random rotation when several run in one slot, the "Your ad
   here" placeholder otherwise) and `BannerStats` (daily rows, unique `(banner, date)`, atomic
   upsert). Impressions are counted in the browser (≥50% visible for 1s, batched every 10s and

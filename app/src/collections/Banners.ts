@@ -13,11 +13,15 @@ import type { AdSlot, Media } from '../payload-types'
 const revalidate = revalidateCollection(['banners'], () => ['/advertise'])
 
 const TOLERANCE = 2 // px, spec §4
+// Sharp-screen ("retina") creatives: the slot size times 2 or 3. Phones and most
+// laptops draw at 2–3x, and an image at exactly 728x90 looks soft there. The
+// slot box stays the same size; the browser just has more pixels to draw.
+const SCALES = [1, 2, 3]
 
 const idOf = (v: unknown) =>
   typeof v === 'object' && v ? (v as { id: number }).id : (v as number | null | undefined)
 
-/** Each image must be its slots' size (±2px); a slot with a mobile size needs a mobile image. */
+/** Each image must be its slots' size (±2px), or exactly 2x/3x of it; a slot with a mobile size needs a mobile image. */
 const checkSizes: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
   const errors: { path: string; message: string }[] = []
   const start = data.startAt ?? originalDoc?.startAt
@@ -60,7 +64,15 @@ const checkSizes: CollectionBeforeChangeHook = async ({ data, originalDoc, req }
   const fits = (img: Media | null, size: string) => {
     if (!img?.width || !img?.height) return false
     const [w, h] = size.split('x').map(Number)
-    return Math.abs(img.width - w) <= TOLERANCE && Math.abs(img.height - h) <= TOLERANCE
+    return SCALES.some(
+      (k) =>
+        Math.abs(img.width! - w * k) <= TOLERANCE * k &&
+        Math.abs(img.height! - h * k) <= TOLERANCE * k,
+    )
+  }
+  const sizes = (size: string) => {
+    const [w, h] = size.split('x').map(Number)
+    return `${size} (or ${w * 2}x${h * 2} for sharp screens)`
   }
   const dims = (img: Media | null) =>
     img?.width && img?.height ? `${img.width}x${img.height}` : 'unknown size'
@@ -69,7 +81,7 @@ const checkSizes: CollectionBeforeChangeHook = async ({ data, originalDoc, req }
     if (desktop && !fits(desktop, slot.desktopSize))
       errors.push({
         path: 'imageDesktop',
-        message: `Slot ${slot.code} needs a ${slot.desktopSize} image; this one is ${dims(desktop)}.`,
+        message: `Slot ${slot.code} needs a ${sizes(slot.desktopSize)} image; this one is ${dims(desktop)}.`,
       })
     if (slot.mobileSize) {
       if (!mobile)
@@ -80,7 +92,7 @@ const checkSizes: CollectionBeforeChangeHook = async ({ data, originalDoc, req }
       else if (!fits(mobile, slot.mobileSize))
         errors.push({
           path: 'imageMobile',
-          message: `Slot ${slot.code} needs a ${slot.mobileSize} mobile image; this one is ${dims(mobile)}.`,
+          message: `Slot ${slot.code} needs a ${sizes(slot.mobileSize)} mobile image; this one is ${dims(mobile)}.`,
         })
     }
   }
@@ -150,13 +162,19 @@ export const Banners: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   required: true,
-                  admin: { description: "Exactly the slot's desktop size (±2px)" },
+                  admin: {
+                    description:
+                      "The slot's desktop size (±2px), best at 2x — e.g. 1456x180 for 728x90",
+                  },
                 },
                 {
                   name: 'imageMobile',
                   type: 'upload',
                   relationTo: 'media',
-                  admin: { description: "For slots shown on phones: the slot's mobile size" },
+                  admin: {
+                    description:
+                      "For slots shown on phones: the slot's mobile size, best at 2x — e.g. 640x200",
+                  },
                 },
               ],
             },

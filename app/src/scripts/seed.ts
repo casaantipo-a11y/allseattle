@@ -124,7 +124,7 @@ async function run() {
 
   // ---- Phase 3: car makes, cars, jobs, events, the contest -------------------
   await seedPhase3(payload, PROTOTYPE, log)
-  await seedPhase4(payload, log)
+  await seedPhase4(payload, PROTOTYPE, log)
 
   // ---- Globals ------------------------------------------------------------
   await payload.updateGlobal({
