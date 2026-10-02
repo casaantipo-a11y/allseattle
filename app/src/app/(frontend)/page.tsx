@@ -76,9 +76,6 @@ export default async function HomePage() {
           </div>
 
           <aside className="home-sidebar home-sidebar-right">
-            <Link href="/add-business" className="btn btn-block">
-              Add your business
-            </Link>
             <StatsWidget stats={stats} />
             <TopNewsWidget articles={top} />
             <JobsWidget jobs={jobs} />

@@ -164,6 +164,7 @@ async function run() {
           highlight: true,
         },
         { label: 'Readers', text: 'Saw something newsworthy? Share the news', url: '/share-news', highlight: false },
+        { label: 'Business', text: 'Add your business', url: '/add-business', highlight: false },
       ],
     },
     context: ctx(),
