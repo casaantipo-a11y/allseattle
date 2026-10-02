@@ -257,10 +257,11 @@
   .section-head--btn-lower {
     --head-btn-dy: calc(var(--space-2) + 4px);
   }
-  /* Events («Submit an event»): кнопка на 16px выше, чем была с --btn-down
-     (+8 → −8) — просьба клиента 02.10.2026. */
+  /* Events («Submit an event»): кнопка на 10px выше, чем была с --btn-down
+     (+8 → −2) — просьба клиента 02.10.2026: «поднять на 16», потом
+     «опустить на 6». Значение вне шкалы, названо в пикселях. */
   .section-head--btn-raise {
-    --head-btn-dy: calc(-1 * var(--space-2));
+    --head-btn-dy: -2px;
   }
   /* Weather и разделы после неё (Real Estate, City Map, Q&A): кнопка на
      12px левее — просьба клиента 28.09.2026. */
