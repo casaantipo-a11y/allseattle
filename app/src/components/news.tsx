@@ -95,16 +95,16 @@ export function CategoriesWidget({
 }) {
   const row = (href: string, label: string, active: boolean, n?: number) => (
     <li key={href}>
-      <Link href={href} className={`news-cat${active ? ' is-active' : ''}`} aria-current={active ? 'page' : undefined}>
+      <Link href={href} className={`cat-row${active ? ' is-active' : ''}`} aria-current={active ? 'page' : undefined}>
         <span>{label}</span>
-        {n !== undefined ? <span className="news-cat-num">{n}</span> : null}
+        {n !== undefined ? <span className="cat-num">{n}</span> : null}
       </Link>
     </li>
   )
   return (
     <nav className="widget" aria-label="News categories">
       <div className="widget-head">Categories</div>
-      <ul className="news-cats">
+      <ul className="cat-list">
         {row('/news', 'All news', !activeSlug, counts?.total)}
         {categories
           .filter((c) => c.slug)

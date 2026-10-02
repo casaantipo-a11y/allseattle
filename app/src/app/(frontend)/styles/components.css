@@ -1244,23 +1244,25 @@ body.modal-open {
   color: var(--color-accent);
 }
 
-/* ---------- Рубрики новостей (виджет Categories) ----------
-   Строки во всю ширину виджета, у каждой — число статей. Текущая рубрика
-   отмечена красной полосой слева и лёгкой подложкой; при наведении строка
-   подсвечивается. */
-.news-cats {
+/* ---------- Список рубрик с числами (Categories / Headings) ----------
+   Один вид для рубрик News, справочника (Directory, Shopping, Leisure) и
+   автоуслуг в Cars: строки во всю ширину виджета, у каждой — число
+   статей или компаний. Текущая рубрика отмечена красной полосой слева и
+   лёгкой подложкой; при наведении строка подсвечивается. Подрубрики —
+   с отступом и чуть мельче (--depth задаёт уровень). */
+.cat-list {
   list-style: none;
   margin: 0;
   padding: var(--space-2) 0;
 }
 
-.news-cat {
+.cat-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
   min-height: 44px;
-  padding: 0 var(--space-6) 0 calc(var(--space-6) - 3px);
+  padding: 0 var(--space-6) 0 calc(var(--space-6) - 3px + var(--depth, 0) * var(--space-4));
   border-left: 3px solid transparent;
   font-size: 15px;
   font-weight: 600;
@@ -1269,19 +1271,19 @@ body.modal-open {
   transition: background-color 0.15s, color 0.15s;
 }
 
-.news-cat:hover {
+.cat-row:hover {
   background: var(--color-bg-soft);
   color: var(--color-accent);
 }
 
-.news-cat.is-active {
+.cat-row.is-active {
   border-left-color: var(--color-accent);
   background: rgba(229, 57, 53, 0.06);
   color: var(--color-accent);
   font-weight: 700;
 }
 
-.news-cat-num {
+.cat-num {
   min-width: 28px;
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
@@ -1292,8 +1294,14 @@ body.modal-open {
   text-align: center;
 }
 
-.news-cat:hover .news-cat-num,
-.news-cat.is-active .news-cat-num {
+.cat-row--sub {
+  min-height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cat-row:hover .cat-num,
+.cat-row.is-active .cat-num {
   background: var(--color-white);
   color: var(--color-accent);
 }

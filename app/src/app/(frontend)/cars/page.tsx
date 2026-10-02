@@ -13,7 +13,8 @@ export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Cars for sale in Seattle',
-  description: 'Used cars for sale in Seattle from local sellers and dealers, plus car repair, washes, parts and rental.',
+  description:
+    'Used cars for sale in Seattle from local sellers and dealers, plus car repair, washes, parts and rental.',
   alternates: { canonical: '/cars' },
 }
 
@@ -26,23 +27,35 @@ export const metadata: Metadata = {
 const FIRMS_ORDER: Record<string, number> = { luxury: 0, premium: 1, standard: 2 }
 
 export default async function CarsPage() {
-  const [cars, categories, businesses] = await Promise.all([getCars(), getBusinessCategories(), getAllBusinesses()])
+  const [cars, categories, businesses] = await Promise.all([
+    getCars(),
+    getBusinessCategories(),
+    getAllBusinesses(),
+  ])
   const auto = categories.find((c) => c.slug === 'auto-services')
   const autoIds = auto ? withDescendants(categories, auto.id) : new Set<number>()
   const catIds = (b: { categories: unknown[] }) =>
-    (b.categories ?? []).map((c) => (typeof c === 'object' && c ? (c as { id: number }).id : (c as number)))
+    (b.categories ?? []).map((c) =>
+      typeof c === 'object' && c ? (c as { id: number }).id : (c as number),
+    )
   const firms = businesses
     .filter((b) => catIds(b).some((id) => autoIds.has(id)))
     .sort((a, b) => {
       const k = (x: typeof a) => {
         const p = effectivePackage(x)
-        return FIRMS_ORDER[p?.brandedPage ? 'premium' : p?.priorityPlacement ? 'luxury' : 'standard']
+        return FIRMS_ORDER[
+          p?.brandedPage ? 'premium' : p?.priorityPlacement ? 'luxury' : 'standard'
+        ]
       }
       return k(a) - k(b) || a.name.localeCompare(b.name)
     })
   const topics = categories
     .filter((c) => auto && (typeof c.parent === 'object' ? c.parent?.id : c.parent) === auto.id)
-    .map((c) => ({ c, n: businesses.filter((b) => catIds(b).some((id) => withDescendants(categories, c.id).has(id))).length }))
+    .map((c) => ({
+      c,
+      n: businesses.filter((b) => catIds(b).some((id) => withDescendants(categories, c.id).has(id)))
+        .length,
+    }))
     .filter((t) => t.n > 0)
 
   return (
@@ -67,18 +80,22 @@ export default async function CarsPage() {
                   {topics.length ? (
                     <nav className="widget" aria-label="Auto services">
                       <div className="widget-head">Headings</div>
-                      <div className="widget-body">
-                        <ul className="auto-cats auto-cats--one">
-                          {topics.map(({ c, n }) => (
-                            <li key={c.id}>
-                              <Link href={`/directory/${c.slug}`}>
-                                <span>{c.name}</span>
-                                <span className="auto-cats-num">{n}</span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <ul className="cat-list">
+                        <li>
+                          <Link href="/directory/auto-services" className="cat-row">
+                            <span>All auto services</span>
+                            <span className="cat-num">{firms.length}</span>
+                          </Link>
+                        </li>
+                        {topics.map(({ c, n }) => (
+                          <li key={c.id}>
+                            <Link href={`/directory/${c.slug}`} className="cat-row">
+                              <span>{c.name}</span>
+                              <span className="cat-num">{n}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
                     </nav>
                   ) : null}
                   <AdSlot code="CARS_SIDEBAR_3" size="300x250" mobileSize="320x100" />
@@ -94,7 +111,12 @@ export default async function CarsPage() {
                   <AdSlot code="CARS_SIDEBAR_4" size="300x600" mobileSize="320x100" />
                 </aside>
               </div>
-              <AdSlot code="CARS_INFEED_1" size="728x90" mobileSize="320x100" className="auto-mid-ad" />
+              <AdSlot
+                code="CARS_INFEED_1"
+                size="728x90"
+                mobileSize="320x100"
+                className="auto-mid-ad"
+              />
             </>
           ) : null}
 
