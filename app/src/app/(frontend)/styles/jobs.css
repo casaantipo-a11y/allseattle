@@ -457,49 +457,15 @@
    Карточки вакансий короче колонки на 104px (было 208, клиент попросил
    «пошире немного»). Ниже 1024px фильтры уходят под список, и всё это не
    нужно. */
-/* display: flex явно — общее `.section-head > div { display: contents }`
-   из components.css растворило бы строку, и в сетку попала бы метка. */
-.jobs-head > .jobs-toolbar {
-  display: flex;
-  grid-column: 1 / -1;
-}
-
 @media (min-width: 1024px) {
   .jobs-head {
     grid-template-columns: 1fr;
+    margin-bottom: var(--space-2);
   }
-  /* Обе надписи на 16px ниже общего правила. padding-left равен
-     letter-spacing: трекинг добавляет пробел после последней буквы, и без
-     него надпись съехала бы от центра влево. */
-  .jobs-head .eyebrow {
-    top: var(--space-6);
-    left: 0;
-    text-align: center;
-    padding-left: 0.14em;
-  }
-  .jobs-head h1 {
-    text-align: center;
-    position: relative;
-    top: var(--space-2);
-  }
-  /* Сортировка и кнопка — одна строка сетки. Поля у них одинаковые, иначе
-     align-self: center поставил бы кнопку по центру строки вместе с полями,
-     а не по центру сортировки. 24px сверху — воздух под «Job Board». */
-  .jobs-head .jobs-toolbar,
-  .jobs-head .btn {
-    grid-column: 1;
-    grid-row: 3;
-    margin-top: var(--space-6);
-    margin-bottom: var(--space-4);
-  }
-  .jobs-head .jobs-toolbar {
-    justify-content: center;
-  }
-  .jobs-head .btn {
-    justify-self: end;
-    align-self: center;
-    top: 0;
-  }
+  /* Шапка «Work in Seattle / Job board» стоит так же, как в News и в
+     справочнике (просьба клиента 02.10.2026): слева, надзаголовок на 4px
+     правее заголовка, колонки сразу под ней. Сортировка переехала из шапки
+     в колонку вакансий — над первой карточкой, по её левому краю. */
   .job-card {
     max-width: calc(100% - 104px);
   }

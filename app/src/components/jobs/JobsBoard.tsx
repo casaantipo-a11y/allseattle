@@ -197,8 +197,7 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
 
   return (
     <>
-      {/* As in the prototype, the sort row is part of the head (styles/jobs.css). */}
-      <div className="section-head section-head--sub jobs-head">
+      <div className="section-head jobs-head">
         <div>
           <span className="eyebrow">Work in Seattle</span>
           <h1>Job board</h1>
@@ -206,17 +205,6 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
         <Link href="/advertise" className="btn">
           Post a job
         </Link>
-        <div className="jobs-toolbar">
-          <label className="jobs-sort">
-            <span>Sort by</span>
-            <select value={s.sort} onChange={(e) => set({ sort: e.target.value })}>
-              <option value="newest">Newest first</option>
-              <option value="salary-desc">Salary: high to low</option>
-              <option value="salary-asc">Salary: low to high</option>
-              <option value="company">Company A–Z</option>
-            </select>
-          </label>
-        </div>
       </div>
 
       <div className="jobs-layout">
@@ -303,6 +291,18 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
         </aside>
 
         <div className="jobs-results">
+          {/* Sort row right above the first card, at its left edge (client, 02.10.2026). */}
+          <div className="jobs-toolbar">
+            <label className="jobs-sort">
+              <span>Sort by</span>
+              <select value={s.sort} onChange={(e) => set({ sort: e.target.value })}>
+                <option value="newest">Newest first</option>
+                <option value="salary-desc">Salary: high to low</option>
+                <option value="salary-asc">Salary: low to high</option>
+                <option value="company">Company A–Z</option>
+              </select>
+            </label>
+          </div>
           <div className="job-list">
             {found.length ? (
               found.map((j) => (
