@@ -43,14 +43,6 @@ export function JobsWidget({ jobs }: { jobs: Job[] }) {
     <div className="widget">
       <div className="widget-head">Job board</div>
       <div className="widget-body">
-        <form action="/jobs" method="get" role="search" className="mb-3 flex gap-2">
-          {/* Inline width: the prototype's unlayered input styles beat Tailwind's
-              min-w-0, and without it the field widened the phone layout. */}
-          <input type="search" name="q" placeholder="Search jobs" aria-label="Search jobs by title or company" className="min-h-11 flex-1" style={{ minWidth: 0, width: '100%', fontSize: 14, padding: '0 12px' }} />
-          <button type="submit" className="btn btn-sm">
-            Find
-          </button>
-        </form>
         {latest.map((j) => (
           <Link key={j.id} className="mini-row" href={`/jobs/${j.slug}`}>
             <span className="mini-row-title">
