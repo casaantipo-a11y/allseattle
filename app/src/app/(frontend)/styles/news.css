@@ -93,24 +93,6 @@
   }
 }
 
-/* Строка Top News — та же .news-list-row, но без рубрики и описания:
-   в виджете шириной 300px на них нет места. Модификатор лежит здесь, а не
-   в общем файле, по образцу .news-card--tile у главной. */
-.news-list-row--mini {
-  grid-template-columns: 56px 1fr;
-  gap: var(--space-3);
-  padding: var(--space-3) 0;
-}
-
-.news-list-row--mini .news-list-thumb {
-  width: 56px;
-}
-
-.news-list-row--mini:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
 /* Архив: «месяц» и «год» стоят рядом, как в макете. Колонка узкая (300px),
    поэтому у этого виджета поля тела 16px вместо 32 — иначе на селект остаётся
    114px и «September» обрезается на середине. */

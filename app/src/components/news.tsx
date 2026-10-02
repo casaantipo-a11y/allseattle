@@ -58,17 +58,27 @@ export function TopNewsWidget({ articles }: { articles: NewsWithRelations[] }) {
     <div className="widget">
       <div className="widget-head">Top news</div>
       <div className="widget-body">
-        {articles.map((a) => {
-          const img = mediaUrl(a.cover, 'thumb')
-          return (
-            <Link key={a.id} className="news-list-row news-list-row--mini" href={hrefOf(a)}>
-              {img ? <img className="news-list-thumb" src={img} alt="" loading="lazy" /> : <span className="news-list-thumb" />}
-              <span className="news-list-body">
-                <span className="news-list-title">{a.title}</span>
-              </span>
-            </Link>
-          )
-        })}
+        <ol className="top-news">
+          {articles.map((a, i) => {
+            const img = mediaUrl(a.cover, 'thumb')
+            return (
+              <li key={a.id}>
+                <Link className="top-news-row" href={hrefOf(a)}>
+                  <span className="top-news-thumb">
+                    {img ? <img src={img} alt="" loading="lazy" /> : null}
+                    <span className="top-news-rank" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                  </span>
+                  <span className="top-news-body">
+                    {a.category?.name ? <span className="top-news-cat">{a.category.name}</span> : null}
+                    <span className="top-news-title">{a.title}</span>
+                  </span>
+                </Link>
+              </li>
+            )
+          })}
+        </ol>
       </div>
     </div>
   )

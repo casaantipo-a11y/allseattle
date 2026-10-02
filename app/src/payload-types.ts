@@ -1005,11 +1005,11 @@ export interface Banner {
   linkUrl: string;
   slots: (number | AdSlot)[];
   /**
-   * Exactly the slot's desktop size (±2px)
+   * The slot's desktop size (±2px), best at 2x — e.g. 1456x180 for 728x90
    */
   imageDesktop: number | Media;
   /**
-   * For slots shown on phones: the slot's mobile size
+   * For slots shown on phones: the slot's mobile size, best at 2x — e.g. 640x200
    */
   imageMobile?: (number | null) | Media;
   startAt: string;
