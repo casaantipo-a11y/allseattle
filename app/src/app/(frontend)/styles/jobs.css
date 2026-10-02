@@ -546,6 +546,8 @@
     color: var(--color-accent);
   }
   .jobs-post-text {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -556,12 +558,28 @@
   }
   .jobs-post-title {
     font-family: var(--font-heading);
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 800;
+    line-height: 1.15;
     color: var(--color-accent);
   }
-  .jobs-post-side:hover .jobs-post-title {
-    text-decoration: underline;
+  /* Стрелка — красным кружком у правого края: занимает пустое место справа
+     и при наведении чуть уезжает вправо. */
+  .jobs-post-go {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: var(--color-white);
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform 0.15s;
+  }
+  .jobs-post-side:hover .jobs-post-go {
+    transform: translateX(3px);
   }
   /* Левая колонка начинается на уровне первой карточки, а не строки
      сортировки: «Post a job» стоит на одной линии с началом вакансий

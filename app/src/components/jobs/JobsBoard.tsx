@@ -225,8 +225,9 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
             </span>
             <span className="jobs-post-text">
               <span className="jobs-post-kicker">Hiring in Seattle?</span>
-              <span className="jobs-post-title">Post a job &rarr;</span>
+              <span className="jobs-post-title">Post a job</span>
             </span>
+            <span className="jobs-post-go" aria-hidden="true">&rarr;</span>
           </Link>
           <button className={`jobs-filters-toggle${open ? ' is-open' : ''}`} type="button" aria-expanded={open} aria-controls="jobs-filters-body" onClick={() => setOpen((v) => !v)}>
             Filters
