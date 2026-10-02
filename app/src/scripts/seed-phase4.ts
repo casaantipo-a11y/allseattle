@@ -75,9 +75,9 @@ export const SLOTS: Slot[] = [
     const page = p.toLowerCase() as AdSlot['page']
     const label = { DIRECTORY: 'Business directory', SHOPPING: 'Shopping', LEISURE: 'Leisure' }[p]
     return [
+      top(`${p}_TOP`, page, label, 120),
       side(`${p}_SIDEBAR_1`, page, label, 1, '300x250', 100),
       side(`${p}_SIDEBAR_2`, page, label, 2, '300x600', 130),
-      { ...feed(`${p}_INFEED_1`, page, label, 1, 120), name: `${label} — bottom banner` },
     ]
   }),
   top('BUSINESS_TOP', 'business', 'Business pages', 120),

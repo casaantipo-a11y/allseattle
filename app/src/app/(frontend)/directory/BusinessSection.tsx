@@ -81,6 +81,7 @@ export async function BusinessSection({
     <main id="content" data-page="directory">
       <section className="section">
         <div className="container">
+          <AdSlot code={`${meta.codePrefix}_TOP`} size="728x90" mobileSize="320x100" className="ad-slot-top" />
           <div className="section-head">
             <div>
               <span className="eyebrow">{meta.eyebrow}</span>
@@ -160,7 +161,6 @@ export async function BusinessSection({
             </aside>
           </div>
         </div>
-        <AdSlot code={`${meta.codePrefix}_INFEED_1`} size="728x90" mobileSize="320x100" className="dir-bottom-ad" />
       </section>
     </main>
   )
