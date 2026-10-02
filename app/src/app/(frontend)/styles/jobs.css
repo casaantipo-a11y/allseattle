@@ -460,7 +460,11 @@
 @media (min-width: 1024px) {
   .jobs-head {
     grid-template-columns: 1fr;
-    margin-bottom: var(--space-2);
+    /* Заголовок стоит над «Post a job» и первой карточкой с тем же просветом,
+       что в News (8px). Колонки подтянуты под шапку на высоту строки
+       сортировки (44px + 16px): сама сортировка встаёт справа от «Job board»,
+       в средней колонке, где заголовка уже нет. */
+    margin-bottom: calc(var(--space-2) - 44px - var(--space-4));
   }
   /* Шапка «Work in Seattle / Job board» стоит так же, как в News и в
      справочнике (просьба клиента 02.10.2026): слева, надзаголовок на 4px
