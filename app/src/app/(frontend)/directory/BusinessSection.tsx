@@ -8,8 +8,7 @@ import { Svg, UI_ICONS } from '@/components/icons'
 import { LiveBizSearch } from '@/components/LiveBizSearch'
 import type { Section } from '@/collections/BusinessCategories'
 import { compareBusinesses, withDescendants } from '@/lib/business'
-import { getActivePromotions, getAllBusinesses, getBusinessCategories } from '@/lib/queries'
-import type { Business } from '@/payload-types'
+import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
 
 // One storefront, three sections (spec §5): the Business Directory, Shopping
 // and Leisure are the same list of businesses filtered to the categories of
@@ -100,14 +99,6 @@ export async function BusinessSection({
   const rows = found.slice((page - 1) * PER_PAGE, page * PER_PAGE)
   const base = active ? `${meta.base}/${active.slug}` : meta.base
 
-  const deals =
-    section === 'shopping'
-      ? (await getActivePromotions()).filter((p) => {
-          const biz = p.business as Business | number
-          return typeof biz === 'object' && inSection.some((b) => b.id === biz.id)
-        })
-      : []
-
   return (
     <main id="content" data-page="directory">
       <section className="section">
@@ -157,43 +148,6 @@ export async function BusinessSection({
                 }))}
               >
                 {active?.description ? <p className="muted">{active.description}</p> : null}
-
-                {deals.length ? (
-                  <div className="deals">
-                    <div className="deals-head">
-                      <span className="eyebrow">Shopping deals</span>
-                      <h2>Deals this week</h2>
-                    </div>
-                    <ul className="deals-grid">
-                      {deals.slice(0, 6).map((d) => {
-                        const biz = d.business as Business
-                        // "25% off: Seasonal bouquet" → badge "25% off", title "Seasonal bouquet".
-                        const cut = d.title.indexOf(': ')
-                        const badge = cut > 0 && cut <= 20 ? d.title.slice(0, cut) : null
-                        const title = badge ? d.title.slice(cut + 2) : d.title
-                        return (
-                          <li key={d.id}>
-                            <Link href={`/biz/${biz.slug}`} className="deal-card">
-                              <span className="deal-top">
-                                {badge ? <span className="deal-badge">{badge}</span> : null}
-                                <span className="deal-until">
-                                  Until{' '}
-                                  {new Date(d.validUntil).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    timeZone: 'UTC',
-                                  })}
-                                </span>
-                              </span>
-                              <span className="deal-title">{title}</span>
-                              <span className="deal-shop">{biz.name} &rarr;</span>
-                            </Link>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </div>
-                ) : null}
 
                 {rows.length ? (
                   <div className="biz-list">
