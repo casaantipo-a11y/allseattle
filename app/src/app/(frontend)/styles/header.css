@@ -113,6 +113,43 @@
   border-bottom-color: var(--color-accent);
 }
 
+/* Подразделы пункта меню — «Cars  Services / For sale» (просьба клиента
+   02.10.2026): мельче и серее основного пункта, через «/», без красной
+   черты снизу; выбранный — красным. */
+.nav-links li:has(.nav-sub) {
+  display: flex;
+  align-items: center;
+}
+
+.nav-sub {
+  display: flex;
+  align-items: center;
+  margin-left: calc(-1 * var(--space-1));
+}
+
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links .nav-sub a {
+  min-height: 44px;
+  padding: 0 var(--space-1);
+  border-bottom: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-slate);
+}
+
+.nav-links .nav-sub a.active {
+  color: var(--color-accent);
+}
+
+.nav-sub-sep {
+  color: var(--color-slate-soft);
+  font-weight: 400;
+}
+
 /* ---------- Правый блок утилит ---------- */
 .header-utils {
   grid-area: utils;

@@ -144,7 +144,16 @@ async function run() {
     { label: 'Home', url: '/', row: 'primary', icon: 'home' },
     { label: 'News', url: '/news', row: 'primary', icon: 'news' },
     { label: 'Business Directory', url: '/directory', row: 'primary', icon: 'directory' },
-    { label: 'Cars', url: '/cars', row: 'primary', icon: 'cars' },
+    {
+      label: 'Cars',
+      url: '/cars',
+      row: 'primary',
+      icon: 'cars',
+      subLinks: [
+        { label: 'Services', url: '/cars/services' },
+        { label: 'For sale', url: '/cars' },
+      ],
+    },
     { label: 'Shopping', url: '/shopping', row: 'secondary', icon: 'none' },
     { label: 'Jobs', url: '/jobs', row: 'secondary', icon: 'none' },
     { label: 'Leisure', url: '/leisure', row: 'secondary', icon: 'none' },
@@ -155,7 +164,7 @@ async function run() {
   await payload.updateGlobal({
     slug: 'header',
     data: {
-      menu: menu.map((m) => ({ ...m })),
+      menu: menu.map((m) => ({ ...m, subLinks: 'subLinks' in m ? m.subLinks.map((l) => ({ ...l })) : [] })),
       announcements: [
         {
           label: 'Contest',

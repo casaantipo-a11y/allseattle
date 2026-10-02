@@ -16,6 +16,7 @@ export async function SiteHeader() {
     url: m.url,
     row: m.row,
     icon: m.icon,
+    subLinks: (m.subLinks ?? []).map((l) => ({ label: l.label, url: l.url })),
   }))
 
   return (

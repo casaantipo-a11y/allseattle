@@ -27,7 +27,7 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
       ...categories
         .filter((c) => c.slug)
         .map((c) => ({ loc: absoluteUrl(`/news/${c.slug}`), changefreq: 'daily', priority: 0.7 })),
-      ...['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business', '/cars', '/jobs', '/events', '/weather', '/share-news'].map((path) => ({
+      ...['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business', '/cars', '/cars/services', '/jobs', '/events', '/weather', '/share-news'].map((path) => ({
         loc: absoluteUrl(path),
         changefreq: 'daily',
         priority: 0.8,

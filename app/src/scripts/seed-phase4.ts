@@ -83,7 +83,7 @@ export const SLOTS: Slot[] = [
   top('BUSINESS_TOP', 'business', 'Business pages', 120),
   side('BUSINESS_SIDEBAR_1', 'business', 'Business pages', 1, '300x250', 90),
   top('CARS_TOP', 'cars', 'Cars', 150),
-  feed('CARS_INFEED_1', 'cars', 'Cars', 1, 110),
+  { ...top('CARS_SERVICES_TOP', 'cars', 'Cars', 110), name: 'Cars — auto services, top banner' },
   side('CARS_SIDEBAR_1', 'cars', 'Cars', 1, '300x250', 90),
   side('CARS_SIDEBAR_2', 'cars', 'Cars', 2, '300x600', 120),
   side('CARS_SIDEBAR_3', 'cars', 'Cars', 3, '300x250', 90),

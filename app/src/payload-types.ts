@@ -2066,6 +2066,16 @@ export interface Header {
         url: string;
         row: 'primary' | 'secondary';
         icon?: ('none' | 'home' | 'news' | 'directory' | 'advertising' | 'cars') | null;
+        /**
+         * Optional sub-sections shown right after this item, separated by "/" (e.g. Cars: Services / For sale). Top row only.
+         */
+        subLinks?:
+          | {
+              label: string;
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -2157,6 +2167,13 @@ export interface HeaderSelect<T extends boolean = true> {
         url?: T;
         row?: T;
         icon?: T;
+        subLinks?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
         id?: T;
       };
   announcements?:

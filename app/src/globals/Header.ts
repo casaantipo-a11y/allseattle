@@ -53,6 +53,23 @@ export const Header: GlobalConfig = {
             },
           ],
         },
+        {
+          name: 'subLinks',
+          type: 'array',
+          admin: {
+            description:
+              'Optional sub-sections shown right after this item, separated by "/" (e.g. Cars: Services / For sale). Top row only.',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                { name: 'label', type: 'text', required: true },
+                { name: 'url', type: 'text', required: true },
+              ],
+            },
+          ],
+        },
       ],
     },
     {

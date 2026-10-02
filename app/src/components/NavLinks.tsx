@@ -5,13 +5,28 @@ import { usePathname } from 'next/navigation'
 
 import { NAV_ICONS, Svg } from './icons'
 
-export type NavItem = { label: string; url: string; row: 'primary' | 'secondary'; icon?: string | null }
+export type NavItem = {
+  label: string
+  url: string
+  row: 'primary' | 'secondary'
+  icon?: string | null
+  /** Sub-sections shown after the item as "A / B" (e.g. Cars: Services / For sale). */
+  subLinks?: { label: string; url: string }[]
+}
 
 // Client component only for the active-link highlight; the list itself comes
 // from the Header global and is rendered on the server.
 function isActive(pathname: string, url: string) {
   if (url === '/') return pathname === '/'
   return pathname === url || pathname.startsWith(`${url}/`)
+}
+
+/** A sub-link is active on its own URL and below it; the one that is also
+ * the parent's URL (Cars → For sale = /cars) only when no sibling matches
+ * more specifically — /cars/services is "Services", not "For sale". */
+function isSubActive(pathname: string, url: string, siblings: { url: string }[]) {
+  if (!isActive(pathname, url)) return false
+  return !siblings.some((s) => s.url !== url && s.url.length > url.length && isActive(pathname, s.url))
 }
 
 export function NavLinks({ items }: { items: NavItem[] }) {
@@ -31,6 +46,29 @@ export function NavLinks({ items }: { items: NavItem[] }) {
                 ) : null}
                 {item.label}
               </Link>
+              {item.subLinks?.length ? (
+                <span className="nav-sub">
+                  {item.subLinks.map((sub, i) => {
+                    const subActive = isSubActive(pathname, sub.url, item.subLinks!)
+                    return (
+                      <span key={sub.url} className="nav-sub-item">
+                        {i > 0 ? (
+                          <span className="nav-sub-sep" aria-hidden="true">
+                            /
+                          </span>
+                        ) : null}
+                        <Link
+                          href={sub.url}
+                          className={subActive ? 'active' : undefined}
+                          aria-current={subActive ? 'page' : undefined}
+                        >
+                          {sub.label}
+                        </Link>
+                      </span>
+                    )
+                  })}
+                </span>
+              ) : null}
             </li>
           )
         })}
