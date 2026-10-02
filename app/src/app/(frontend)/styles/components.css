@@ -250,10 +250,14 @@
   .section-head--btn-down {
     --head-btn-dy: var(--space-2);
   }
+  /* Главная («Latest news»), News, блок предприятий в Cars и Weather:
+     кнопка на 12px ниже — просьба клиента 02.10.2026 (8px, потом «ещё
+     4 пикселя»). */
+  .section-head--btn-lower {
+    --head-btn-dy: calc(var(--space-2) + 4px);
+  }
   /* Weather и разделы после неё (Real Estate, City Map, Q&A): кнопка на
-     12px левее — просьба клиента 28.09.2026. --btn-down (на 8px ниже) с
-     02.10.2026 носят и Weather, главная («Latest news»), News и блок
-     предприятий в Cars — просьба клиента. */
+     12px левее — просьба клиента 28.09.2026. */
   .section-head--nudge {
     --head-btn-dx: -12px;
   }

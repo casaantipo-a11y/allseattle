@@ -53,7 +53,7 @@ export default async function CarsPage() {
 
           {firms.length ? (
             <>
-              <div className="section-head section-head--btn-down auto-firms-head">
+              <div className="section-head section-head--btn-lower auto-firms-head">
                 <div>
                   <span className="eyebrow">Auto services</span>
                   <h2>Directory of enterprises</h2>

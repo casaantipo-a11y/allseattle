@@ -52,7 +52,7 @@ export default async function HomePage() {
           </aside>
 
           <div className="home-main">
-            <div className="section-head section-head--btn-down">
+            <div className="section-head section-head--btn-lower">
               <div>
                 <span className="eyebrow">Today in Seattle</span>
                 <h1>Latest news</h1>
