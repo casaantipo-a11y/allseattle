@@ -104,6 +104,13 @@ const Pin = () => (
   </svg>
 )
 
+const SORTS = [
+  ['newest', 'Newest'],
+  ['salary-desc', 'Highest pay'],
+  ['salary-asc', 'Lowest pay'],
+  ['company', 'Company A–Z'],
+] as const
+
 export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initialQuery?: string }) {
   const [s, setS] = useState<State>({ ...EMPTY, query: initialQuery })
   const [open, setOpen] = useState(false)
@@ -282,7 +289,7 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
                 {checkGroup('Language a plus', 'languages', uniq(jobs.flatMap((j) => j.languages)).map((l) => [l, l]))}
                 {checkGroup('Posted', 'posted', POSTED)}
 
-                <button type="button" className="btn btn-outline btn-sm btn-block" onClick={() => setS({ ...EMPTY, sort: s.sort })}>
+                <button type="button" className="btn btn-outline btn-sm btn-block jobs-reset" onClick={() => setS({ ...EMPTY, sort: s.sort })}>
                   Reset filters
                 </button>
               </div>
@@ -293,15 +300,20 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
         <div className="jobs-results">
           {/* Sort row right above the first card, at its left edge (client, 02.10.2026). */}
           <div className="jobs-toolbar">
-            <label className="jobs-sort">
-              <span>Sort by</span>
-              <select value={s.sort} onChange={(e) => set({ sort: e.target.value })}>
-                <option value="newest">Newest first</option>
-                <option value="salary-desc">Salary: high to low</option>
-                <option value="salary-asc">Salary: low to high</option>
-                <option value="company">Company A–Z</option>
-              </select>
-            </label>
+            <div className="jobs-sort" role="group" aria-label="Sort jobs">
+              <span className="jobs-sort-label">Sort</span>
+              {SORTS.map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`jobs-sort-chip${s.sort === value ? ' is-active' : ''}`}
+                  aria-pressed={s.sort === value}
+                  onClick={() => set({ sort: value })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="job-list">
             {found.length ? (
