@@ -15,7 +15,7 @@ export async function Announcements() {
       {/* Gap via padding on a wrapper: the prototype's base.css zeroes list
           margins unlayered, which beats a Tailwind margin utility on the <ul>. */}
       <div className="pt-5">
-        <ul className="flex flex-wrap justify-center gap-x-10 gap-y-2" aria-label="Announcements">
+        <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2" aria-label="Announcements">
           {items.map((a) => (
             <li key={`${a.label}-${a.url}`}>
               <Link
