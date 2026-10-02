@@ -27,9 +27,7 @@ export async function Announcements() {
                 }`}
               >
                 <span
-                  className={`font-display rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide ${
-                    a.highlight ? 'bg-brand-red text-white' : 'bg-brand-navy text-white'
-                  }`}
+                  className="font-display rounded bg-brand-navy px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white"
                 >
                   {a.label}
                 </span>

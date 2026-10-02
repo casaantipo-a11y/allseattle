@@ -42,18 +42,21 @@ export function JobsWidget({ jobs }: { jobs: Job[] }) {
   return (
     <div className="widget">
       <div className="widget-head">Job board</div>
-      <div className="widget-body">
-        {latest.map((j) => (
-          <Link key={j.id} className="mini-row" href={`/jobs/${j.slug}`}>
-            <span className="mini-row-title">
-              {j.title}
-              <span className="block font-normal text-brand-slate">{j.company}</span>
-            </span>
-            {/* Short on purpose: the prototype's note doesn't wrap. */}
-            <span className="mini-row-note">{j.salary || j.type}</span>
-          </Link>
-        ))}
-        <Link href="/jobs" className="mt-2 inline-block text-sm font-semibold text-brand-red">
+      <div className="widget-body job-mini">
+        <ul className="job-mini-list">
+          {latest.map((j) => (
+            <li key={j.id}>
+              <Link className="job-mini-row" href={`/jobs/${j.slug}`}>
+                <span className="job-mini-main">
+                  <span className="job-mini-title">{j.title}</span>
+                  <span className="job-mini-company">{j.company}</span>
+                </span>
+                {j.salary || j.type ? <span className="job-mini-pay">{j.salary || j.type}</span> : null}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <Link href="/jobs" className="job-mini-all">
           All jobs &rarr;
         </Link>
       </div>
