@@ -159,32 +159,34 @@ export async function BusinessSection({
                 {active?.description ? <p className="muted">{active.description}</p> : null}
 
                 {deals.length ? (
-                  <div className="mb-6">
-                    <h2 className="mb-3 text-xl">Deals this week</h2>
-                    <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+                  <div className="deals">
+                    <div className="deals-head">
+                      <span className="eyebrow">Shopping deals</span>
+                      <h2>Deals this week</h2>
+                    </div>
+                    <ul className="deals-grid">
                       {deals.slice(0, 6).map((d) => {
                         const biz = d.business as Business
+                        // "25% off: Seasonal bouquet" → badge "25% off", title "Seasonal bouquet".
+                        const cut = d.title.indexOf(': ')
+                        const badge = cut > 0 && cut <= 20 ? d.title.slice(0, cut) : null
+                        const title = badge ? d.title.slice(cut + 2) : d.title
                         return (
-                          <li
-                            key={d.id}
-                            className="rounded-lg border border-brand-line bg-white p-4"
-                          >
-                            <p className="m-0 text-sm font-semibold text-brand-red">
-                              Until{' '}
-                              {new Date(d.validUntil).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                timeZone: 'UTC',
-                              })}
-                            </p>
-                            <p className="mb-1 mt-1 font-display text-base font-bold text-brand-navy">
-                              {d.title}
-                            </p>
-                            <Link
-                              href={`/biz/${biz.slug}`}
-                              className="text-sm text-brand-slate underline hover:text-brand-red"
-                            >
-                              {biz.name}
+                          <li key={d.id}>
+                            <Link href={`/biz/${biz.slug}`} className="deal-card">
+                              <span className="deal-top">
+                                {badge ? <span className="deal-badge">{badge}</span> : null}
+                                <span className="deal-until">
+                                  Until{' '}
+                                  {new Date(d.validUntil).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    timeZone: 'UTC',
+                                  })}
+                                </span>
+                              </span>
+                              <span className="deal-title">{title}</span>
+                              <span className="deal-shop">{biz.name} &rarr;</span>
                             </Link>
                           </li>
                         )
