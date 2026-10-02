@@ -216,8 +216,17 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
 
       <div className="jobs-layout">
         <aside className="jobs-filters">
-          <Link href="/advertise" className="btn btn-block jobs-post-side">
-            Post a job
+          <Link href="/advertise" className="jobs-post-side">
+            <span className="jobs-post-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="7" width="18" height="13" rx="2" />
+                <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18" />
+              </svg>
+            </span>
+            <span className="jobs-post-text">
+              <span className="jobs-post-kicker">Hiring in Seattle?</span>
+              <span className="jobs-post-title">Post a job &rarr;</span>
+            </span>
           </Link>
           <button className={`jobs-filters-toggle${open ? ' is-open' : ''}`} type="button" aria-expanded={open} aria-controls="jobs-filters-body" onClick={() => setOpen((v) => !v)}>
             Filters
