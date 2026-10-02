@@ -21,7 +21,7 @@ export default async function WeatherPage() {
       <section className="section">
         <div className="container">
           <AdSlot code="WEATHER_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
-          <div className="section-head section-head--sub section-head--nudge section-head--btn-lower">
+          <div className="section-head section-head--sub section-head--nudge section-head--btn-down">
             <div>
               <span className="eyebrow">Seattle forecast</span>
               <h1>Weather</h1>
