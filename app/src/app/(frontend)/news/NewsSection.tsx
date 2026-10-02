@@ -27,7 +27,7 @@ export async function NewsSection({ page, categorySlug }: { page: number; catego
         <div className="container">
           <AdSlot code="NEWS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
 
-          <div className="section-head section-head--btn-lower">
+          <div className="section-head section-head--btn-down">
             <div>
               <span className="eyebrow">Seattle news</span>
               <h1>{category ? category.name : 'Latest stories'}</h1>

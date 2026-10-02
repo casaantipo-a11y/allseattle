@@ -250,9 +250,10 @@
   .section-head--btn-down {
     --head-btn-dy: var(--space-2);
   }
-  /* Главная («Latest news», «Coming up in Seattle», «Fresh cars»), News,
-     блок предприятий в Cars и Weather: кнопка на 12px ниже — просьба
-     клиента 02.10.2026 (8px, потом «ещё 4 пикселя»). */
+  /* Главная («Latest news», «Coming up in Seattle», «Fresh cars»), блок
+     предприятий в Cars и Weather: кнопка на 12px ниже — просьба клиента
+     02.10.2026 (8px, потом «ещё 4 пикселя»). News — на 8px (--btn-down):
+     там клиент попросил вернуть 4px обратно. */
   .section-head--btn-lower {
     --head-btn-dy: calc(var(--space-2) + 4px);
   }
