@@ -41,7 +41,7 @@ export default async function EventsPage({ searchParams }: Props) {
         <div className="container">
           <AdSlot code="EVENTS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
 
-          <div className="section-head section-head--sub section-head--btn-low section-head--btn-down">
+          <div className="section-head section-head--sub section-head--btn-low section-head--btn-raise">
             <div>
               <span className="eyebrow">What is on</span>
               <h1>Seattle events</h1>
