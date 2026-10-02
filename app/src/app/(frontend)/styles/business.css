@@ -109,3 +109,28 @@
   text-align: center;
   text-decoration: none;
 }
+
+/* The whole business card opens the business page (client, 02.10.2026):
+   the name link is stretched over the card with ::after; the phone and
+   "Upgrade your listing" links sit above it and keep their own targets. */
+.biz-row {
+  position: relative;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.biz-row-name::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.biz-row:hover {
+  box-shadow: 0 6px 18px rgba(13, 27, 42, 0.1);
+}
+.biz-row:hover .biz-row-name {
+  color: var(--color-accent);
+}
+.biz-row-upsell,
+.biz-row-contact a {
+  position: relative;
+  z-index: 1;
+}

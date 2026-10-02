@@ -5,6 +5,7 @@ import { AdSlot } from '@/components/AdSlot'
 import { BizRow, CategoryTree, buildTree } from '@/components/business'
 import { Pagination } from '@/components/news'
 import { Svg, UI_ICONS } from '@/components/icons'
+import { LiveBizSearch } from '@/components/LiveBizSearch'
 import type { Section } from '@/collections/BusinessCategories'
 import { compareBusinesses, withDescendants } from '@/lib/business'
 import { getActivePromotions, getAllBusinesses, getBusinessCategories } from '@/lib/queries'
@@ -16,10 +17,28 @@ import type { Business } from '@/payload-types'
 // (styles/directory.css): categories on the left, search and rows in the
 // middle, ads on the right.
 
-export const SECTION_META: Record<Section, { base: string; eyebrow: string; title: string; codePrefix: string }> = {
-  directory: { base: '/directory', eyebrow: 'Business Directory', title: 'Find a Seattle business', codePrefix: 'DIRECTORY' },
-  shopping: { base: '/shopping', eyebrow: 'Shopping', title: 'Shop local in Seattle', codePrefix: 'SHOPPING' },
-  leisure: { base: '/leisure', eyebrow: 'Things to do', title: 'Leisure in Seattle', codePrefix: 'LEISURE' },
+export const SECTION_META: Record<
+  Section,
+  { base: string; eyebrow: string; title: string; codePrefix: string }
+> = {
+  directory: {
+    base: '/directory',
+    eyebrow: 'Business Directory',
+    title: 'Find a Seattle business',
+    codePrefix: 'DIRECTORY',
+  },
+  shopping: {
+    base: '/shopping',
+    eyebrow: 'Shopping',
+    title: 'Shop local in Seattle',
+    codePrefix: 'SHOPPING',
+  },
+  leisure: {
+    base: '/leisure',
+    eyebrow: 'Things to do',
+    title: 'Leisure in Seattle',
+    codePrefix: 'LEISURE',
+  },
 }
 
 const PER_PAGE = 20
@@ -36,14 +55,19 @@ export async function BusinessSection({
   page?: number
 }) {
   const meta = SECTION_META[section]
-  const [allCategories, allBusinesses] = await Promise.all([getBusinessCategories(), getAllBusinesses()])
+  const [allCategories, allBusinesses] = await Promise.all([
+    getBusinessCategories(),
+    getAllBusinesses(),
+  ])
   const categories = allCategories.filter((c) => c.section === section)
   const sectionIds = new Set(categories.map((c) => c.id))
   const active = categorySlug ? categories.find((c) => c.slug === categorySlug) : undefined
   if (categorySlug && !active) notFound()
 
   const catIds = (b: { categories: unknown[] }) =>
-    (b.categories ?? []).map((c) => (typeof c === 'object' && c ? (c as { id: number }).id : (c as number)))
+    (b.categories ?? []).map((c) =>
+      typeof c === 'object' && c ? (c as { id: number }).id : (c as number),
+    )
   const inSection = allBusinesses.filter((b) => catIds(b).some((id) => sectionIds.has(id)))
 
   // Counts include businesses of child categories.
@@ -55,14 +79,21 @@ export async function BusinessSection({
 
   const scope = active ? withDescendants(categories, active.id) : sectionIds
   const needle = q.trim().toLowerCase()
-  const found = inSection
+  // What a search matches: name, summary, address and category names.
+  const searchText = (b: (typeof inSection)[number]) =>
+    [
+      b.name,
+      b.summary,
+      b.address,
+      ...(b.categories ?? []).map((c) => (typeof c === 'object' ? c.name : '')),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+  const scoped = inSection
     .filter((b) => catIds(b).some((id) => scope.has(id)))
-    .filter((b) => {
-      if (!needle) return true
-      const names = (b.categories ?? []).map((c) => (typeof c === 'object' ? c.name : '')).join(' ')
-      return [b.name, b.summary, b.address, names].some((f) => f?.toLowerCase().includes(needle))
-    })
     .sort((a, b) => compareBusinesses(a, b))
+  const found = needle ? scoped.filter((b) => searchText(b).includes(needle)) : scoped
 
   const totalPages = Math.max(1, Math.ceil(found.length / PER_PAGE))
   if (page > totalPages) notFound()
@@ -81,7 +112,12 @@ export async function BusinessSection({
     <main id="content" data-page="directory">
       <section className="section">
         <div className="container">
-          <AdSlot code={`${meta.codePrefix}_TOP`} size="728x90" mobileSize="320x100" className="ad-slot-top" />
+          <AdSlot
+            code={`${meta.codePrefix}_TOP`}
+            size="728x90"
+            mobileSize="320x100"
+            className="ad-slot-top"
+          />
           <div className="section-head">
             <div>
               <span className="eyebrow">{meta.eyebrow}</span>
@@ -91,7 +127,12 @@ export async function BusinessSection({
 
           <div className="dir-layout">
             <aside className="dir-rail dir-rail--left">
-              <CategoryTree tree={buildTree(categories, counts)} base={meta.base} activeSlug={active?.slug ?? undefined} total={inSection.length} />
+              <CategoryTree
+                tree={buildTree(categories, counts)}
+                base={meta.base}
+                activeSlug={active?.slug ?? undefined}
+                total={inSection.length}
+              />
               <div className="widget dir-cta">
                 <div className="widget-head">Add your business</div>
                 <div className="widget-body">
@@ -104,55 +145,70 @@ export async function BusinessSection({
             </aside>
 
             <div className="dir-main">
-              <form className="dir-search" role="search" action={base} method="get">
-                <span className="dir-search-icon">
-                  <Svg html={UI_ICONS.search} />
-                </span>
-                <input
-                  type="search"
-                  name="q"
-                  defaultValue={q}
-                  placeholder="I am looking for..."
-                  aria-label={`Search ${meta.eyebrow.toLowerCase()}`}
-                  autoComplete="off"
+              <LiveBizSearch
+                action={base}
+                initialQuery={q}
+                label={`Search ${meta.eyebrow.toLowerCase()}`}
+                icon={<Svg html={UI_ICONS.search} />}
+                items={scoped.map((b) => ({
+                  id: b.id,
+                  text: searchText(b),
+                  node: <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} />,
+                }))}
+              >
+                {active?.description ? <p className="muted">{active.description}</p> : null}
+
+                {deals.length ? (
+                  <div className="mb-6">
+                    <h2 className="mb-3 text-xl">Deals this week</h2>
+                    <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+                      {deals.slice(0, 6).map((d) => {
+                        const biz = d.business as Business
+                        return (
+                          <li
+                            key={d.id}
+                            className="rounded-lg border border-brand-line bg-white p-4"
+                          >
+                            <p className="m-0 text-sm font-semibold text-brand-red">
+                              Until{' '}
+                              {new Date(d.validUntil).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                timeZone: 'UTC',
+                              })}
+                            </p>
+                            <p className="mb-1 mt-1 font-display text-base font-bold text-brand-navy">
+                              {d.title}
+                            </p>
+                            <Link
+                              href={`/biz/${biz.slug}`}
+                              className="text-sm text-brand-slate underline hover:text-brand-red"
+                            >
+                              {biz.name}
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                ) : null}
+
+                {rows.length ? (
+                  <div className="biz-list">
+                    {rows.map((b) => (
+                      <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="muted">No businesses match that search yet.</p>
+                )}
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  base={base}
+                  params={needle ? { q } : {}}
                 />
-              </form>
-
-              {active?.description ? <p className="muted">{active.description}</p> : null}
-
-              {deals.length ? (
-                <div className="mb-6">
-                  <h2 className="mb-3 text-xl">Deals this week</h2>
-                  <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
-                    {deals.slice(0, 6).map((d) => {
-                      const biz = d.business as Business
-                      return (
-                        <li key={d.id} className="rounded-lg border border-brand-line bg-white p-4">
-                          <p className="m-0 text-sm font-semibold text-brand-red">
-                            Until{' '}
-                            {new Date(d.validUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
-                          </p>
-                          <p className="mb-1 mt-1 font-display text-base font-bold text-brand-navy">{d.title}</p>
-                          <Link href={`/biz/${biz.slug}`} className="text-sm text-brand-slate underline hover:text-brand-red">
-                            {biz.name}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-
-              {rows.length ? (
-                <div className="biz-list">
-                  {rows.map((b) => (
-                    <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} />
-                  ))}
-                </div>
-              ) : (
-                <p className="muted">No businesses match that search yet.</p>
-              )}
-              <Pagination page={page} totalPages={totalPages} base={base} params={needle ? { q } : {}} />
+              </LiveBizSearch>
             </div>
 
             <aside className="dir-rail dir-rail--right">
