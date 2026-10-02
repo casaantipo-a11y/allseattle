@@ -69,7 +69,7 @@ export function UpcomingEvents({ events }: { events: Event[] }) {
   return (
     <section className="section">
       <div className="container">
-        <div className="section-head">
+        <div className="section-head section-head--btn-lower">
           <div>
             <span className="eyebrow">What is on</span>
             <h2>Coming up in Seattle</h2>
@@ -94,7 +94,7 @@ export function FreshCars({ cars }: { cars: CarListing[] }) {
   return (
     <section className="section">
       <div className="container">
-        <div className="section-head">
+        <div className="section-head section-head--btn-lower">
           <div>
             <span className="eyebrow">AllSeattle Auto</span>
             <h2>Fresh cars</h2>
