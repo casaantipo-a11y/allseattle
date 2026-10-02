@@ -251,9 +251,9 @@
     --head-btn-dy: var(--space-2);
   }
   /* Weather и разделы после неё (Real Estate, City Map, Q&A): кнопка на
-     12px левее — просьба клиента 28.09.2026. На Weather и City Map клиент
-     потом вернул кнопку на прежнюю высоту — там только этот класс, без
-     --btn-down. */
+     12px левее — просьба клиента 28.09.2026. --btn-down (на 8px ниже) с
+     02.10.2026 носят и Weather, главная («Latest news»), News и блок
+     предприятий в Cars — просьба клиента. */
   .section-head--nudge {
     --head-btn-dx: -12px;
   }
