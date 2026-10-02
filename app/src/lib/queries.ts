@@ -61,6 +61,23 @@ export const getNewsCategories = unstable_cache(
   { tags: ['news-categories'], revalidate: HOUR },
 )
 
+/** Published articles per category id, plus the total — for the Categories widget. */
+export const getNewsCategoryCounts = unstable_cache(
+  async (): Promise<{ total: number; byCategory: Record<number, number> }> => {
+    const { docs } = await (
+      await payload()
+    ).find({ collection: 'news', where: published, limit: 5000, depth: 0, pagination: false, select: { category: true } })
+    const byCategory: Record<number, number> = {}
+    for (const d of docs) {
+      const id = typeof d.category === 'object' && d.category ? d.category.id : d.category
+      if (id) byCategory[id] = (byCategory[id] ?? 0) + 1
+    }
+    return { total: docs.length, byCategory }
+  },
+  ['news-category-counts'],
+  { tags: ['news', 'news-categories'], revalidate: HOUR },
+)
+
 export const getNewsPage = unstable_cache(
   async ({ page = 1, limit = 20, categoryId }: { page?: number; limit?: number; categoryId?: number }) => {
     const where: Where = categoryId ? { and: [published, { category: { equals: categoryId } }] } : published

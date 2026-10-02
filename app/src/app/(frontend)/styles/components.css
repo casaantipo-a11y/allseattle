@@ -1233,6 +1233,60 @@ body.modal-open {
   color: var(--color-accent);
 }
 
+/* ---------- Рубрики новостей (виджет Categories) ----------
+   Строки во всю ширину виджета, у каждой — число статей. Текущая рубрика
+   отмечена красной полосой слева и лёгкой подложкой; при наведении строка
+   подсвечивается. */
+.news-cats {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2) 0;
+}
+
+.news-cat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0 var(--space-6) 0 calc(var(--space-6) - 3px);
+  border-left: 3px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.news-cat:hover {
+  background: var(--color-bg-soft);
+  color: var(--color-accent);
+}
+
+.news-cat.is-active {
+  border-left-color: var(--color-accent);
+  background: rgba(229, 57, 53, 0.06);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.news-cat-num {
+  min-width: 28px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-soft);
+  color: var(--color-slate);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.news-cat:hover .news-cat-num,
+.news-cat.is-active .news-cat-num {
+  background: var(--color-white);
+  color: var(--color-accent);
+}
+
 /* ---------- Job board (виджет на главной) ----------
    Свои поля вместо общих 32px у .widget-body: список начинается сразу под
    шапкой виджета и кончается сразу под «All jobs» (просьба клиента).

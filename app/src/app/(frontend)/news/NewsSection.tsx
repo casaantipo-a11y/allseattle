@@ -3,13 +3,13 @@ import { notFound } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
 import { CategoriesWidget, NewsListRow, Pagination, TopNewsWidget } from '@/components/news'
-import { getNewsCategories, getNewsPage, getTopNews } from '@/lib/queries'
+import { getNewsCategories, getNewsCategoryCounts, getNewsPage, getTopNews } from '@/lib/queries'
 
 // The news feed from the prototype's news.html: banner, head, three columns —
 // ads and categories on the left, the feed, ads and Top news on the right.
 // Shared by /news and /news/[category].
 export async function NewsSection({ page, categorySlug }: { page: number; categorySlug?: string }) {
-  const categories = await getNewsCategories()
+  const [categories, counts] = await Promise.all([getNewsCategories(), getNewsCategoryCounts()])
   const category = categorySlug ? categories.find((c) => c.slug === categorySlug) : undefined
   if (categorySlug && !category) notFound()
 
@@ -39,8 +39,8 @@ export async function NewsSection({ page, categorySlug }: { page: number; catego
 
           <div className="news-layout">
             <aside className="news-rail news-rail--left">
+              <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
               <AdSlot code="NEWS_SIDEBAR_2" size="300x600" mobileSize="320x100" />
-              <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} />
             </aside>
 
             <div className="news-feed">

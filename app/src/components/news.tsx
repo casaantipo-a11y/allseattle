@@ -87,40 +87,29 @@ export function TopNewsWidget({ articles }: { articles: NewsWithRelations[] }) {
 export function CategoriesWidget({
   categories,
   activeSlug,
+  counts,
 }: {
   categories: { id: number; name: string; slug?: string | null }[]
   activeSlug?: string
+  counts?: { total: number; byCategory: Record<number, number> }
 }) {
+  const row = (href: string, label: string, active: boolean, n?: number) => (
+    <li key={href}>
+      <Link href={href} className={`news-cat${active ? ' is-active' : ''}`} aria-current={active ? 'page' : undefined}>
+        <span>{label}</span>
+        {n !== undefined ? <span className="news-cat-num">{n}</span> : null}
+      </Link>
+    </li>
+  )
   return (
     <nav className="widget" aria-label="News categories">
       <div className="widget-head">Categories</div>
-      <div className="widget-body">
-        <ul className="m-0 list-none p-0">
-          <li>
-            <Link
-              href="/news"
-              className={`flex min-h-11 items-center border-b border-brand-line text-sm font-semibold no-underline hover:text-brand-red ${
-                !activeSlug ? 'text-brand-red' : 'text-brand-navy'
-              }`}
-            >
-              All news
-            </Link>
-          </li>
-          {categories.map((c) => (
-            <li key={c.id}>
-              <Link
-                href={`/news/${c.slug}`}
-                aria-current={activeSlug === c.slug ? 'page' : undefined}
-                className={`flex min-h-11 items-center border-b border-brand-line text-sm no-underline last:border-b-0 hover:text-brand-red ${
-                  activeSlug === c.slug ? 'font-semibold text-brand-red' : 'text-brand-navy'
-                }`}
-              >
-                {c.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul className="news-cats">
+        {row('/news', 'All news', !activeSlug, counts?.total)}
+        {categories
+          .filter((c) => c.slug)
+          .map((c) => row(`/news/${c.slug}`, c.name, activeSlug === c.slug, counts ? (counts.byCategory[c.id] ?? 0) : undefined))}
+      </ul>
     </nav>
   )
 }
