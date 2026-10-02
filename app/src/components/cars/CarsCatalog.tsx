@@ -290,9 +290,6 @@ export function CarsCatalog({ cars, rightRail }: { cars: CarItem[]; rightRail?: 
         </aside>
 
         <div className="auto-results">
-          <p className="result-count" aria-live="polite">
-            {found.length === cars.length ? `${cars.length} cars listed` : `Showing ${found.length} of ${cars.length} cars`}
-          </p>
           <div className="car-list">
             {found.length ? (
               found.map((c) => (

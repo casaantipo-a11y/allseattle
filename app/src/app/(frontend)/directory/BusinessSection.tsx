@@ -86,11 +86,6 @@ export async function BusinessSection({
               <span className="eyebrow">{meta.eyebrow}</span>
               <h1>{active ? active.name : meta.title}</h1>
             </div>
-            <p className="result-count">
-              {needle || active
-                ? `Showing ${found.length} of ${inSection.length} businesses`
-                : `${inSection.length} businesses listed`}
-            </p>
           </div>
 
           <div className="dir-layout">

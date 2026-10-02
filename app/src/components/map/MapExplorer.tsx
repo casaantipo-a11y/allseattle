@@ -39,9 +39,6 @@ export function MapExplorer({ points, categories }: { points: ExplorerPoint[]; c
             ))}
           </select>
         </div>
-        <p className="m-0 pb-3 text-sm text-brand-slate" aria-live="polite">
-          {shown.length} {shown.length === 1 ? 'place' : 'places'} on the map
-        </p>
       </div>
       {/* Remounting on filter change refits the map to what's left. */}
       <MapClient key={cat || 'all'} points={shown} cluster height={560} />
