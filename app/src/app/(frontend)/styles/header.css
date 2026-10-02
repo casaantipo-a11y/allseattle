@@ -125,6 +125,28 @@
   display: flex;
   align-items: center;
   margin-left: calc(-1 * var(--space-1));
+  /* На 2px выше: у основного пункта снизу 3px под красную черту, и его
+     текст стоит выше середины строки — подразделы ставим на ту же линию,
+     что «Cars» (просьба клиента). */
+  transform: translateY(-2px);
+}
+
+/* С 1280px подразделы «висят» справа от пункта и не входят в ширину меню:
+   центр шапки считается по основным пунктам (Home…Cars), и второй ряд
+   стоит ровно под ними — просьба клиента «центрируй надписи в шапке». Уже
+   1280 места справа не хватает (упрётся в ENG / Add your business), там
+   подразделы остаются в потоке. */
+@media (min-width: 1280px) {
+  .nav-links li:has(.nav-sub) {
+    position: relative;
+  }
+  .nav-sub {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    bottom: 0;
+    white-space: nowrap;
+  }
 }
 
 .nav-sub-item {
