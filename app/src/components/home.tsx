@@ -46,7 +46,7 @@ export function JobsWidget({ jobs }: { jobs: Job[] }) {
         <form action="/jobs" method="get" role="search" className="mb-3 flex gap-2">
           {/* Inline width: the prototype's unlayered input styles beat Tailwind's
               min-w-0, and without it the field widened the phone layout. */}
-          <input type="search" name="q" placeholder="Job title or company" aria-label="Search jobs" className="min-h-11 flex-1" style={{ minWidth: 0, width: '100%' }} />
+          <input type="search" name="q" placeholder="Search jobs" aria-label="Search jobs by title or company" className="min-h-11 flex-1" style={{ minWidth: 0, width: '100%', fontSize: 14, padding: '0 12px' }} />
           <button type="submit" className="btn btn-sm">
             Find
           </button>
