@@ -225,6 +225,15 @@
   color: var(--color-slate);
 }
 
+/* Обёртка иконки (<Svg> — строчный span) — флекс: иначе svg садится на
+   базовую линию внутри неё и стоит выше центра кнопки — человечек на 4px
+   выше строки «Add your business», лупа на 2px выше середины своей кнопки
+   (просьба клиента 05.10.2026). */
+.account-btn > span[aria-hidden],
+.search-stub button > span[aria-hidden] {
+  display: flex;
+}
+
 .account-btn:hover {
   color: var(--color-accent);
 }
