@@ -1496,3 +1496,97 @@ body.modal-open {
   color: var(--color-accent);
   white-space: nowrap;
 }
+
+/* ---------- Карточка-призыв «Post a …» ----------
+   Тот же вид, что у «Post a job» в колонке Jobs (.jobs-post-side в jobs.css):
+   иконка в светло-красном круге, подпись, красный заголовок и стрелка в
+   красном круге справа. Числа скопированы оттуда как есть (13 / 20 / 2px —
+   так карточка выглядит одинаково), но без transition и сдвига при наведении:
+   на сайте нет анимации, наведение меняет только тень. Стоит на Jobs
+   («Post a job», в колонке фильтров), Events («Submit an event»), Cars
+   («Place a listing») и Weather («Place an ad») — просьбы клиента
+   03–04.10.2026, «без подпрыгивания при наведении» у всех. */
+.post-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+  background: var(--color-white);
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.post-card-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: rgba(229, 57, 53, 0.1);
+  color: var(--color-accent);
+}
+
+.post-card-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-card-kicker {
+  font-size: 13px;
+  color: var(--color-slate);
+}
+
+.post-card-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-accent);
+}
+
+.post-card-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-white);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* В шапке раздела карточка стоит вместо .btn: на телефоне — во всю ширину
+   под заголовком, с 640px — у правого края напротив надзаголовка и
+   заголовка (строки 1–2 сетки .section-head), 300px как в колонке Jobs.
+   +8px вниз: надзаголовок нарисован на 16px ниже своей ячейки (общее
+   правило .section-head .eyebrow), и центр видимого текста ниже центра
+   строк сетки ровно на половину этого. */
+.section-head .post-card {
+  grid-column: 1;
+  grid-row: 3;
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .section-head .post-card {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    width: 300px;
+    margin-top: 0;
+    position: relative;
+    top: var(--space-2);
+  }
+}

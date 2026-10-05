@@ -110,7 +110,10 @@
   margin-bottom: 0;
 }
 
-.footer-social a {
+/* Ссылка и заглушка «coming soon» (span, пока адреса нет) выглядят
+   одинаково: иконка по центру строки текста, а не на её базовой линии
+   (просьба клиента 04.10.2026 — иконки стояли выше подписей). */
+.footer-social :is(a, .footer-social-soon) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -122,6 +125,13 @@
 }
 
 .footer-social svg {
+  flex: none;
+}
+
+/* Обёртка иконки (<Svg> — строчный span) — флекс, иначе svg внутри неё
+   садится на базовую линию и стоит на 3px выше середины подписи. */
+.footer-social :is(a, .footer-social-soon) > span[aria-hidden] {
+  display: flex;
   flex: none;
 }
 
@@ -240,7 +250,7 @@
   }
   /* Иконка и ник — одна ссылка. Иконка не сжимается и не уезжает от текста,
      когда ник переносится. */
-  .footer-social a {
+  .footer-social :is(a, .footer-social-soon) {
     width: auto;
     height: auto;
     justify-content: flex-start;
@@ -277,5 +287,89 @@
   }
   .footer-col--wide {
     grid-column: auto;
+  }
+}
+
+/* ---------- Explore: разделы сеткой, служебные ссылки строкой ----------
+   В одном списке были вперемешку девять разделов и пять служебных страниц,
+   по строкам, с недобитой последней строкой — «не гармонично» (клиент,
+   04.10.2026). Теперь разделы (то, что есть в меню шапки) — ровная сетка
+   три колонки с 640px, а About / Advertise / Contact / Privacy / Terms —
+   тонкая строка под ней через линию, цветом строки копирайта. На телефоне
+   разделы по-прежнему под кнопкой, а служебная строка видна всегда.
+   Селекторы с ul.footer-meta — чтобы перебить .footer-explore ul. */
+.footer-explore ul.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  /* По центру ширины Explore (просьба клиента, тот же день). */
+  justify-content: center;
+  gap: var(--space-1) var(--space-4);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.footer-explore ul.footer-meta li {
+  margin-bottom: 0;
+}
+
+.footer-explore ul.footer-meta a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #8695a6;
+}
+
+.footer-explore ul.footer-meta a:hover {
+  color: var(--color-accent);
+}
+
+@media (min-width: 640px) {
+  .footer-explore ul#footer-explore-list {
+    grid-template-columns: repeat(3, minmax(max-content, 1fr));
+  }
+
+  .footer-explore ul.footer-meta a {
+    min-height: 0;
+  }
+}
+
+/* ---------- Линия над служебной строкой кончается на «City Map» ----------
+   Просьба клиента 04.10.2026: колонки разделов стоят где стояли (три
+   равные трети), а линия и центр служебной строки — от левого края до
+   конца самой длинной надписи третьей колонки. Для этого разделы и строка
+   — одна сетка из четырёх колонок: две трети ширины, третья по содержимому,
+   четвёртая — остаток; ul разделов растворён (display: contents), строка
+   занимает колонки 1–3. Треть считается от ширины Explore (100cqw), поэтому
+   колонки совпадают с прежними. Работает, когда Explore шире 450px (640–1023
+   и с 1280); на 1024–1279 он 380px, и там остаётся обычная сетка. */
+@media (min-width: 640px) {
+  .footer-explore {
+    container-type: inline-size;
+  }
+}
+
+@container (min-width: 450px) {
+  .footer-explore-body {
+    --explore-third: calc((100cqw - 2 * var(--space-4)) / 3);
+    display: grid;
+    grid-template-columns:
+      minmax(max-content, var(--explore-third))
+      minmax(max-content, var(--explore-third))
+      max-content
+      minmax(0, 1fr);
+    column-gap: var(--space-4);
+  }
+
+  .footer-explore-body ul#footer-explore-list {
+    display: contents;
+  }
+
+  .footer-explore-body ul#footer-explore-list li:nth-child(3n + 1) { grid-column: 1; }
+  .footer-explore-body ul#footer-explore-list li:nth-child(3n + 2) { grid-column: 2; }
+  .footer-explore-body ul#footer-explore-list li:nth-child(3n) { grid-column: 3; }
+
+  .footer-explore-body .footer-meta {
+    grid-column: 1 / 4;
   }
 }

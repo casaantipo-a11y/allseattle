@@ -52,19 +52,22 @@ export default async function EventPage({ params }: Props) {
               &larr; All events
             </Link>
           </p>
+          {/* Category, title and date line sit above the grid, so the photo and the right
+              column start at the same height (client, 03.10.2026). */}
+          {cat ? <p className="mb-1 text-sm font-bold uppercase tracking-wide text-brand-red">{cat.name}</p> : null}
+          <h1 className="mb-3">{ev.title}</h1>
+          <p className="mb-6 text-lg text-brand-slate">
+            {start.long}
+            {end ? ` — ${end.long}` : ''} · {ev.venueName}
+          </p>
           <div className="grid items-start gap-[var(--grid-gap)] lg:grid-cols-[minmax(0,1fr)_300px]">
             <article className="min-w-0">
-              {cat ? <p className="mb-1 text-sm font-bold uppercase tracking-wide text-brand-red">{cat.name}</p> : null}
-              <h1 className="mb-3">{ev.title}</h1>
-              <p className="mb-6 text-lg text-brand-slate">
-                {start.long}
-                {end ? ` — ${end.long}` : ''} · {ev.venueName}
-              </p>
               {img ? (
                 // eslint-disable-next-line @next/next/no-img-element -- Payload rendition
                 <img src={img} alt={mediaAlt(ev.image, ev.title)} className="mb-6 block h-auto w-full rounded-lg" />
               ) : null}
-              {ev.description ? <RichText data={ev.description} /> : ev.summary ? <p>{ev.summary}</p> : null}
+              {/* Full photo width and one step larger (client, 04.10.2026), see .event-desc. */}
+              <div className="event-desc">{ev.description ? <RichText data={ev.description} /> : ev.summary ? <p>{ev.summary}</p> : null}</div>
             </article>
             <aside className="grid gap-[var(--grid-gap)]">
               <div className="widget">

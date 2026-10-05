@@ -63,10 +63,27 @@ export default async function MapPage() {
     })
   points.push(...eventPoints)
 
+  // The filter lists the sections in site order (Directory, Shopping, Leisure), each
+  // section's top-level categories by their admin `order` then A–Z, and subcategories
+  // right under their parent, indented — as the Directory's own list does. Before, the
+  // raw list put "Car Repair" among unrelated top-level categories and Leisure first.
   const sectionLabel = Object.fromEntries(SECTIONS.map((s) => [s.value, s.label]))
-  const explorerCategories: ExplorerCategory[] = categories.map((c) => ({
+  const sectionRank = Object.fromEntries(SECTIONS.map((s, i) => [s.value, i]))
+  const parentId = (c: (typeof categories)[number]) => (c.parent && typeof c.parent === 'object' ? c.parent.id : (c.parent ?? null))
+  const byName = (a: (typeof categories)[number], b: (typeof categories)[number]) =>
+    (sectionRank[a.section] ?? 99) - (sectionRank[b.section] ?? 99) || (a.order ?? 0) - (b.order ?? 0) || a.name.localeCompare(b.name)
+  const ordered: { cat: (typeof categories)[number]; depth: number }[] = []
+  const walk = (parent: number | null, depth: number) => {
+    for (const c of categories.filter((x) => parentId(x) === parent).sort(byName)) {
+      ordered.push({ cat: c, depth })
+      walk(c.id, depth + 1)
+    }
+  }
+  walk(null, 0)
+  const explorerCategories: ExplorerCategory[] = ordered.map(({ cat: c, depth }) => ({
     id: c.id,
     name: c.name,
+    depth,
     group: sectionLabel[c.section] ?? 'Other',
     ids: [...withDescendants(categories, c.id)],
   }))
@@ -79,13 +96,16 @@ export default async function MapPage() {
     <main id="content" data-page="map">
       <section className="section">
         <div className="container">
-          <div className="section-head">
-            <div>
-              <span className="eyebrow">Neighborhood guide</span>
-              <h1>City map</h1>
-            </div>
-          </div>
-          <MapExplorer points={points} categories={explorerCategories} />
+          <MapExplorer
+            points={points}
+            categories={explorerCategories}
+            head={
+              <div key="head">
+                <span className="eyebrow">Neighborhood guide</span>
+                <h1>City map</h1>
+              </div>
+            }
+          />
         </div>
       </section>
     </main>

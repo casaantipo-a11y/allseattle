@@ -107,3 +107,151 @@
 }
 
 }
+
+/* ---------- Шапка и фильтры (просьбы клиента 03.10.2026) ----------
+   Заголовок слева, «Submit an event» — карточка того же вида, что «Post a
+   job» на Jobs (.post-card; её место в шапке задаёт общее правило
+   .section-head .post-card в components.css), у правого края напротив
+   надзаголовка и заголовка. Ряды фильтров по центру страницы, каждый ряд
+   (подпись + элемент) на одной оси. Фильтры: период — сегментированный
+   переключатель, категория — лёгкие чипы, выбранное navy.
+   До этого в тот же день пробовали «всё слева» и колонку виджетов как в
+   News — оба варианта клиент отклонил. */
+[data-page="events"] {
+  .events-filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    /* 16px от заголовка: без отступа переключатель почти касался букв. */
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .events-filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .events-filter-label {
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-slate);
+  }
+
+  /* Переключатель периода. На телефоне четыре сегмента не влезают в строку
+     (нужно ~366px при 343), поэтому там сетка 2 × 2. */
+  .events-when {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-slate-soft);
+    border-radius: var(--radius);
+  }
+
+  .events-when a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-slate);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .events-when a:hover {
+    color: var(--color-navy);
+    background: var(--color-white);
+  }
+
+  .events-when a.active {
+    background: var(--color-navy);
+    color: var(--color-white);
+  }
+
+  .events-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .events-types a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-slate-soft);
+    border-radius: var(--radius-full);
+    background: var(--color-white);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-navy);
+    text-decoration: none;
+  }
+
+  .events-types a:hover {
+    border-color: var(--color-navy);
+  }
+
+  .events-types a.active {
+    background: var(--color-navy);
+    border-color: var(--color-navy);
+    color: var(--color-white);
+  }
+
+  @media (min-width: 640px) {
+    .events-filters {
+      gap: var(--space-3);
+    }
+
+    .events-filter-row {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-4);
+    }
+
+    .events-types {
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .events-when {
+      display: flex;
+      border-radius: var(--radius-full);
+    }
+
+    .events-when a {
+      border-radius: var(--radius-full);
+    }
+  }
+
+  /* Мышиные ширины: правило 44px про касания (design.md §8), здесь ряды
+     ниже, как второй ряд меню и сортировка Jobs. */
+  @media (min-width: 1024px) {
+    .events-when a { min-height: 36px; }
+    .events-types a { min-height: 36px; }
+  }
+}
+
+/* ---------- Страница события: описание под фото ----------
+   Текст идёт на всю ширину фотографии, до её правого края, и на шаг
+   крупнее общего RichText (17px → 18px) — просьба клиента 04.10.2026. Сознательное
+   отступление от design.md §2 (55–75 знаков в строке): на 1440 строка
+   выходит ~100 знаков, клиент выбрал ровный правый край с фото. Правило
+   только для этой страницы: обёртка снимает max-w-[72ch] у RichText. */
+[data-page="events"] .event-desc > * {
+  max-width: none;
+  /* 18px на всех ширинах: сначала было 20 с 1024px, клиент попросил
+     «чуть поменьше» (04.10.2026). */
+  font-size: var(--text-lg);
+}

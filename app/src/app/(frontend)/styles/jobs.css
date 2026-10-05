@@ -502,7 +502,7 @@
   /* Шапка «Work in Seattle / Job board» стоит так же, как в News и в
      справочнике (просьба клиента 02.10.2026): слева, надзаголовок на 4px
      правее заголовка, колонки сразу под ней. Сортировка переехала из шапки
-     в колонку вакансий — над первой карточкой, по её левому краю. */
+     в колонку вакансий — над первой карточкой, по её центру (03.10.2026). */
   .job-card {
     max-width: calc(100% - 104px);
   }
@@ -516,71 +516,9 @@
     display: flex;
     margin-bottom: var(--space-4);
   }
-  /* «Post a job» — карточка, а не сплошная красная кнопка (просьба клиента
-     02.10.2026: «некрасиво выглядит»): иконка в красном кружке, подпись
-     «Hiring in Seattle?» и сама ссылка. Красную полосу слева клиент попросил
-     убрать. */
-  .jobs-post-side {
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-slate-soft);
-    border-radius: var(--radius);
-    background: var(--color-white);
-    color: inherit;
-    text-decoration: none;
-    transition: box-shadow 0.15s, transform 0.15s;
-  }
-  .jobs-post-side:hover {
-    box-shadow: 0 8px 20px rgba(13, 27, 42, 0.12);
-    transform: translateY(-2px);
-  }
-  .jobs-post-icon {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-full);
-    background: rgba(229, 57, 53, 0.1);
-    color: var(--color-accent);
-  }
-  .jobs-post-text {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .jobs-post-kicker {
-    font-size: 13px;
-    color: var(--color-slate);
-  }
-  .jobs-post-title {
-    font-family: var(--font-heading);
-    font-size: 20px;
-    font-weight: 800;
-    line-height: 1.15;
-    color: var(--color-accent);
-  }
-  /* Стрелка — красным кружком у правого края: занимает пустое место справа
-     и при наведении чуть уезжает вправо. */
-  .jobs-post-go {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-full);
-    background: var(--color-accent);
-    color: var(--color-white);
-    font-size: 18px;
-    font-weight: 700;
-    transition: transform 0.15s;
-  }
-  .jobs-post-side:hover .jobs-post-go {
-    transform: translateX(3px);
-  }
+  /* Вид карточки — общий .post-card из components.css (с 04.10.2026: тот же
+     вид у Events, Cars и Weather; без подъёма карточки и сдвига стрелки при
+     наведении — просьба клиента). Здесь только её место в колонке. */
   /* Левая колонка начинается на уровне первой карточки, а не строки
      сортировки: «Post a job» стоит на одной линии с началом вакансий
      (просьба клиента 02.10.2026). Сдвиг — высота строки сортировки (поле
@@ -593,6 +531,11 @@
   .jobs-results > .jobs-toolbar {
     position: relative;
     top: var(--space-2);
+    /* Сортировка — по центру над карточками (просьба клиента 03.10.2026):
+       ширина та же, что у .job-card, иначе центр уезжает на 52px вправо.
+       Ниже 1024 ряд переносится, там он остаётся у края. */
+    max-width: calc(100% - 104px);
+    justify-content: center;
   }
   /* Текст карточки на шаг шкалы крупнее: на широкой карточке мелкий шрифт
      оставлял много пустого места (просьба клиента 28.09.2026). */

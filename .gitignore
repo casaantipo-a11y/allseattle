@@ -5,3 +5,6 @@ desktop.ini
 .DS_Store
 .vscode/
 .idea/
+
+# arena runs (Claude Code skill scratch)
+.arena/

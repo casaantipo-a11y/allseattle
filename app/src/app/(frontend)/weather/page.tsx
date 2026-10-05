@@ -26,8 +26,19 @@ export default async function WeatherPage() {
               <span className="eyebrow">Seattle forecast</span>
               <h1>Weather</h1>
             </div>
-            <Link href="/advertise" className="btn">
-              Place an ad
+            {/* Same card as Jobs' "Post a job" (client, 04.10.2026). */}
+            <Link href="/advertise" className="post-card">
+              <span className="post-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z" />
+                  <path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12" />
+                </svg>
+              </span>
+              <span className="post-card-text">
+                <span className="post-card-kicker">Have a business?</span>
+                <span className="post-card-title">Place an ad</span>
+              </span>
+              <span className="post-card-go" aria-hidden="true">&rarr;</span>
             </Link>
           </div>
           {data ? (

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { getFooter, getSiteSettings } from '@/lib/queries'
+import { getFooter, getHeader, getSiteSettings } from '@/lib/queries'
 
 import { ExploreToggle } from './ExploreToggle'
 import { Logo } from './Logo'
@@ -13,13 +13,20 @@ const telHref = (phone: string) => `tel:+${phone.replace(/\D/g, '')}`
 // and link columns from the Footer global. The first column is the "Explore"
 // list that folds under a button on phones.
 export async function SiteFooter() {
-  const [settings, footer] = await Promise.all([getSiteSettings(), getFooter()])
+  const [settings, footer, header] = await Promise.all([getSiteSettings(), getFooter(), getHeader()])
   const year = new Date().getFullYear()
   const socials = [
     { key: 'facebook' as const, name: 'Facebook', url: settings.socials?.facebook },
     { key: 'instagram' as const, name: 'Instagram', url: settings.socials?.instagram },
   ]
   const [explore, ...rest] = footer.columns ?? []
+  // Explore splits in two (client, 04.10.2026): the site's sections — whatever the
+  // header menu links to — as an even grid, and everything else (About, Advertise,
+  // Contact, Privacy, Terms) as a quiet line underneath.
+  const menuUrls = new Set((header.menu ?? []).map((m) => m.url))
+  const exploreLinks = explore?.links ?? []
+  const sectionLinks = exploreLinks.filter((l) => menuUrls.has(l.url))
+  const metaLinks = exploreLinks.filter((l) => !menuUrls.has(l.url))
 
   return (
     <footer className="site-footer">
@@ -59,7 +66,7 @@ export async function SiteFooter() {
                 </li>
               ) : (
                 <li key={s.key}>
-                  <span title={`${s.name}: coming soon`}>
+                  <span className="footer-social-soon" title={`${s.name}: coming soon`}>
                     <Svg html={SOCIAL_ICONS[s.key]} />
                     <span className="footer-social-label">{s.name}: coming soon</span>
                   </span>
@@ -72,13 +79,24 @@ export async function SiteFooter() {
         {explore ? (
           <div className="footer-col footer-col--wide footer-explore">
             <h4>{explore.title}</h4>
-            <ExploreToggle>
-              {(explore.links ?? []).map((l) => (
-                <li key={l.url}>
-                  <Link href={l.url}>{l.label}</Link>
-                </li>
-              ))}
-            </ExploreToggle>
+            <div className="footer-explore-body">
+              <ExploreToggle>
+                {sectionLinks.map((l) => (
+                  <li key={l.url}>
+                    <Link href={l.url}>{l.label}</Link>
+                  </li>
+                ))}
+              </ExploreToggle>
+              {metaLinks.length ? (
+                <ul className="footer-meta">
+                  {metaLinks.map((l) => (
+                    <li key={l.url}>
+                      <Link href={l.url}>{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
           </div>
         ) : null}
 

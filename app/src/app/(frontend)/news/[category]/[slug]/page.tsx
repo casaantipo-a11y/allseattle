@@ -87,7 +87,10 @@ export default async function ArticlePage({ params }: Props) {
             </aside>
 
             <article className="news-feed min-w-0">
-              <nav aria-label="Breadcrumb" className="mb-3 text-sm text-brand-slate">
+              {/* Centred over the photo, 18px (client, 05.10.2026, after 16 and 20) and centred
+                  vertically between the ad above and the title below — see .article-crumb in
+                  news.css. */}
+              <nav aria-label="Breadcrumb" className="article-crumb text-center text-lg text-brand-slate">
                 <Link href="/news" className="text-brand-slate hover:text-brand-red">
                   News
                 </Link>
@@ -152,9 +155,21 @@ export default async function ArticlePage({ params }: Props) {
                 </ul>
               ) : null}
 
-              <div className="mt-8">
-                <Link href="/share-news" className="btn btn-navy">
-                  Share the news
+              {/* The site's call-to-action card (as on the News list), centred under the
+                  photo column (client, 05.10.2026). */}
+              <div className="mt-8 flex justify-center">
+                <Link href="/share-news" className="post-card w-[300px] max-w-full">
+                  <span className="post-card-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 5h13v14H6a2 2 0 0 1-2-2V5z" />
+                      <path d="M17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5M8 16h3" />
+                    </svg>
+                  </span>
+                  <span className="post-card-text">
+                    <span className="post-card-kicker">Got a news tip?</span>
+                    <span className="post-card-title">Share the news</span>
+                  </span>
+                  <span className="post-card-go" aria-hidden="true">&rarr;</span>
                 </Link>
               </div>
             </article>

@@ -41,33 +41,59 @@ export default async function EventsPage({ searchParams }: Props) {
         <div className="container">
           <AdSlot code="EVENTS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
 
-          <div className="section-head section-head--sub section-head--btn-low section-head--btn-raise">
+          <div className="section-head section-head--sub events-head">
             <div>
               <span className="eyebrow">What is on</span>
               <h1>Seattle events</h1>
             </div>
-            <Link href="/advertise" className="btn">
-              Submit an event
+            {/* The same card as Jobs' "Post a job" (client, 03.10.2026), at the right edge
+                opposite the heading. */}
+            <Link href="/advertise" className="post-card">
+              <span className="post-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+              </span>
+              <span className="post-card-text">
+                <span className="post-card-kicker">Hosting an event?</span>
+                <span className="post-card-title">Submit an event</span>
+              </span>
+              <span className="post-card-go" aria-hidden="true">&rarr;</span>
             </Link>
           </div>
 
-          <nav className="category-filter" aria-label="When">
-            {WHEN.map((w) => (
-              <Link key={w.value} href={href(w.value, category?.slug)} className={w.value === when ? 'active' : undefined} aria-current={w.value === when ? 'page' : undefined}>
-                {w.label}
-              </Link>
-            ))}
-          </nav>
-          <nav className="category-filter" aria-label="Category">
-            <Link href={href(when)} className={!category ? 'active' : undefined}>
-              All
-            </Link>
-            {categories.map((c) => (
-              <Link key={c.id} href={href(when, c.slug)} className={category?.id === c.id ? 'active' : undefined}>
-                {c.name}
-              </Link>
-            ))}
-          </nav>
+          {/* Two filters, each with its label (client, 03.10.2026): the period is a
+              segmented switch, the category a row of light chips. Each row is centred. */}
+          <div className="events-filters">
+            <div className="events-filter-row">
+              <span className="events-filter-label" id="events-when-label">
+                When
+              </span>
+              <nav className="events-when" aria-labelledby="events-when-label">
+                {WHEN.map((w) => (
+                  <Link key={w.value} href={href(w.value, category?.slug)} className={w.value === when ? 'active' : undefined} aria-current={w.value === when ? 'page' : undefined}>
+                    {w.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+            <div className="events-filter-row">
+              <span className="events-filter-label" id="events-type-label">
+                Category
+              </span>
+              <nav className="events-types" aria-labelledby="events-type-label">
+                <Link href={href(when)} className={!category ? 'active' : undefined} aria-current={!category ? 'page' : undefined}>
+                  All
+                </Link>
+                {categories.map((c) => (
+                  <Link key={c.id} href={href(when, c.slug)} className={category?.id === c.id ? 'active' : undefined} aria-current={category?.id === c.id ? 'page' : undefined}>
+                    {c.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </div>
 
           <div className="events-layout">
             {list.length ? (

@@ -57,9 +57,16 @@ export default function LeafletMap({
 
   return (
     <MapContainer
-      center={center}
-      zoom={points.length === 1 ? 15 : zoom}
+      // react-leaflet uses center+zoom when both are given and ignores bounds, so they go
+      // in only without bounds (0 or 1 point). Passing them always kept every map on the
+      // fixed Seattle view: the set was never fitted, edge pins were cut off, and after a
+      // category filter the remaining places could sit outside the frame.
+      center={bounds ? undefined : center}
+      zoom={bounds ? undefined : points.length === 1 ? 15 : zoom}
       bounds={bounds}
+      // Pixel padding on top of the 10% geographic one: pins and cluster badges are up to
+      // 40px wide, and without it the ones at the edge of the set were cut in half.
+      boundsOptions={{ padding: [40, 40] }}
       scrollWheelZoom={false}
       zoomAnimation={false}
       fadeAnimation={false}

@@ -78,8 +78,10 @@ export default async function ContestPage({ params }: Props) {
           )}
 
           {c.rules ? (
-            <div className="mx-auto mt-12 max-w-[72ch]">
-              <h2>Rules</h2>
+            // Centred on the page with "Rules" centred over the text (client, 05.10.2026);
+            // .contest-rules in contest.css lets the text fill this centred column.
+            <div className="contest-rules mx-auto mt-12 max-w-[72ch]">
+              <h2 className="text-center">Rules</h2>
               <RichText data={c.rules} />
             </div>
           ) : null}
