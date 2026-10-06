@@ -71,13 +71,20 @@ function Creative({
       rel="sponsored noopener"
       aria-label={`Advertisement: ${banner.advertiser}`}
     >
+      {/* Lazy even for the *_TOP slots: a slot renders a desktop and a phone creative
+          and CSS hides one of them. An eager image loads even when hidden, so every
+          phone downloaded the desktop banner too; a lazy one is skipped while hidden,
+          and the visible one, being on screen, still starts right away. Below the
+          top slot creatives fetch at low priority, so they never compete with the
+          header photo (the page's largest paint). */}
       {/* eslint-disable-next-line @next/next/no-img-element -- the advertiser's exact-size creative */}
       <img
         src={image.url}
         width={image.width}
         height={image.height}
         alt={banner.advertiser}
-        loading={eager ? 'eager' : 'lazy'}
+        loading="lazy"
+        fetchPriority={eager ? 'auto' : 'low'}
       />
     </a>
   )

@@ -1590,3 +1590,17 @@ body.modal-open {
     top: var(--space-2);
   }
 }
+
+/* Плашки-анонсы под баннером: вопрос в начале текста («Saw something
+   newsworthy?») на телефоне скрыт, остаётся призыв «Share the news» —
+   иначе плашка переносилась в две строки (просьба клиента 06.10.2026).
+   С 640px — полный текст. Разметка — Announcements.tsx. */
+.announcement-lead {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .announcement-lead {
+    display: inline;
+  }
+}

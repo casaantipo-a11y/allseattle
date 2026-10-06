@@ -2,6 +2,22 @@ import Link from 'next/link'
 
 import { getHeader } from '@/lib/queries'
 
+// A text that opens with a question ("Saw something newsworthy? Share the news") keeps
+// only the call to action on phones: the question is hidden below 640px, where it
+// wrapped the plate to two lines (client, 06.10.2026). Any other text is shown as is.
+// The rule is .announcement-lead in components.css: Tailwind's `hidden` loses to the
+// prototype's `.hidden { display: none !important }`.
+function AnnouncementText({ text }: { text: string }) {
+  const q = text.indexOf('? ')
+  if (q < 0) return <span className="font-semibold">{text}</span>
+  return (
+    <span className="font-semibold">
+      <span className="announcement-lead">{text.slice(0, q + 2)}</span>
+      {text.slice(q + 2)}
+    </span>
+  )
+}
+
 // Strip of short labelled links under the banner (spec §3), from the Header
 // global. New component, so Tailwind rather than prototype CSS; sizes and
 // colours come from the brand tokens in tailwind.css.
@@ -30,7 +46,7 @@ export async function Announcements() {
                 >
                   {a.label}
                 </span>
-                <span className="font-semibold">{a.text}</span>
+                <AnnouncementText text={a.text} />
               </Link>
             </li>
           ))}

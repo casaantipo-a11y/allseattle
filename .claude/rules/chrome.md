@@ -166,6 +166,16 @@ as `display: contents` and the meta line on columns 1–3. Column positions are 
 "coming soon" social items are `.footer-social-soon` spans styled like the links, icon wrapper
 `display: flex`, so the icons sit centred on their labels (measured 0.01px).
 
+**App performance and announcements (06.10.2026).** The logo `<img>` uses 372x120 copies
+(`public/brand/logo-372.webp`, `logo-dark-372.webp`, from the PNGs at q 0.86) instead of the
+560px files — the logo is drawn at most 186x60; the footer copy is `loading="lazy"`. Banner
+creatives are all `loading="lazy"` (a slot renders a desktop and a phone creative and hides
+one; an eager hidden image still downloaded), lower slots `fetchPriority="low"`. Both cut
+what competes with the header photo, the pages' largest paint on Lighthouse mobile.
+Announcement plates: a text that opens with a question ("Saw something newsworthy? Share the
+news") hides the question below 640px (`.announcement-lead` in components.css — Tailwind's
+`hidden` loses to the prototype's `.hidden { display: none !important }`).
+
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown
 / Mount Rainier / Waterfront / Pike Place) that used to sit under the hero is gone — it was
