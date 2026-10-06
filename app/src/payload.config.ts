@@ -102,6 +102,13 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { en, ru },
     fallbackLanguage: 'en',
+    // Checkbox columns in list views print `general:true/false`, which Payload's
+    // Russian translates as «Правда / Ложь» — read as "yes / no" instead
+    // (client, 06.10.2026).
+    translations: {
+      en: { general: { true: 'Yes', false: 'No' } },
+      ru: { general: { true: 'Да', false: 'Нет' } },
+    },
   },
   collections: [
     News,

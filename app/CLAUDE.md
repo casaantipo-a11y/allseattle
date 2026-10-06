@@ -46,7 +46,14 @@ config. Verify UI by running it (no test suite) — see `../.claude/rules/layout
 - Secrets live in `.env`, `.env.local`, `.env.neon.local`, `.env.r2.local`, `.env.vercel.local` —
   never print or copy them; never `source` them in a shell (the Neon URL contains `&`).
 - Deploy is `npx vercel deploy --prod` from this machine (the friend's repo can't be imported into
-  Vercel). It's outward-facing: only on the user's explicit request.
+  Vercel). It's outward-facing: only on the user's explicit request. In PowerShell the user runs
+  `npx.cmd` (script execution is disabled there, `npx.ps1` won't load).
+- **Before every deploy, `git status` must not show `src/app/(payload)/admin/importMap.js` or
+  `src/payload-types.ts`.** A running `pnpm dev` regenerates both without R2 configured locally
+  and drops the S3 upload handler; `vercel deploy` uploads the working tree, not the commit, so
+  that would break media uploads in the production admin. Stop the dev server (its child
+  `start-server.js` keeps port 3000 after the parent stops), `git checkout --` both files, deploy,
+  then restart dev. Never commit those local regenerations.
 - Neon schema changes go through migrations only (`push` runs against a local DB only).
 
 <!-- BEGIN:nextjs-agent-rules -->

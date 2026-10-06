@@ -1,0 +1,11 @@
+// Admin-only overrides. Payload's own styles live in `@layer payload-default`,
+// so plain rules here win without !important.
+
+// The document title (h1.doc-header__title) is 32px on a 36px line with
+// overflow: hidden for the ellipsis, which cut off descenders — the tail of
+// "g", "y", "p". Extra room below inside the clip shows them; the negative
+// margin gives the room back, so nothing around the title moves.
+.doc-header__title {
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
+}
