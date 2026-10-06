@@ -172,7 +172,9 @@ as `display: contents` and the meta line on columns 1–3. Column positions are 
 creatives are all `loading="lazy"` (a slot renders a desktop and a phone creative and hides
 one; an eager hidden image still downloaded), lower slots `fetchPriority="low"`. Both cut
 what competes with the header photo, the pages' largest paint on Lighthouse mobile.
-Announcement plates: a text that opens with a question ("Saw something newsworthy? Share the
+Announcement plates: "highlight" (admin) draws the red outline + tint again — removed
+04.10.2026, restored 06.10.2026 (spec §3 wants the contest plate in the accent colour). A text
+that opens with a question ("Saw something newsworthy? Share the
 news") hides the question below 640px (`.announcement-lead` in components.css — Tailwind's
 `hidden` loses to the prototype's `.hidden { display: none !important }`).
 

@@ -34,12 +34,14 @@ export async function Announcements() {
         <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2" aria-label="Announcements">
           {items.map((a) => (
             <li key={`${a.label}-${a.url}`}>
-              {/* No red outline for highlighted items any more (client, 04.10.2026): every
-                  item is drawn the same; the admin's "highlight" flag currently has no
-                  visual effect. */}
+              {/* "highlight" in the admin draws the plate with the red outline and tint
+                  (spec §3: the contest plate is highlighted in the accent colour). Removed
+                  on 04.10.2026 and brought back on 06.10.2026 at the client's request. */}
               <Link
                 href={a.url}
-                className="group inline-flex min-h-11 items-center gap-2 rounded-lg border border-brand-line bg-white px-3 py-2 text-sm text-brand-navy no-underline hover:underline"
+                className={`group inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm text-brand-navy no-underline hover:underline ${
+                  a.highlight ? 'border-brand-red bg-brand-red/5' : 'border-brand-line bg-white'
+                }`}
               >
                 <span
                   className="font-display rounded bg-brand-navy px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white"
