@@ -69,7 +69,7 @@ export function UpcomingEvents({ events }: { events: Event[] }) {
   return (
     <section className="section">
       <div className="container">
-        <div className="section-head section-head--btn-lower">
+        <div className="section-head section-head--btn-lower home-events-head">
           <div>
             <span className="eyebrow">What is on</span>
             <h2>Coming up in Seattle</h2>

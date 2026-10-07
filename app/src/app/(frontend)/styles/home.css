@@ -187,11 +187,27 @@
   top: calc(var(--space-4) + var(--space-1));
 }
 
-/* Надзаголовок — ещё на 8px ниже и на 8px правее заголовка (2мм вправо). */
+/* Надзаголовок — ниже и на 8px правее заголовка (2мм вправо). Вниз было
+   8px, 07.10.2026 клиент попросил «More from Seattle» ещё на 8px ниже — 16. */
 .home-feed .eyebrow {
   position: relative;
-  top: var(--space-2);
+  top: var(--space-4);
   left: var(--space-2);
+}
+
+/* «What is on / Coming up in Seattle» — на 12px ниже (клиент, 07.10.2026).
+   Двигаются только надзаголовок и заголовок; кнопка «All events» и
+   карточки остаются на месте. translate складывается с общими сдвигами
+   надзаголовка (top/left из components.css). */
+.home-events-head .eyebrow,
+.home-events-head h2 {
+  translate: 0 var(--space-3);
+}
+
+/* От рекламного места под лентой (HOME_INFEED_2) до подвала — на 20px
+   меньше общих 36px: 16px (клиент, 07.10.2026). Только на главной. */
+.home-feed {
+  margin-bottom: -20px;
 }
 
 /* Зазор от конца ленты до подвала — те же 36px, но теперь это поведение по

@@ -38,7 +38,8 @@ export default function ShareNewsPage() {
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl border border-brand-line bg-white p-5 sm:p-8">
+            {/* 12px padding on phones: the 300px Turnstile widget did not fit a 360px screen. */}
+            <div className="rounded-xl border border-brand-line bg-white p-3 sm:p-8">
               <SubmissionForm
                 form="news-tip"
                 submitLabel="Send the tip"

@@ -20,33 +20,57 @@ export type FieldSpec = {
   hint?: string
 }
 
-/** Up to 5 photos with previews; the server checks type and size again. */
+/** Up to 5 photos with previews; the server checks type and size again.
+ * The native file input is visually hidden (still focusable and announced) behind a
+ * picker drawn in the site's style: the browser's own "Choose files / No file chosen"
+ * button looked out of place and spoke the browser's language, not the site's
+ * (client, 07.10.2026). Styles: .photo-picker in components.css. */
 function PhotoInput(props: { id: string; name: string; 'aria-describedby'?: string; 'aria-invalid'?: boolean }) {
   const [previews, setPreviews] = useState<string[]>([])
   const [note, setNote] = useState<string | null>(null)
+  const [count, setCount] = useState(0)
   return (
     <>
-      <input
-        id={props.id}
-        name={props.name}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        multiple
-        aria-describedby={props['aria-describedby']}
-        aria-invalid={props['aria-invalid']}
-        onChange={(e) => {
-          const files = [...(e.target.files ?? [])]
-          previews.forEach((u) => URL.revokeObjectURL(u))
-          setNote(
-            files.length > 5
-              ? 'Up to 5 photos — only the first 5 will be accepted.'
-              : files.some((f) => f.size > 10 * 1024 * 1024)
-                ? 'Each photo must be under 10 MB.'
-                : null,
-          )
-          setPreviews(files.slice(0, 5).map((f) => URL.createObjectURL(f)))
-        }}
-      />
+      <div className="photo-picker">
+        <input
+          id={props.id}
+          name={props.name}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          className="photo-picker-input"
+          aria-describedby={props['aria-describedby']}
+          aria-invalid={props['aria-invalid']}
+          onChange={(e) => {
+            const files = [...(e.target.files ?? [])]
+            previews.forEach((u) => URL.revokeObjectURL(u))
+            setCount(files.length)
+            setNote(
+              files.length > 5
+                ? 'Up to 5 photos — only the first 5 will be accepted.'
+                : files.some((f) => f.size > 10 * 1024 * 1024)
+                  ? 'Each photo must be under 10 MB.'
+                  : null,
+            )
+            setPreviews(files.slice(0, 5).map((f) => URL.createObjectURL(f)))
+          }}
+        />
+        <label htmlFor={props.id} className="photo-picker-box" aria-hidden="true">
+          <span className="photo-picker-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
+          </span>
+          <span className="photo-picker-text">
+            <span className="photo-picker-title">
+              {count ? `${Math.min(count, 5)} ${Math.min(count, 5) === 1 ? 'photo' : 'photos'} selected` : 'Add photos'}
+            </span>
+            <span className="photo-picker-hint">JPEG, PNG or WebP · up to 5, 10 MB each</span>
+          </span>
+          <span className="photo-picker-btn">{count ? 'Change' : 'Choose files'}</span>
+        </label>
+      </div>
       {note ? <span className="form-note text-[#c53030]">{note}</span> : null}
       {previews.length ? (
         <div className="photo-preview-row mt-2 flex flex-wrap gap-2">

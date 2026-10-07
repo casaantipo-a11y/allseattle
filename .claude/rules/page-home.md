@@ -66,3 +66,8 @@ column widths change:
 - **`-webkit-line-clamp` needs the element's height to equal the clamp.** `.news-card-excerpt`
   carries `flex: 1`, which stretched the box past two lines: the ellipsis appeared on line two
   and the rest of the paragraph kept rendering under it. The tile sets `flex: none`.
+
+**App home, 07.10.2026:** "What is on / Coming up in Seattle" eyebrow + heading 12px lower
+(`.home-events-head`, translate — the button and cards stay); "More from Seattle" eyebrow 16px
+below its cell (was 8); the gap from the HOME_INFEED_2 slot under the feed to the footer is 16px
+instead of 36 (`.home-feed { margin-bottom: -20px }`).

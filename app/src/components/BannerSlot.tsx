@@ -28,18 +28,42 @@ const boxStyle = (size: Size) => {
 const variantClass = (v: Variant) =>
   v === 'desktop' ? 'ad-slot--desktop' : v === 'mobile-only' ? 'ad-slot--mobile-only' : ''
 
+// The "for sale" box an empty slot shows (client, 07.10.2026: the old dashed box with
+// three tiny lines looked unfinished). A small "Advertisement · size" tag, a heading, a
+// line of copy and a "Place an ad" button, laid out by the slot's shape: a row for wide
+// slots (728x90, 320x100), a centred stack with the site's tinted icon circle for boxes
+// and towers (300x250, 300x600). Styles: .ad-slot--house in components.css.
 function Placeholder({ size, variant }: { size: Size; variant: Variant }) {
+  const [w, h] = size.split('x').map(Number)
+  const shape = w / h >= 2.5 ? 'wide' : h > w * 1.5 ? 'tall' : 'box'
+  const compact = shape === 'wide' && w <= 320
   return (
     <Link
       href="/advertise"
-      className={`ad-slot ${variantClass(variant)}`}
+      className={`ad-slot ad-slot--house ad-slot--${shape}${compact ? ' ad-slot--compact' : ''} ${variantClass(variant)}`}
       style={boxStyle(size)}
       rel="nofollow"
+      aria-label={`Advertise here: ${size} placement — place an ad`}
     >
-      <span className="ad-slot-inner">
-        <span className="ad-slot-label">Your ad here</span>
-        <span className="ad-slot-tier">{size}</span>
-        <span className="ad-slot-status is-available">Place an ad &rarr;</span>
+      <span className="ad-house-tag">Advertisement · {size.replace('x', '×')}</span>
+      <span className="ad-house">
+        {shape !== 'wide' ? (
+          <span className="ad-house-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z" />
+              <path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12" />
+            </svg>
+          </span>
+        ) : null}
+        <span className="ad-house-text">
+          <span className="ad-house-title">Your business here</span>
+          {compact ? null : (
+            <span className="ad-house-sub">
+              {shape === 'tall' ? 'Reach Seattle readers on this page every day' : 'Reach Seattle locals on this page'}
+            </span>
+          )}
+        </span>
+        <span className="ad-house-cta">Place an ad &rarr;</span>
       </span>
     </Link>
   )

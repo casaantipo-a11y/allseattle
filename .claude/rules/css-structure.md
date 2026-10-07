@@ -204,6 +204,14 @@ it at the right edge, 300px, spanning the eyebrow and heading rows, `top: 8px` s
 matches the visible text (measured equal at 640–1920); below 640 it is full width under the
 heading. A new page that needs such a button uses this class, not a copy.
 
+**App, 07.10.2026: empty ad slots are a "house ad" (`.ad-slot--house`, BannerSlot.tsx), not the
+dashed box** — thin border, "Advertisement · 728×90" tag in the corner, "Your business here",
+a line of copy and a "Place an ad →" pill; wide slots (728x90, 320x100) lay out in a row, boxes
+and towers (300x250, 300x600) stack with the tinted icon circle of `.post-card`. Forms:
+`.cf-turnstile` is centred with rounded corners on every form, and the photo field is a styled
+`.photo-picker` over a visually hidden native input (English, unlike the browser's own button).
+The footer ends with a "Developed by · Alexander" Telegram pill (`.footer-credit`).
+
 Page modules do use inline `style="..."` for small one-off spacing inside template literals. That's
 the established local idiom, not an accident — matching it is fine; converting it all to classes is
 churn.

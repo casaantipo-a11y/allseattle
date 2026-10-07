@@ -348,3 +348,51 @@
     gap: 0 var(--space-8);
   }
 }
+
+/* ---------- Подпись разработчика (клиент, 07.10.2026) ----------
+   Самая нижняя строка подвала, по центру: тихое «Developed by» и
+   кнопка-таблетка со значком Telegram и именем. Тонкая светлая рамка на
+   тёмном фоне, значок в голубом круге Telegram; при наведении рамка и имя
+   становятся белыми. Без анимации. */
+.footer-credit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--gutter) var(--space-4);
+  font-size: var(--text-xs);
+  color: #8695a6;
+}
+
+.site-footer .footer-credit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 32px;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: #c9d3de;
+  text-decoration: none;
+}
+
+.footer-credit-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: #2aabee;
+  color: var(--color-white);
+}
+
+.footer-credit-icon svg {
+  position: relative;
+  left: -1px;
+}
+
+.site-footer .footer-credit-link:hover {
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
