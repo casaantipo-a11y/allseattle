@@ -120,9 +120,13 @@ export async function creative(
   const wide = w / h > 2.5
   const compact = wide && w < 500
   // Photo area in slot pixels, and the strip where it fades into the panel.
+  // A tower (300x600) gets a taller photo and its text + button centred in the panel
+  // below; with the box layout the button sat at the very bottom under ~200px of empty
+  // navy (07.10.2026).
+  const tall = h > w * 1.5
   const ph = wide
     ? { x: 0, y: 0, w: compact ? 100 : 170, h }
-    : { x: 0, y: 0, w, h: Math.round(h * 0.56) }
+    : { x: 0, y: 0, w, h: Math.round(h * (tall ? 0.62 : 0.56)) }
   // The photo's inner edge fades to transparent (an alpha mask), so it melts
   // into the panel's gradient wherever that edge falls — no seam.
   const fadeMask = Buffer.from(
@@ -145,6 +149,15 @@ export async function creative(
       <text x="${x}" y="${h * 0.73}" font-size="15" fill="#c9d4e0">${esc(offer)}</text>
       <rect x="${w - 20 - pillW}" y="${(h - pillH) / 2}" width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#e53935"/>
       <text x="${w - 20 - pillW / 2}" y="${h / 2 + 5.5}" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">${esc(cta)}</text>`
+  } else if (tall) {
+    const pillW = w * 0.56
+    const pillH = 40
+    const block = 34 + 24 + 22 + pillH
+    const top = ph.h + (h - ph.h - block) / 2
+    text = `<text x="${w / 2}" y="${top + 26}" font-size="21" font-weight="800" fill="#fff" text-anchor="middle">${esc(name)}</text>
+      <text x="${w / 2}" y="${top + 52}" font-size="15" fill="#c9d4e0" text-anchor="middle">${esc(offer)}</text>
+      <rect x="${(w - pillW) / 2}" y="${top + 80}" width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#e53935"/>
+      <text x="${w / 2}" y="${top + 80 + pillH / 2 + 5.5}" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">${esc(cta)}</text>`
   } else {
     const top = ph.h
     const pillW = w * 0.5
@@ -194,7 +207,29 @@ const DEMO_BANNERS = [
     desktop: '300x250',
     mobile: null,
   },
-] as const
+  // 07.10.2026: a demo creative in every slot (client: "демо-баннеры во все места"), so the
+  // demo site reads as live. Grouped by slot size, matched to the page where it makes sense.
+  // All isDemo — they leave with purge-demo, and /advertise doesn't count them as Booked.
+  ...([
+    ['Skyline Brewing Taproom', 'skyline-brewing-taproom', 'Happy hour 4–6 pm, every day', 'See the menu', 'img/business/biz-12.webp', ['HOME_INFEED_1', 'LEISURE_TOP', 'EVENTS_TOP']],
+    ['Rainier Kitchen & Bar', 'rainier-kitchen-bar', 'Weekend brunch from 9 am', 'Book a table', 'img/business/biz-2.webp', ['HOME_INFEED_2', 'NEWS_TOP', 'MAP_TOP']],
+    ['Puget Sound Web Studio', 'puget-sound-web-studio', 'Websites for Seattle businesses', 'Get a quote', 'img/business/biz-9.webp', ['DIRECTORY_TOP', 'BUSINESS_TOP', 'JOBS_TOP']],
+    ['Elliott Bay Boutique', 'elliott-bay-boutique', 'The fall collection is in', 'Shop now', 'img/business/biz-5.webp', ['SHOPPING_TOP', 'WEATHER_TOP']],
+    ['Northgate Motors', 'northgate-motors-dealership', 'Certified pre-owned, 0% APR', 'View cars', 'img/cars/c9-2.webp', ['CARS_SERVICES_TOP']],
+    ['Pike & Pine Bookshop', 'pike-pine-bookshop', 'Author readings every Thursday', 'See events', 'img/business/biz-8.webp', ['EVENTS_INFEED_1']],
+  ] as const).map(([advertiser, business, offer, cta, photo, slots]) => ({ advertiser, business, offer, cta, photo, slots, desktop: '728x90', mobile: '320x100' }) as const),
+  { advertiser: 'Scoop City Creamery', business: 'scoop-city-creamery', offer: 'Two scoops for the price of one', cta: 'Find us', photo: 'img/business/biz-15.webp', slots: ['HOME_SIDEBAR_2'], desktop: '300x250', mobile: null },
+  { advertiser: 'Emerald City Coffee', business: 'emerald-city-coffee-roasters', offer: 'Fresh roasts every morning', cta: 'Visit us', photo: 'img/business/biz-1.webp', slots: ['HOME_SIDEBAR_3'], desktop: '300x600', mobile: null },
+  ...([
+    ['Evergreen Yoga & Wellness', 'evergreen-yoga-wellness', 'First week of classes free', 'Join a class', 'img/business/biz-13.webp', ['NEWS_SIDEBAR_1', 'LEISURE_SIDEBAR_1', 'EVENTS_SIDEBAR_1'], '300x250'],
+    ['Blossom & Bay Florist', 'blossom-bay-florist', 'Same-day flower delivery', 'Order flowers', 'img/business/biz-10.webp', ['SHOPPING_SIDEBAR_1', 'BUSINESS_SIDEBAR_1', 'DIRECTORY_SIDEBAR_1'], '300x250'],
+    ['Cascade Tire & Wheel', 'cascade-tire-wheel', 'Winter tires installed free', 'Book a fitting', 'img/cars/c11-3.webp', ['CARS_SIDEBAR_1', 'CARS_SIDEBAR_3'], '300x250'],
+    ['Needle & Fade Barbershop', 'needle-fade-barbershop', 'Walk-ins welcome till 8 pm', 'Book a cut', 'img/business/biz-4.webp', ['JOBS_SIDEBAR_1'], '300x250'],
+    ['Fremont Sourdough Bakery', 'fremont-sourdough-bakery', 'Bread out of the oven at 7 am', 'Order ahead', 'img/business/biz-7.webp', ['NEWS_SIDEBAR_2', 'SHOPPING_SIDEBAR_2'], '300x600'],
+    ["Waggin' Pet Grooming", 'waggin-waterfront-pet-grooming', 'First groom 15% off', 'Book now', 'img/business/biz-11.webp', ['LEISURE_SIDEBAR_2', 'DIRECTORY_SIDEBAR_2'], '300x600'],
+    ['Rainier Car Rental', 'rainier-car-rental', 'Weekend rates from $39/day', 'Reserve', 'img/cars/c5-2.webp', ['CARS_SIDEBAR_2', 'CARS_SIDEBAR_4'], '300x600'],
+  ] as const).map(([advertiser, business, offer, cta, photo, slots, desktop]) => ({ advertiser, business, offer, cta, photo, slots, desktop, mobile: '320x100' }) as const),
+]
 
 export async function seedPhase4(payload: Payload, prototypeDir: string, log: (m: string) => void) {
   const slotIds = new Map<string, number>()

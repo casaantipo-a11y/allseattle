@@ -21,6 +21,9 @@ export type ActiveBanner = {
   endAt: string
   desktop: BannerImage
   mobile: BannerImage | null
+  /** Demo filler (isDemo): shown only while no paid banner runs in the slot, and not
+   * counted as Booked on /advertise (07.10.2026). */
+  demo: boolean
 }
 
 const image = (m: unknown): BannerImage | null => {
@@ -58,6 +61,7 @@ export const getBannerPool = unstable_cache(
         endAt: b.endAt,
         desktop,
         mobile: image(b.imageMobile),
+        demo: Boolean(b.isDemo),
       }
       for (const s of b.slots ?? []) {
         const slot = s as AdSlot
@@ -95,10 +99,17 @@ export const isRunning = (b: Pick<ActiveBanner, 'startAt' | 'endAt'>, now = Date
   new Date(b.startAt).getTime() <= now && now < new Date(b.endAt).getTime()
 
 /** Index of the first banner running right now, -1 if none — what the server renders. */
-export const firstRunning = (banners: ActiveBanner[]) => {
-  const now = Date.now()
-  return banners.findIndex((b) => isRunning(b, now))
+/** Indexes of the banners running now — paid ones if any run, else the demo fillers. */
+export const liveIndexes = (banners: ActiveBanner[], now = Date.now()) => {
+  const running = banners.map((b, i) => (isRunning(b, now) ? i : -1)).filter((i) => i >= 0)
+  const paid = running.filter((i) => !banners[i].demo)
+  return paid.length ? paid : running
 }
+
+export const firstRunning = (banners: ActiveBanner[]) => liveIndexes(banners)[0] ?? -1
+
+/** Booked = a paid banner runs there now; demo fillers don't count. */
+export const isBooked = (banners: ActiveBanner[], now = Date.now()) => banners.some((b) => !b.demo && isRunning(b, now))
 
 const BOT_UA =
   /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|monitor|curl|wget|python|httpclient|java\//i

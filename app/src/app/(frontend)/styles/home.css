@@ -28,6 +28,23 @@
   min-width: 0;
 }
 
+/* Левая колонка — только рекламные места для компьютера (.ad-desktop-slot,
+   скрыты до 1024px); на узких экранах она пустая, но занимала строку сетки
+   и добавляла лишний промежуток над «Today in Seattle» (+16px на телефоне,
+   +24 на планшете). До 1024px её нет. */
+.home-sidebar-left {
+  display: none;
+}
+
+/* «Today in Seattle» — 25px от верхнего баннера до букв надзаголовка
+   (клиент, 07.10.2026; было 46). Поднимается вся средняя колонка, заголовок
+   вместе с новостями под ним; боковые колонки остаются на своих 24px под
+   баннером, так что на компьютере буквы надзаголовка встают вровень с их
+   верхом. 21px — разница, замеренная по пикселям, вне шкалы. */
+.home-main {
+  margin-top: -21px;
+}
+
 .ad-slot-bottom {
   margin-top: var(--space-6);
   display: flex;
@@ -68,6 +85,9 @@
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
+  }
+  .home-sidebar-left {
+    display: flex;
   }
   .home-sidebar > * {
     flex: 0 0 auto;

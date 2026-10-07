@@ -71,3 +71,7 @@ column widths change:
 (`.home-events-head`, translate — the button and cards stay); "More from Seattle" eyebrow 16px
 below its cell (was 8); the gap from the HOME_INFEED_2 slot under the feed to the footer is 16px
 instead of 36 (`.home-feed { margin-bottom: -20px }`).
+"Today in Seattle" letters sit 25px under the HOME_TOP banner at every width (`.home-main
+{ margin-top: -21px }`; the sidebars stay 24px under the banner, so on desktop the eyebrow's
+letters line up with their tops). Below 1024 the left sidebar (desktop-only ads) is
+`display: none` — empty, it still took a grid row and added 16–24px above the heading.

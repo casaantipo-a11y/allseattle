@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { RichText } from '@/components/RichText'
 import { SubmissionForm } from '@/components/SubmissionForm'
-import { firstRunning, getAdSlots, getBannerPool } from '@/lib/banners'
+import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
 import type { Package } from '@/payload-types'
@@ -73,7 +73,8 @@ export default async function AdvertisePage({ searchParams }: Props) {
     getBannerPool(),
   ])
   const chosen = packages.find((p) => String(p.id) === sp.package)
-  const booked = (code: string) => firstRunning(pool[code] ?? []) >= 0
+  // Demo fillers don't make a slot Booked — only a paid banner does.
+  const booked = (code: string) => isBooked(pool[code] ?? [])
   const slotsByPage: [string, typeof slots][] = []
   for (const s of slots) {
     const group = slotsByPage.find(([k]) => k === s.page)

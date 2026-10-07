@@ -135,8 +135,11 @@ export function BannerSlot({
 }) {
   const [index, setIndex] = useState(initial)
   useEffect(() => {
+    // Paid banners first: a demo filler only shows while no paid banner runs here.
     const now = Date.now()
-    const live = banners.map((b, i) => (running(b, now) ? i : -1)).filter((i) => i >= 0)
+    const runningNow = banners.map((b, i) => (running(b, now) ? i : -1)).filter((i) => i >= 0)
+    const paid = runningNow.filter((i) => !banners[i].demo)
+    const live = paid.length ? paid : runningNow
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the pick depends on the visitor's clock, unknown during SSR
     setIndex(live.length ? live[Math.floor(Math.random() * live.length)] : -1)
   }, [banners])
