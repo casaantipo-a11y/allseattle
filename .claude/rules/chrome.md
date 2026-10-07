@@ -183,7 +183,8 @@ news") hides the question below 640px (`.announcement-lead` in components.css �
 both rows (was 28 on top); "Services / For sale" sits 12px after "Cars" (`.nav-sub` margin
 `--space-1`); both rows stay centred on the logo–utilities gap (measured 0.0px). The photo
 banner and the announcement plates are skipped on `/add-business` (`HiddenOn` in the layout,
-list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). Footer: the
+list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). On that page the
+Turnstile widget is centred in the form card with rounded corners (components.css). Footer: the
 About / Advertise / Contact / Privacy / Terms links left Explore for a `.footer-meta-bar` at the
 bottom of the footer — a hairline across the whole viewport and the links as one centred group
 with 32px gaps (`--space-8`; a same-day edge-to-edge `space-between` version was "too far
