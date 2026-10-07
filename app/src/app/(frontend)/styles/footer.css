@@ -350,18 +350,28 @@
 }
 
 /* ---------- Подпись разработчика (клиент, 07.10.2026) ----------
-   Самая нижняя строка подвала, по центру: тихое «Developed by» и
-   кнопка-таблетка со значком Telegram и именем. Тонкая светлая рамка на
-   тёмном фоне, значок в голубом круге Telegram; при наведении рамка и имя
-   становятся белыми. Без анимации. */
+   Под строкой копирайта и по центру относительно неё: копирайт и подпись
+   стоят в одной стопке шириной по самой широкой строке (.footer-copy-stack),
+   подпись выровнена по её центру. Тихое «Developed by» и кнопка-таблетка со
+   значком Telegram и именем. Тонкая светлая рамка на тёмном фоне, значок в
+   голубом круге Telegram; при наведении рамка и имя становятся белыми.
+   Без анимации. */
+.footer-copy-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footer-copy-stack p {
+  margin: 0;
+}
+
 .footer-credit {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding: 0 var(--gutter) var(--space-4);
-  font-size: var(--text-xs);
-  color: #8695a6;
 }
 
 .site-footer .footer-credit-link {

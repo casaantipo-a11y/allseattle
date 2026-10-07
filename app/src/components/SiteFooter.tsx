@@ -33,9 +33,26 @@ export async function SiteFooter() {
       <div className="container footer-inner">
         <div className="footer-col footer-brand">
           <Logo href="/" variant="dark" />
-          <p className="footer-copy">
-            &copy; {year} {footer.copyright || 'AllSeattle. All rights reserved.'}
-          </p>
+          {/* Developer credit (client, 07.10.2026): centred under the copyright line, a
+              Telegram pill. Not owner content, so it lives in code, not in the Footer global. */}
+          <div className="footer-copy">
+            <div className="footer-copy-stack">
+              <p>
+                &copy; {year} {footer.copyright || 'AllSeattle. All rights reserved.'}
+              </p>
+              <div className="footer-credit">
+                <span className="footer-credit-label">Developed by</span>
+                <a href="https://t.me/Nanana2281" target="_blank" rel="noopener" className="footer-credit-link" aria-label="Developed by Alexander — Telegram">
+                  <span className="footer-credit-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                      <path d="M21.4 4.3 2.9 11.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.5c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.2-2.1 4.6 3.4c.8.5 1.4.2 1.6-.8l3-14.2c.3-1.2-.5-1.8-1.3-1.4zM8.6 14.3l9.8-6.2c.5-.3.9-.1.5.2l-8.1 7.3-.3 3.4z" />
+                    </svg>
+                  </span>
+                  Alexander
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="footer-col footer-contact">
@@ -116,19 +133,6 @@ export async function SiteFooter() {
           </ul>
         </div>
       ) : null}
-      {/* Developer credit (client, 07.10.2026): a quiet line at the very bottom with a
-          Telegram pill. Not owner content, so it lives in code, not in the Footer global. */}
-      <div className="footer-credit">
-        <span className="footer-credit-label">Developed by</span>
-        <a href="https://t.me/Nanana2281" target="_blank" rel="noopener" className="footer-credit-link" aria-label="Developed by Alexander — Telegram">
-          <span className="footer-credit-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-              <path d="M21.4 4.3 2.9 11.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.5c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.2-2.1 4.6 3.4c.8.5 1.4.2 1.6-.8l3-14.2c.3-1.2-.5-1.8-1.3-1.4zM8.6 14.3l9.8-6.2c.5-.3.9-.1.5.2l-8.1 7.3-.3 3.4z" />
-            </svg>
-          </span>
-          Alexander
-        </a>
-      </div>
     </footer>
   )
 }
