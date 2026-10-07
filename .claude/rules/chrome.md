@@ -185,9 +185,9 @@ both rows (was 28 on top); "Services / For sale" sits 12px after "Cars" (`.nav-s
 banner and the announcement plates are skipped on `/add-business` (`HiddenOn` in the layout,
 list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). Footer: the
 About / Advertise / Contact / Privacy / Terms links left Explore for a `.footer-meta-bar` at the
-bottom of the footer — a hairline across the whole viewport and the links `space-between`
-inside `.container` (first under the logo's left edge, last at the content's right edge, equal
-gaps; centred and wrapped below 640). The 4-column container-query grid that ended the line
+bottom of the footer — a hairline across the whole viewport and the links as one centred group
+with 32px gaps (`--space-8`; a same-day edge-to-edge `space-between` version was "too far
+apart"); centred and wrapped below 640. The 4-column container-query grid that ended the line
 under "City Map" is gone. Admin login logo: white-lettered copy in the dark admin theme
 (`AdminGraphics.tsx` + `custom.scss`).
 

@@ -339,9 +339,12 @@
   color: var(--color-accent);
 }
 
+/* С 640px — одной группой по центру, промежутки по 32px. Сначала ссылки
+   стояли от края до края контента (space-between), клиент попросил «ближе»
+   (07.10.2026); линия над ними по-прежнему через весь экран. */
 @media (min-width: 640px) {
   .site-footer .footer-meta {
     flex-wrap: nowrap;
-    justify-content: space-between;
+    gap: 0 var(--space-8);
   }
 }
