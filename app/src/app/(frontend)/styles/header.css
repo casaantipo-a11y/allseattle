@@ -414,11 +414,18 @@
     justify-content: center;
   }
 
-  /* Поля ряда симметричны, иначе текст первого ряда стоит на 4px правее
-     второго: слева у Home поле --space-3, а у последнего подраздела справа
-     было --space-1. */
-  .nav-links > li:last-child .nav-sub-item:last-child a {
-    padding-right: var(--space-3);
+  /* Пункты первого ряда (Home … Cars) стоят так же плотно, как второго
+     (Shopping, Jobs…): поля ссылок по --space-1, как у второго ряда, плюс
+     общий gap --space-1 — 12px между соседними пунктами в обоих рядах
+     (просьба клиента 07.10.2026; было по --space-3, 28px). Подразделы
+     «Services / For sale» отходят от «Cars» на те же 12px. Поля по краям
+     ряда теперь равные (4px у Home и у последнего подраздела), так что оба
+     ряда стоят на одной оси без отдельной поправки. */
+  .nav-links li a {
+    padding: 0 var(--space-1);
+  }
+  .nav-sub {
+    margin-left: var(--space-1);
   }
 
   .nav-secondary li a {

@@ -16,7 +16,10 @@ export type AdSize = (typeof AD_SIZES)[number]
 export const AdSlots: CollectionConfig = {
   slug: 'ad-slots',
   admin: {
-    useAsTitle: 'code',
+    // The readable name ("Home — sidebar 2 (300x250)") is what the banner form's
+    // place picker lists, not the code (client, 07.10.2026). A slot saved without a
+    // name gets its code as the name (beforeChange below).
+    useAsTitle: 'name',
     defaultColumns: [
       'code',
       'page',
@@ -38,6 +41,7 @@ export const AdSlots: CollectionConfig = {
     delete: canWrite('sales'),
   },
   hooks: {
+    beforeChange: [({ data }) => (data && !data.name && data.code ? { ...data, name: data.code } : data)],
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },
@@ -79,6 +83,7 @@ export const AdSlots: CollectionConfig = {
             { label: 'Cars', value: 'cars' },
             { label: 'Jobs', value: 'jobs' },
             { label: 'Weather', value: 'weather' },
+            { label: 'City map', value: 'map' },
             { label: 'All pages', value: 'all' },
           ],
         },

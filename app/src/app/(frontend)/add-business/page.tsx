@@ -23,7 +23,7 @@ export default async function AddBusinessPage() {
     .map((c) => ({ value: String(c.id), label: `${c.name} (${sectionLabel[c.section]})` }))
 
   return (
-    <main id="content">
+    <main id="content" data-page="add-business">
       <section className="section">
         <div className="container">
           <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
@@ -59,7 +59,9 @@ export default async function AddBusinessPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-brand-line bg-white p-5 sm:p-8">
+            {/* 12px padding on phones: the Turnstile widget is a fixed 300px and did not fit
+                a 360px screen with 20px (the page scrolled sideways). */}
+            <div className="rounded-xl border border-brand-line bg-white p-3 sm:p-8">
               <SubmissionForm
                 form="business-registration"
                 submitLabel="Send"

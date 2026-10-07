@@ -9,3 +9,20 @@
   padding-bottom: 0.25em;
   margin-bottom: -0.25em;
 }
+
+// Login-screen logo: the regular artwork (navy "Seattle") on the light theme, the
+// white-lettered copy on the dark one (AdminGraphics.tsx). Payload sets the theme as
+// data-theme on <html>.
+.as-admin-logo--dark {
+  display: none;
+}
+
+html[data-theme='dark'] {
+  .as-admin-logo--light {
+    display: none;
+  }
+
+  .as-admin-logo--dark {
+    display: inline;
+  }
+}

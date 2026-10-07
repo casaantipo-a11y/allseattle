@@ -153,6 +153,11 @@ export const Banners: CollectionConfig = {
               relationTo: 'ad-slots',
               hasMany: true,
               required: true,
+              label: 'Where it shows',
+              admin: {
+                description:
+                  'Pick one or more places: page — position (size). The banner appears exactly there while it is published and today is between Start and End.',
+              },
             },
             {
               type: 'row',

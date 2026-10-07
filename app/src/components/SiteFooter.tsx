@@ -22,7 +22,7 @@ export async function SiteFooter() {
   const [explore, ...rest] = footer.columns ?? []
   // Explore splits in two (client, 04.10.2026): the site's sections — whatever the
   // header menu links to — as an even grid, and everything else (About, Advertise,
-  // Contact, Privacy, Terms) as a quiet line underneath.
+  // Contact, Privacy, Terms) as a quiet bar at the bottom of the footer.
   const menuUrls = new Set((header.menu ?? []).map((m) => m.url))
   const exploreLinks = explore?.links ?? []
   const sectionLinks = exploreLinks.filter((l) => menuUrls.has(l.url))
@@ -79,24 +79,13 @@ export async function SiteFooter() {
         {explore ? (
           <div className="footer-col footer-col--wide footer-explore">
             <h4>{explore.title}</h4>
-            <div className="footer-explore-body">
-              <ExploreToggle>
-                {sectionLinks.map((l) => (
-                  <li key={l.url}>
-                    <Link href={l.url}>{l.label}</Link>
-                  </li>
-                ))}
-              </ExploreToggle>
-              {metaLinks.length ? (
-                <ul className="footer-meta">
-                  {metaLinks.map((l) => (
-                    <li key={l.url}>
-                      <Link href={l.url}>{l.label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
+            <ExploreToggle>
+              {sectionLinks.map((l) => (
+                <li key={l.url}>
+                  <Link href={l.url}>{l.label}</Link>
+                </li>
+              ))}
+            </ExploreToggle>
           </div>
         ) : null}
 
@@ -113,6 +102,20 @@ export async function SiteFooter() {
           </div>
         ))}
       </div>
+      {/* About, Advertise, Contact, Privacy, Terms: a bar across the whole footer under a
+          full-width hairline, the links spread evenly from the content's left edge to its
+          right (client, 07.10.2026). */}
+      {metaLinks.length ? (
+        <div className="footer-meta-bar">
+          <ul className="container footer-meta">
+            {metaLinks.map((l) => (
+              <li key={l.url}>
+                <Link href={l.url}>{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </footer>
   )
 }

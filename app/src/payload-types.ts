@@ -973,6 +973,7 @@ export interface AdSlot {
     | 'cars'
     | 'jobs'
     | 'weather'
+    | 'map'
     | 'all';
   position: 'leaderboard' | 'sidebar' | 'in-feed';
   desktopSize: '970x250' | '728x90' | '300x250' | '300x600' | '320x100';
@@ -1003,6 +1004,9 @@ export interface Banner {
    * Where a click leads, e.g. https://example.com — counted, then redirected.
    */
   linkUrl: string;
+  /**
+   * Pick one or more places: page — position (size). The banner appears exactly there while it is published and today is between Start and End.
+   */
   slots: (number | AdSlot)[];
   /**
    * The slot's desktop size (±2px), best at 2x — e.g. 1456x180 for 728x90

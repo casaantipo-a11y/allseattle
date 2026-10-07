@@ -234,6 +234,13 @@ the row is heading + filter on the right, the legend a centred row under it (it 
 does not fit between them at 1024); on a phone everything stacks. The map is 10px under the
 heading (under the legend row at 640–1279), as the blocks on Shopping.
 
+**App `/map` ad (07.10.2026):** the prototype's City Map had a top 728×90; stage 2 had dropped it.
+`MAP_TOP` is back above the heading (`<AdSlot className="ad-slot-top">`), with a `map` value in
+the AdSlots `page` select (migration `20261007_105644_map_ad_slot_page`) and the slot in
+`seed-phase4.ts`. Existing databases need the row added once (it was inserted by hand locally).
+AdSlots now show their human `name` as the title, so the banner form's "Where it shows" picker
+lists "Home — sidebar 2 (300x250)" rather than codes.
+
 **`qa.html` — Q&A** — topic chips + a list of native `<details>`. No JS for the accordion:
 keyboard and screen readers work on their own.
 

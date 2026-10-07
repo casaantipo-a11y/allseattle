@@ -4,6 +4,7 @@ import * as migration_20261001_110926_phase3_sections from './20261001_110926_ph
 import * as migration_20261001_140215_r2_object_key from './20261001_140215_r2_object_key';
 import * as migration_20261001_150947_phase4_banners from './20261001_150947_phase4_banners';
 import * as migration_20261002_170344_header_sub_links from './20261002_170344_header_sub_links';
+import * as migration_20261007_105644_map_ad_slot_page from './20261007_105644_map_ad_slot_page';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261002_170344_header_sub_links.up,
     down: migration_20261002_170344_header_sub_links.down,
-    name: '20261002_170344_header_sub_links'
+    name: '20261002_170344_header_sub_links',
+  },
+  {
+    up: migration_20261007_105644_map_ad_slot_page.up,
+    down: migration_20261007_105644_map_ad_slot_page.down,
+    name: '20261007_105644_map_ad_slot_page'
   },
 ];

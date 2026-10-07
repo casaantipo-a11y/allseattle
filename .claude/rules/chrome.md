@@ -178,6 +178,19 @@ that opens with a question ("Saw something newsworthy? Share the
 news") hides the question below 640px (`.announcement-lead` in components.css — Tailwind's
 `hidden` loses to the prototype's `.hidden { display: none !important }`).
 
+**App changes of 07.10.2026.** Header: from 1024 the first-row links (Home … Cars) have
+`--space-1` padding like the second row, so every gap between neighbouring items is 12px in
+both rows (was 28 on top); "Services / For sale" sits 12px after "Cars" (`.nav-sub` margin
+`--space-1`); both rows stay centred on the logo–utilities gap (measured 0.0px). The photo
+banner and the announcement plates are skipped on `/add-business` (`HiddenOn` in the layout,
+list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). Footer: the
+About / Advertise / Contact / Privacy / Terms links left Explore for a `.footer-meta-bar` at the
+bottom of the footer — a hairline across the whole viewport and the links `space-between`
+inside `.container` (first under the logo's left edge, last at the content's right edge, equal
+gaps; centred and wrapped below 640). The 4-column container-query grid that ended the line
+under "City Map" is gone. Admin login logo: white-lettered copy in the dark admin theme
+(`AdminGraphics.tsx` + `custom.scss`).
+
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown
 / Mount Rainier / Waterfront / Pike Place) that used to sit under the hero is gone — it was

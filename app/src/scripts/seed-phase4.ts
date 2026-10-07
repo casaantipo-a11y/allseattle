@@ -94,6 +94,8 @@ export const SLOTS: Slot[] = [
   side('EVENTS_SIDEBAR_1', 'events', 'Events', 1, '300x250', 90),
   feed('EVENTS_INFEED_1', 'events', 'Events', 1, 100),
   top('WEATHER_TOP', 'weather', 'Weather', 100),
+  // The prototype's City Map had a top banner; stage 2 had dropped it (back 07.10.2026).
+  top('MAP_TOP', 'map', 'City map', 100),
 ]
 
 // A demo creative: the business's photo with the advertiser, an offer and a

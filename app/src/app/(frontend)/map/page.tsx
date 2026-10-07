@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { SECTIONS } from '@/collections/BusinessCategories'
+import { AdSlot } from '@/components/AdSlot'
 import { type ExplorerCategory, type ExplorerPoint, MapExplorer } from '@/components/map/MapExplorer'
 import { bizPath, effectivePackage, viewFor, withDescendants } from '@/lib/business'
 import { dateParts } from '@/lib/events'
@@ -96,6 +97,8 @@ export default async function MapPage() {
     <main id="content" data-page="map">
       <section className="section">
         <div className="container">
+          {/* The prototype's City Map had a top banner; it is back (client, 07.10.2026). */}
+          <AdSlot code="MAP_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
           <MapExplorer
             points={points}
             categories={explorerCategories}

@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { Announcements } from '@/components/Announcements'
 import { CookieConsent } from '@/components/CookieConsent'
 import { HeroBanner } from '@/components/HeroBanner'
+import { HiddenOn } from '@/components/HiddenOn'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getSiteSettings } from '@/lib/queries'
@@ -65,6 +66,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = { themeColor: '#0D1B2A' }
 
+// Pages shown without the photo banner and the announcement plates (client, 07.10.2026).
+const CHROME_FREE_PAGES = ['/add-business']
+
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
   const settings = await getSiteSettings()
   return (
@@ -74,8 +78,10 @@ export default async function FrontendLayout({ children }: { children: ReactNode
           Skip to content
         </a>
         <SiteHeader />
-        <HeroBanner />
-        <Announcements />
+        <HiddenOn paths={CHROME_FREE_PAGES}>
+          <HeroBanner />
+          <Announcements />
+        </HiddenOn>
         {children}
         <SiteFooter />
         <CookieConsent gaId={settings.ga4MeasurementId} />
