@@ -79,6 +79,11 @@ HOME_TOP 16px (`& > .section:first-child`, was the shared 32), HOME_TOP → the 
 (`.home-top`, was an inline 24), and the empty left sidebar is `display: none` below 1024
 (`.home-sidebar.home-sidebar-left`). Banner → eyebrow letters 30px at every width (was 46 /
 62 / 71); the whole row moves, so sidebars and "All news" keep their alignment.
+Then, same day, from 1024: `.home-main { margin-top: -22px }` — the eyebrow's letter tops sit on
+the same line as the tops of both sidebars (ad on the left, "At a glance" on the right), heading,
+"All news" and cards lifted with it; measured 0px off at 1024/1440/1920. Below 1024 no sidebars
+sit beside it, so nothing moves there. The plates → HOME_TOP 16px is now the site-wide rule in
+base.css (`main > .section:first-child:has(.ad-slot-top)`).
 "All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
 4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
 centre; now within ±1px at 640–1920. Phones keep the button on its own row.
