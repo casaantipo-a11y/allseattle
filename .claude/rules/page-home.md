@@ -74,6 +74,11 @@ instead of 36 (`.home-feed { margin-bottom: -20px }`).
 "Today in Seattle" was briefly lifted to 25px under the HOME_TOP banner, then the client asked
 for it back the same day — it sits where it always did (46px from the banner to the letters on
 desktop, 62 on a phone, where the empty left sidebar still takes its grid row).
+08.10.2026 the client asked for less empty space again, this time for the whole block: plates →
+HOME_TOP 16px (`& > .section:first-child`, was the shared 32), HOME_TOP → the row below 8px
+(`.home-top`, was an inline 24), and the empty left sidebar is `display: none` below 1024
+(`.home-sidebar.home-sidebar-left`). Banner → eyebrow letters 30px at every width (was 46 /
+62 / 71); the whole row moves, so sidebars and "All news" keep their alignment.
 "All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
 4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
 centre; now within ±1px at 640–1920. Phones keep the button on its own row.

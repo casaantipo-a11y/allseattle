@@ -12,6 +12,26 @@
   align-items: start;
 }
 
+/* Плашки → баннер HOME_TOP → «Today in Seattle» плотнее (клиент, 08.10.2026,
+   «много пустого места»): сверху 16px вместо общих 32 первой секции, под
+   баннером 8px вместо 24 — до букв надзаголовка 30px вместо 46. Вверх едет
+   весь ряд (обе боковые колонки вместе с лентой), так что выравнивание
+   колонок между собой не меняется. */
+& > .section:first-child {
+  padding-top: var(--space-4);
+}
+
+.home-top {
+  margin-bottom: var(--space-2);
+}
+
+/* Левая колонка — только рекламные места для компьютера (.ad-desktop-slot,
+   скрыты до 1024px). На узких экранах она пустая, но занимала строку сетки и
+   добавляла 16–24px над «Today in Seattle». До 1024px её нет. */
+.home-sidebar.home-sidebar-left {
+  display: none;
+}
+
 .home-sidebar {
   display: flex;
   flex-direction: row;
@@ -68,6 +88,9 @@
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
+  }
+  .home-sidebar.home-sidebar-left {
+    display: flex;
   }
   .home-sidebar > * {
     flex: 0 0 auto;

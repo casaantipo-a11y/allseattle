@@ -41,7 +41,7 @@ export default async function HomePage() {
     <main id="content" data-page="home">
 
       <section className="section">
-        <div className="container" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="container home-top">
           <AdSlot code="HOME_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
         </div>
         <div className="container home-layout">
