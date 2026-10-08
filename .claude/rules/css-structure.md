@@ -242,7 +242,9 @@ Each of these was decided explicitly. Don't "fix" them back:
 - **The first section of every page gets 32px of top padding instead of 96px**
   (`main > .section:first-child`). §1 allows an exception for the block adjoining the hero, and
   that is exactly what this is — it sits directly under the sticky nav. Spacing *between*
-  sections is untouched at 96px.
+  sections is untouched at 96px. **App, 08.10.2026:** when that first section holds the 728x90
+  top banner (`main > .section:first-child:has(.ad-slot-top)`) it is 16px, so the announcement
+  plates sit 16px above the banner on every page (Home first, then the client asked for the rest).
 - **Base text is 16px on mobile, 18px from 1024px** (§2) — but the site keeps a dense,
   portal-like feel, so most secondary text sits at `--text-xs` (14px), the floor of the scale.
 - **Text below 14px survives in exactly one place**, marked in the CSS: the captions inside

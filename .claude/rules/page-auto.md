@@ -57,7 +57,9 @@ pages) carries the offsets. He then asked, twice in a row, for the subnav 50px l
 where the subnav should sit instead, he said just above "AllSeattle Auto / Cars for Sale". So the
 settled state is the compact one: the banner alone under the photo banner, the subnav under it, the
 head right after. He then named the numbers for all three gaps, in three more passes: **35px above
-the banner, 30px below it** (`top: 3px` on `.ad-slot-top`, `margin-top: 33px` on `.auto-subnav`) and
+the banner, 30px below it** (`top: 3px` on `.ad-slot-top`, `margin-top: 33px` on `.auto-subnav`;
+in the app, 08.10.2026, the 3px shift is gone so the plates → banner gap is the site-wide 16px, and
+the subnav margin is a plain 30px — the app renders no subnav today, the rule waits for one) and
 **10px between the subnav's rule and the "ALLSEATTLE AUTO" letters**, which was 42 — 24px of the subnav's own `margin-bottom`, the eyebrow's shared
 `top: 16px`, and 2px of leading above the caps. The eyebrow's offset is not available to spend: it
 is what holds the eyebrow against the heading. So the 32px comes off the subnav —
