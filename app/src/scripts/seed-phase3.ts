@@ -52,6 +52,77 @@ const HOODS: Record<string, [number, number]> = {
   'Green Lake': [47.6798, -122.3285],
   'Columbia City': [47.5594, -122.2866],
   'Chinatown-International District': [47.5987, -122.3244],
+  'Queen Anne': [47.6205, -122.3493],
+  Wallingford: [47.6456, -122.3344],
+  'South Lake Union': [47.6256, -122.3344],
+  Waterfront: [47.6062, -122.3425],
+}
+
+// More demo events, dated from the day the seed runs (client, 08.10.2026: the prototype's twelve
+// all fall in the first ten days, so a week later "Coming up in Seattle" showed three cards and
+// then none). Spread over five weeks so the home block keeps four cards that long; photos are
+// the local pool's pictures no other event uses. [days from today, local hour, …]
+const UPCOMING_EVENTS = [
+  [5, 18, 'Sunset Cruise on Elliott Bay', 'Family', 'Pier 55', 'Waterfront', '$29', 'img/hero/waterfront.webp', 'A ninety-minute loop past the skyline and West Seattle at golden hour, with hot cider on the upper deck.'],
+  [8, 7, 'Sunrise Yoga at Gas Works Park', 'Sports', 'Gas Works Park', 'Wallingford', 'Free', 'img/business/biz-12.webp', 'An hour of all-levels flow on the hill above Lake Union. Bring a mat and a warm layer; tea afterwards.'],
+  [11, 19, 'Candlelight Jazz in Capitol Hill', 'Music', 'The Lantern Room', 'Capitol Hill', '$25', 'img/business/biz-1.webp', 'A trio playing standards and new arrangements in a room lit only by candles. Two sets, small plates at the bar.'],
+  [15, 11, 'Pike Place Chowder Crawl', 'Food', 'Pike Place Market', 'Downtown', '$18', 'img/hero/pike-place.webp', 'Eight market kitchens, eight tasting cups, one ballot for the best chowder in Seattle.'],
+  [19, 20, 'Night Sky Talk at the Space Needle', 'Family', 'Seattle Center', 'Queen Anne', '$15', 'img/hero/space-needle.webp', 'A local astronomer on what you can still see from a city sky, followed by telescopes on the lawn if it is clear.'],
+  [24, 10, 'Fremont Pie Baking Workshop', 'Food', 'Fremont Sourdough Bakery', 'Fremont', '$45', 'img/business/biz-7.webp', 'Hands-on class for flaky crust and a seasonal apple filling. You take home the pie you bake.'],
+  [31, 9, 'Mount Rainier Day Hike Meetup', 'Sports', 'REI Flagship', 'South Lake Union', 'Free', 'img/hero/mount-rainier.webp', 'Carpool from the flagship store to an easy trail in the park. Moderate pace, about six miles round trip.'],
+  [38, 18, 'Ballard Author Reading Night', 'Community', 'Ballard Branch Library', 'Ballard', 'Free', 'img/business/biz-8.webp', 'Three Seattle writers read from new books, then a Q&A and signing with the neighborhood bookshop.'],
+] as const
+
+// The wall-clock hour in Seattle on a given day, as a UTC instant (DST-aware).
+function seattleTime(daysFromNow: number, hour: number) {
+  const day = new Date(Date.now() + daysFromNow * 86_400_000)
+  const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(day)
+  const guess = new Date(`${ymd}T${String(hour).padStart(2, '0')}:00:00Z`)
+  const offset = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'shortOffset' })
+    .formatToParts(guess)
+    .find((part) => part.type === 'timeZoneName')!
+    .value.match(/GMT([+-]\d+)/)![1]
+  return new Date(guess.getTime() - Number(offset) * 3_600_000)
+}
+
+export async function seedUpcomingEvents(payload: Payload, prototypeDir: string, log: (m: string) => void) {
+  let created = 0
+  for (const [i, [days, hour, title, category, venue, hood, price, photo, description]] of UPCOMING_EVENTS.entries()) {
+    const exists = await payload.find({ collection: 'events', where: { title: { equals: title } }, limit: 1, depth: 0 })
+    if (exists.totalDocs) continue
+    const cat =
+      (await payload.find({ collection: 'event-categories', where: { name: { equals: category } }, limit: 1, depth: 0 })).docs[0]?.id ??
+      (await payload.create({ collection: 'event-categories', data: { name: category, isDemo: true }, context: ctx() })).id
+    const image =
+      (await payload.find({ collection: 'media', where: { filename: { equals: path.basename(photo) } }, limit: 1, depth: 0 })).docs[0]?.id ??
+      (await payload.create({ collection: 'media', data: { alt: title, isDemo: true }, filePath: path.join(prototypeDir, photo), context: ctx() })).id
+    const start = seattleTime(days, hour)
+    const [lat, lng] = HOODS[hood] ?? HOODS.Downtown
+    const free = price === 'Free'
+    await payload.create({
+      collection: 'events',
+      data: {
+        title,
+        category: cat,
+        venueName: venue,
+        address: `${venue}, ${hood}, Seattle`,
+        lat: +(lat + ((i % 5) - 2) * 0.0012).toFixed(6),
+        lng: +(lng + ((i % 3) - 1) * 0.0015).toFixed(6),
+        startAt: start.toISOString(),
+        endAt: new Date(start.getTime() + 2 * 3600000).toISOString(),
+        isFree: free,
+        price: free ? undefined : price,
+        image,
+        summary: description,
+        description: doc(p(description)),
+        status: 'published',
+        isDemo: true,
+      },
+      context: ctx(),
+    })
+    created++
+  }
+  log(`${created} upcoming demo events`)
 }
 
 type MockCar = {
@@ -261,6 +332,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
     events++
   }
   log(`${events} demo events`)
+  await seedUpcomingEvents(payload, prototypeDir, log)
 
   // ---- Contest ------------------------------------------------------------------
   const { CONTEST_TITLE, CONTEST_ENTRIES } = await load<{ CONTEST_TITLE: string; CONTEST_ENTRIES: MockEntry[] }>('js/mock-data/contest.js')
