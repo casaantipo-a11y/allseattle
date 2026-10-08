@@ -90,7 +90,8 @@ at 1024–1920. Phones/tablets were already within 2px of centred and are untouc
 12–15px under the letters (button → cards 6.5px at 1024, 11 at 1440). Then "higher still": the
 head's `margin-bottom` is 8px and its translate 10px instead of 14 (so the "All news" button,
 whose bottom hangs below the letters, doesn't land on the cards) — banner → letters 18px,
-letters → cards 8 (1024) / 10.6 (1440), button → cards 2.6 / 6.8.
+letters → cards 8 (1024) / 10.6 (1440), button → cards 2.6 / 6.8. Then "a touch lower":
+`margin-bottom` 12px — letters → cards 12 / 14.6, button → cards 6.6 / 10.8.
 "All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
 4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
 centre; now within ±1px at 640–1920. Phones keep the button on its own row.
