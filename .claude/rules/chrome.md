@@ -194,7 +194,11 @@ under "City Map" is gone. Admin login logo: white-lettered copy in the dark admi
 Footer, 08.10.2026 (app): from 640 the brand column is as wide as its content
 (`justify-self: start`) and the logo is centred over the copyright line and the "Developed by"
 pill (wrapped copyright text centred too); the footer's bottom padding is 16px instead of 32, so
-the meta-bar hairline and its links sit 16px higher. Phones unchanged.
+the meta-bar hairline and its links sit 16px higher. Phones unchanged. Then "too much empty space above the
+line": the brand column was 23px taller than Contact / Follow / Explore, so from 640 the footer
+logo is `--logo-h: 34px` (as in the header), brand gaps 8px, copyright → credit 4px; at 1440 the
+blocks now end 24px above the line (was 39). In the narrow 1024 column "Developed by" wraps
+whole above the pill (nowrap label, wrapping row) instead of breaking into two words.
 
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown
