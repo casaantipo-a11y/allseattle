@@ -92,7 +92,8 @@ head's `margin-bottom` is 8px and its translate 10px instead of 14 (so the "All 
 whose bottom hangs below the letters, doesn't land on the cards) — banner → letters 18px,
 letters → cards 8 (1024) / 10.6 (1440), button → cards 2.6 / 6.8. Then "a touch lower":
 `margin-bottom` 12px — letters → cards 12 / 14.6, button → cards 6.6 / 10.8; and "a touch more":
-16px — letters → cards 16 / 18.6, button → cards 10.6 / 14.8.
+16px — letters → cards 16 / 18.6, button → cards 10.6 / 14.8; then "2px up": 14px
+(`calc(var(--space-4) - 2px)`).
 "All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
 4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
 centre; now within ±1px at 640–1920. Phones keep the button on its own row.
