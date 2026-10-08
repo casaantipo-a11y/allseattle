@@ -83,7 +83,10 @@ Then, same day, from 1024: `.home-main { margin-top: -22px }` — the eyebrow's 
 the same line as the tops of both sidebars (ad on the left, "At a glance" on the right), heading,
 "All news" and cards lifted with it; measured 0px off at 1024/1440/1920. Below 1024 no sidebars
 sit beside it, so nothing moves there. The plates → HOME_TOP 16px is now the site-wide rule in
-base.css (`main > .section:first-child:has(.ad-slot-top)`).
+base.css (`main > .section:first-child:has(.ad-slot-top)`). Later the same day the client asked for the head to sit
+midway between HOME_TOP and the cards instead: from 1024 `.home-main > .section-head` is
+`translate: 0 14px` (cards and sidebars stay put) — 22px banner → letters, 20–23 letters → cards
+at 1024–1920. Phones/tablets were already within 2px of centred and are untouched.
 "All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
 4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
 centre; now within ±1px at 640–1920. Phones keep the button on its own row.
