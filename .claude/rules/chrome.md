@@ -191,6 +191,10 @@ with 32px gaps (`--space-8`; a same-day edge-to-edge `space-between` version was
 apart"); centred and wrapped below 640. The 4-column container-query grid that ended the line
 under "City Map" is gone. Admin login logo: white-lettered copy in the dark admin theme
 (`AdminGraphics.tsx` + `custom.scss`).
+Footer, 08.10.2026 (app): from 640 the brand column is as wide as its content
+(`justify-self: start`) and the logo is centred over the copyright line and the "Developed by"
+pill (wrapped copyright text centred too); the footer's bottom padding is 16px instead of 32, so
+the meta-bar hairline and its links sit 16px higher. Phones unchanged.
 
 The header sits *above* the banner, which is the inversion of how this used to work: the photo
 was the page header and the nav came after it. The landmark icon strip (Space Needle / Downtown

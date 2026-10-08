@@ -213,11 +213,17 @@
     grid-template-areas: none;
     align-items: start;
     row-gap: var(--space-6);
-    padding: var(--space-8) var(--gutter);
+    padding: var(--space-8) var(--gutter) var(--space-4);
   }
+  /* Колонка бренда по ширине своего содержимого (justify-self: start), и
+     логотип в ней по центру — над строкой копирайта и подписью под ней
+     (клиент, 08.10.2026; раньше логотип стоял по левому краю). Снизу у
+     подвала 16px вместо 32 — линия служебных ссылок поднята на 16px. */
   .footer-brand {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-self: start;
     gap: var(--space-3);
   }
   .footer-brand .site-logo,
@@ -228,7 +234,7 @@
     grid-area: auto;
   }
   .footer-brand .site-logo {
-    align-self: flex-start;
+    align-self: center;
   }
   .footer-copy {
     padding-top: 0;
@@ -365,6 +371,7 @@
 
 .footer-copy-stack p {
   margin: 0;
+  text-align: center;
 }
 
 .footer-credit {

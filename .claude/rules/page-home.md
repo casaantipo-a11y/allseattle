@@ -74,3 +74,6 @@ instead of 36 (`.home-feed { margin-bottom: -20px }`).
 "Today in Seattle" was briefly lifted to 25px under the HOME_TOP banner, then the client asked
 for it back the same day — it sits where it always did (46px from the banner to the letters on
 desktop, 62 on a phone, where the empty left sidebar still takes its grid row).
+"All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
+4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
+centre; now within ±1px at 640–1920. Phones keep the button on its own row.
