@@ -279,5 +279,7 @@ keyboard and screen readers work on their own.
   was the shared 36), the list page only.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
 - **Weather**: WEATHER_TOP in the heading row from 1440, as on Cars (`.ad-slot-top--in-head`).
+  "Place an ad" is centred on the banner there (`top: 0` instead of the head card's shared 8px,
+  weather.css; centres 577 / 577 at 1440 and 1920). Cars keeps the 8px.
 - **Map**: from 640 the eyebrow + heading are 8px right and the category filter 8px left
   (`translate` / `left`, business.css); the legend stays centred between them.
