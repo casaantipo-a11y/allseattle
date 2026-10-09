@@ -256,9 +256,12 @@ keyboard and screen readers work on their own.
 - **Events**: head 8px closer to the banner (`--snug`). The filters were redesigned the same day
   after two rejected tries (an aligned panel with labels, then a SORT row — "remove sort, I meant
   when and category"): **WHEN is underline tabs** like Weather's Today / Week (heading font, 18px
-  from 640, 14px on phones; red 3px underline on the active one, laid over a 1px rule the width of
-  the container), **CATEGORY soft grey chips** without a border (navy when selected) under them,
-  both rows **centred on the rule** (measured to 0.1px at 1024/1440). The WHEN/CATEGORY labels are
+  from 640, 14px on phones; red 3px underline on the active one, laid over a 1px rule that runs
+  only from the first tab's text to the last's — `width: fit-content`, centred), **CATEGORY soft
+  grey chips** without a border (navy when selected) under them, both rows centred (measured to
+  0.1px at 1024/1440). **From 1440 the tabs sit in the heading row**, between "Seattle events" and
+  "Submit an event", their baseline on the heading's (`margin-top: −56px`, 0.4px off; the chips
+  follow); at 1280 they would come 13px from the heading, so below 1440 they stay under it. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).

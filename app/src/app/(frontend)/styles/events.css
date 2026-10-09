@@ -153,6 +153,11 @@
     justify-content: center;
     column-gap: var(--space-3);
     border-bottom: 1px solid var(--color-slate-soft);
+    /* Линия — от начала первой вкладки до конца последней, а не во всю
+       ширину (клиент, 09.10.2026): ряд по ширине своих вкладок, по центру. */
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
   }
 
   .events-when a {
@@ -221,6 +226,20 @@
      ниже, как второй ряд меню и сортировка Jobs. */
   @media (min-width: 1024px) {
     .events-types a { min-height: 36px; }
+  }
+
+  /* Вкладки вровень с «Seattle events» (клиент, 09.10.2026): с 1440 они
+     поднимаются в строку заголовка, между ним и «Submit an event», и
+     базовая линия их букв ложится на базовую линию заголовка (замер: на
+     56px выше, 0.4px разницы). Чипы поднимаются вместе с ними. Уже 1440
+     вкладки (≈525px по центру) подходят к заголовку ближе чем на 16px —
+     там они остаются под шапкой. z-index — поверх широкой коробки h1. */
+  @media (min-width: 1440px) {
+    .events-when {
+      position: relative;
+      z-index: 1;
+      margin-top: calc(-1 * (var(--space-12) + var(--space-2)));
+    }
   }
 }
 
