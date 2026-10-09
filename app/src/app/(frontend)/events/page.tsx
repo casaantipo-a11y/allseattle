@@ -3,16 +3,16 @@ import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
 import { EventCard } from '@/components/events'
-import { EVENT_SORTS, type EventSort, WHEN, type When, categoryOf, inWindow, sortEvents } from '@/lib/events'
+import { WHEN, type When, categoryOf, inWindow } from '@/lib/events'
 import { getEventCategories, getUpcomingEvents } from '@/lib/queries-phase3'
 
 export const revalidate = 600
 
-type Props = { searchParams: Promise<{ when?: string; category?: string; sort?: string }> }
+type Props = { searchParams: Promise<{ when?: string; category?: string }> }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const sp = await searchParams
-  const filtered = Boolean(sp.when || sp.category || sp.sort)
+  const filtered = Boolean(sp.when || sp.category)
   return {
     title: 'Events in Seattle',
     description: 'What is on in Seattle: concerts, food, community, family, art and sports events — today, this weekend and this month.',
@@ -29,18 +29,9 @@ export default async function EventsPage({ searchParams }: Props) {
   const when = (WHEN.some((w) => w.value === sp.when) ? sp.when : 'all') as When
   const [events, categories] = await Promise.all([getUpcomingEvents(), getEventCategories()])
   const category = categories.find((c) => c.slug === sp.category)
-  const sort = (EVENT_SORTS.some((s) => s.value === sp.sort) ? sp.sort : 'soonest') as EventSort
-  const list = sortEvents(
-    events.filter((e) => inWindow(e, when) && (!category || categoryOf(e)?.id === category.id)),
-    sort,
-  )
-  // Every link keeps the other two choices; the defaults stay out of the URL.
-  const href = (w: When, c?: string | null, s: EventSort = sort) => {
-    const q = new URLSearchParams({
-      ...(w !== 'all' ? { when: w } : {}),
-      ...(c ? { category: c } : {}),
-      ...(s !== 'soonest' ? { sort: s } : {}),
-    }).toString()
+  const list = events.filter((e) => inWindow(e, when) && (!category || categoryOf(e)?.id === category.id))
+  const href = (w: When, c?: string | null) => {
+    const q = new URLSearchParams({ ...(w !== 'all' ? { when: w } : {}), ...(c ? { category: c } : {}) }).toString()
     return q ? `/events?${q}` : '/events'
   }
 
@@ -72,8 +63,9 @@ export default async function EventsPage({ searchParams }: Props) {
             </Link>
           </div>
 
-          {/* Filters and sort in one panel (client, 03 and 09.10.2026): the period is a
-              segmented switch, category and sort rows of light chips; labels share a column. */}
+          {/* Period and category (client, 03 and 09.10.2026): the period as underline tabs
+              (like Weather's Today / Week), the category as soft chips under them. The labels
+              stay for screen readers only — the two rows explain themselves. */}
           <div className="events-filters">
             <div className="events-filter-row">
               <span className="events-filter-label" id="events-when-label">
@@ -98,19 +90,6 @@ export default async function EventsPage({ searchParams }: Props) {
                 {categories.map((c) => (
                   <Link key={c.id} href={href(when, c.slug)} className={category?.id === c.id ? 'active' : undefined} aria-current={category?.id === c.id ? 'page' : undefined}>
                     {c.name}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-            {/* Sort order (client, 09.10.2026), the same chips as the category row. */}
-            <div className="events-filter-row">
-              <span className="events-filter-label" id="events-sort-label">
-                Sort
-              </span>
-              <nav className="events-types" aria-labelledby="events-sort-label">
-                {EVENT_SORTS.map((s) => (
-                  <Link key={s.value} href={href(when, category?.slug, s.value)} className={s.value === sort ? 'active' : undefined} aria-current={s.value === sort ? 'page' : undefined}>
-                    {s.label}
                   </Link>
                 ))}
               </nav>

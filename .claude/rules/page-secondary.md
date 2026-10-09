@@ -253,13 +253,14 @@ keyboard and screen readers work on their own.
   (`PAGE` in `JobsBoard.tsx`; the count
   is tied to a JSON key of the filter state, so any filter/sort change starts again at 5 without an
   effect).
-- **Events**: head 8px closer to the banner (`--snug`); the WHEN / CATEGORY rows are one white
-  panel the width of the container (= the card grid's edges), labels in a shared column and both
-  controls starting on one line (`subgrid` from 640). Replaces the two separately centred rows.
-  A third row, **SORT** — Soonest (default) / Lowest price / Highest price / A–Z, the same set as
-  Jobs' — `?sort=` links like the filters (every link keeps the other two choices, defaults stay
-  out of the URL; any `sort` is noindex). `sortEvents()` in `lib/events.ts`: Free counts as 0, a
-  price string gives its first number ("$15–25" → 15), no price goes last; ties by start date.
+- **Events**: head 8px closer to the banner (`--snug`). The filters were redesigned the same day
+  after two rejected tries (an aligned panel with labels, then a SORT row — "remove sort, I meant
+  when and category"): **WHEN is underline tabs** like Weather's Today / Week (heading font, 18px
+  from 640, 14px on phones; red 3px underline on the active one, laid over a 1px rule the width of
+  the container), **CATEGORY soft grey chips** without a border (navy when selected) under them,
+  both rows **centred on the rule** (measured to 0.1px at 1024/1440). The WHEN/CATEGORY labels are
+  screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
+  at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
 - **Weather**: WEATHER_TOP in the heading row from 1440, as on Cars (`.ad-slot-top--in-head`).
 - **Map**: from 640 the eyebrow + heading are 8px right and the category filter 8px left

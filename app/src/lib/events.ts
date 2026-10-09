@@ -16,36 +16,6 @@ export const WHEN: { value: When; label: string }[] = [
   { value: 'month', label: 'This month' },
 ]
 
-// Sort orders for the events list (client, 09.10.2026), the same set as Jobs'
-// "Newest / Highest pay / Lowest pay / Company A–Z".
-export type EventSort = 'soonest' | 'price-asc' | 'price-desc' | 'title'
-export const EVENT_SORTS: { value: EventSort; label: string }[] = [
-  { value: 'soonest', label: 'Soonest' },
-  { value: 'price-asc', label: 'Lowest price' },
-  { value: 'price-desc', label: 'Highest price' },
-  { value: 'title', label: 'A–Z' },
-]
-
-/** Free is 0; otherwise the first number in the price text ("$15–25" → 15); none → unknown. */
-const priceValue = (ev: Pick<Event, 'isFree' | 'price'>) => {
-  if (ev.isFree) return 0
-  const m = (ev.price || '').replace(/,/g, '').match(/\d+(\.\d+)?/)
-  return m ? Number(m[0]) : null
-}
-
-/** A sorted copy; ties (and events with no price) fall back to the start date. */
-export function sortEvents<T extends Pick<Event, 'startAt' | 'title' | 'isFree' | 'price'>>(list: T[], sort: EventSort): T[] {
-  const byDate = (a: T, b: T) => +new Date(a.startAt) - +new Date(b.startAt)
-  const byPrice = (dir: 1 | -1) => (a: T, b: T) => {
-    const pa = priceValue(a)
-    const pb = priceValue(b)
-    if (pa === null || pb === null) return pa === pb ? byDate(a, b) : pa === null ? 1 : -1
-    return (pa - pb) * dir || byDate(a, b)
-  }
-  const cmp = { soonest: byDate, 'price-asc': byPrice(1), 'price-desc': byPrice(-1), title: (a: T, b: T) => a.title.localeCompare(b.title) || byDate(a, b) }[sort]
-  return [...list].sort(cmp)
-}
-
 /** Does the event (start…end) touch the window? */
 export function inWindow(ev: Pick<Event, 'startAt' | 'endAt'>, when: When, now = new Date()): boolean {
   if (when === 'all') return true

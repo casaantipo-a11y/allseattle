@@ -112,65 +112,58 @@
    Заголовок слева, «Submit an event» — карточка того же вида, что «Post a
    job» на Jobs (.post-card; её место в шапке задаёт общее правило
    .section-head .post-card в components.css), у правого края напротив
-   надзаголовка и заголовка. Фильтры: период — сегментированный
-   переключатель, категория — лёгкие чипы, выбранное navy.
+   надзаголовка и заголовка. Фильтры 03.10: период — сегментированный
+   переключатель, категория — лёгкие чипы в рамке, каждый ряд по центру.
    До этого в тот же день пробовали «всё слева» и колонку виджетов как в
    News — оба варианта клиент отклонил.
-   09.10.2026 («придумай что-то с сортировкой»): два ряда, каждый отдельно по
-   центру, давали подписи и переключатели на разных вертикалях. Теперь это
-   одна панель во всю ширину контейнера (её края — края сетки карточек под
-   ней): подписи в общей колонке, переключатели начинаются с одной линии
-   (subgrid с 640px). */
+   09.10.2026 клиент попросил другой дизайн фильтров («придумай что-то с
+   when и category»): две центрированные строки с подписями, потом панель с
+   общей колонкой подписей — обе отклонены. Теперь без рамки и без видимых
+   подписей: период — вкладки с красным подчёркиванием на линии во всю
+   ширину (как Today / Week на Weather), под ними категории — мягкие серые
+   чипы без рамки, выбранный navy. Вкладки и чипы по центру линии (клиент,
+   тот же день). Подписи When / Category остаются для
+   экранных читалок (aria-labelledby). */
 [data-page="events"] {
   .events-filters {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    /* 16px от заголовка: без отступа переключатель почти касался букв. */
+    /* 16px от заголовка: без отступа вкладки почти касались букв. */
     margin-top: var(--space-4);
     margin-bottom: var(--space-6);
-    padding: var(--space-4);
-    background: var(--color-white);
-    border: 1px solid var(--color-slate-soft);
-    border-radius: var(--radius-lg);
-  }
-
-  .events-filter-row {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
   }
 
   .events-filter-label {
-    font-family: var(--font-heading);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-slate);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
-  /* Переключатель периода. На телефоне четыре сегмента не влезают в строку
-     (нужно ~366px при 343), поэтому там сетка 2 × 2. */
+  /* Вкладки периода. Линия под ними — граница ряда; подчёркивание активной
+     вкладки ложится поверх неё (margin-bottom: −1px). */
   .events-when {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-1);
-    padding: var(--space-1);
-    background: var(--color-bg-soft);
-    border: 1px solid var(--color-slate-soft);
-    border-radius: var(--radius);
+    display: flex;
+    /* На 375 четыре вкладки входят в строку впритык (343 из 343px); на 320
+       последняя переносится на вторую строку, а не уводит страницу вбок. */
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: var(--space-3);
+    border-bottom: 1px solid var(--color-slate-soft);
   }
 
   .events-when a {
     display: flex;
     align-items: center;
-    justify-content: center;
     min-height: 44px;
-    padding: 0 var(--space-4);
-    border-radius: var(--radius-sm);
+    margin-bottom: -1px;
+    border-bottom: 3px solid transparent;
+    font-family: var(--font-heading);
     font-size: var(--text-xs);
-    font-weight: 600;
+    font-weight: 700;
     color: var(--color-slate);
     text-decoration: none;
     white-space: nowrap;
@@ -178,17 +171,17 @@
 
   .events-when a:hover {
     color: var(--color-navy);
-    background: var(--color-white);
   }
 
   .events-when a.active {
-    background: var(--color-navy);
-    color: var(--color-white);
+    color: var(--color-navy);
+    border-bottom-color: var(--color-accent);
   }
 
   .events-types {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-2);
   }
 
@@ -197,9 +190,8 @@
     align-items: center;
     min-height: 44px;
     padding: 0 var(--space-4);
-    border: 1px solid var(--color-slate-soft);
     border-radius: var(--radius-full);
-    background: var(--color-white);
+    background: var(--color-bg-soft);
     font-size: var(--text-xs);
     font-weight: 600;
     color: var(--color-navy);
@@ -207,54 +199,27 @@
   }
 
   .events-types a:hover {
-    border-color: var(--color-navy);
+    background: var(--color-slate-soft);
   }
 
   .events-types a.active {
     background: var(--color-navy);
-    border-color: var(--color-navy);
     color: var(--color-white);
   }
 
   @media (min-width: 640px) {
-    .events-filters {
-      display: grid;
-      grid-template-columns: max-content minmax(0, 1fr);
-      column-gap: var(--space-6);
-      row-gap: var(--space-3);
-      padding: var(--space-4) var(--space-6);
-    }
-
-    .events-filter-row {
-      display: grid;
-      grid-column: 1 / -1;
-      grid-template-columns: subgrid;
-      align-items: center;
-    }
-
-    .events-types {
-      min-width: 0;
-    }
-
-    /* Переключатель периода по ширине своих сегментов, а не на всю строку. */
     .events-when {
-      justify-self: start;
-    }
-
-    .events-when {
-      display: flex;
-      border-radius: var(--radius-full);
+      column-gap: var(--space-8);
     }
 
     .events-when a {
-      border-radius: var(--radius-full);
+      font-size: var(--text-lg);
     }
   }
 
-  /* Мышиные ширины: правило 44px про касания (design.md §8), здесь ряды
+  /* Мышиные ширины: правило 44px про касания (design.md §8), здесь чипы
      ниже, как второй ряд меню и сортировка Jobs. */
   @media (min-width: 1024px) {
-    .events-when a { min-height: 36px; }
     .events-types a { min-height: 36px; }
   }
 }
