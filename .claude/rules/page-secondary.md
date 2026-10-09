@@ -265,7 +265,9 @@ keyboard and screen readers work on their own.
   on the filter block — `.events-head` is a 92px band (44 tabs + 12 + 36 chips) with
   `align-content: center`, `.events-filters` sits on it with `margin-top: −92px`, `z-index: 1`,
   `pointer-events: none` except on its links (checked: the card and every tab/chip get their
-  clicks). Measured: filter block centre 678, card 680, heading text ≈677. At 1280 the tabs would
+  clicks). Measured: filter block centre 678, card 680, heading text ≈677. Then "lower the sort
+  8px": `margin-top: calc(−92px + 8px)` — tabs, chips and the cards below 8px lower, the heading
+  and card stay (tab letters 24px under the banner, filter centre 8px below the heading's). At 1280 the tabs would
   come 13px from the heading, so below 1440 they stay under it. Phones: rule → chips 8px. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
