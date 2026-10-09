@@ -374,25 +374,42 @@
   }
 }
 
-/* Колонки по ширине своего содержимого, свободное место поровну между ними
-   (space-between): видимые промежутки между блоками логотипа, Contact,
-   Follow us и Explore равны (клиент, 09.10.2026; при 1fr 1fr 1fr 2.2fr они
-   были 25 / 109 / 91px на 1440). Подколонки Explore — 32px, чтобы раздел
-   читался одним блоком, а не тремя колонками в общем ряду. */
+/* Колонки с 1024 (клиент, 09.10.2026, в два шага). Сначала — равные
+   промежутки между блоками (Contact / Follow us / Explore: при 1fr 1fr 1fr
+   2.2fr они были 25 / 109 / 91px на 1440). Затем — «сместить влево, чтобы
+   Contact стоял на прежнем месте, а новые отступы сохранить»:
+   - колонка логотипа — прежняя доля сетки 1fr из 5.2fr, плюс 16px, так что
+     Contact начинается там же, где при старой сетке (303px на 1440);
+   - между Contact, Follow us и Explore — одинаковые промежутки-дорожки
+     --footer-gap той же величины, что давал space-between: ширина
+     контейнера минус ширины всех четырёх колонок (1019px с 1280, 987 ниже,
+     где подколонки Explore по 16px), делённая на три. Оба промежутка — одно
+     значение, поэтому равны всегда; от текста в колонках зависит только их
+     величина и свободное место справа.
+   Колонки стоят в дорожках 1 / 3 / 5 / 7, чётные — промежутки. */
 @media (min-width: 1024px) {
   .footer-inner {
-    /* Колонка логотипа может сузиться (копирайт переносится): на 1024–1279
-       четыре колонки по содержимому шире контейнера (971 из 945px). */
-    grid-template-columns: minmax(0, max-content) repeat(3, max-content);
-    justify-content: space-between;
+    --footer-gap: max(var(--space-4), calc((100% - 987px) / 3));
+    grid-template-columns:
+      calc((100% - 3 * var(--space-4)) / 5.2) var(--space-4)
+      max-content var(--footer-gap)
+      max-content var(--footer-gap)
+      max-content;
+    column-gap: 0;
   }
+  .footer-brand { grid-column: 1; }
+  .footer-contact { grid-column: 3; }
+  .footer-follow { grid-column: 5; }
+  .footer-explore,
   .footer-col--wide {
-    grid-column: auto;
+    grid-column: 7;
   }
 }
-/* На 1024 содержимое еле помещается, и с 32px колонки сжимались — промежутки
-   выходили 28 / 32 / 36. Там подколонки по 16px. */
+/* С 1280 подколонки Explore по 32px — раздел читается одним блоком. */
 @media (min-width: 1280px) {
+  .footer-inner {
+    --footer-gap: calc((100% - 1019px) / 3);
+  }
   .footer-explore ul#footer-explore-list {
     column-gap: var(--space-8);
   }

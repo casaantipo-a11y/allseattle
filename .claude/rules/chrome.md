@@ -234,3 +234,12 @@ sub-columns are 32px apart from 1280, 16 below. At 1024–1279 everything barely
 max-content columns are 971px against 945), so the brand column may shrink (the copyright wraps):
 Contact / Follow / Explore stay 16px apart there, brand → Contact is a little wider. Footer height
 unchanged (266 at 1024, 219 at 1440).
+Then the same day "shift everything left so Contact is where it was, keep the new gaps": the grid
+is seven tracks — the old brand share `calc((100% − 48px) / 5.2)`, 16px, Contact, `--footer-gap`,
+Follow, `--footer-gap`, Explore (items in tracks 1/3/5/7, `column-gap: 0`). `--footer-gap` is
+what space-between gave: `(100% − 1019px) / 3` from 1280 (the four columns' box widths), `max(16px,
+(100% − 987px) / 3)` below (Explore's sub-columns are 16px there). One value for both gaps, so
+they are always equal; only their size and the free space on the right depend on the column text.
+Measured: Contact at 220.5 / 272.6 / 303.4 / 494.1 (= the old grid) at 1024 / 1280 / 1440 / 1920,
+gaps 66 / 119 / 172 from 1280. At 1100–1279 the brand column is narrow again and the copyright
+wraps, as with the old grid.
