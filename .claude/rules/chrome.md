@@ -212,3 +212,16 @@ by nothing.
 **App footer, 09.10.2026:** the "Developed by · Alexander" row (`.footer-credit`) sits 4px lower
 (`position: relative`, the label moves with the pill so they stay one line), then 2px more:
 `top: calc(var(--space-1) + 2px)`, 10px under the copyright line; the footer's height is unchanged.
+
+**App footer on phones and tablets, 09.10.2026 ("do something with the footer"):** the column
+layout now starts at **1024**, not 640 — tablets got three narrow columns with the copyright
+broken into "All rights / reserved." and empty space on the right. **640–1023** is a stretched
+phone: logo left + the 44px round social icons right; Contact (1fr) and Explore (2fr, 3
+sub-columns, links 44px tall) side by side; under a hairline the copyright left and the
+"Developed by · Alexander" pill right on one line (centres equal). **Phones:** copyright and
+credit centred across the footer (`.footer-copy-stack` is a full-width flex column); the meta
+links are inline text with `text-wrap: balance` — two even lines (3 + 2) instead of four and a
+lone "Terms of Use". The credit pill is 44px tall below 1024 (32 with a mouse), and its 6px
+nudge applies from 1024 only. The 1024 block resets everything the tablet sets (tablet rules
+that touch the copy stack carry `.footer-copy` in front — the base stack rule sits later in the
+file). Desktop measured identical before/after: 266px at 1024, 219 at 1440.

@@ -199,21 +199,103 @@
   min-height: 44px;
 }
 
-/* ---------- Планшет и шире (с 640px) ----------
-   Прежняя раскладка в колонки. На планшете четыре колонки в ряд не
-   помещаются: контактной досталось бы 125px и «Email: info@allseattle.org»
-   переносился бы в две строки. Поэтому здесь три колонки, а Explore уходит
-   под них во всю ширину — там ему хватает на пять подколонок вместо двух.
-   Промежуток между колонками один на весь футер (16px) — тот же, что между
-   подколонками Explore: с 24px Explore теряет подколонку на 1280 и на 1920,
-   и футер снова прибавляет в высоту. По вертикали — 24px. */
+/* ---------- Планшет (640–1023), клиент 09.10.2026 «сделай что-то с футером» ----------
+   Раньше с 640 шла раскладка компьютера: три узкие колонки, копирайт в
+   колонке логотипа ломался на «All rights / reserved.», справа пустота.
+   Теперь планшет — растянутый телефон:
+     логотип                              иконки соцсетей
+     CONTACT          EXPLORE  (три подколонки)
+     ───────────────────────────────────────────────
+     © копирайт                 Developed by · Alexander
+   Иконки — те же круглые кнопки 44px, что на телефоне; ссылки Explore по
+   44px в высоту — планшет сенсорный. */
 @media (min-width: 640px) {
+  .footer-inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-areas:
+      "logo    social"
+      "contact explore"
+      "copy    copy";
+    align-items: start;
+    column-gap: var(--space-8);
+    row-gap: var(--space-6);
+    padding: var(--space-8) var(--gutter) var(--space-4);
+  }
+  .footer-follow {
+    justify-self: end;
+    align-self: center;
+  }
+  .footer-contact h4,
+  .footer-explore h4 {
+    display: block;
+  }
+  .footer-explore-toggle {
+    display: none;
+  }
+  .footer-explore ul,
+  .footer-explore ul.is-open {
+    display: grid;
+    column-gap: var(--space-4);
+    margin-top: 0;
+  }
+  .footer-explore ul li {
+    margin-bottom: 0;
+  }
+  .footer-explore ul a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .footer-explore h4 {
+    margin-bottom: 0;
+  }
+  /* .footer-copy впереди — базовое правило стопки стоит ниже по файлу. */
+  .footer-copy .footer-copy-stack {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .footer-copy .footer-copy-stack p {
+    text-align: left;
+  }
+}
+
+/* ---------- Компьютер (с 1024px) ----------
+   Раскладка в колонки. Промежуток между колонками один на весь футер (16px) —
+   тот же, что между подколонками Explore: с 24px Explore теряет подколонку на
+   1280 и на 1920, и футер снова прибавляет в высоту. По вертикали — 24px.
+   (До 09.10.2026 эта раскладка начиналась с 640px.) Сбрасывает всё, что
+   задал планшет. */
+@media (min-width: 1024px) {
   .footer-inner {
     grid-template-columns: repeat(3, 1fr);
     grid-template-areas: none;
     align-items: start;
+    column-gap: var(--space-4);
     row-gap: var(--space-6);
     padding: var(--space-8) var(--gutter) var(--space-4);
+  }
+  .footer-follow {
+    justify-self: stretch;
+    align-self: start;
+  }
+  .footer-explore ul a {
+    display: inline;
+    min-height: 0;
+  }
+  .footer-explore ul li {
+    margin-bottom: var(--space-1);
+  }
+  .footer-explore h4 {
+    margin-bottom: var(--space-2);
+  }
+  .footer-copy .footer-copy-stack {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--space-1);
+  }
+  .footer-copy .footer-copy-stack p {
+    text-align: center;
   }
   /* Колонка бренда по ширине своего содержимого (justify-self: start), и
      логотип в ней по центру — над строкой копирайта и подписью под ней
@@ -326,11 +408,13 @@
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* На телефоне пять ссылок — две ровные строки (text-wrap: balance), а не
+   четыре и одинокая «Terms of Use» (клиент, 09.10.2026). Поэтому здесь
+   строчный текст по центру, а не flex: балансируются только строки текста. */
 .site-footer .footer-meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0 var(--space-4);
+  display: block;
+  text-align: center;
+  text-wrap: balance;
   margin: 0 auto;
   padding-top: var(--space-2);
   padding-bottom: var(--space-2);
@@ -338,7 +422,12 @@
 }
 
 .site-footer .footer-meta li {
+  display: inline;
   margin-bottom: 0;
+}
+
+.site-footer .footer-meta li + li {
+  margin-left: var(--space-4);
 }
 
 .site-footer .footer-meta a {
@@ -357,8 +446,13 @@
    (07.10.2026); линия над ними по-прежнему через весь экран. */
 @media (min-width: 640px) {
   .site-footer .footer-meta {
+    display: flex;
+    justify-content: center;
     flex-wrap: nowrap;
     gap: 0 var(--space-8);
+  }
+  .site-footer .footer-meta li + li {
+    margin-left: 0;
   }
 }
 
@@ -369,11 +463,13 @@
    значком Telegram и именем. Тонкая светлая рамка на тёмном фоне, значок в
    голубом круге Telegram; при наведении рамка и имя становятся белыми.
    Без анимации. */
+/* На телефоне копирайт и подпись по центру подвала (09.10.2026), на
+   планшете — одной строкой по краям, с 1024 — стопкой в колонке логотипа. */
 .footer-copy-stack {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .footer-copy-stack p {
@@ -389,11 +485,17 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1) var(--space-2);
-  /* Кнопка Telegram «немного вниз» (клиент, 09.10.2026) — на 4px, потом ещё
-     на 2: 6px вместе с подписью «Developed by», чтобы они остались одной
-     строкой. Сдвиг поверх потока: высота подвала не меняется. */
-  position: relative;
-  top: calc(var(--space-1) + 2px);
+}
+
+/* Кнопка Telegram «немного вниз» (клиент, 09.10.2026) — на 4px, потом ещё
+   на 2: 6px вместе с подписью «Developed by», чтобы они остались одной
+   строкой. Сдвиг поверх потока: высота подвала не меняется. Только с 1024,
+   где подпись стоит стопкой под копирайтом (правка делалась там). */
+@media (min-width: 1024px) {
+  .footer-credit {
+    position: relative;
+    top: calc(var(--space-1) + 2px);
+  }
 }
 
 .footer-credit-label {
@@ -404,13 +506,21 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 32px;
-  padding: 0 var(--space-3) 0 var(--space-1);
+  /* 44px под палец до 1024, 32 с мышью (как вторая строка меню). */
+  min-height: 44px;
+  padding: 0 var(--space-3) 0 var(--space-2);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-full);
   font-weight: 600;
   color: #c9d3de;
   text-decoration: none;
+}
+
+@media (min-width: 1024px) {
+  .site-footer .footer-credit-link {
+    min-height: 32px;
+    padding-left: var(--space-1);
+  }
 }
 
 .footer-credit-icon {

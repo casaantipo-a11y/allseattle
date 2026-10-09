@@ -87,3 +87,11 @@ under the photo column (measured 0.00px off at 375–1920).
 base.css zeroes the last block's margin and the 36 is the footer's `margin-top`). Top News was
 briefly aligned with the left 300x600 through a subgrid; the client asked for it back the same
 day — it sits right under the 300x250 again.
+
+**App News below 1024 (09.10.2026, the client: "what is this mess"):** the side rails used to
+be flex rows with 260px items, so on a tablet each rail became two cells side by side — a 320x100
+ad next to the tall Top News or Categories with empty space under the ad. Now below 1024 both
+rails are one full-width stack under the feed (`flex-direction: column`, items `width: 100%`,
+the ad wrapper centres its banner), the right rail first (`order: -1`: 300x250, Top News, then
+Categories, the second ad), so two banners never stand together. List and article pages alike;
+from 1024 nothing changed.
