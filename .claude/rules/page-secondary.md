@@ -275,6 +275,8 @@ keyboard and screen readers work on their own.
   come 13px from the heading, so below 1440 they stay under it. Phones: rule → chips 8px. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
+- **Events bottom banner → footer 16px** like Home (`.events-section { margin-bottom: -20px }`,
+  was the shared 36), the list page only.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
 - **Weather**: WEATHER_TOP in the heading row from 1440, as on Cars (`.ad-slot-top--in-head`).
 - **Map**: from 640 the eyebrow + heading are 8px right and the category filter 8px left

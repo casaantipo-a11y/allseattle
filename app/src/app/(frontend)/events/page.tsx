@@ -37,7 +37,7 @@ export default async function EventsPage({ searchParams }: Props) {
 
   return (
     <main id="content" data-page="events">
-      <section className="section">
+      <section className="section events-section">
         <div className="container">
           <AdSlot code="EVENTS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
 
