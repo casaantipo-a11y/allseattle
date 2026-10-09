@@ -267,7 +267,11 @@ keyboard and screen readers work on their own.
   `pointer-events: none` except on its links (checked: the card and every tab/chip get their
   clicks). Measured: filter block centre 678, card 680, heading text ≈677. Then "lower the sort
   8px": `margin-top: calc(−92px + 8px)` — tabs, chips and the cards below 8px lower, the heading
-  and card stay (tab letters 24px under the banner, filter centre 8px below the heading's). At 1280 the tabs would
+  and card stay (tab letters 24px under the banner, filter centre 8px below the heading's).
+  Then the heading and the card 10px lower: `.events-head { translate: 0 10px }` (from 1440,
+  out of flow — filters and cards stay; removed and restored the same day). Card bottom level with
+  the chips'. Below 1440 the events head has no extra lift of its own (the −16px rule went): it
+  uses `--snug`, which the shared rule switches off at 640–1439 for heads with a `.post-card`. At 1280 the tabs would
   come 13px from the heading, so below 1440 they stay under it. Phones: rule → chips 8px. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.

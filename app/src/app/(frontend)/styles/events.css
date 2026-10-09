@@ -125,13 +125,6 @@
    тот же день). Подписи When / Category остаются для
    экранных читалок (aria-labelledby). */
 [data-page="events"] {
-  /* Шапка со вкладками ближе к баннеру (клиент, 09.10.2026, дважды «ещё
-     выше» по 4px): −16px вместо общих −8 у .section-head--snug. Вместе с ней
-     едет всё ниже. */
-  .events-head.section-head--snug {
-    margin-top: calc(-1 * var(--space-4));
-  }
-
   .events-filters {
     display: flex;
     flex-direction: column;
@@ -250,6 +243,10 @@
       margin-top: var(--space-1);
       min-height: 92px;
       align-content: center;
+      /* Надпись и «Submit an event» на 10px ниже середины полосы (клиент,
+         09.10.2026; убирали и вернули в тот же день). Сдвиг поверх потока:
+         фильтры и карточки на месте. */
+      translate: 0 10px;
     }
 
     .events-filters {
