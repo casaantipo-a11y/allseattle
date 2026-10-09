@@ -263,7 +263,11 @@ keyboard and screen readers work on their own.
   "Submit an event", their baseline on the heading's (`margin-top: −56px`, 0.4px off; the chips
   follow); at 1280 they would come 13px from the heading, so below 1440 they stay under it.
   Then "all together 4px up, the chips a little closer to the rule": `.events-head` takes −12px
-  instead of `--snug`'s −8, the filter rows' gap is 8px (rule → chips 20px at 1440, was 28). The WHEN/CATEGORY labels are
+  instead of `--snug`'s −8, the filter rows' gap is 8px (rule → chips 20px at 1440, was 28).
+  Then "higher still, the chips closer to the rule": −16px, and from 1440 the rows' gap is 0 —
+  the lifted tab row already ends 12px below its rule (44px tall − 56 lift), so rule → chips is
+  12px. Banner → "What is on" letters 6px; "Submit an event"'s top is level with the banner's
+  bottom (they don't overlap horizontally). Phones: rule → chips 8px. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
