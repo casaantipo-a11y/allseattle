@@ -405,10 +405,19 @@
     grid-column: 7;
   }
 }
-/* С 1280 подколонки Explore по 32px — раздел читается одним блоком. */
+/* С 1280 подколонки Explore по 32px — раздел читается одним блоком. И
+   «справа слишком пусто, все блоки чуть правее» (клиент, тот же день):
+   Contact, Follow us и Explore вместе на 48px правее (дорожка после логотипа
+   16 + 48px), промежутки между ними прежние. Ниже 1280 справа места почти
+   нет (≈50px на 1024) — там без сдвига. */
 @media (min-width: 1280px) {
   .footer-inner {
     --footer-gap: calc((100% - 1019px) / 3);
+    grid-template-columns:
+      calc((100% - 3 * var(--space-4)) / 5.2) calc(var(--space-4) + var(--space-12))
+      max-content var(--footer-gap)
+      max-content var(--footer-gap)
+      max-content;
   }
   .footer-explore ul#footer-explore-list {
     column-gap: var(--space-8);

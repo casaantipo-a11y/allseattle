@@ -242,4 +242,7 @@ what space-between gave: `(100% − 1019px) / 3` from 1280 (the four columns' bo
 they are always equal; only their size and the free space on the right depend on the column text.
 Measured: Contact at 220.5 / 272.6 / 303.4 / 494.1 (= the old grid) at 1024 / 1280 / 1440 / 1920,
 gaps 66 / 119 / 172 from 1280. At 1100–1279 the brand column is narrow again and the copyright
-wraps, as with the old grid.
+wraps, as with the old grid. Then "too much empty space on the right, everything a bit right":
+from 1280 the track after the brand is 16 + 48px, so Contact / Follow / Explore sit 48px further
+right with the same gaps (Contact 351 at 1440, Explore ending 1297 of 1393). Below 1280 no shift —
+about 50px are left on the right at 1024.
