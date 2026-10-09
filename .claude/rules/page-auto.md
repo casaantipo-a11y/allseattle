@@ -203,4 +203,5 @@ Auto / Cars for sale" and "Place a listing" (`.ad-slot-top--in-head`, components
 leaves the flow (−90px), the head is a 90px band with `align-content: center`, z-index keeps the
 banner clickable over the head's empty grid. Saves the 90px row; plates → banner 16px, banner →
 search panel 8px. Below 1440 the three do not fit in a row and the banner stays above the head.
+"Place a listing" is centred on the banner there (the head card's `top: 0`, same rule as Weather).
 `/cars/services`: head 8px closer to its banner (`.section-head--snug`).

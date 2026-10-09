@@ -1618,6 +1618,12 @@ body.modal-open {
     min-height: 90px;
     align-content: center;
   }
+  /* Карточка справа («Place an ad», «Place a listing») вровень с баннером:
+     середина на середине баннера (клиент, 09.10.2026). Общий сдвиг карточки
+     в шапке (top: 8px) равнял её с текстом и ставил на 8px ниже. */
+  .ad-slot-top--in-head + .section-head .post-card {
+    top: 0;
+  }
 }
 
 .result-count {
