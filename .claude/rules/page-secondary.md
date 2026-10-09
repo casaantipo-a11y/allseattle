@@ -259,18 +259,14 @@ keyboard and screen readers work on their own.
   from 640, 14px on phones; red 3px underline on the active one, laid over a 1px rule that runs
   only from the first tab's text to the last's — `width: fit-content`, centred), **CATEGORY soft
   grey chips** without a border (navy when selected) under them, both rows centred (measured to
-  0.1px at 1024/1440). **From 1440 the tabs sit in the heading row**, between "Seattle events" and
-  "Submit an event", their baseline on the heading's (`margin-top: −56px`, 0.4px off; the chips
-  follow); at 1280 they would come 13px from the heading, so below 1440 they stay under it.
-  Then "all together 4px up, the chips a little closer to the rule": `.events-head` takes −12px
-  instead of `--snug`'s −8, the filter rows' gap is 8px (rule → chips 20px at 1440, was 28).
-  Then "higher still, the chips closer to the rule": −16px, and from 1440 the rows' gap is 0 —
-  the lifted tab row already ends 12px below its rule (44px tall − 56 lift), so rule → chips is
-  12px. Banner → "What is on" letters 6px; "Submit an event"'s top is level with the banner's
-  bottom (they don't overlap horizontally). Phones: rule → chips 8px. Then the tabs + chips
-  (not the heading) 6px higher from 1440: the whole `.events-filters` block takes
-  `margin-top: calc(16px − 6px)` — a bigger negative margin on the tabs alone would not reach the
-  chips, the tab row is already collapsed to zero. Tab baseline now 6px above the heading's. The WHEN/CATEGORY labels are
+  0.1px at 1024/1440). **From 1440 the tabs and chips sit in the heading row**, between "Seattle events" and
+  "Submit an event" (after a day of 4–6px nudges the client settled it): the filter block starts
+  right under the banner (4px; tab letters 16px below it) and the heading and the card are centred
+  on the filter block — `.events-head` is a 92px band (44 tabs + 12 + 36 chips) with
+  `align-content: center`, `.events-filters` sits on it with `margin-top: −92px`, `z-index: 1`,
+  `pointer-events: none` except on its links (checked: the card and every tab/chip get their
+  clicks). Measured: filter block centre 678, card 680, heading text ≈677. At 1280 the tabs would
+  come 13px from the heading, so below 1440 they stay under it. Phones: rule → chips 8px. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
