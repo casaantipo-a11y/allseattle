@@ -208,6 +208,14 @@
   margin-top: calc(-2px - var(--space-2));
 }
 
+/* Business Directory (не Shopping / Leisure): шапка на 12px ближе к баннеру
+   (клиент, 09.10.2026, «уменьши пустое пространство»): от баннера до строки
+   надзаголовка 6px вместо 18, как в News с 1440. Карточки справа в этой
+   шапке нет — ничто не наезжает на баннер, поэтому на всех ширинах. */
+.section-head.dir-head--directory {
+  margin-top: calc(-2px - var(--space-3));
+}
+
 /* «Shopping немного вправо» (клиент, 09.10.2026): надзаголовок на 12px правее
    заголовка — 16px, как «AllSeattle Auto» в Cars. Только в Shopping. */
 .dir-head--shopping .eyebrow {

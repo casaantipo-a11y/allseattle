@@ -67,7 +67,7 @@ export function JobsWidget({ jobs }: { jobs: Job[] }) {
 export function UpcomingEvents({ events }: { events: Event[] }) {
   if (!events.length) return null
   return (
-    <section className="section">
+    <section className="section home-events">
       <div className="container">
         <div className="section-head section-head--btn-lower home-events-head">
           <div>

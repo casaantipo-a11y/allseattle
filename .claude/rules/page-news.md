@@ -95,3 +95,8 @@ rails are one full-width stack under the feed (`flex-direction: column`, items `
 the ad wrapper centres its banner), the right rail first (`order: -1`: 300x250, Top News, then
 Categories, the second ad), so two banners never stand together. List and article pages alike;
 from 1024 nothing changed.
+
+**App News list, 09.10.2026 (second list, "less space between the banner and Seattle news"):**
+from 1440 the head is 12px closer to NEWS_TOP (`.news-list-section .ad-slot-top +
+.section-head--snug`, −12 instead of −8): banner → eyebrow line box 6px (letters ≈9). At 640–1439
+it stays 18 — "Share the news" stands beside the banner there and a lift would put it on it.

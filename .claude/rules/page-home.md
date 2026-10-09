@@ -104,3 +104,9 @@ moves with it. "All news" centred on the whole head — from the top of the "Tod
 letters to the bottom of "Latest news" — `--head-btn-dy: calc(var(--space-1) - 9px)`, measured
 0–1px off at 640/1024/1440. Last newsfeed rule → HOME_INFEED_2 16px (`.ad-slot-bottom`
 margin-top, was 24), the same as banner → footer.
+
+**App home, 09.10.2026 (second list):** the "What is on / Coming up in Seattle" block (head and
+cards, `section.home-events`) is 20px closer to HOME_INFEED_1 from 1024 — visible banner bottom →
+eyebrow line box 18px at 1024/1440/1920, the same as HOME_TOP → "Today in Seattle". Only from
+1024: there the banner is the last thing in the first section (both rails end far above it);
+below 1024 the right rail's widgets follow the banner and a negative margin would land on them.

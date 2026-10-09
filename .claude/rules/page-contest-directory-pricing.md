@@ -179,3 +179,7 @@ wrapper, so the text hugged the wrapper's left edge and the block read as shifte
 `dir-head--<section>`; Shopping/Leisure also get `.section-head--snug` (in directory.css as
 `calc(-2px - 8px)`, since the directory's own −2px would otherwise win) and Shopping's eyebrow is
 16px right of the heading (`.dir-head--shopping .eyebrow`, like Cars).
+
+**App Directory, 09.10.2026 (second list):** the head is 12px closer to DIRECTORY_TOP at every
+width (`.section-head.dir-head--directory`, `margin-top: calc(-2px - 12px)`): banner → eyebrow
+line box 6px, as News from 1440. No card in this head, so nothing can land on the banner.
