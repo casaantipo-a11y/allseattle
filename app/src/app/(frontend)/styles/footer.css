@@ -389,11 +389,11 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1) var(--space-2);
-  /* Кнопка Telegram «немного вниз» (клиент, 09.10.2026) — на 4px вместе с
-     подписью «Developed by», чтобы они остались одной строкой. Сдвиг поверх
-     потока: высота подвала не меняется. */
+  /* Кнопка Telegram «немного вниз» (клиент, 09.10.2026) — на 4px, потом ещё
+     на 2: 6px вместе с подписью «Developed by», чтобы они остались одной
+     строкой. Сдвиг поверх потока: высота подвала не меняется. */
   position: relative;
-  top: var(--space-1);
+  top: calc(var(--space-1) + 2px);
 }
 
 .footer-credit-label {

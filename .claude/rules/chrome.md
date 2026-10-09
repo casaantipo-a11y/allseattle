@@ -210,5 +210,5 @@ by nothing.
 ---
 
 **App footer, 09.10.2026:** the "Developed by · Alexander" row (`.footer-credit`) sits 4px lower
-(`position: relative; top: 4px`, the label moves with the pill so they stay one line) — 8px under
-the copyright line; the footer's height is unchanged.
+(`position: relative`, the label moves with the pill so they stay one line), then 2px more:
+`top: calc(var(--space-1) + 2px)`, 10px under the copyright line; the footer's height is unchanged.

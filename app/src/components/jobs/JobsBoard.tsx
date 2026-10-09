@@ -105,8 +105,8 @@ const Pin = () => (
 )
 
 // Openings shown at first and added per "Show more" — fourteen full cards
-// were too many on one screen (client, 09.10.2026).
-const PAGE = 5
+// were too many on one screen (client, 09.10.2026: 5, then 6).
+const PAGE = 6
 
 const SORTS = [
   ['newest', 'Newest'],

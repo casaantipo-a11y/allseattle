@@ -82,9 +82,8 @@ news" at the end of the article is the shared `.post-card` ("Got a news tip?"), 
 under the photo column (measured 0.00px off at 375–1920).
 
 **App News list, 09.10.2026 (client):** the head is 8px closer to NEWS_TOP
-(`.section-head--snug`, 14px banner → eyebrow letters, was 22); from 1280 Top News starts level
-with the left 300x600 (NEWS_SIDEBAR_2) — `.news-layout--list` has rows `auto 1fr` and both rails
-are `grid-template-rows: subgrid`, so the first row holds Categories / the 300x250 and the second
-starts at one line for both (measured equal at 1280/1440, any number of categories); pagination →
-footer 16px (`margin-bottom: calc(var(--space-12) - 20px)`, was 36). Article pages share
-`.news-layout` but not `--list`, so they are untouched.
+(`.section-head--snug`, 14px banner → eyebrow letters, was 22); pagination → footer 16px
+(`.news-list-section { margin-bottom: -20px }`, was 36 — a margin on `.news-layout` does nothing:
+base.css zeroes the last block's margin and the 36 is the footer's `margin-top`). Top News was
+briefly aligned with the left 300x600 through a subgrid; the client asked for it back the same
+day — it sits right under the 300x250 again.

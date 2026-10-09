@@ -249,12 +249,17 @@ keyboard and screen readers work on their own.
 ---
 
 **App, 09.10.2026 (client's list):**
-- **Jobs** shows 5 openings, then "Show more jobs (N)" adds 5 (`PAGE` in `JobsBoard.tsx`; the count
+- **Jobs** shows 6 openings (5 at first, the client asked for 6), then "Show more jobs (N)" adds 6
+  (`PAGE` in `JobsBoard.tsx`; the count
   is tied to a JSON key of the filter state, so any filter/sort change starts again at 5 without an
   effect).
 - **Events**: head 8px closer to the banner (`--snug`); the WHEN / CATEGORY rows are one white
   panel the width of the container (= the card grid's edges), labels in a shared column and both
   controls starting on one line (`subgrid` from 640). Replaces the two separately centred rows.
+  A third row, **SORT** — Soonest (default) / Lowest price / Highest price / A–Z, the same set as
+  Jobs' — `?sort=` links like the filters (every link keeps the other two choices, defaults stay
+  out of the URL; any `sort` is noindex). `sortEvents()` in `lib/events.ts`: Free counts as 0, a
+  price string gives its first number ("$15–25" → 15), no price goes last; ties by start date.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
 - **Weather**: WEATHER_TOP in the heading row from 1440, as on Cars (`.ad-slot-top--in-head`).
 - **Map**: from 640 the eyebrow + heading are 8px right and the category filter 8px left
