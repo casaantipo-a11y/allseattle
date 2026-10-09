@@ -225,3 +225,12 @@ lone "Terms of Use". The credit pill is 44px tall below 1024 (32 with a mouse), 
 nudge applies from 1024 only. The 1024 block resets everything the tablet sets (tablet rules
 that touch the copy stack carry `.footer-copy` in front — the base stack rule sits later in the
 file). Desktop measured identical before/after: 266px at 1024, 219 at 1440.
+
+**App footer columns, 09.10.2026 ("even spacing between Contact, Follow us and Explore"):** from
+1024 the four columns are sized by their content (`minmax(0, max-content) repeat(3,
+max-content)`) with `justify-content: space-between`, so the visible gaps are equal — 66 / 119 /
+172px at 1280 / 1440 / 1920 (were 25 / 109 / 91 at 1440 with `1fr 1fr 1fr 2.2fr`). Explore's
+sub-columns are 32px apart from 1280, 16 below. At 1024–1279 everything barely fits (four
+max-content columns are 971px against 945), so the brand column may shrink (the copyright wraps):
+Contact / Follow / Explore stay 16px apart there, brand → Contact is a little wider. Footer height
+unchanged (266 at 1024, 219 at 1440).
