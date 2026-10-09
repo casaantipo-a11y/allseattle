@@ -286,7 +286,6 @@ keyboard and screen readers work on their own.
   (`translate` / `left`, business.css); the legend stays centred between them.
 
 **App Jobs, 09.10.2026 (second list):** "Work in Seattle" 16px right of the heading
-(`.jobs-head .eyebrow { left: 16px }`, as Shopping / Cars; no overflow at 320/375); from 1024 the
-Sort row sits at the cards' right edge (`justify-content: flex-end` in the card-wide toolbar,
-was centred), and "Show more jobs" is centred on the cards (`.jobs-more` card-wide too — it was
+(`.jobs-head .eyebrow { left: 16px }`, as Shopping / Cars; no overflow at 320/375); the Sort row
+was moved to the cards' right edge and put back centred over the cards the same day; "Show more jobs" is centred on the cards (`.jobs-more` card-wide too — it was
 centred on the 104px wider column, 52px right).
