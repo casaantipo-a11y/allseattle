@@ -267,7 +267,10 @@ keyboard and screen readers work on their own.
   Then "higher still, the chips closer to the rule": −16px, and from 1440 the rows' gap is 0 —
   the lifted tab row already ends 12px below its rule (44px tall − 56 lift), so rule → chips is
   12px. Banner → "What is on" letters 6px; "Submit an event"'s top is level with the banner's
-  bottom (they don't overlap horizontally). Phones: rule → chips 8px. The WHEN/CATEGORY labels are
+  bottom (they don't overlap horizontally). Phones: rule → chips 8px. Then the tabs + chips
+  (not the heading) 6px higher from 1440: the whole `.events-filters` block takes
+  `margin-top: calc(16px − 6px)` — a bigger negative margin on the tabs alone would not reach the
+  chips, the tab row is already collapsed to zero. Tab baseline now 6px above the heading's. The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
