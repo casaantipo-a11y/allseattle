@@ -1583,6 +1583,22 @@ body.modal-open {
   margin-top: calc(-1 * var(--space-2));
 }
 
+/* Но шапка с карточкой справа (.post-card: News, Events) на 640–1439
+   стоит рядом с баннером по центру и с подъёмом налезала на его нижний край
+   (Events −8px на 640/768, News вплотную) — там подъёма нет, карточка в 8px
+   под баннером. На телефоне карточка уходит под заголовок, с 1440 — правее
+   баннера, там подъём остаётся. */
+@media (min-width: 640px) {
+  .ad-slot-top + .section-head--snug:has(.post-card) {
+    margin-top: 0;
+  }
+}
+@media (min-width: 1440px) {
+  .ad-slot-top + .section-head--snug:has(.post-card) {
+    margin-top: calc(-1 * var(--space-2));
+  }
+}
+
 /* Cars и Weather: баннер 728x90 стоит в одной строке с заголовком — между
    ним и карточкой справа, а не отдельной строкой над ними (клиент,
    09.10.2026: «опусканием рекламы и удалением пустого места сверху»).
@@ -1790,6 +1806,19 @@ body.modal-open {
   border-radius: var(--radius-sm);
   overflow: hidden;
   line-height: 0;
+}
+
+/* На 320px карточка формы внутри — 262px, а виджет всегда 300: страница
+   уезжала вбок (замер 09.10.2026: 354px на Add your business, 347 на Share
+   the news). До 360 виджет уменьшен (zoom, а не transform — меняется и
+   место, которое он занимает). С 360 внутри карточки уже 302px. */
+.cf-turnstile {
+  zoom: 0.85;
+}
+@media (min-width: 360px) {
+  .cf-turnstile {
+    zoom: 1;
+  }
 }
 
 /* ---------- Выбор фото в формах (Share the news) ----------

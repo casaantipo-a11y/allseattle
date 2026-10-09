@@ -30,7 +30,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
           </div>
           <form action="/search" method="get" role="search" className="mb-8 flex max-w-[640px] gap-2">
-            <input type="search" name="q" defaultValue={q} minLength={2} placeholder="Businesses, news, jobs, events, cars…" aria-label="Search" className="min-h-11 flex-1" />
+            <input type="search" name="q" defaultValue={q} minLength={2} placeholder="Businesses, news, jobs, events, cars…" aria-label="Search" className="min-h-11 min-w-0 flex-1" />
             <button type="submit" className="btn">
               Search
             </button>
