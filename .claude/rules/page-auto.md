@@ -197,3 +197,10 @@ six.
 2. Section head — "Your Account" / **My Listings** + "+ Post a Listing".
 3. Note that the account system does not exist and the data is fixed.
 4. Listing rows *(JS)* — 3 fixed cars, Edit / Delete flash "Demo only".
+
+**App Cars, 09.10.2026:** from 1440 CARS_TOP stands in the heading row, between "AllSeattle
+Auto / Cars for sale" and "Place a listing" (`.ad-slot-top--in-head`, components.css): the banner
+leaves the flow (−90px), the head is a 90px band with `align-content: center`, z-index keeps the
+banner clickable over the head's empty grid. Saves the 90px row; plates → banner 16px, banner →
+search panel 8px. Below 1440 the three do not fit in a row and the banner stays above the head.
+`/cars/services`: head 8px closer to its banner (`.section-head--snug`).

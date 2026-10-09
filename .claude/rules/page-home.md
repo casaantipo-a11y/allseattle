@@ -97,3 +97,10 @@ letters → cards 8 (1024) / 10.6 (1440), button → cards 2.6 / 6.8. Then "a to
 "All news" (08.10.2026) sits opposite "Latest news": `.home-latest-head` sets `--head-btn-dy` to
 4px instead of `--btn-lower`'s 12, which put the button's centre 8–9px under the heading's ink
 centre; now within ±1px at 640–1920. Phones keep the button on its own row.
+
+**App home, 09.10.2026 (client's list):** HOME_TOP 2px higher — plates → banner 14px
+(`& > .section:first-child:has(.ad-slot-top)` in home.css, beats the shared 16), everything below
+moves with it. "All news" centred on the whole head — from the top of the "Today in Seattle"
+letters to the bottom of "Latest news" — `--head-btn-dy: calc(var(--space-1) - 9px)`, measured
+0–1px off at 640/1024/1440. Last newsfeed rule → HOME_INFEED_2 16px (`.ad-slot-bottom`
+margin-top, was 24), the same as banner → footer.

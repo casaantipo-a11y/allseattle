@@ -40,7 +40,9 @@ export const SECTION_META: Record<
   },
 }
 
-const PER_PAGE = 20
+// The directory lists 10 businesses a page, the client found 20 too many
+// (09.10.2026); Shopping and Leisure keep 20.
+const PER_PAGE: Record<Section, number> = { directory: 10, shopping: 20, leisure: 20 }
 
 export async function BusinessSection({
   section,
@@ -94,9 +96,10 @@ export async function BusinessSection({
     .sort((a, b) => compareBusinesses(a, b))
   const found = needle ? scoped.filter((b) => searchText(b).includes(needle)) : scoped
 
-  const totalPages = Math.max(1, Math.ceil(found.length / PER_PAGE))
+  const perPage = PER_PAGE[section]
+  const totalPages = Math.max(1, Math.ceil(found.length / perPage))
   if (page > totalPages) notFound()
-  const rows = found.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+  const rows = found.slice((page - 1) * perPage, page * perPage)
   const base = active ? `${meta.base}/${active.slug}` : meta.base
 
   return (
@@ -109,7 +112,8 @@ export async function BusinessSection({
             mobileSize="320x100"
             className="ad-slot-top"
           />
-          <div className="section-head">
+          {/* Shopping and Leisure sit 8px closer to the banner (client, 09.10.2026). */}
+          <div className={`section-head dir-head--${section}${section === 'directory' ? '' : ' section-head--snug'}`}>
             <div>
               <span className="eyebrow">{meta.eyebrow}</span>
               <h1>{active ? active.name : meta.title}</h1>

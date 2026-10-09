@@ -130,6 +130,19 @@
     grid-row: 3;
     justify-content: center;
   }
+
+  /* «Neighborhood guide / City map» немного вправо, «All categories» немного
+     влево (клиент, 09.10.2026) — по 8px навстречу друг другу. Сдвиг поверх
+     сетки: промежутки слева и справа от легенды сужаются одинаково, и её
+     центровка между ними не меняется. С 640, где они стоят в одной строке;
+     на телефоне они стоят друг под другом во всю ширину. */
+  .map-head .eyebrow,
+  .map-head h1 {
+    translate: var(--space-2) 0;
+  }
+  .map-head > .map-filter {
+    left: calc(-1 * var(--space-2));
+  }
 }
 
 @media (min-width: 1280px) {

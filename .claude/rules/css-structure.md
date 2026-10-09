@@ -271,3 +271,8 @@ Each of these was decided explicitly. Don't "fix" them back:
   scroller at desktop width, and the second is the nav sliding off centre.
 - **Two font families** (§2): Libre Franklin and Public Sans. Pacifico went with the inner hero's
   script wordmark on 29.09.2026.
+
+**App, 09.10.2026, two shared head classes in `components.css`:** `.section-head--snug` — the
+head 8px closer to the `.ad-slot-top` above it (`.ad-slot-top + .section-head--snug`, 14px banner
+→ eyebrow letters at 1440; News, Cars Services, Shopping, Leisure, Events). `.ad-slot-top--in-head`
+on the banner — from 1440 it shares the head's row (Cars, Weather), see page-auto.md.

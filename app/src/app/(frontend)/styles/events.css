@@ -112,11 +112,15 @@
    Заголовок слева, «Submit an event» — карточка того же вида, что «Post a
    job» на Jobs (.post-card; её место в шапке задаёт общее правило
    .section-head .post-card в components.css), у правого края напротив
-   надзаголовка и заголовка. Ряды фильтров по центру страницы, каждый ряд
-   (подпись + элемент) на одной оси. Фильтры: период — сегментированный
+   надзаголовка и заголовка. Фильтры: период — сегментированный
    переключатель, категория — лёгкие чипы, выбранное navy.
    До этого в тот же день пробовали «всё слева» и колонку виджетов как в
-   News — оба варианта клиент отклонил. */
+   News — оба варианта клиент отклонил.
+   09.10.2026 («придумай что-то с сортировкой»): два ряда, каждый отдельно по
+   центру, давали подписи и переключатели на разных вертикалях. Теперь это
+   одна панель во всю ширину контейнера (её края — края сетки карточек под
+   ней): подписи в общей колонке, переключатели начинаются с одной линии
+   (subgrid с 640px). */
 [data-page="events"] {
   .events-filters {
     display: flex;
@@ -125,6 +129,10 @@
     /* 16px от заголовка: без отступа переключатель почти касался букв. */
     margin-top: var(--space-4);
     margin-bottom: var(--space-6);
+    padding: var(--space-4);
+    background: var(--color-white);
+    border: 1px solid var(--color-slate-soft);
+    border-radius: var(--radius-lg);
   }
 
   .events-filter-row {
@@ -210,19 +218,27 @@
 
   @media (min-width: 640px) {
     .events-filters {
-      gap: var(--space-3);
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: var(--space-6);
+      row-gap: var(--space-3);
+      padding: var(--space-4) var(--space-6);
     }
 
     .events-filter-row {
-      flex-direction: row;
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
       align-items: center;
-      justify-content: center;
-      gap: var(--space-4);
     }
 
     .events-types {
-      justify-content: center;
       min-width: 0;
+    }
+
+    /* Переключатель периода по ширине своих сегментов, а не на всю строку. */
+    .events-when {
+      justify-self: start;
     }
 
     .events-when {

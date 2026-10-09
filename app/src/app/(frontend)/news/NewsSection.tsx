@@ -27,7 +27,7 @@ export async function NewsSection({ page, categorySlug }: { page: number; catego
         <div className="container">
           <AdSlot code="NEWS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
 
-          <div className="section-head section-head--btn-down">
+          <div className="section-head section-head--btn-down section-head--snug">
             <div>
               <span className="eyebrow">Seattle news</span>
               <h1>{category ? category.name : 'Latest stories'}</h1>
@@ -49,7 +49,7 @@ export async function NewsSection({ page, categorySlug }: { page: number; catego
             </Link>
           </div>
 
-          <div className="news-layout">
+          <div className="news-layout news-layout--list">
             <aside className="news-rail news-rail--left">
               <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
               <AdSlot code="NEWS_SIDEBAR_2" size="300x600" mobileSize="320x100" />

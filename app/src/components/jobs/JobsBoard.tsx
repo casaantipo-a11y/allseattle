@@ -104,6 +104,10 @@ const Pin = () => (
   </svg>
 )
 
+// Openings shown at first and added per "Show more" — fourteen full cards
+// were too many on one screen (client, 09.10.2026).
+const PAGE = 5
+
 const SORTS = [
   ['newest', 'Newest'],
   ['salary-desc', 'Highest pay'],
@@ -115,6 +119,11 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
   const [s, setS] = useState<State>({ ...EMPTY, query: initialQuery })
   const [open, setOpen] = useState(false)
   const set = (patch: Partial<State>) => setS((p) => ({ ...p, ...patch }))
+  // How many cards are open, tied to the filters it was counted for: any change
+  // of filter or sort starts again from the first PAGE without an effect.
+  const filterKey = JSON.stringify(s)
+  const [more, setMore] = useState({ key: filterKey, n: PAGE })
+  const shown = more.key === filterKey ? more.n : PAGE
 
   const matches = (j: JobItem, skip = '') => {
     if (s.query) {
@@ -327,7 +336,7 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
           </div>
           <div className="job-list">
             {found.length ? (
-              found.map((j) => (
+              found.slice(0, shown).map((j) => (
                 <article key={j.id} className="job-card">
                   {j.urgent || j.featured ? (
                     <div className="job-card-badges">
@@ -381,6 +390,13 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
               <p className="muted">No openings match those filters. Try widening your search.</p>
             )}
           </div>
+          {found.length > shown ? (
+            <div className="jobs-more">
+              <button type="button" className="btn btn-outline" onClick={() => setMore({ key: filterKey, n: shown + PAGE })}>
+                Show more jobs ({found.length - shown})
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </>

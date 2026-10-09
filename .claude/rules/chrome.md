@@ -208,3 +208,7 @@ decoration with no destination (§7) and the contest strip took its slot.
 by nothing.
 
 ---
+
+**App footer, 09.10.2026:** the "Developed by · Alexander" row (`.footer-credit`) sits 4px lower
+(`position: relative; top: 4px`, the label moves with the pill so they stay one line) — 8px under
+the copyright line; the footer's height is unchanged.

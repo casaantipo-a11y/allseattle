@@ -60,7 +60,7 @@ export default async function CarServicesPage() {
             className="ad-slot-top"
           />
 
-          <div className="section-head section-head--btn-lower auto-firms-head">
+          <div className="section-head section-head--btn-lower section-head--snug auto-firms-head">
             <div>
               <span className="eyebrow">Auto services</span>
               <h1>Directory of enterprises</h1>

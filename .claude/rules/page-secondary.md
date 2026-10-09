@@ -247,3 +247,15 @@ keyboard and screen readers work on their own.
 **Code:** [qa.html](qa.html) · [css/pages/qa.css](css/pages/qa.css) · [js/pages/qa.js](js/pages/qa.js) (`qaItemTemplate`, `renderFilters`) · data [js/mock-data/qa.js](js/mock-data/qa.js)
 
 ---
+
+**App, 09.10.2026 (client's list):**
+- **Jobs** shows 5 openings, then "Show more jobs (N)" adds 5 (`PAGE` in `JobsBoard.tsx`; the count
+  is tied to a JSON key of the filter state, so any filter/sort change starts again at 5 without an
+  effect).
+- **Events**: head 8px closer to the banner (`--snug`); the WHEN / CATEGORY rows are one white
+  panel the width of the container (= the card grid's edges), labels in a shared column and both
+  controls starting on one line (`subgrid` from 640). Replaces the two separately centred rows.
+- **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
+- **Weather**: WEATHER_TOP in the heading row from 1440, as on Cars (`.ad-slot-top--in-head`).
+- **Map**: from 640 the eyebrow + heading are 8px right and the category filter 8px left
+  (`translate` / `left`, business.css); the legend stays centred between them.

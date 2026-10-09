@@ -20,7 +20,7 @@ export default async function WeatherPage() {
     <main id="content" data-page="weather">
       <section className="section">
         <div className="container">
-          <AdSlot code="WEATHER_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
+          <AdSlot code="WEATHER_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top ad-slot-top--in-head" />
           <div className="section-head section-head--sub section-head--nudge section-head--btn-down">
             <div>
               <span className="eyebrow">Seattle forecast</span>

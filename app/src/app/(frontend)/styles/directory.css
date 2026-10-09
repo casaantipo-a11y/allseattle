@@ -201,4 +201,17 @@
   top: calc(var(--space-4) + 2px);
 }
 
+/* Shopping и Leisure (тот же компонент): шапка на 8px ближе к баннеру —
+   общее правило .section-head--snug, но здесь к нему прибавляются свои −2px
+   выше, а без повтора их правило перебило бы общее. */
+.section-head.section-head--snug {
+  margin-top: calc(-2px - var(--space-2));
+}
+
+/* «Shopping немного вправо» (клиент, 09.10.2026): надзаголовок на 12px правее
+   заголовка — 16px, как «AllSeattle Auto» в Cars. Только в Shopping. */
+.dir-head--shopping .eyebrow {
+  left: var(--space-4);
+}
+
 }

@@ -25,7 +25,7 @@ export default async function CarsPage() {
     <main id="content" data-page="cars">
       <section className="section auto-catalog">
         <div className="container">
-          <AdSlot code="CARS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
+          <AdSlot code="CARS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top ad-slot-top--in-head" />
 
           <div className="section-head auto-head">
             <div>

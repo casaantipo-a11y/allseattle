@@ -173,3 +173,9 @@ for a fourth column.
 centred on the page with "Rules" and the rule lines centred (`.contest-rules` in contest.css).
 Before, the shared `RichText` capped itself at 72ch of its own 17px font inside a 72ch-of-18px
 wrapper, so the text hugged the wrapper's left edge and the block read as shifted left.
+
+**App Directory, 09.10.2026:** 10 businesses a page (was 20 — "too many"); `PER_PAGE` in
+`BusinessSection.tsx` is per section, Shopping and Leisure keep 20. The head carries
+`dir-head--<section>`; Shopping/Leisure also get `.section-head--snug` (in directory.css as
+`calc(-2px - 8px)`, since the directory's own −2px would otherwise win) and Shopping's eyebrow is
+16px right of the heading (`.dir-head--shopping .eyebrow`, like Cars).
