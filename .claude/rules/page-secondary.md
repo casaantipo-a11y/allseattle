@@ -261,7 +261,9 @@ keyboard and screen readers work on their own.
   grey chips** without a border (navy when selected) under them, both rows centred (measured to
   0.1px at 1024/1440). **From 1440 the tabs sit in the heading row**, between "Seattle events" and
   "Submit an event", their baseline on the heading's (`margin-top: −56px`, 0.4px off; the chips
-  follow); at 1280 they would come 13px from the heading, so below 1440 they stay under it. The WHEN/CATEGORY labels are
+  follow); at 1280 they would come 13px from the heading, so below 1440 they stay under it.
+  Then "all together 4px up, the chips a little closer to the rule": `.events-head` takes −12px
+  instead of `--snug`'s −8, the filter rows' gap is 8px (rule → chips 20px at 1440, was 28). The WHEN/CATEGORY labels are
   screen-reader-only (`aria-labelledby` keeps them). At 375 the four tabs fit exactly (343/343px);
   at 320 the last wraps (`flex-wrap`) instead of pushing the page sideways. No sorting.
 - **Shopping / Leisure**: see the directory note (snug head, Shopping eyebrow +12px).
