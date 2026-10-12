@@ -26,7 +26,8 @@ const FIRMS_ORDER: Record<string, number> = { luxury: 0, premium: 1, standard: 2
 export default async function CarServicesPage() {
   const [categories, businesses] = await Promise.all([getBusinessCategories(), getAllBusinesses()])
   // The directory's Automotive section (13-section tree, 12.10.2026; was "Auto Services").
-  const auto = categories.find((c) => c.slug === 'automotive')
+  // Before the seed has run on a database the section is still the old "Auto Services".
+  const auto = categories.find((c) => c.slug === 'automotive') ?? categories.find((c) => c.slug === 'auto-services')
   const autoIds = auto ? withDescendants(categories, auto.id) : new Set<number>()
   const catIds = (b: { categories: unknown[] }) =>
     (b.categories ?? []).map((c) =>
@@ -66,7 +67,7 @@ export default async function CarServicesPage() {
               <span className="eyebrow">Auto services</span>
               <h1>Directory of enterprises</h1>
             </div>
-            <Link href="/directory/automotive" className="btn btn-outline btn-sm">
+            <Link href={`/directory/${auto?.slug ?? 'automotive'}`} className="btn btn-outline btn-sm">
               All auto businesses
             </Link>
           </div>
@@ -77,7 +78,7 @@ export default async function CarServicesPage() {
                   <div className="widget-head">Headings</div>
                   <ul className="cat-list">
                     <li>
-                      <Link href="/directory/automotive" className="cat-row">
+                      <Link href={`/directory/${auto?.slug ?? 'automotive'}`} className="cat-row">
                         <span>All auto services</span>
                         <span className="cat-num">{firms.length}</span>
                       </Link>

@@ -226,6 +226,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
   if (retired.docs.length) log(`${retired.docs.length} replaced demo car listings removed`)
 
   let cars = 0
+  let updated = 0
   for (const [i, c] of allCars.entries()) {
     const title = `${c.year} ${c.make} ${c.model}`
     // Colours follow the photos (12.10.2026); the prototype's six are recoloured here.
@@ -233,8 +234,38 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
     const exists = await payload.find({ collection: 'car-listings', where: { title: { equals: title } }, limit: 1, depth: 0 })
     if (exists.totalDocs) {
       const doc = exists.docs[0]
-      if (doc.isDemo && doc.exteriorColor !== color) {
-        await payload.update({ collection: 'car-listings', id: doc.id, data: { exteriorColor: color }, context: ctx() })
+      if (!doc.isDemo) continue
+      // Demo rows follow this file: the colour always, and the added cars (whose
+      // photos were replaced on 12.10.2026) their photos and specs too.
+      const extra = i >= CAR_LISTINGS.length
+      const photoIds: number[] = []
+      if (extra) for (const [n, f] of c.photos.entries()) photoIds.push(await media(f, `${title} — photo ${n + 1}`))
+      const have = (doc.photos ?? []).map((x) => (typeof x === 'object' && x ? x.id : x))
+      const changed = doc.exteriorColor !== color || (extra && (have.join() !== photoIds.join() || doc.price !== c.price || doc.description !== c.description))
+      if (changed) {
+        await payload.update({
+          collection: 'car-listings',
+          id: doc.id,
+          data: {
+            exteriorColor: color,
+            ...(extra
+              ? {
+                  photos: photoIds,
+                  price: c.price,
+                  mileage: c.mileage,
+                  engine: c.engine,
+                  transmission: c.transmission as 'Automatic',
+                  fuelType: c.fuel as 'Gasoline',
+                  bodyType: c.bodyType as 'sedan',
+                  description: c.description,
+                  sellerName: c.seller.name,
+                  sellerPhone: c.seller.phone,
+                }
+              : {}),
+          },
+          context: ctx(),
+        })
+        updated++
       }
       continue
     }
@@ -270,7 +301,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
     })
     cars++
   }
-  log(`${cars} demo car listings`)
+  log(`${cars} demo car listings${updated ? `, ${updated} updated` : ''}`)
 
   // ---- Jobs -------------------------------------------------------------------
   const { JOB_LISTINGS } = await load<{ JOB_LISTINGS: MockJob[] }>('js/mock-data/jobs.js')

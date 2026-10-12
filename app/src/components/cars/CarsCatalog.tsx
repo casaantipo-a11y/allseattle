@@ -80,6 +80,11 @@ const EMPTY: State = {
 
 const uniq = (xs: string[]) => [...new Set(xs.filter(Boolean))].sort()
 
+// A model name that starts with a digit ("3", "3 Series") says nothing on its own
+// in the catalog or the Model list (client, 12.10.2026: "what model is 3?"), so
+// those carry the make: "Mazda 3", "BMW 3 Series". The filter value stays the model.
+const modelLabel = (make: string, model: string) => (/^\d/.test(model) ? `${make} ${model}` : model)
+
 export function CarsCatalog({
   cars,
   rightRail,
@@ -162,7 +167,9 @@ export function CarsCatalog({
             <select id="f-model" value={s.model} onChange={(e) => set({ model: e.target.value })}>
               <option value="">All models</option>
               {models.map((m) => (
-                <option key={m}>{m}</option>
+                <option key={m} value={m}>
+                  {modelLabel(cars.find((c) => c.model === m)?.make ?? '', m).trim()}
+                </option>
               ))}
             </select>
           </div>
@@ -285,7 +292,7 @@ export function CarsCatalog({
                 {catalog.map((r) => (
                   <li key={`${r.make}-${r.model}`}>
                     <button type="button" className={s.model === r.model ? 'active' : undefined} onClick={() => set({ make: r.make, model: r.model })}>
-                      <span>{r.model}</span>
+                      <span>{modelLabel(r.make, r.model)}</span>
                       <span className="auto-cats-num">{r.n}</span>
                     </button>
                   </li>

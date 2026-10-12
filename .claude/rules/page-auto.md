@@ -209,12 +209,22 @@ search panel 8px. Below 1440 the three do not fit in a row and the banner stays 
 **App Cars, 12.10.2026 (client's Cars scheme):** 21 demo listings on **21 different photo sets**
 ("every car photo different and matching its make", same day): the 6 from cars.js (c1, c2, c4,
 c5, c8, c12), 7 from the prototype's 48-listing cars.js (git 56ea1af) on the remaining prototype
-sets c3, c6, c7, c9, c10, c11, c13, and 8 new models on new photos c14–c21 (Tesla Model 3, Subaru
-Forester, Toyota Tacoma, BMW 3 Series — an M3, Toyota Prius, Jeep Grand Cherokee, Hyundai Tucson,
-Honda Civic; one photo each). All in `scripts/demo-cars-extra.ts`. Colours follow the photos
+sets c3, c6, c7, c9, c10, c11, c13, and 8 new models on new photos **c22–c29, three shots of one
+car each** like the prototype's sets (client: "3 photos like the old ones"): Tesla Model 3, Subaru
+WRX, Toyota Tacoma, BMW 3 Series (330i), Toyota 4Runner, Ford Bronco, Hyundai Tucson, Honda Civic.
+A first same-day version had one photo each (c14–c21, removed); Forester, Prius and Grand
+Cherokee had no three-shot series of one car on Unsplash and were swapped for WRX, 4Runner, Bronco.
+The seed updates photos and specs of existing demo rows from this list. All in `scripts/demo-cars-extra.ts`. Colours follow the photos
 (`PROTOTYPE_CAR_COLORS` recolours the six prototype cars in the app only; the seed syncs the colour
 of existing demo rows). The eight listings that had reused a photo set are in
 `RETIRED_DEMO_CARS`, and the seed deletes them (demo rows only). Three prototype photos show an
 older generation than the listing's year (Accord, Outback, Explorer) — makes and models match. B2 = CARS_INFEED_1 after the 10th car (`CarsCatalog` `feedAd`), C1 =
 CARS_SIDEBAR_1 (300x250), C2 = CARS_SIDEBAR_2 (300x600), B1 = CARS_TOP in the heading row.
 /cars/services: B2 = CARS_SERVICES_INFEED_1 under the list.
+
+**App Cars, 12.10.2026 (later):** the last car → footer gap is 16px like Home and Events
+(`.cars-list-section { margin-bottom: -20px }`, was 36; on phones the right rail's last banner is
+the last block). Model names that start with a digit carry the make in the left catalog and the
+Model select — "Mazda 3", "BMW 3 Series", "Toyota 4Runner" (`modelLabel` in CarsCatalog; the filter
+value stays the model). /cars/services falls back to the old `auto-services` category while a
+database hasn't been seeded with the 13-section tree.
