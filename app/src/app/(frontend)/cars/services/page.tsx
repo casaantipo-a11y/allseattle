@@ -25,7 +25,8 @@ const FIRMS_ORDER: Record<string, number> = { luxury: 0, premium: 1, standard: 2
 
 export default async function CarServicesPage() {
   const [categories, businesses] = await Promise.all([getBusinessCategories(), getAllBusinesses()])
-  const auto = categories.find((c) => c.slug === 'auto-services')
+  // The directory's Automotive section (13-section tree, 12.10.2026; was "Auto Services").
+  const auto = categories.find((c) => c.slug === 'automotive')
   const autoIds = auto ? withDescendants(categories, auto.id) : new Set<number>()
   const catIds = (b: { categories: unknown[] }) =>
     (b.categories ?? []).map((c) =>
@@ -65,7 +66,7 @@ export default async function CarServicesPage() {
               <span className="eyebrow">Auto services</span>
               <h1>Directory of enterprises</h1>
             </div>
-            <Link href="/directory/auto-services" className="btn btn-outline btn-sm">
+            <Link href="/directory/automotive" className="btn btn-outline btn-sm">
               All auto businesses
             </Link>
           </div>
@@ -76,7 +77,7 @@ export default async function CarServicesPage() {
                   <div className="widget-head">Headings</div>
                   <ul className="cat-list">
                     <li>
-                      <Link href="/directory/auto-services" className="cat-row">
+                      <Link href="/directory/automotive" className="cat-row">
                         <span>All auto services</span>
                         <span className="cat-num">{firms.length}</span>
                       </Link>
@@ -109,6 +110,8 @@ export default async function CarServicesPage() {
               <AdSlot code="CARS_SIDEBAR_4" size="300x600" mobileSize="320x100" />
             </aside>
           </div>
+          {/* B2 under the main content ("other sections" scheme, 12.10.2026). */}
+          <AdSlot code="CARS_SERVICES_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
     </main>

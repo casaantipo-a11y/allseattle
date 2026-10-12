@@ -46,6 +46,8 @@ export default async function WeatherPage() {
           ) : (
             <p className="muted">The forecast service isn&rsquo;t answering right now. Please try again in a few minutes.</p>
           )}
+          {/* B2 under the main content ("other sections" scheme, 12.10.2026). */}
+          <AdSlot code="WEATHER_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
     </main>

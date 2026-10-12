@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 
 import type { Section } from '@/collections/BusinessCategories'
-import { getBusinessCategories } from '@/lib/queries'
+import { withDescendants } from '@/lib/business'
+import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
 
 import { BusinessSection, SECTION_META } from './BusinessSection'
 
@@ -50,8 +51,18 @@ export async function sectionPage(section: Section, searchParams: SP, params?: C
   )
 }
 
+// Pre-rendered at build: only the categories that have businesses. The
+// directory's 13-section tree (12.10.2026) has ~100 empty sub-categories; built
+// all at once they exhausted the database's connections, and an empty page gains
+// nothing from being built ahead — it renders on its first visit and is cached
+// like the rest (revalidate).
 export async function sectionStaticParams(section: Section) {
-  return (await getBusinessCategories())
+  const [categories, businesses] = await Promise.all([getBusinessCategories(), getAllBusinesses()])
+  const used = new Set(
+    businesses.flatMap((b) => (b.categories ?? []).map((c) => (typeof c === 'object' && c ? c.id : (c as number)))),
+  )
+  return categories
     .filter((c) => c.section === section && c.slug)
+    .filter((c) => [...withDescendants(categories, c.id)].some((id) => used.has(id)))
     .map((c) => ({ category: c.slug as string }))
 }

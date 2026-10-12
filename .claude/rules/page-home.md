@@ -110,3 +110,8 @@ cards, `section.home-events`) is 20px closer to HOME_INFEED_1 from 1024 — visi
 eyebrow line box 18px at 1024/1440/1920, the same as HOME_TOP → "Today in Seattle". Only from
 1024: there the banner is the last thing in the first section (both rails end far above it);
 below 1024 the right rail's widgets follow the banner and a negative margin would land on them.
+
+**App home, 12.10.2026 (client's Home scheme):** left column A1–A4 top to bottom (HOME_SIDEBAR_1–3
++ new HOME_SIDEBAR_4, 300x250), C1 = new HOME_RIGHT_1 (300x250) at the top of the right column
+above "AllSeattle at a glance", B1 = HOME_TOP, B2 = HOME_INFEED_1. Side slots are desktop-only like
+the rest of Home's rails. HOME_INFEED_2 is not on the scheme and stays (no price).

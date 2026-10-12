@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { SECTIONS } from '@/collections/BusinessCategories'
+import { ContactEmail } from '@/components/ContactEmail'
 import { SubmissionForm } from '@/components/SubmissionForm'
 import { getBusinessCategories, getPackages } from '@/lib/queries'
 
@@ -57,6 +58,7 @@ export default async function AddBusinessPage() {
                   Compare packages
                 </Link>
               </p>
+              <ContactEmail label="Questions? Email us:" className="mt-3" />
             </div>
 
             {/* 12px padding on phones: the Turnstile widget is a fixed 300px and did not fit

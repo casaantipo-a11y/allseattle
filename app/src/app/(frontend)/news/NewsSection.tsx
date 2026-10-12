@@ -1,25 +1,53 @@
 import Link from 'next/link'
+import { Fragment } from 'react'
 import { notFound } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
+import { NewsArchiveWidget } from '@/components/NewsArchiveWidget'
+import { NewsletterWidget } from '@/components/NewsletterWidget'
 import { CategoriesWidget, NewsListRow, Pagination, TopNewsWidget } from '@/components/news'
-import { getNewsCategories, getNewsCategoryCounts, getNewsPage, getTopNews } from '@/lib/queries'
+import { getNewsCategories, getNewsCategoryCounts, getNewsMonths, getNewsPage, getTopNews } from '@/lib/queries'
 
 // The news feed from the prototype's news.html: banner, head, three columns —
 // ads and categories on the left, the feed, ads and Top news on the right.
 // Shared by /news and /news/[category].
-export async function NewsSection({ page, categorySlug }: { page: number; categorySlug?: string }) {
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+/** ?month=&year= from the News Archive; anything else is ignored. */
+export function archiveParams(sp: { month?: string; year?: string }) {
+  const month = Number(sp.month)
+  const year = Number(sp.year)
+  return {
+    month: Number.isInteger(month) && month >= 1 && month <= 12 ? month : undefined,
+    year: Number.isInteger(year) && year >= 2000 && year <= 2100 ? year : undefined,
+  }
+}
+
+export async function NewsSection({
+  page,
+  categorySlug,
+  month,
+  year,
+}: {
+  page: number
+  categorySlug?: string
+  month?: number
+  year?: number
+}) {
   const [categories, counts] = await Promise.all([getNewsCategories(), getNewsCategoryCounts()])
   const category = categorySlug ? categories.find((c) => c.slug === categorySlug) : undefined
   if (categorySlug && !category) notFound()
 
-  const [feed, top] = await Promise.all([
-    getNewsPage({ page, limit: 20, categoryId: category?.id }),
+  const [feed, top, months] = await Promise.all([
+    getNewsPage({ page, limit: 20, categoryId: category?.id, month, year }),
     getTopNews(6),
+    getNewsMonths(),
   ])
   if (page > 1 && page > feed.totalPages) notFound()
 
   const base = category ? `/news/${category.slug}` : '/news'
+  const archive = { ...(month ? { month: String(month) } : {}), ...(year ? { year: String(year) } : {}) }
+  const archiveLabel = [month ? MONTHS[month - 1] : null, year ?? null].filter(Boolean).join(' ')
 
   return (
     <main id="content" data-page="news">
@@ -50,23 +78,41 @@ export async function NewsSection({ page, categorySlug }: { page: number; catego
           </div>
 
           <div className="news-layout">
+            {/* Left column per the client's News scheme (12.10.2026): A1 on top, then
+                Categories and the prototype's Newsletter and News Archive, back. */}
             <aside className="news-rail news-rail--left">
-              <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
               <AdSlot code="NEWS_SIDEBAR_2" size="300x600" mobileSize="320x100" />
+              <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
+              <NewsletterWidget />
+              <NewsArchiveWidget months={months} month={month} year={year} base={base} />
             </aside>
 
             <div className="news-feed">
               {category?.description ? <p className="muted">{category.description}</p> : null}
+              {archiveLabel ? (
+                <p className="muted">
+                  Archive: {archiveLabel} &middot;{' '}
+                  <Link href={base} className="text-brand-navy underline">
+                    show all
+                  </Link>
+                </p>
+              ) : null}
               {feed.docs.length ? (
                 <div className="news-list">
-                  {feed.docs.map((a) => (
-                    <NewsListRow key={a.id} article={a} />
+                  {feed.docs.map((a, i) => (
+                    <Fragment key={a.id}>
+                      <NewsListRow article={a} />
+                      {/* B2 — the strip inside the list after the 10th story (client's scheme). */}
+                      {i === 9 && feed.docs.length > 10 ? (
+                        <AdSlot code="NEWS_INFEED_1" size="728x90" mobileSize="320x100" className="news-infeed-ad" />
+                      ) : null}
+                    </Fragment>
                   ))}
                 </div>
               ) : (
-                <p className="muted">No stories in this section yet.</p>
+                <p className="muted">{archiveLabel ? `No stories from ${archiveLabel}.` : 'No stories in this section yet.'}</p>
               )}
-              <Pagination page={feed.page} totalPages={feed.totalPages} base={base} />
+              <Pagination page={feed.page} totalPages={feed.totalPages} base={base} params={archive} />
             </div>
 
             <aside className="news-rail news-rail--right">

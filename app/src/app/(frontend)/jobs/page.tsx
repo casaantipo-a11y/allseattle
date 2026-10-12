@@ -24,6 +24,8 @@ export default async function JobsPage({ searchParams }: Props) {
         <div className="container">
           <AdSlot code="JOBS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
           <JobsBoard key={q} jobs={jobs} initialQuery={q} />
+          {/* B2 under the main content ("other sections" scheme, 12.10.2026). */}
+          <AdSlot code="JOBS_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
     </main>

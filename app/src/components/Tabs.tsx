@@ -18,7 +18,7 @@ export function Tabs({ tabs }: { tabs: { id: string; label: string; content: Rea
 
   return (
     <div>
-      <div role="tablist" className="mb-5 flex gap-6 border-b-2 border-brand-line">
+      <div role="tablist" className="mb-5 flex flex-wrap gap-x-6 border-b-2 border-brand-line">
         {tabs.map((t, i) => (
           <button
             key={t.id}

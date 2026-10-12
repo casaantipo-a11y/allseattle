@@ -134,6 +134,8 @@ async function run() {
       tagline: "If you're not on this website, you don't exist.",
       description: 'AllSeattle — the Seattle city portal for news, businesses, events, jobs and cars.',
       phone: '+1 (206) 331-8216',
+      // The one contact address everywhere on the site (client, 12.10.2026).
+      email: 'AllSeattle.info@gmail.com',
       address: 'Seattle, WA',
       socials: { instagram: '', facebook: '' },
     },
@@ -144,6 +146,8 @@ async function run() {
     { label: 'Home', url: '/', row: 'primary', icon: 'home' },
     { label: 'News', url: '/news', row: 'primary', icon: 'news' },
     { label: 'Business Directory', url: '/directory', row: 'primary', icon: 'directory' },
+    // Advertising in the top row, as in the prototype (client, 12.10.2026).
+    { label: 'Advertising', url: '/advertise', row: 'primary', icon: 'advertising' },
     {
       label: 'Cars',
       url: '/cars',
@@ -186,7 +190,9 @@ async function run() {
         {
           title: 'Explore',
           links: [
-            ...menu.filter((m) => m.url !== '/').map((m) => ({ label: m.label, url: m.url })),
+            // Advertising is in the header menu too (12.10.2026); the footer lists it
+            // once, as "Advertise" in the bottom bar.
+            ...menu.filter((m) => m.url !== '/' && m.url !== '/advertise').map((m) => ({ label: m.label, url: m.url })),
             { label: 'Advertise', url: '/advertise' },
             { label: 'About', url: '/about' },
             { label: 'Contact', url: '/contact' },

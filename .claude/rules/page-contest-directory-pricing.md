@@ -183,3 +183,22 @@ wrapper, so the text hugged the wrapper's left edge and the block read as shifte
 **App Directory, 09.10.2026 (second list):** the head is 12px closer to DIRECTORY_TOP at every
 width (`.section-head.dir-head--directory`, `margin-top: calc(-2px - 12px)`): banner → eyebrow
 line box 6px, as News from 1440. No card in this head, so nothing can land on the banner.
+
+**App Directory, 12.10.2026 (client):** 13 sections with sub-categories (`lib/directory-tree.ts`),
+seeded idempotently: rows with the same slug are reused and re-parented, the 23 demo businesses
+move by name (`BUSINESS_SUBCATEGORY`), any other business by its old category's slug
+(`OLD_DIRECTORY_SLUGS`), and old directory categories are deleted only when nothing uses them. Old
+category URLs answer 308 to the new ones (directory `[category]` route). Slugs are unique
+site-wide, so "Clothing" is `clothing-stores` (Shopping has `clothing`) and Kids & Family's
+"Entertainment Centers" is `kids-family-entertainment-centers`. Shopping and Leisure keep their own
+categories. The Headings widget is an accordion (`CategoryTree`, native `<details>`): only the
+sections show, a click opens a section ("All <section>" + its sub-categories), another closes it,
+the section holding the active category starts open and highlighted. Right column: C1
+(DIRECTORY_SIDEBAR_1) → "AllSeattle at a glance" (Home's `StatsWidget`, live counts) → C2
+(DIRECTORY_SIDEBAR_2). B2 = DIRECTORY_INFEED_1 after the 8th business; Shopping / Leisure get their
+`*_INFEED_1` under the list. /cars/services now reads the Automotive section.
+
+Build note (12.10.2026): `sectionStaticParams` pre-renders only categories that have businesses
+(with their descendants). Building all ~117 directory categories exhausted the local Postgres's
+connections ("too many clients") and gains nothing for an empty page; the rest render on first
+visit and are cached like the others.

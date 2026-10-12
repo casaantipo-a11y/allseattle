@@ -1,3 +1,4 @@
+import { EXTRA_CARS } from './demo-cars-extra'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -200,8 +201,12 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
 
   // ---- Car listings -----------------------------------------------------------
   const { CAR_LISTINGS } = await load<{ CAR_LISTINGS: MockCar[] }>('js/mock-data/cars.js')
+  const allCars: Omit<MockCar, 'id'>[] = [
+    ...CAR_LISTINGS,
+    ...EXTRA_CARS.map((c) => ({ ...c, seller: { ...c.seller }, photos: [...c.photos] })),
+  ]
   let cars = 0
-  for (const [i, c] of CAR_LISTINGS.entries()) {
+  for (const [i, c] of allCars.entries()) {
     const title = `${c.year} ${c.make} ${c.model}`
     const exists = await payload.find({ collection: 'car-listings', where: { title: { equals: title } }, limit: 1 })
     if (exists.totalDocs) continue

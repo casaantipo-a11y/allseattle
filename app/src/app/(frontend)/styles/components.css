@@ -972,6 +972,14 @@
   gap: var(--space-3);
 }
 
+/* Растяжка B2 в списке компаний (схема клиента, 12.10.2026: в справочнике после
+   8-й карточки, в Shopping / Leisure — под списком). По центру колонки. */
+.biz-infeed-ad {
+  display: flex;
+  justify-content: center;
+  margin: var(--space-2) 0;
+}
+
 .biz-row {
   display: grid;
   grid-template-columns: 72px 1fr;
@@ -1441,6 +1449,40 @@ body.modal-open {
   color: var(--color-accent);
 }
 
+/* Аккордеон рубрик справочника (клиент, 12.10.2026): раздел с подрубриками —
+   нативный <details>, его строка (<summary>) выглядит как обычная .cat-row,
+   плюс стрелка справа. Без анимации: список появляется сразу, стрелка
+   переворачивается (правило сайта). */
+.cat-group > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.cat-group > summary::-webkit-details-marker {
+  display: none;
+}
+/* Название тянется — счётчик и стрелка встают к правому краю, как счётчики
+   обычных строк. */
+.cat-group > summary > span:first-child {
+  flex: 1;
+}
+.cat-group > summary::after {
+  content: "\25BE";
+  flex: none;
+  margin-left: calc(-1 * var(--space-1));
+  color: var(--color-slate);
+  font-size: 12px;
+}
+.cat-group[open] > summary::after {
+  transform: rotate(180deg);
+}
+.cat-group > summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+.cat-list--sub {
+  padding: 0 0 var(--space-1);
+}
+
 /* ---------- Job board (виджет на главной) ----------
    Свои поля вместо общих 32px у .widget-body: список начинается сразу под
    шапкой виджета и кончается сразу под «All jobs» (просьба клиента).
@@ -1573,6 +1615,14 @@ body.modal-open {
   margin-bottom: 0;
   display: flex;
   justify-content: center;
+}
+
+/* B2 — растяжка под основным содержимым страницы (схема клиента для
+   «остальных» разделов, 12.10.2026): по центру, 32px от того, что выше. */
+.ad-slot-under {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-8);
 }
 
 /* «Всё, что ниже верхнего баннера, немного поднять» (клиент, 09.10.2026:

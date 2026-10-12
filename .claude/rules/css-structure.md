@@ -276,3 +276,16 @@ Each of these was decided explicitly. Don't "fix" them back:
 head 8px closer to the `.ad-slot-top` above it (`.ad-slot-top + .section-head--snug`, 14px banner
 → eyebrow letters at 1440; News, Cars Services, Shopping, Leisure, Events). `.ad-slot-top--in-head`
 on the banner — from 1440 it shares the head's row (Cars, Weather), see page-auto.md.
+
+**App, 12.10.2026 — the client's banner system.** Positions are the client's: B1 (strip under the
+photo banner / plates), B2 (strip in or under the main list), A1–A4 (left column), C1/C2 (right
+column, C2 tall). `src/lib/ad-placements.ts` is the one place that says which slot code is which
+position on which page and what it costs per month (Home / News / Cars / Directory / "Others"
+sheets, 100% of views); the empty-slot placeholder (BannerSlot `offer`: "Block B1 · 728×90 /
+Your Ad Here / Available · $149/month") and /advertise → "Banner placement & prices" read it.
+Prices are code, not CMS (the user's choice): change the file and deploy. AdSlots rows stay — a
+banner is attached to a code in the admin; the seed adds the new codes (HOME_SIDEBAR_4,
+HOME_RIGHT_1, *_INFEED_1 for News, Cars, Directory and every "other" page) and puts "· Block A1"
+into each slot's name for the admin's picker. Demo banners stay in every slot (user's choice),
+so the placeholder only shows where no banner runs. Slots that are not on the sheets stay and
+show no price. Shared `.ad-slot-under` = a B2 under the main content (32px above).

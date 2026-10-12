@@ -1,3 +1,4 @@
+import { placementFor } from '@/lib/ad-placements'
 import { firstRunning, getBannerPool } from '@/lib/banners'
 
 import { BannerSlot, type Size } from './BannerSlot'
@@ -20,6 +21,7 @@ export async function AdSlot({
   className?: string
 }) {
   const banners = (await getBannerPool())[code] ?? []
+  const placement = placementFor(code)
   return (
     <BannerSlot
       code={code}
@@ -28,6 +30,7 @@ export async function AdSlot({
       className={className}
       banners={banners}
       initial={firstRunning(banners)}
+      offer={placement ? { position: placement.position, price: placement.price } : undefined}
     />
   )
 }
@@ -35,7 +38,15 @@ export async function AdSlot({
 /** Phone-only echo of a sidebar slot, placed inside a feed. */
 export async function InlineMobileAd({ code }: { code: string }) {
   const banners = (await getBannerPool())[code] ?? []
+  const placement = placementFor(code)
   return (
-    <BannerSlot code={code} size="300x250" banners={banners} initial={firstRunning(banners)} echo />
+    <BannerSlot
+      code={code}
+      size="300x250"
+      banners={banners}
+      initial={firstRunning(banners)}
+      echo
+      offer={placement ? { position: placement.position, price: placement.price } : undefined}
+    />
   )
 }

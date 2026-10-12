@@ -922,7 +922,7 @@ export interface Contest {
  */
 export interface Submission {
   id: number;
-  type: 'news_tip' | 'business_registration' | 'ad_inquiry';
+  type: 'news_tip' | 'business_registration' | 'ad_inquiry' | 'newsletter';
   status: 'new' | 'in_progress' | 'done' | 'rejected';
   name?: string | null;
   email?: string | null;

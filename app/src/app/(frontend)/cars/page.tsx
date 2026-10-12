@@ -51,6 +51,7 @@ export default async function CarsPage() {
 
           <CarsCatalog
             cars={cars.map(toCarItem)}
+            feedAd={<AdSlot code="CARS_INFEED_1" size="728x90" mobileSize="320x100" />}
             rightRail={
               <>
                 <AdSlot code="CARS_SIDEBAR_1" size="300x250" mobileSize="320x100" />

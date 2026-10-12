@@ -86,8 +86,12 @@ export function buildTree(categories: BusinessCategory[], counts: Map<number, nu
 }
 
 /** The "Headings" widget, as links (one URL per category, so each is
- * indexable), in the shared category-list look (components.css .cat-list):
- * sub-categories follow their parent, indented. */
+ * indexable), in the shared category-list look (components.css .cat-list).
+ * An accordion (client, 12.10.2026): only the top-level sections show, with
+ * their counts; a section with sub-categories is a native <details> — a click
+ * on it opens the list, another closes it, no script. Inside: "All <section>"
+ * (the section's own page) and the sub-categories. The section that holds the
+ * open category is highlighted and starts open. */
 export function CategoryTree({
   tree,
   base,
@@ -99,25 +103,41 @@ export function CategoryTree({
   activeSlug?: string
   total: number
 }) {
-  const rows: React.ReactNode[] = []
-  const add = (n: Node, depth: number) => {
+  const contains = (n: Node): boolean => n.slug === activeSlug || n.children.some(contains)
+  const link = (n: Node, depth: number, label = n.name) => {
     const active = n.slug === activeSlug
-    rows.push(
-      <li key={n.id}>
-        <Link
-          href={`${base}/${n.slug}`}
-          aria-current={active ? 'page' : undefined}
-          className={`cat-row${depth ? ' cat-row--sub' : ''}${active ? ' is-active' : ''}`}
-          style={depth ? ({ '--depth': depth } as React.CSSProperties) : undefined}
-        >
-          <span>{n.name}</span>
-          <span className="cat-num">{n.count}</span>
-        </Link>
-      </li>,
+    return (
+      <Link
+        href={`${base}/${n.slug}`}
+        aria-current={active ? 'page' : undefined}
+        className={`cat-row${depth ? ' cat-row--sub' : ''}${active ? ' is-active' : ''}`}
+        style={depth ? ({ '--depth': depth } as React.CSSProperties) : undefined}
+      >
+        <span>{label}</span>
+        <span className="cat-num">{n.count}</span>
+      </Link>
     )
-    for (const c of n.children) add(c, depth + 1)
   }
-  for (const n of tree) add(n, 0)
+  const subRows = (n: Node, depth: number): React.ReactNode[] =>
+    n.children.flatMap((c) => [<li key={c.id}>{link(c, depth)}</li>, ...subRows(c, depth + 1)])
+  const rows = tree.map((n) =>
+    n.children.length ? (
+      <li key={n.id}>
+        <details className="cat-group" open={contains(n) || undefined}>
+          <summary className={`cat-row${contains(n) ? ' is-active' : ''}`}>
+            <span>{n.name}</span>
+            <span className="cat-num">{n.count}</span>
+          </summary>
+          <ul className="cat-list cat-list--sub">
+            <li>{link(n, 1, `All ${n.name}`)}</li>
+            {subRows(n, 1)}
+          </ul>
+        </details>
+      </li>
+    ) : (
+      <li key={n.id}>{link(n, 0)}</li>
+    ),
+  )
   return (
     <nav className="widget" aria-label="Categories">
       <div className="widget-head">Headings</div>

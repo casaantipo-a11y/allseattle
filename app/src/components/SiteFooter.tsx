@@ -23,7 +23,9 @@ export async function SiteFooter() {
   // Explore splits in two (client, 04.10.2026): the site's sections — whatever the
   // header menu links to — as an even grid, and everything else (About, Advertise,
   // Contact, Privacy, Terms) as a quiet bar at the bottom of the footer.
-  const menuUrls = new Set((header.menu ?? []).map((m) => m.url))
+  // Advertising joined the header's top row (12.10.2026) but stays in the footer's
+  // bottom bar with About / Contact — the Explore grid keeps the nine sections.
+  const menuUrls = new Set((header.menu ?? []).map((m) => m.url).filter((u) => u !== '/advertise'))
   const exploreLinks = explore?.links ?? []
   const sectionLinks = exploreLinks.filter((l) => menuUrls.has(l.url))
   const metaLinks = exploreLinks.filter((l) => !menuUrls.has(l.url))

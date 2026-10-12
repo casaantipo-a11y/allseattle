@@ -289,3 +289,8 @@ keyboard and screen readers work on their own.
 (`.jobs-head .eyebrow { left: 16px }`, as Shopping / Cars; no overflow at 320/375); the Sort row
 was moved to the cards' right edge and put back centred over the cards the same day; "Show more jobs" is centred on the cards (`.jobs-more` card-wide too — it was
 centred on the 104px wider column, 52px right).
+
+**App, 12.10.2026 (client's "other sections" sheet):** B1 = each page's *_TOP, B2 = *_INFEED_1 under
+the main content (`.ad-slot-under`): Jobs, Weather, Map, Services, Shopping, Leisure; Events
+already had EVENTS_INFEED_1. The app has no Real Estate page, so nothing there. Existing side slots
+(Jobs, Events) are not on the sheet and stay.

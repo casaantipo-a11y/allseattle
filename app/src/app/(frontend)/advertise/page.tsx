@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 
 import { RichText } from '@/components/RichText'
+import { ContactEmail } from '@/components/ContactEmail'
+import { PlacementPrices } from '@/components/PlacementPrices'
 import { SubmissionForm } from '@/components/SubmissionForm'
 import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
 import { badgeFor, priceText } from '@/lib/business'
@@ -8,9 +10,9 @@ import { getPackages, getPage } from '@/lib/queries'
 import type { Package } from '@/payload-types'
 
 // /advertise — the page salespeople show to clients (spec §5): the packages
-// from the Packages collection, the map of banner placements (AdSlots) with
-// their weekly price and whether a banner is running there right now, and the
-// inquiry form. Markup and CSS are the prototype's pricing page
+// from the Packages collection, the banner positions with their schemes and
+// monthly prices (lib/ad-placements.ts) and whether a banner is running there
+// right now, and the inquiry form. Markup and CSS are the prototype's pricing page
 // (styles/pricing.css).
 
 type Props = { searchParams: Promise<{ package?: string; slot?: string }> }
@@ -75,12 +77,6 @@ export default async function AdvertisePage({ searchParams }: Props) {
   const chosen = packages.find((p) => String(p.id) === sp.package)
   // Demo fillers don't make a slot Booked — only a paid banner does.
   const booked = (code: string) => isBooked(pool[code] ?? [])
-  const slotsByPage: [string, typeof slots][] = []
-  for (const s of slots) {
-    const group = slotsByPage.find(([k]) => k === s.page)
-    if (group) group[1].push(s)
-    else slotsByPage.push([s.page, [s]])
-  }
   const slotName = (s: (typeof slots)[number]) =>
     s.name || `${PAGE_LABEL[s.page] ?? s.page} — ${POSITION_LABEL[s.position] ?? s.position}`
   // The middle tier is highlighted, as in the prototype.
@@ -187,70 +183,20 @@ export default async function AdvertisePage({ searchParams }: Props) {
             </table>
           </div>
 
-          {slots.length ? (
-            <>
-              <div id="placements" className="section-head section-head--spaced scroll-mt-40">
-                <div>
-                  <span className="eyebrow">Banner placements</span>
-                  <h2>Where your banner can run</h2>
-                </div>
-              </div>
-              <p className="muted">
-                Prices are per week. Booked means a banner is running there right now; ask us for
-                the next free dates.
-              </p>
-              <div className="table-scroll">
-                <table className="feature-table placements-table">
-                  <thead>
-                    <tr>
-                      <th>Placement</th>
-                      <th>Desktop</th>
-                      <th>Phone</th>
-                      <th>Per week</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  {slotsByPage.map(([pageKey, list]) => (
-                    <tbody key={pageKey}>
-                      <tr>
-                        <th colSpan={5} className="placements-group">
-                          {PAGE_LABEL[pageKey] ?? pageKey}
-                        </th>
-                      </tr>
-                      {list.map((s) => {
-                        const isBooked = booked(s.code)
-                        return (
-                          <tr key={s.id}>
-                            <td className="feature-label">
-                              <a href={`/advertise?slot=${encodeURIComponent(s.code)}#inquiry`}>
-                                {slotName(s)}
-                              </a>
-                            </td>
-                            <td className="num">{s.desktopSize}</td>
-                            <td className="num">
-                              {s.mobileSize ?? (
-                                <span aria-label="not shown on phones">&mdash;</span>
-                              )}
-                            </td>
-                            <td className="num">
-                              {s.weeklyPrice > 0 ? priceText(s.weeklyPrice, 'USD') : 'Contact us'}
-                            </td>
-                            <td>
-                              <span
-                                className={`ad-slot-status ${isBooked ? 'is-occupied' : 'is-available'}`}
-                              >
-                                {isBooked ? 'Booked' : 'Available'}
-                              </span>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  ))}
-                </table>
-              </div>
-            </>
-          ) : null}
+          {/* Banner placement & prices (client, 12.10.2026): schemes and monthly prices
+              from lib/ad-placements.ts. It replaces the earlier per-week table built from
+              the AdSlots rows — two price lists on one page would disagree. */}
+          <div id="placements" className="section-head section-head--spaced scroll-mt-40">
+            <div>
+              <span className="eyebrow">Banner placement &amp; prices</span>
+              <h2>Where your banner can run</h2>
+            </div>
+          </div>
+          <p className="muted">
+            Every position is shown on 100% of the page&rsquo;s views. Prices are per month. Booked
+            means a banner is running there right now; ask us for the next free dates.
+          </p>
+          <PlacementPrices booked={(codes) => codes.some((c) => booked(c))} />
 
           {page?.content ? (
             <div className="mt-10">
@@ -269,6 +215,7 @@ export default async function AdvertisePage({ searchParams }: Props) {
               Tell us about your business and we&rsquo;ll get back to you with options. Nothing is
               charged now.
             </p>
+            <ContactEmail label="Or email us:" className="muted" />
             <SubmissionForm
               form="ad-inquiry"
               submitLabel="Send request"

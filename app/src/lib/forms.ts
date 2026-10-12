@@ -71,7 +71,23 @@ export const FORMS = {
     thanks: 'Thanks! We received your news tip and will review it shortly.',
     title: 'New news tip',
   },
+  // News sidebar newsletter (client, 12.10.2026). Just an address and the
+  // button pressed; no Turnstile (the widget is wider than the 300px column —
+  // honeypot and the per-IP rate limit still apply) and no notification for
+  // every sign-up. The list lives in Inbox → Submissions, type Newsletter.
+  newsletter: {
+    type: 'newsletter' as const,
+    schema: z.object({
+      email: z.email('That doesn’t look like an email address'),
+      action: z.enum(['subscribe', 'unsubscribe']).default('subscribe'),
+    }),
+    thanks: 'You’re on the list — the Seattle briefing will land in your inbox.',
+    title: 'Newsletter',
+  },
 } as const
+
+// Forms that skip Turnstile and the owner's notifications (see newsletter above).
+const QUIET_FORMS: readonly FormKey[] = ['newsletter']
 
 // Photos for news tips (spec §8): up to 5, JPEG/PNG/WebP, 10 MB each.
 const MAX_PHOTOS = 5
@@ -144,7 +160,8 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
   }
 
   const ip = clientIp(req)
-  if (!(await turnstileOk(fd.get('cf-turnstile-response'), ip))) {
+  const quiet = QUIET_FORMS.includes(key)
+  if (!quiet && !(await turnstileOk(fd.get('cf-turnstile-response'), ip))) {
     return json({ error: 'The anti-spam check failed. Please try again.' }, 400)
   }
 
@@ -163,6 +180,7 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
   }
 
   const d = parsed.data as Record<string, unknown>
+  if (key === 'newsletter') d.name = `Newsletter: ${d.action}`
   // Ids come from the visitor's browser: keep them only if they exist.
   const exists = async (collection: 'business-categories' | 'packages', id: unknown) =>
     typeof id === 'number' &&
@@ -220,6 +238,14 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
   } catch (e) {
     console.error('[forms] could not save submission', e)
     return json({ error: 'Something went wrong on our side. Please try again in a minute.' }, 500)
+  }
+
+  const unsubscribed = key === 'newsletter' && d.action === 'unsubscribe'
+  if (quiet) {
+    return json({
+      ok: true,
+      message: unsubscribed ? 'You’re unsubscribed — that address won’t get the briefing any more.' : form.thanks,
+    })
   }
 
   // Notifications must never lose a saved submission.

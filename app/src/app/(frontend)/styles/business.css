@@ -195,9 +195,12 @@
 .hero-frame {
   overflow: visible;
 }
+/* Радиус задан прямо, а не inherit: фото лежит в <picture> (display:
+   contents), а наследуется от DOM-родителя — от <picture> без радиуса, и углы
+   картинки выходили прямыми (клиент, 12.10.2026: «вернуть закруглённые углы»). */
 .hero-photo,
 .hero-shade {
-  border-radius: inherit;
+  border-radius: var(--radius-lg);
 }
 .search-stub {
   overflow: visible;

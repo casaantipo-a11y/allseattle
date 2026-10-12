@@ -1,3 +1,4 @@
+import { placementFor } from '../lib/ad-placements'
 import path from 'node:path'
 
 import type { Payload } from 'payload'
@@ -61,6 +62,8 @@ const feed = (
   weeklyPrice: price,
 })
 
+const weekly = (monthly: number) => Math.round((monthly * 12) / 52)
+
 export const SLOTS: Slot[] = [
   top('HOME_TOP', 'home', 'Home', 250),
   side('HOME_SIDEBAR_1', 'home', 'Home', 1, '300x250', 150, false),
@@ -96,6 +99,21 @@ export const SLOTS: Slot[] = [
   top('WEATHER_TOP', 'weather', 'Weather', 100),
   // The prototype's City Map had a top banner; stage 2 had dropped it (back 07.10.2026).
   top('MAP_TOP', 'map', 'City map', 100),
+  // 12.10.2026, the client's banner schemes (lib/ad-placements.ts has the positions and
+  // monthly prices): Home A4 and C1, and a B2 strip in or under the list of News,
+  // Cars, the directory and every "other" section. weeklyPrice is the monthly price
+  // spread over the year's weeks; the site shows the monthly one.
+  side('HOME_SIDEBAR_4', 'home', 'Home', 4, '300x250', weekly(129), false),
+  { ...side('HOME_RIGHT_1', 'home', 'Home', 1, '300x250', weekly(149), false), name: 'Home — right column (300x250)' },
+  feed('NEWS_INFEED_1', 'news', 'News', 1, weekly(129)),
+  feed('CARS_INFEED_1', 'cars', 'Cars', 1, weekly(129)),
+  { ...feed('CARS_SERVICES_INFEED_1', 'cars', 'Cars', 1, weekly(129)), name: 'Cars — auto services, under the list' },
+  feed('DIRECTORY_INFEED_1', 'directory', 'Business directory', 1, weekly(149)),
+  feed('SHOPPING_INFEED_1', 'shopping', 'Shopping', 1, weekly(129)),
+  feed('LEISURE_INFEED_1', 'leisure', 'Leisure', 1, weekly(129)),
+  feed('JOBS_INFEED_1', 'jobs', 'Jobs', 1, weekly(129)),
+  feed('WEATHER_INFEED_1', 'weather', 'Weather', 1, weekly(129)),
+  feed('MAP_INFEED_1', 'map', 'City map', 1, weekly(129)),
 ]
 
 // A demo creative: the business's photo with the advertiser, an offer and a
@@ -193,7 +211,7 @@ const DEMO_BANNERS = [
     offer: 'First wash 20% off this month',
     cta: 'Book now',
     photo: 'img/cars/c1-2.webp',
-    slots: ['HOME_TOP', 'CARS_TOP'],
+    slots: ['HOME_TOP', 'CARS_TOP', 'CARS_SERVICES_INFEED_1'],
     desktop: '728x90',
     mobile: '320x100',
   },
@@ -211,20 +229,20 @@ const DEMO_BANNERS = [
   // demo site reads as live. Grouped by slot size, matched to the page where it makes sense.
   // All isDemo — they leave with purge-demo, and /advertise doesn't count them as Booked.
   ...([
-    ['Skyline Brewing Taproom', 'skyline-brewing-taproom', 'Happy hour 4–6 pm, every day', 'See the menu', 'img/business/biz-12.webp', ['HOME_INFEED_1', 'LEISURE_TOP', 'EVENTS_TOP']],
-    ['Rainier Kitchen & Bar', 'rainier-kitchen-bar', 'Weekend brunch from 9 am', 'Book a table', 'img/business/biz-2.webp', ['HOME_INFEED_2', 'NEWS_TOP', 'MAP_TOP']],
-    ['Puget Sound Web Studio', 'puget-sound-web-studio', 'Websites for Seattle businesses', 'Get a quote', 'img/business/biz-9.webp', ['DIRECTORY_TOP', 'BUSINESS_TOP', 'JOBS_TOP']],
-    ['Elliott Bay Boutique', 'elliott-bay-boutique', 'The fall collection is in', 'Shop now', 'img/business/biz-5.webp', ['SHOPPING_TOP', 'WEATHER_TOP']],
-    ['Northgate Motors', 'northgate-motors-dealership', 'Certified pre-owned, 0% APR', 'View cars', 'img/cars/c9-2.webp', ['CARS_SERVICES_TOP']],
-    ['Pike & Pine Bookshop', 'pike-pine-bookshop', 'Author readings every Thursday', 'See events', 'img/business/biz-8.webp', ['EVENTS_INFEED_1']],
+    ['Skyline Brewing Taproom', 'skyline-brewing-taproom', 'Happy hour 4–6 pm, every day', 'See the menu', 'img/business/biz-12.webp', ['HOME_INFEED_1', 'LEISURE_TOP', 'EVENTS_TOP', 'SHOPPING_INFEED_1', 'WEATHER_INFEED_1']],
+    ['Rainier Kitchen & Bar', 'rainier-kitchen-bar', 'Weekend brunch from 9 am', 'Book a table', 'img/business/biz-2.webp', ['HOME_INFEED_2', 'NEWS_TOP', 'MAP_TOP', 'JOBS_INFEED_1']],
+    ['Puget Sound Web Studio', 'puget-sound-web-studio', 'Websites for Seattle businesses', 'Get a quote', 'img/business/biz-9.webp', ['DIRECTORY_TOP', 'BUSINESS_TOP', 'JOBS_TOP', 'NEWS_INFEED_1']],
+    ['Elliott Bay Boutique', 'elliott-bay-boutique', 'The fall collection is in', 'Shop now', 'img/business/biz-5.webp', ['SHOPPING_TOP', 'WEATHER_TOP', 'DIRECTORY_INFEED_1', 'MAP_INFEED_1']],
+    ['Northgate Motors', 'northgate-motors-dealership', 'Certified pre-owned, 0% APR', 'View cars', 'img/cars/c9-2.webp', ['CARS_SERVICES_TOP', 'CARS_INFEED_1']],
+    ['Pike & Pine Bookshop', 'pike-pine-bookshop', 'Author readings every Thursday', 'See events', 'img/business/biz-8.webp', ['EVENTS_INFEED_1', 'LEISURE_INFEED_1']],
   ] as const).map(([advertiser, business, offer, cta, photo, slots]) => ({ advertiser, business, offer, cta, photo, slots, desktop: '728x90', mobile: '320x100' }) as const),
   { advertiser: 'Scoop City Creamery', business: 'scoop-city-creamery', offer: 'Two scoops for the price of one', cta: 'Find us', photo: 'img/business/biz-15.webp', slots: ['HOME_SIDEBAR_2'], desktop: '300x250', mobile: null },
   { advertiser: 'Emerald City Coffee', business: 'emerald-city-coffee-roasters', offer: 'Fresh roasts every morning', cta: 'Visit us', photo: 'img/business/biz-1.webp', slots: ['HOME_SIDEBAR_3'], desktop: '300x600', mobile: null },
   ...([
-    ['Evergreen Yoga & Wellness', 'evergreen-yoga-wellness', 'First week of classes free', 'Join a class', 'img/business/biz-13.webp', ['NEWS_SIDEBAR_1', 'LEISURE_SIDEBAR_1', 'EVENTS_SIDEBAR_1'], '300x250'],
+    ['Evergreen Yoga & Wellness', 'evergreen-yoga-wellness', 'First week of classes free', 'Join a class', 'img/business/biz-13.webp', ['NEWS_SIDEBAR_1', 'LEISURE_SIDEBAR_1', 'EVENTS_SIDEBAR_1', 'HOME_RIGHT_1'], '300x250'],
     ['Blossom & Bay Florist', 'blossom-bay-florist', 'Same-day flower delivery', 'Order flowers', 'img/business/biz-10.webp', ['SHOPPING_SIDEBAR_1', 'BUSINESS_SIDEBAR_1', 'DIRECTORY_SIDEBAR_1'], '300x250'],
     ['Cascade Tire & Wheel', 'cascade-tire-wheel', 'Winter tires installed free', 'Book a fitting', 'img/cars/c11-3.webp', ['CARS_SIDEBAR_1', 'CARS_SIDEBAR_3'], '300x250'],
-    ['Needle & Fade Barbershop', 'needle-fade-barbershop', 'Walk-ins welcome till 8 pm', 'Book a cut', 'img/business/biz-4.webp', ['JOBS_SIDEBAR_1'], '300x250'],
+    ['Needle & Fade Barbershop', 'needle-fade-barbershop', 'Walk-ins welcome till 8 pm', 'Book a cut', 'img/business/biz-4.webp', ['JOBS_SIDEBAR_1', 'HOME_SIDEBAR_4'], '300x250'],
     ['Fremont Sourdough Bakery', 'fremont-sourdough-bakery', 'Bread out of the oven at 7 am', 'Order ahead', 'img/business/biz-7.webp', ['NEWS_SIDEBAR_2', 'SHOPPING_SIDEBAR_2'], '300x600'],
     ["Waggin' Pet Grooming", 'waggin-waterfront-pet-grooming', 'First groom 15% off', 'Book now', 'img/business/biz-11.webp', ['LEISURE_SIDEBAR_2', 'DIRECTORY_SIDEBAR_2'], '300x600'],
     ['Rainier Car Rental', 'rainier-car-rental', 'Weekend rates from $39/day', 'Reserve', 'img/cars/c5-2.webp', ['CARS_SIDEBAR_2', 'CARS_SIDEBAR_4'], '300x600'],
@@ -245,11 +263,19 @@ export async function seedPhase4(payload: Payload, prototypeDir: string, log: (m
     ).docs[0]
     if (found) {
       slotIds.set(s.code, found.id)
+      // The client's position in the slot's name, so the admin's "Where it shows"
+      // picker reads "Home — sidebar 1 (300x250) · Block A1" (12.10.2026).
+      const pos = placementFor(s.code)?.position
+      const name = pos ? `${s.name} · Block ${pos}` : s.name
+      if (found.name !== name) {
+        await payload.update({ collection: 'ad-slots', id: found.id, data: { name }, context: ctx() })
+      }
       continue
     }
+    const pos = placementFor(s.code)?.position
     const doc = await payload.create({
       collection: 'ad-slots',
-      data: { ...s, sortOrder: i, isActive: true },
+      data: { ...s, name: pos ? `${s.name} · Block ${pos}` : s.name, sortOrder: i, isActive: true },
       context: ctx(),
     })
     slotIds.set(s.code, doc.id)
@@ -266,7 +292,18 @@ export async function seedPhase4(payload: Payload, prototypeDir: string, log: (m
       limit: 1,
       depth: 0,
     })
-    if (exists.totalDocs) continue
+    if (exists.totalDocs) {
+      // A banner seeded before its slot list grew (new slots, 12.10.2026): add the
+      // missing slots, keep the ones it has.
+      const have = (exists.docs[0].slots ?? []).map((x) => (typeof x === 'object' ? x.id : x))
+      const want = b.slots.map((c) => slotIds.get(c)).filter((x): x is number => Boolean(x))
+      const missing = want.filter((id) => !have.includes(id))
+      if (missing.length) {
+        await payload.update({ collection: 'banners', id: exists.docs[0].id, data: { slots: [...have, ...missing] }, context: ctx() })
+        log(`demo banner ${b.advertiser}: +${missing.length} slot(s)`)
+      }
+      continue
+    }
     const upload = async (size: string) => {
       const [w, h] = size.split('x').map(Number)
       const data = await creative(

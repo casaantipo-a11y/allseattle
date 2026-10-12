@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url'
 import type { Payload } from 'payload'
 
 import { slugify } from '../fields'
+import { BUSINESS_SUBCATEGORY, DIRECTORY_TREE, OLD_DIRECTORY_SLUGS, categorySlug } from '../lib/directory-tree'
 import { doc, p } from './lexical'
 
 // Phase 2 seed: packages (structure, not demo), business categories and the
@@ -99,21 +100,7 @@ const PACKAGES = [
   },
 ]
 
-// Directory categories. "Auto Services" becomes a parent with children, to
-// show the tree; the rest stay top-level as in the prototype.
-const AUTO_CHILDREN: [string, RegExp][] = [
-  ['Car Repair', /repair/i],
-  ['Car Wash', /wash/i],
-  ['Auto Parts', /parts/i],
-  ['Tires & Wheels', /tire/i],
-  ['Driving Schools', /driving/i],
-  ['Car Rental', /rental/i],
-  ['Service Stations', /service station/i],
-  ['Dealerships', /dealership|motors/i],
-  ['Towing', /towing/i],
-]
-
-// Extra Shopping-section categories for directory businesses that are shops.
+// Shopping's own categories (the directory's are lib/directory-tree.ts).
 const SHOPPING: Record<string, string> = {
   'Elliott Bay Boutique': 'Clothing',
   'Pike & Pine Bookshop': 'Books & Media',
@@ -217,10 +204,40 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   const { VENUES } = await load<{ VENUES: MockVenue[] }>('js/mock-data/entertainment.js')
   const { SHOPPING_DEALS } = await load<{ SHOPPING_DEALS: MockDeal[] }>('js/mock-data/shopping.js')
 
-  const dirNames = [...new Set(BUSINESSES.map((b) => b.category))].sort()
-  for (const [i, name] of dirNames.entries()) await category('directory', name, i)
-  const autoId = catIds.get('directory:Auto Services')!
-  for (const [i, [child]] of AUTO_CHILDREN.entries()) await category('directory', child, i, autoId)
+  // The directory's 13 sections and their sub-categories (client, 12.10.2026;
+  // lib/directory-tree.ts). A row with the same slug from the old list (Car Wash,
+  // Towing, Restaurants, Shopping & Retail…) is reused and re-parented, so its
+  // businesses and URL stay.
+  const dirCatIds = new Set<number>()
+  async function dirCategory(name: string, order: number, parentName?: string, parentId?: number) {
+    const slug = categorySlug(name, parentName)
+    const found = (
+      await payload.find({
+        collection: 'business-categories',
+        where: { and: [{ slug: { equals: slug } }, { section: { equals: 'directory' } }] },
+        limit: 1,
+        depth: 0,
+      })
+    ).docs[0]
+    const data = { name, order, parent: parentId ?? null }
+    let id: number
+    if (!found) {
+      id = (await payload.create({ collection: 'business-categories', data: { ...data, slug, section: 'directory', isDemo: true }, context: ctx() })).id
+    } else {
+      id = found.id
+      const parentNow = typeof found.parent === 'object' ? found.parent?.id ?? null : found.parent ?? null
+      if (found.name !== name || found.order !== order || parentNow !== data.parent) {
+        await payload.update({ collection: 'business-categories', id, data, context: ctx() })
+      }
+    }
+    catIds.set(`directory:${parentName ? `${parentName}/` : ''}${name}`, id)
+    dirCatIds.add(id)
+    return id
+  }
+  for (const [i, [section, children]] of DIRECTORY_TREE.entries()) {
+    const parentId = await dirCategory(section, i)
+    for (const [j, child] of children.entries()) await dirCategory(child, j, section, parentId)
+  }
   for (const [i, name] of [...new Set(Object.values(SHOPPING))].sort().entries()) await category('shopping', name, i)
   for (const [i, kind] of [...new Set(VENUES.map((v) => v.kind))].sort().entries()) await category('leisure', kind, i)
   log(`${catIds.size} business categories`)
@@ -263,11 +280,8 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   for (const [i, b] of BUSINESSES.entries()) {
     const pkgName = b.package === 'Lux' ? 'Luxury' : b.package
     const hood = b.address.split(', ').pop() ?? 'Downtown'
-    const categories = [catIds.get(`directory:${b.category}`)!]
-    if (b.category === 'Auto Services') {
-      const child = AUTO_CHILDREN.find(([, re]) => re.test(b.name))
-      if (child) categories[0] = catIds.get(`directory:${child[0]}`)!
-    }
+    const sub = BUSINESS_SUBCATEGORY[b.name]
+    const categories = sub ? [catIds.get(`directory:${sub[0]}/${sub[1]}`)!] : []
     if (SHOPPING[b.name]) categories.push(catIds.get(`shopping:${SHOPPING[b.name]}`)!)
     const cover = await media(b.photo, b.name)
     const extra = pkgName === 'Standard' ? [] : [...photoPool.slice(i % 5), ...photoPool.slice(0, i % 5)].slice(0, pkgName === 'Premium' ? 4 : 2)
@@ -304,6 +318,50 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
           }
         : {}),
     })
+  }
+
+  // ---- Existing businesses → the new directory tree (12.10.2026) -----------------
+  // Demo businesses by name; any other business by its old category's slug. A
+  // business keeps its Shopping / Leisure categories. Then the old directory
+  // categories nobody uses any more are removed; one still in use is kept and
+  // reported, never deleted under a business.
+  {
+    const allCats = (await payload.find({ collection: 'business-categories', limit: 1000, depth: 0, pagination: false })).docs
+    const bySlug = new Map(allCats.map((c) => [c.slug, c]))
+    const oldDir = allCats.filter((c) => c.section === 'directory' && !dirCatIds.has(c.id))
+    const oldIds = new Set(oldDir.map((c) => c.id))
+    const all = (await payload.find({ collection: 'businesses', limit: 5000, depth: 0, pagination: false })).docs
+    let moved = 0
+    for (const biz of all) {
+      const ids = (biz.categories ?? []).map((c) => (typeof c === 'object' ? c.id : c))
+      const sub = BUSINESS_SUBCATEGORY[biz.name]
+      let next = ids
+      if (sub) {
+        const target = catIds.get(`directory:${sub[0]}/${sub[1]}`)!
+        next = [target, ...ids.filter((id) => !dirCatIds.has(id) && !oldIds.has(id))]
+      } else {
+        next = ids.map((id) => {
+          if (!oldIds.has(id)) return id
+          const slug = OLD_DIRECTORY_SLUGS[oldDir.find((c) => c.id === id)!.slug ?? '']
+          return (slug && bySlug.get(slug)?.id) || id
+        })
+      }
+      next = [...new Set(next)]
+      if (next.join() !== ids.join()) {
+        await payload.update({ collection: 'businesses', id: biz.id, data: { categories: next }, context: ctx() })
+        moved++
+      }
+    }
+    const stillUsed = new Set(
+      (await payload.find({ collection: 'businesses', limit: 5000, depth: 0, pagination: false })).docs.flatMap((b) =>
+        (b.categories ?? []).map((c) => (typeof c === 'object' ? c.id : c)),
+      ),
+    )
+    // Children before parents, so no category is left pointing at a deleted parent.
+    const removable = oldDir.filter((c) => !stillUsed.has(c.id)).sort((a, b) => Number(Boolean(b.parent)) - Number(Boolean(a.parent)))
+    for (const c of removable) await payload.delete({ collection: 'business-categories', id: c.id, context: ctx() })
+    const kept = oldDir.filter((c) => stillUsed.has(c.id)).map((c) => c.name)
+    log(`directory tree: ${dirCatIds.size} categories, ${moved} businesses moved, ${removable.length} old categories removed${kept.length ? `, kept (still in use): ${kept.join(', ')}` : ''}`)
   }
 
   for (const [i, v] of VENUES.entries()) {

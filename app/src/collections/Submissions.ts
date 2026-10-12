@@ -12,12 +12,15 @@ const TYPES = [
   { label: 'News tip', value: 'news_tip' },
   { label: 'Business registration', value: 'business_registration' },
   { label: 'Ad inquiry', value: 'ad_inquiry' },
+  // The News sidebar's Subscribe / Unsubscribe (client, 12.10.2026): the email,
+  // and the action in `name` so the list reads "Newsletter: subscribe".
+  { label: 'Newsletter', value: 'newsletter' },
 ] as const
 
 const byRole: Access = ({ req }) => {
   if (hasRole(req, 'admin')) return true
   const types: string[] = []
-  if (hasRole(req, 'editor')) types.push('news_tip')
+  if (hasRole(req, 'editor')) types.push('news_tip', 'newsletter')
   if (hasRole(req, 'sales')) types.push('business_registration', 'ad_inquiry')
   if (!types.length) return false
   return { type: { in: types } } as Where
@@ -70,7 +73,7 @@ export const Submissions: CollectionConfig = {
     {
       type: 'collapsible',
       label: 'Business',
-      admin: { condition: (d) => d?.type !== 'news_tip' },
+      admin: { condition: (d) => d?.type !== 'news_tip' && d?.type !== 'newsletter' },
       fields: [
         { name: 'businessName', type: 'text', admin: { readOnly: true } },
         { name: 'category', type: 'relationship', relationTo: 'business-categories', admin: { readOnly: true } },

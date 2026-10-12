@@ -246,3 +246,23 @@ wraps, as with the old grid. Then "too much empty space on the right, everything
 from 1280 the track after the brand is 16 + 48px, so Contact / Follow / Explore sit 48px further
 right with the same gaps (Contact 351 at 1440, Explore ending 1297 of 1393). Below 1280 no shift —
 about 50px are left on the right at 1024.
+
+**App, 12.10.2026 (client):** the photo banner's corners are rounded again — `.hero-photo` /
+`.hero-shade` take `border-radius: var(--radius-lg)` directly (business.css): `inherit` read the
+radius from the `<picture>` wrapper, which has none, so the photo drew square corners over the
+rounded frame (the frame itself is `overflow: visible` for the search suggestions). The logo is
+the full 560×180 `logo.webp` again, as in the prototype — the 372px q0.86 copy blurred the
+"Seattle City Website" line (the 372 files are now unused, not deleted). The header's top row is
+Home · News · Business Directory · **Advertising** · Cars (seed menu, megaphone icon); the footer
+still lists Advertise once, in the bottom bar (`SiteFooter` drops `/advertise` from the section
+grid; the seed no longer adds it twice). The contact address is AllSeattle.info@gmail.com (Site
+settings, seeded) — footer, and a `ContactEmail` line on Contact, Advertising and Add your
+business.
+
+**App footer, 12.10.2026:** with the real address in Contact (AllSeattle.info@gmail.com instead
+of "Coming soon") the four content-width columns no longer fit at 1024–1279 (every page scrolled
+sideways by 21px at 1024), so the column layout now starts at **1280** and 1024–1279 uses the
+tablet layout (logo + icons, Contact | Explore, copyright | credit). The credit's 6px nudge moved
+to 1280 with it. The address may wrap inside the narrow tablet Contact column
+(`.footer-contact a { overflow-wrap: anywhere }`). Measured: no overflow 320–1920; 1440 unchanged
+(219px tall, Contact at 351).

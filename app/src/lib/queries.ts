@@ -17,6 +17,7 @@ import type {
 } from '@/payload-types'
 
 import type { BusinessFull } from './business'
+import { SITE_TZ } from './site'
 
 // Every public read goes through unstable_cache with a tag. Payload hooks
 // expire the tag on save (src/hooks/revalidate.ts); the time-based
@@ -78,9 +79,79 @@ export const getNewsCategoryCounts = unstable_cache(
   { tags: ['news', 'news-categories'], revalidate: HOUR },
 )
 
+// News Archive (client, 12.10.2026): months are Seattle months, so a story
+// published at 11 pm on the 30th stays in its month. The offset is found by
+// trying PDT and PST — whichever lands on local midnight of the 1st.
+const seattleMonthStart = (year: number, month: number) => {
+  const mm = String(month).padStart(2, '0')
+  for (const off of ['-07:00', '-08:00']) {
+    const d = new Date(`${year}-${mm}-01T00:00:00${off}`)
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: SITE_TZ, day: 'numeric', hour: 'numeric', hourCycle: 'h23' }).formatToParts(d)
+    if (parts.find((x) => x.type === 'day')?.value === '1' && parts.find((x) => x.type === 'hour')?.value === '0') return d
+  }
+  return new Date(`${year}-${mm}-01T00:00:00-08:00`)
+}
+const monthRange = (year: number, month: number): Where => ({
+  and: [
+    { publishedAt: { greater_than_equal: seattleMonthStart(year, month).toISOString() } },
+    {
+      publishedAt: {
+        less_than: (month === 12 ? seattleMonthStart(year + 1, 1) : seattleMonthStart(year, month + 1)).toISOString(),
+      },
+    },
+  ],
+})
+
+/** The (year, month) pairs that have published stories, newest first — the Archive's options. */
+export const getNewsMonths = unstable_cache(
+  async (): Promise<{ year: number; month: number }[]> => {
+    const res = await (await payload()).find({
+      collection: 'news',
+      where: published,
+      select: { publishedAt: true },
+      limit: 5000,
+      depth: 0,
+      pagination: false,
+    })
+    const fmt = new Intl.DateTimeFormat('en-US', { timeZone: SITE_TZ, year: 'numeric', month: 'numeric' })
+    const seen = new Map<string, { year: number; month: number }>()
+    for (const d of res.docs) {
+      if (!d.publishedAt) continue
+      const parts = fmt.formatToParts(new Date(d.publishedAt))
+      const year = Number(parts.find((x) => x.type === 'year')?.value)
+      const month = Number(parts.find((x) => x.type === 'month')?.value)
+      seen.set(`${year}-${month}`, { year, month })
+    }
+    return [...seen.values()].sort((a, b) => b.year - a.year || b.month - a.month)
+  },
+  ['news-months'],
+  { tags: ['news'], revalidate: HOUR },
+)
+
 export const getNewsPage = unstable_cache(
-  async ({ page = 1, limit = 20, categoryId }: { page?: number; limit?: number; categoryId?: number }) => {
-    const where: Where = categoryId ? { and: [published, { category: { equals: categoryId } }] } : published
+  async ({
+    page = 1,
+    limit = 20,
+    categoryId,
+    month,
+    year,
+  }: {
+    page?: number
+    limit?: number
+    categoryId?: number
+    /** 1–12; without a year, that month in every year that has stories. */
+    month?: number
+    year?: number
+  }) => {
+    const and: Where[] = [published]
+    if (categoryId) and.push({ category: { equals: categoryId } })
+    if (year && month) and.push(monthRange(year, month))
+    else if (year) and.push({ publishedAt: { greater_than_equal: seattleMonthStart(year, 1).toISOString() } }, { publishedAt: { less_than: seattleMonthStart(year + 1, 1).toISOString() } })
+    else if (month) {
+      const years = [...new Set((await getNewsMonths()).map((m) => m.year))]
+      and.push(years.length ? { or: years.map((y) => monthRange(y, month)) } : { id: { equals: -1 } })
+    }
+    const where: Where = and.length > 1 ? { and } : published
     const res = await (await payload()).find({
       collection: 'news',
       where,

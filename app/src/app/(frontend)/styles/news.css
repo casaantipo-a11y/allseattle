@@ -143,6 +143,14 @@
   margin-bottom: 0;
 }
 
+/* B2 — растяжка внутри ленты после 10-й новости (схема клиента, 12.10.2026):
+   по центру строки, с тем же просветом сверху и снизу, что у строк ленты. */
+.news-infeed-ad {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0;
+}
+
 /* Две кнопки рассылки в одну строку — тоже как в макете. */
 .newsletter-actions {
   display: grid;

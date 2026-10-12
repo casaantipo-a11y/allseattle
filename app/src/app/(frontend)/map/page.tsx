@@ -109,6 +109,8 @@ export default async function MapPage() {
               </div>
             }
           />
+          {/* B2 under the main content ("other sections" scheme, 12.10.2026). */}
+          <AdSlot code="MAP_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
     </main>

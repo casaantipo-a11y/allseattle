@@ -205,3 +205,9 @@ banner clickable over the head's empty grid. Saves the 90px row; plates → bann
 search panel 8px. Below 1440 the three do not fit in a row and the banner stays above the head.
 "Place a listing" is centred on the banner there (the head card's `top: 0`, same rule as Weather).
 `/cars/services`: head 8px closer to its banner (`.section-head--snug`).
+
+**App Cars, 12.10.2026 (client's Cars scheme):** 21 demo listings — the 6 from cars.js plus 15
+from the prototype's 48-listing cars.js (git 56ea1af, `scripts/demo-cars-extra.ts`), so every photo
+set matches its model. B2 = CARS_INFEED_1 after the 10th car (`CarsCatalog` `feedAd`), C1 =
+CARS_SIDEBAR_1 (300x250), C2 = CARS_SIDEBAR_2 (300x600), B1 = CARS_TOP in the heading row.
+/cars/services: B2 = CARS_SERVICES_INFEED_1 under the list.

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState, type ReactNode } from 'react'
+import { Fragment, useMemo, useState, type ReactNode } from 'react'
 
 // The prototype's car catalog (auto/index.html + js/pages/auto-catalog.js,
 // css: styles/auto.css), unchanged in behaviour: a navy search bar that
@@ -80,7 +80,16 @@ const EMPTY: State = {
 
 const uniq = (xs: string[]) => [...new Set(xs.filter(Boolean))].sort()
 
-export function CarsCatalog({ cars, rightRail }: { cars: CarItem[]; rightRail?: ReactNode }) {
+export function CarsCatalog({
+  cars,
+  rightRail,
+  feedAd,
+}: {
+  cars: CarItem[]
+  rightRail?: ReactNode
+  /** B2 — the strip in the list after the 10th car (client's Cars scheme, 12.10.2026). */
+  feedAd?: ReactNode
+}) {
   const [s, setS] = useState<State>(EMPTY)
   const [adv, setAdv] = useState(false)
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }))
@@ -292,8 +301,9 @@ export function CarsCatalog({ cars, rightRail }: { cars: CarItem[]; rightRail?: 
         <div className="auto-results">
           <div className="car-list">
             {found.length ? (
-              found.map((c) => (
-                <article key={c.id} className="car-row">
+              found.map((c, i) => (
+                <Fragment key={c.id}>
+                <article className="car-row">
                   <Link className="car-row-photo" href={`/cars/${c.slug}`} tabIndex={-1} aria-hidden="true">
                     {/* eslint-disable-next-line @next/next/no-img-element -- card rendition from Payload */}
                     {c.photo ? <img src={c.photo} alt="" loading="lazy" /> : null}
@@ -317,6 +327,8 @@ export function CarsCatalog({ cars, rightRail }: { cars: CarItem[]; rightRail?: 
                     <div className="car-row-ref">{c.ref}</div>
                   </div>
                 </article>
+                {i === 9 && found.length > 10 && feedAd ? <div className="car-infeed-ad">{feedAd}</div> : null}
+                </Fragment>
               ))
             ) : (
               <p className="muted">No cars match those filters. Try widening your search.</p>

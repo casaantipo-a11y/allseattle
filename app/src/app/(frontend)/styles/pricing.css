@@ -156,4 +156,65 @@
   }
 }
 
+/* «Banner placement & prices» (клиент, 12.10.2026): во вкладке — схема
+   страницы клиента и таблица цен. На телефоне схема над таблицей, с 1024 —
+   слева колонкой 360px. Схема — ссылка на полный PNG. Цвет метки блока —
+   как на схемах клиента (A зелёный, B оранжевый, C синий): это легенда к
+   картинке, а не второй акцент. */
+.placement-panel {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+/* Без min-width: 0 колонка сетки растягивается под ширину таблицы, и
+   страница на телефоне уезжала вбок до 576px (таблица сама прокручивается в
+   .table-scroll). */
+.placement-panel > * {
+  min-width: 0;
+}
+.placement-scheme {
+  display: block;
+  max-width: 360px;
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+}
+.placement-scheme img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.placement-scheme-hint {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  text-align: center;
+}
+.placement-scheme:hover .placement-scheme-hint {
+  color: var(--color-accent);
+}
+.placement-block {
+  display: inline-block;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.placement-block--a { background: #84cf4f; }
+.placement-block--b { background: #ebad2d; }
+.placement-block--c { background: #6690eb; }
+.placement-table a.ad-slot-status {
+  text-decoration: none;
+}
+@media (min-width: 1024px) {
+  .placement-panel {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+  .placement-panel--no-scheme {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 }

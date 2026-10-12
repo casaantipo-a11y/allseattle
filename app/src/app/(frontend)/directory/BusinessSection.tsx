@@ -1,14 +1,17 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
 import { BizRow, CategoryTree, buildTree } from '@/components/business'
 import { Pagination } from '@/components/news'
+import { StatsWidget } from '@/components/home'
 import { Svg, UI_ICONS } from '@/components/icons'
 import { LiveBizSearch } from '@/components/LiveBizSearch'
 import type { Section } from '@/collections/BusinessCategories'
 import { compareBusinesses, withDescendants } from '@/lib/business'
 import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
+import { getSiteStats } from '@/lib/queries-phase3'
 
 // One storefront, three sections (spec §5): the Business Directory, Shopping
 // and Leisure are the same list of businesses filtered to the categories of
@@ -56,9 +59,10 @@ export async function BusinessSection({
   page?: number
 }) {
   const meta = SECTION_META[section]
-  const [allCategories, allBusinesses] = await Promise.all([
+  const [allCategories, allBusinesses, stats] = await Promise.all([
     getBusinessCategories(),
     getAllBusinesses(),
+    section === 'directory' ? getSiteStats() : null,
   ])
   const categories = allCategories.filter((c) => c.section === section)
   const sectionIds = new Set(categories.map((c) => c.id))
@@ -155,8 +159,14 @@ export async function BusinessSection({
 
                 {rows.length ? (
                   <div className="biz-list">
-                    {rows.map((b) => (
-                      <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} />
+                    {rows.map((b, i) => (
+                      <Fragment key={b.id}>
+                        <BizRow biz={b} sectionCategoryIds={sectionIds} />
+                        {/* Directory B2: the strip in the list after the 8th business (client's scheme, 12.10.2026). */}
+                        {section === 'directory' && i === 7 && rows.length > 8 ? (
+                          <AdSlot code="DIRECTORY_INFEED_1" size="728x90" mobileSize="320x100" className="biz-infeed-ad" />
+                        ) : null}
+                      </Fragment>
                     ))}
                   </div>
                 ) : (
@@ -168,11 +178,18 @@ export async function BusinessSection({
                   base={base}
                   params={needle ? { q } : {}}
                 />
+                {/* Shopping / Leisure B2: under the list ("other sections" scheme). */}
+                {section !== 'directory' ? (
+                  <AdSlot code={`${meta.codePrefix}_INFEED_1`} size="728x90" mobileSize="320x100" className="biz-infeed-ad" />
+                ) : null}
               </LiveBizSearch>
             </div>
 
             <aside className="dir-rail dir-rail--right">
               <AdSlot code={`${meta.codePrefix}_SIDEBAR_1`} size="300x250" mobileSize="320x100" />
+              {/* "AllSeattle at a glance" between C1 and C2, as in the prototype's directory
+                  (client, 12.10.2026) — the same live counts as Home's widget. */}
+              {stats ? <StatsWidget stats={stats} /> : null}
               <AdSlot code={`${meta.codePrefix}_SIDEBAR_2`} size="300x600" mobileSize="320x100" />
             </aside>
           </div>

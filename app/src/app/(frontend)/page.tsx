@@ -49,6 +49,8 @@ export default async function HomePage() {
             <AdSlot code="HOME_SIDEBAR_1" size="300x250" className="ad-desktop-slot" />
             <AdSlot code="HOME_SIDEBAR_2" size="300x250" className="ad-desktop-slot" />
             <AdSlot code="HOME_SIDEBAR_3" size="300x600" className="ad-desktop-slot" />
+            {/* A4 (client's Home scheme, 12.10.2026): A1–A4 fill the left column top to bottom. */}
+            <AdSlot code="HOME_SIDEBAR_4" size="300x250" className="ad-desktop-slot" />
           </aside>
 
           <div className="home-main">
@@ -76,6 +78,8 @@ export default async function HomePage() {
           </div>
 
           <aside className="home-sidebar home-sidebar-right">
+            {/* C1 above "AllSeattle at a glance" (client's Home scheme, 12.10.2026). */}
+            <AdSlot code="HOME_RIGHT_1" size="300x250" className="ad-desktop-slot" />
             <StatsWidget stats={stats} />
             <TopNewsWidget articles={top} />
             <JobsWidget jobs={jobs} />

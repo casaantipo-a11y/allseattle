@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, permanentRedirect } from 'next/navigation'
 
+import { ContactEmail } from '@/components/ContactEmail'
 import { RichText } from '@/components/RichText'
 import { findPageByOldSlug, getPage, getPagesForSitemap } from '@/lib/queries'
 import type { Page } from '@/payload-types'
@@ -71,6 +72,7 @@ export default async function StaticPage({ params }: Props) {
             </div>
           </div>
           {page.intro ? <p className="mb-6 max-w-[72ch] text-lg text-brand-slate">{page.intro}</p> : null}
+          {slug === 'contact' ? <ContactEmail className="mb-6 text-lg" /> : null}
           <RichText data={page.content} />
           <Blocks blocks={page.blocks} />
         </div>

@@ -100,3 +100,14 @@ from 1024 nothing changed.
 from 1440 the head is 12px closer to NEWS_TOP (`.news-list-section .ad-slot-top +
 .section-head--snug`, −12 instead of −8): banner → eyebrow line box 6px (letters ≈9). At 640–1439
 it stays 18 — "Share the news" stands beside the banner there and a lift would put it on it.
+
+**App News, 12.10.2026 (client's News scheme):** left column = A1 (NEWS_SIDEBAR_2, 300x600) on top,
+then Categories, the prototype's **Newsletter** and **News Archive**, back. Newsletter
+(`NewsletterWidget`) is real: Subscribe / Unsubscribe post to `/api/forms/newsletter` → Inbox →
+Submissions, type Newsletter (new enum value, migration `20261012_132825_newsletter_submission_type`;
+the generated migration also dropped `media._objectkey` because the local config has no R2 — that
+line was removed and the snapshot keeps the column); no Turnstile (wider than the column) and no
+notification, honeypot + rate limit only. Archive (`NewsArchiveWidget`): Month / Year selects from
+the months that have stories (`getNewsMonths`), `?month=&year=` on /news or a category, Seattle-time
+month bounds, noindex, "Archive: August 2026 · show all" line, pagination keeps the params. B2 =
+NEWS_INFEED_1 inside the list after the 10th story (`.news-infeed-ad`). C1 = NEWS_SIDEBAR_1.

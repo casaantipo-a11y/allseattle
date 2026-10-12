@@ -28,12 +28,17 @@ const boxStyle = (size: Size) => {
 const variantClass = (v: Variant) =>
   v === 'desktop' ? 'ad-slot--desktop' : v === 'mobile-only' ? 'ad-slot--mobile-only' : ''
 
+/** The client's position and monthly price for a slot (lib/ad-placements.ts). */
+export type SlotOffer = { position: string; price: number }
+
 // The "for sale" box an empty slot shows (client, 07.10.2026: the old dashed box with
-// three tiny lines looked unfinished). A small "Advertisement · size" tag, a heading, a
-// line of copy and a "Place an ad" button, laid out by the slot's shape: a row for wide
-// slots (728x90, 320x100), a centred stack with the site's tinted icon circle for boxes
-// and towers (300x250, 300x600). Styles: .ad-slot--house in components.css.
-function Placeholder({ size, variant }: { size: Size; variant: Variant }) {
+// three tiny lines looked unfinished). A small tag, a heading, a line of copy and a
+// "Place an ad" button, laid out by the slot's shape: a row for wide slots (728x90,
+// 320x100), a centred stack with the site's tinted icon circle for boxes and towers
+// (300x250, 300x600). Styles: .ad-slot--house in components.css.
+// For a position on the client's price sheets the text is the prototype's (client,
+// 12.10.2026): "Your Ad Here", "Block B1 · 728×90" and "Available · $149/month".
+function Placeholder({ size, variant, offer }: { size: Size; variant: Variant; offer?: SlotOffer }) {
   const [w, h] = size.split('x').map(Number)
   const shape = w / h >= 2.5 ? 'wide' : h > w * 1.5 ? 'tall' : 'box'
   const compact = shape === 'wide' && w <= 320
@@ -43,9 +48,11 @@ function Placeholder({ size, variant }: { size: Size; variant: Variant }) {
       className={`ad-slot ad-slot--house ad-slot--${shape}${compact ? ' ad-slot--compact' : ''} ${variantClass(variant)}`}
       style={boxStyle(size)}
       rel="nofollow"
-      aria-label={`Advertise here: ${size} placement — place an ad`}
+      aria-label={`Advertise here: ${size} placement${offer ? `, $${offer.price} a month` : ''} — place an ad`}
     >
-      <span className="ad-house-tag">Advertisement · {size.replace('x', '×')}</span>
+      <span className="ad-house-tag">
+        {offer ? `Block ${offer.position}` : 'Advertisement'} · {size.replace('x', '×')}
+      </span>
       <span className="ad-house">
         {shape !== 'wide' ? (
           <span className="ad-house-icon" aria-hidden="true">
@@ -56,8 +63,12 @@ function Placeholder({ size, variant }: { size: Size; variant: Variant }) {
           </span>
         ) : null}
         <span className="ad-house-text">
-          <span className="ad-house-title">Your business here</span>
-          {compact ? null : (
+          <span className="ad-house-title">{offer ? 'Your Ad Here' : 'Your business here'}</span>
+          {offer ? (
+            <span className="ad-house-sub">
+              <span className="ad-slot-status is-available">Available</span> · ${offer.price}/month
+            </span>
+          ) : compact ? null : (
             <span className="ad-house-sub">
               {shape === 'tall' ? 'Reach Seattle readers on this page every day' : 'Reach Seattle locals on this page'}
             </span>
@@ -122,6 +133,7 @@ export function BannerSlot({
   banners,
   initial,
   echo = false,
+  offer,
 }: {
   code: string
   size: Size
@@ -132,6 +144,8 @@ export function BannerSlot({
   initial: number
   /** Mobile echo of a sidebar slot inside a feed: one box, phone only. */
   echo?: boolean
+  /** Position and price, when the slot is on the client's price sheets. */
+  offer?: SlotOffer
 }) {
   const [index, setIndex] = useState(initial)
   useEffect(() => {
@@ -161,7 +175,7 @@ export function BannerSlot({
               eager={false}
             />
           ) : (
-            <Placeholder size="320x100" variant="standalone" />
+            <Placeholder offer={offer} size="320x100" variant="standalone" />
           )}
         </div>
       </div>
@@ -190,14 +204,14 @@ export function BannerSlot({
                   eager={eager}
                 />
               ) : (
-                <Placeholder size={mobileSize} variant="mobile-only" />
+                <Placeholder offer={offer} size={mobileSize} variant="mobile-only" />
               )
             ) : null}
           </>
         ) : (
           <>
-            <Placeholder size={size} variant={mobileSize ? 'desktop' : 'standalone'} />
-            {mobileSize ? <Placeholder size={mobileSize} variant="mobile-only" /> : null}
+            <Placeholder offer={offer} size={size} variant={mobileSize ? 'desktop' : 'standalone'} />
+            {mobileSize ? <Placeholder offer={offer} size={mobileSize} variant="mobile-only" /> : null}
           </>
         )}
       </div>
