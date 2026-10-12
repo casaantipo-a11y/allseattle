@@ -1,4 +1,4 @@
-import { EXTRA_CARS } from './demo-cars-extra'
+import { EXTRA_CARS, PHOTO_CREDITS, PROTOTYPE_CAR_COLORS, RETIRED_DEMO_CARS } from './demo-cars-extra'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -178,13 +178,25 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
   const load = async <T>(file: string) => (await import(pathToFileURL(path.join(prototypeDir, file)).href)) as T
 
   const mediaIds = new Map<string, number>()
+  const creditFor = (rel: string) => {
+    const name = PHOTO_CREDITS[path.basename(rel).split('-')[0]]
+    return name ? `Photo: ${name} / Unsplash` : undefined
+  }
   async function media(file: string, alt: string) {
     const rel = file.replace(/^(\.\.\/)+/, '')
     if (mediaIds.has(rel)) return mediaIds.get(rel)!
     const existing = await payload.find({ collection: 'media', where: { filename: { equals: path.basename(rel) } }, limit: 1 })
     const id =
       existing.docs[0]?.id ??
-      (await payload.create({ collection: 'media', data: { alt, isDemo: true }, filePath: path.join(prototypeDir, rel), context: ctx() })).id
+      (
+        await payload.create({
+          collection: 'media',
+          // Unsplash photos (c14–c21) carry their photographer's name.
+          data: { alt, isDemo: true, credit: creditFor(rel) },
+          filePath: path.join(prototypeDir, rel),
+          context: ctx(),
+        })
+      ).id
     mediaIds.set(rel, id)
     return id
   }
@@ -205,11 +217,27 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
     ...CAR_LISTINGS,
     ...EXTRA_CARS.map((c) => ({ ...c, seller: { ...c.seller }, photos: [...c.photos] })),
   ]
+  // Listings replaced on 12.10.2026 (they reused another car's photos) — demo rows only.
+  const retired = await payload.delete({
+    collection: 'car-listings',
+    where: { and: [{ title: { in: RETIRED_DEMO_CARS } }, { isDemo: { equals: true } }] },
+    context: ctx(),
+  })
+  if (retired.docs.length) log(`${retired.docs.length} replaced demo car listings removed`)
+
   let cars = 0
   for (const [i, c] of allCars.entries()) {
     const title = `${c.year} ${c.make} ${c.model}`
-    const exists = await payload.find({ collection: 'car-listings', where: { title: { equals: title } }, limit: 1 })
-    if (exists.totalDocs) continue
+    // Colours follow the photos (12.10.2026); the prototype's six are recoloured here.
+    const color = PROTOTYPE_CAR_COLORS[title] ?? c.color
+    const exists = await payload.find({ collection: 'car-listings', where: { title: { equals: title } }, limit: 1, depth: 0 })
+    if (exists.totalDocs) {
+      const doc = exists.docs[0]
+      if (doc.isDemo && doc.exteriorColor !== color) {
+        await payload.update({ collection: 'car-listings', id: doc.id, data: { exteriorColor: color }, context: ctx() })
+      }
+      continue
+    }
     // One at a time: parallel uploads race on Payload's unique-filename check
     // (fails against a remote database / R2, where each upload is slower).
     const photos: number[] = []
@@ -227,7 +255,7 @@ export async function seedPhase3(payload: Payload, prototypeDir: string, log: (m
         transmission: c.transmission as 'Automatic',
         fuelType: c.fuel as 'Gasoline',
         bodyType: c.bodyType as 'sedan',
-        exteriorColor: c.color,
+        exteriorColor: color,
         description: c.description,
         photos,
         sellerName: c.seller.name,

@@ -206,8 +206,15 @@ search panel 8px. Below 1440 the three do not fit in a row and the banner stays 
 "Place a listing" is centred on the banner there (the head card's `top: 0`, same rule as Weather).
 `/cars/services`: head 8px closer to its banner (`.section-head--snug`).
 
-**App Cars, 12.10.2026 (client's Cars scheme):** 21 demo listings — the 6 from cars.js plus 15
-from the prototype's 48-listing cars.js (git 56ea1af, `scripts/demo-cars-extra.ts`), so every photo
-set matches its model. B2 = CARS_INFEED_1 after the 10th car (`CarsCatalog` `feedAd`), C1 =
+**App Cars, 12.10.2026 (client's Cars scheme):** 21 demo listings on **21 different photo sets**
+("every car photo different and matching its make", same day): the 6 from cars.js (c1, c2, c4,
+c5, c8, c12), 7 from the prototype's 48-listing cars.js (git 56ea1af) on the remaining prototype
+sets c3, c6, c7, c9, c10, c11, c13, and 8 new models on new photos c14–c21 (Tesla Model 3, Subaru
+Forester, Toyota Tacoma, BMW 3 Series — an M3, Toyota Prius, Jeep Grand Cherokee, Hyundai Tucson,
+Honda Civic; one photo each). All in `scripts/demo-cars-extra.ts`. Colours follow the photos
+(`PROTOTYPE_CAR_COLORS` recolours the six prototype cars in the app only; the seed syncs the colour
+of existing demo rows). The eight listings that had reused a photo set are in
+`RETIRED_DEMO_CARS`, and the seed deletes them (demo rows only). Three prototype photos show an
+older generation than the listing's year (Accord, Outback, Explorer) — makes and models match. B2 = CARS_INFEED_1 after the 10th car (`CarsCatalog` `feedAd`), C1 =
 CARS_SIDEBAR_1 (300x250), C2 = CARS_SIDEBAR_2 (300x600), B1 = CARS_TOP in the heading row.
 /cars/services: B2 = CARS_SERVICES_INFEED_1 under the list.

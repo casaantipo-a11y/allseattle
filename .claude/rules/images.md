@@ -56,3 +56,10 @@ never sees it — measured, it used to start downloading at 500–670ms. The
 `<link rel="preload" as="image">` moves that to ~100ms. It deliberately carries no
 `fetchpriority="high"`: the six render-blocking stylesheets should win that race, and measuring
 both ways showed no LCP difference. Any new page needs that line too, with `../` under `auto/`.
+
+**12.10.2026, app demo cars:** `img/cars/c14-1.webp` … `c21-1.webp` are new — free Unsplash
+photos (Unsplash License), downloaded once at 1200px and converted to WebP q0.86 through headless
+Edge like the rest, so that every demo car listing has its own photo of its own model (the 13
+prototype sets ran out at 13 listings). Photographers in `PHOTO_CREDITS`
+(app/src/scripts/demo-cars-extra.ts); the seed writes "Photo: <name> / Unsplash" into the Media
+`credit`. One photo per new listing, not three.
