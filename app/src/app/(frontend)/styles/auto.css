@@ -258,6 +258,9 @@
   align-self: center;
   width: auto;
   padding-inline: var(--space-8);
+  /* По вертикали посередине между полями и низом панели: 12px промежутка
+     сетки + 4 = 16, как поле панели снизу (клиент, 13.10.2026). */
+  margin-top: var(--space-1);
 }
 
 @media (min-width: 640px) {

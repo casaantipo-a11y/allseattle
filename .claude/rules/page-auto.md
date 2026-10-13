@@ -231,4 +231,6 @@ database hasn't been seeded with the 13-section tree.
 
 **App Cars, 13.10.2026:** "Reset filters" in the open Advanced search spans the panel's full row and
 is centred like "Advanced search" (`.auto-search-reset`: `grid-column: 1 / -1; justify-self:
-center`); measured centres equal at 375/1024/1440.
+center`); measured centres equal at 375/1024/1440. Vertically midway between the advanced fields and
+the panel's bottom edge: `margin-top: 4px` on top of the grid's 12px gap = 16, the panel's bottom
+padding (16 / 16 at 375/1024/1440).
