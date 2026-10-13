@@ -239,3 +239,13 @@ or going back to a vector imitation.
   `<head>` points at. Don't go back to inlining a `data:` URI per page.
 - `img/icons/logo-lockup.png` is an old, unused raster of the previous mark. Nothing loads it;
   don't wire it back into a page.
+
+**App search ranking (13.10.2026, `searchSite` in lib/queries-phase3.ts):** the index query only
+filters; results are ranked in code by match quality — whole word in the title (100, plural s/es
+counts), the section the word names (60: car/cars/auto → car listings, job → jobs, event, news,
+business; those kinds are also fetched, since a car title never says "car"), whole word in the
+excerpt/keywords (40), a title word that only starts with the term (30, "car" → "Care"), text word
+start (20), inside a word (10/5); collection priority and title only break ties. Before, results
+were sorted by collection priority alone, so "car" put a dealership whose description says "car"
+above "Rainier Car Rental" and showed "Urgent Care". Both the header suggestions (/api/search, 8)
+and /search (60) use it.

@@ -172,23 +172,60 @@ export const getSiteStats = unstable_cache(
 
 export type SearchHit = { id: number; title: string; url: string; excerpt?: string | null; kind: string }
 
-/** Global search over the plugin-search index (spec §6). */
+// Words that name a section: "car" or "cars" also brings the car listings, whose
+// titles ("2021 Toyota Camry") never contain the word itself.
+const KIND_WORDS: Record<string, string> = {
+  car: 'car-listings', cars: 'car-listings', auto: 'car-listings', autos: 'car-listings', vehicle: 'car-listings', vehicles: 'car-listings',
+  job: 'jobs', jobs: 'jobs', vacancy: 'jobs', vacancies: 'jobs',
+  event: 'events', events: 'events',
+  news: 'news', business: 'businesses', businesses: 'businesses',
+}
+const PRIORITY: Record<string, number> = { businesses: 40, news: 30, events: 20, jobs: 20, 'car-listings': 10 }
+const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/** Global search over the plugin-search index (spec §6). Matches are ranked by how well
+ *  they match (client, 13.10.2026: "car" listed a dealership whose description says "car"
+ *  above "Rainier Car Rental", and "Urgent Care" came up at all): the whole word in the
+ *  title, then the section the word names, then the whole word in the text, then a word
+ *  that only starts with it ("car" → "Care"), then text inside a word. The type of record
+ *  only breaks ties. */
 export async function searchSite(q: string, limit = 60): Promise<SearchHit[]> {
   const term = q.trim()
   if (term.length < 2) return []
+  const lower = term.toLowerCase()
+  const kind = KIND_WORDS[lower]
   const res = await (await payload()).find({
     collection: 'search',
     where: {
       and: [
         { isPublished: { equals: true } },
-        { or: [{ title: { like: term } }, { excerpt: { like: term } }, { keywords: { like: term } }] },
+        {
+          or: [
+            { title: { like: term } },
+            { excerpt: { like: term } },
+            { keywords: { like: term } },
+            ...(kind ? [{ kind: { equals: kind } }] : []),
+          ],
+        },
       ],
     },
-    sort: '-priority',
-    limit,
+    limit: 500,
     depth: 0,
   })
-  return res.docs.map((d) => ({
+  const t = escapeRe(lower)
+  const word = new RegExp(`(^|[^a-z0-9])${t}(s|es)?($|[^a-z0-9])`, 'i')
+  const prefix = new RegExp(`(^|[^a-z0-9])${t}`, 'i')
+  const score = (text: string, whole: number, start: number, inside: number) =>
+    word.test(text) ? whole : prefix.test(text) ? start : text.toLowerCase().includes(lower) ? inside : 0
+  const ranked = res.docs.map((d) => {
+    const title = String(d.title ?? '')
+    const text = `${(d as { excerpt?: string }).excerpt ?? ''} ${(d as { keywords?: string }).keywords ?? ''}`
+    const k = String((d as { kind?: string }).kind ?? '')
+    const rank = Math.max(score(title, 100, 30, 10), kind === k ? 60 : 0, score(text, 40, 20, 5))
+    return { d, rank, title, k }
+  })
+  ranked.sort((a, b) => b.rank - a.rank || (PRIORITY[b.k] ?? 0) - (PRIORITY[a.k] ?? 0) || a.title.localeCompare(b.title))
+  return ranked.slice(0, limit).map(({ d }) => ({
     id: d.id as number,
     title: (d.title as string) ?? '',
     url: (d as { url?: string }).url ?? '/',

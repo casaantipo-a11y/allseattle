@@ -228,3 +228,7 @@ the last block). Model names that start with a digit carry the make in the left 
 Model select — "Mazda 3", "BMW 3 Series", "Toyota 4Runner" (`modelLabel` in CarsCatalog; the filter
 value stays the model). /cars/services falls back to the old `auto-services` category while a
 database hasn't been seeded with the 13-section tree.
+
+**App Cars, 13.10.2026:** "Reset filters" in the open Advanced search spans the panel's full row and
+is centred like "Advanced search" (`.auto-search-reset`: `grid-column: 1 / -1; justify-self:
+center`); measured centres equal at 375/1024/1440.

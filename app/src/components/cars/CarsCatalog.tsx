@@ -277,7 +277,7 @@ export function CarsCatalog({
               <option value="mileage-asc">Mileage: Lowest first</option>
             </select>
           </div>
-          <button className="btn btn-outline btn-sm" type="button" onClick={() => setS(EMPTY)}>
+          <button className="btn btn-outline btn-sm auto-search-reset" type="button" onClick={() => setS(EMPTY)}>
             Reset filters
           </button>
         </div>

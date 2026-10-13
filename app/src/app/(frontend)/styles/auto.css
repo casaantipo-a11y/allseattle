@@ -250,6 +250,16 @@
   color: var(--color-navy);
 }
 
+/* «Reset filters» — отдельной строкой во всю ширину панели и по центру, как
+   «Advanced search» (клиент, 13.10.2026; стояла в первой ячейке сетки). */
+.auto-search-adv .auto-search-reset {
+  grid-column: 1 / -1;
+  justify-self: center;
+  align-self: center;
+  width: auto;
+  padding-inline: var(--space-8);
+}
+
 @media (min-width: 640px) {
   .auto-search-row,
   .auto-search-adv.open {
