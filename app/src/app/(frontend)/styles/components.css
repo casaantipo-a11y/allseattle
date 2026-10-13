@@ -1617,6 +1617,29 @@ body.modal-open {
   justify-content: center;
 }
 
+/* От нижнего баннера страницы до подвала 16px, а не общие 36 (клиент,
+   12.10.2026: «как в Cars for sale») — минус 20px на секции, тем же способом,
+   что .home-feed, .events-section и .cars-list-section. Cars Services,
+   Shopping, Leisure, Jobs, Weather, City Map. */
+.section--footer-tight {
+  margin-bottom: -20px;
+}
+
+/* Пагинация ленты News и списка справочника — посередине между последней
+   строкой и подвалом (клиент, 12.10.2026): 16px сверху (было 24, mt-6) и
+   16px снизу до подвала (.news-list-section, .section--footer-tight). Правило
+   без слоя, поэтому сильнее утилиты Tailwind. */
+.news-feed > nav[aria-label="Pagination"],
+.dir-main nav[aria-label="Pagination"] {
+  margin-top: var(--space-4);
+}
+
+/* Растяжка под списком Shopping / Leisure — последний блок страницы: своего
+   нижнего поля у неё нет, отступ до подвала держит секция. */
+.biz-infeed-ad--last {
+  margin-bottom: 0;
+}
+
 /* B2 — растяжка под основным содержимым страницы (схема клиента для
    «остальных» разделов, 12.10.2026): по центру, 32px от того, что выше. */
 .ad-slot-under {

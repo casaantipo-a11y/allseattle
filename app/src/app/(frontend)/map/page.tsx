@@ -95,7 +95,7 @@ export default async function MapPage() {
 
   return (
     <main id="content" data-page="map">
-      <section className="section">
+      <section className="section section--footer-tight">
         <div className="container">
           {/* The prototype's City Map had a top banner; it is back (client, 07.10.2026). */}
           <AdSlot code="MAP_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />

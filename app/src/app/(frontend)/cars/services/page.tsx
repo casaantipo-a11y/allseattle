@@ -53,7 +53,7 @@ export default async function CarServicesPage() {
 
   return (
     <main id="content" data-page="cars">
-      <section className="section auto-catalog">
+      <section className="section auto-catalog section--footer-tight">
         <div className="container">
           <AdSlot
             code="CARS_SERVICES_TOP"

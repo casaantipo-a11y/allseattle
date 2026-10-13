@@ -108,7 +108,9 @@ export async function BusinessSection({
 
   return (
     <main id="content" data-page="directory">
-      <section className="section">
+      {/* 16px from the last block (pagination, or Shopping / Leisure's B2 banner) to the
+          footer, as on News and Cars (12.10.2026). */}
+      <section className="section section--footer-tight">
         <div className="container">
           <AdSlot
             code={`${meta.codePrefix}_TOP`}
@@ -180,7 +182,7 @@ export async function BusinessSection({
                 />
                 {/* Shopping / Leisure B2: under the list ("other sections" scheme). */}
                 {section !== 'directory' ? (
-                  <AdSlot code={`${meta.codePrefix}_INFEED_1`} size="728x90" mobileSize="320x100" className="biz-infeed-ad" />
+                  <AdSlot code={`${meta.codePrefix}_INFEED_1`} size="728x90" mobileSize="320x100" className="biz-infeed-ad biz-infeed-ad--last" />
                 ) : null}
               </LiveBizSearch>
             </div>

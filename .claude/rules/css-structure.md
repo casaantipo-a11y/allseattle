@@ -289,3 +289,12 @@ HOME_RIGHT_1, *_INFEED_1 for News, Cars, Directory and every "other" page) and p
 into each slot's name for the admin's picker. Demo banners stay in every slot (user's choice),
 so the placeholder only shows where no banner runs. Slots that are not on the sheets stay and
 show no price. Shared `.ad-slot-under` = a B2 under the main content (32px above).
+
+**App, 12.10.2026 (later):** `.section--footer-tight` (components.css) = 16px from a page's last
+block to the footer instead of the shared 36 (`margin-bottom: -20px` on the section, the same trick
+as `.home-feed`, `.events-section`, `.cars-list-section`, `.news-list-section`). On Cars Services,
+Shopping, Leisure, Jobs, Weather, City Map (bottom B2 banner → footer 16) and the Business
+Directory. Pagination of the News feed and the directory list sits midway between the last row and
+the footer: 16px above (`margin-top: var(--space-4)`, overrides Tailwind's `mt-6`) and 16 below —
+measured equal on News and Directory at 1280/1440/1920, where the list is the tallest column (at
+1024 News's rails are taller, on phones the rails follow the list).

@@ -20,7 +20,7 @@ export default async function JobsPage({ searchParams }: Props) {
   const jobs = (await getJobs()).map(toJobItem)
   return (
     <main id="content" data-page="jobs">
-      <section className="section">
+      <section className="section section--footer-tight">
         <div className="container">
           <AdSlot code="JOBS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
           <JobsBoard key={q} jobs={jobs} initialQuery={q} />
