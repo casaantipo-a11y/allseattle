@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 
 import { AccountForm, LogoutButton } from '@/components/account/AccountForm'
 import { AccountShell } from '@/components/account/AccountShell'
+import { DeleteAccount } from '@/components/account/DeleteAccount'
 import { getCustomer } from '@/lib/account'
 import { myAds } from '@/lib/ad-billing'
 import { myBusinesses } from '@/lib/business-cabinet'
@@ -73,6 +74,9 @@ export default async function AccountPage() {
         <LogoutButton />
       </div>
       <AccountForm mode="profile" customerId={me.id} values={{ name: me.name ?? '', phone: me.phone ?? '' }} />
+      <div className="mt-8 border-t border-brand-line pt-6">
+        <DeleteAccount />
+      </div>
     </AccountShell>
   )
 }

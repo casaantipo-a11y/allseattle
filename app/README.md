@@ -153,6 +153,11 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   sending too. **Daily reminders** (`lib/reminders.ts`, `/api/cron/daily`, Vercel Cron at 16:00
   UTC in `vercel.json`): an owner is emailed 2–3 days before a car or job comes off the site,
   and before a package set by hand ends; needs `CRON_SECRET` on Vercel (off while empty).
+  **Delete my account** (bottom of `/account`, `lib/account-delete.ts`): confirmed with the
+  password; refused while a subscription still renews (cancel in "Manage billing" first).
+  Deletes the cars and jobs (with photos) and businesses that never went live (with their
+  promotions and products); published businesses and banners stay with the owner cleared,
+  for the team to decide. Signs out, emails a confirmation, notifies the team.
 
 ## Local development
 
