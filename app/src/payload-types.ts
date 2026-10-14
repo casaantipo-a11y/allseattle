@@ -81,6 +81,7 @@ export interface Config {
     events: Event;
     'event-categories': EventCategory;
     contests: Contest;
+    'site-notes': SiteNote;
     submissions: Submission;
     'ad-slots': AdSlot;
     banners: Banner;
@@ -111,6 +112,7 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     'event-categories': EventCategoriesSelect<false> | EventCategoriesSelect<true>;
     contests: ContestsSelect<false> | ContestsSelect<true>;
+    'site-notes': SiteNotesSelect<false> | SiteNotesSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
     'ad-slots': AdSlotsSelect<false> | AdSlotsSelect<true>;
     banners: BannersSelect<false> | BannersSelect<true>;
@@ -916,6 +918,58 @@ export interface Contest {
   createdAt: string;
 }
 /**
+ * Notes left on site pages. Only admins see them — on the site (the Notes button) and here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-notes".
+ */
+export interface SiteNote {
+  id: number;
+  /**
+   * The page, e.g. /news or /biz/some-business.
+   */
+  path: string;
+  text: string;
+  author?: (number | null) | User;
+  /**
+   * Done — kept for the record.
+   */
+  resolved?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name?: string | null;
+  /**
+   * Admin: everything. Editor: news, events, contest, news tips. Sales: businesses, packages, banners, placement requests.
+   */
+  roles: ('admin' | 'editor' | 'sales')[];
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
@@ -1128,37 +1182,6 @@ export interface Page {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name?: string | null;
-  /**
-   * Admin: everything. Editor: news, events, contest, news tips. Sales: businesses, packages, banners, placement requests.
-   */
-  roles: ('admin' | 'editor' | 'sales')[];
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1276,6 +1299,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contests';
         value: number | Contest;
+      } | null)
+    | ({
+        relationTo: 'site-notes';
+        value: number | SiteNote;
       } | null)
     | ({
         relationTo: 'submissions';
@@ -1735,6 +1762,18 @@ export interface ContestsSelect<T extends boolean = true> {
         slug?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-notes_select".
+ */
+export interface SiteNotesSelect<T extends boolean = true> {
+  path?: T;
+  text?: T;
+  author?: T;
+  resolved?: T;
   updatedAt?: T;
   createdAt?: T;
 }

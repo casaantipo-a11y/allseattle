@@ -24,6 +24,7 @@ import { Packages } from './collections/Packages'
 import { Pages } from './collections/Pages'
 import { Products } from './collections/Products'
 import { Promotions } from './collections/Promotions'
+import { SiteNotes } from './collections/SiteNotes'
 import { Submissions } from './collections/Submissions'
 import { AdSlots } from './collections/AdSlots'
 import { Banners } from './collections/Banners'
@@ -125,6 +126,7 @@ export default buildConfig({
     Events,
     EventCategories,
     Contests,
+    SiteNotes,
     Submissions,
     AdSlots,
     Banners,
