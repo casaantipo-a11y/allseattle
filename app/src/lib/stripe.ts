@@ -10,6 +10,20 @@ const VERSION = '2025-03-31.basil'
 
 export const stripeEnabled = () => Boolean(process.env.STRIPE_SECRET_KEY)
 
+/**
+ * Stripe's Managed Payments (Stripe as merchant of record: it charges and remits US sales
+ * tax, for an extra fee) is on by default for new accounts, and then a Checkout needs a
+ * product tax code and refuses custom text. STRIPE_MANAGED_PAYMENTS=off turns it off for
+ * our Checkouts (sales tax is then the client's business, or Stripe Tax); with it on,
+ * STRIPE_TAX_CODE names the product tax code. Unset: the account's own default.
+ */
+export function managedPaymentsParams(): Record<string, unknown> {
+  const mode = process.env.STRIPE_MANAGED_PAYMENTS?.trim().toLowerCase()
+  if (mode === 'off') return { managed_payments: { enabled: false } }
+  return {}
+}
+export const productTaxCode = () => process.env.STRIPE_TAX_CODE?.trim() || undefined
+
 type Params = Record<string, unknown>
 
 /** Stripe's form encoding: nested objects as a[b][c], arrays as a[0][b]. */

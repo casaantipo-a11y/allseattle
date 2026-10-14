@@ -128,6 +128,18 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   `https://<site>/api/stripe/webhook` with the five events above; save the billing portal's
   settings once (Settings → Billing → Customer portal: allow cancel, at period end; no plan
   switching); put real monthly prices on the packages in the admin.
+  **Tested against a real Stripe sandbox (15.10.2026)**, events relayed to the local webhook:
+  Checkout paid with 4242 → package on; billing portal opens; cancel at period end → canceling;
+  a test clock renews (+1 month), a failing card → past_due with the date kept, a new card →
+  paid and extended; deleting the subscription → canceled, the package runs to its date; a
+  banner place paid → draft banner, the place refused to a second buyer. Found and fixed: the
+  package was extended on `customer.subscription.updated` before the period was paid (now only
+  a paid latest invoice extends it; the subscription is always re-read from Stripe), and new
+  Stripe accounts have **Managed Payments** on by default, which refuses our Checkout (no
+  custom text, needs a product tax code): `STRIPE_MANAGED_PAYMENTS=off` turns it off, or leave
+  it on and set `STRIPE_TAX_CODE` — the client's choice (Stripe as merchant of record handling
+  US sales tax for a fee, or not). Stripe's Adaptive Pricing shows prices in the buyer's
+  currency (e.g. UAH from Ukraine); US buyers see USD.
 
 - **Stage 3, step 5 (14.10.2026)** — banner places bought online (`lib/ad-billing.ts`). A place
   is one AdSlot code with a price in `lib/ad-placements.ts`. On `/advertise` "Available" leads

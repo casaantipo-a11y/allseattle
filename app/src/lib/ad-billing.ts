@@ -4,11 +4,11 @@ import { z } from 'zod'
 import type { AdSlot, Banner, Customer } from '@/payload-types'
 
 import { placementFor } from './ad-placements'
-import { GRACE_MS, LIVE, NOT_SET_UP, statusOf, stripeCustomerFor, type Sub } from './billing'
+import { LIVE, NOT_SET_UP, paidUntilOf, statusOf, stripeCustomerFor, type Sub } from './billing'
 import { CHECK, TOO_SOON_ERROR, fail, isOwner, tooSoon, mediaIds, notifyTeam, payloadClient, relId, saveFailed, settlePhotos, takePhotos, toFields, zodErrors, type CabinetResult, type PhotoChange } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
-import { stripe, stripeEnabled, StripeError } from './stripe'
+import { managedPaymentsParams, productTaxCode, stripe, stripeEnabled, StripeError } from './stripe'
 
 // Stage 3, step 5: banner places bought online. A place is one AdSlot code with
 // a price in lib/ad-placements.ts; it is sold by the month through Stripe
@@ -86,6 +86,7 @@ export async function startAdCheckout(customer: Customer, fd: FormData): Promise
   try {
     const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
       mode: 'subscription',
+      ...managedPaymentsParams(),
       customer: await stripeCustomerFor(customer),
       line_items: [
         {
@@ -94,15 +95,14 @@ export async function startAdCheckout(customer: Customer, fd: FormData): Promise
             currency: 'usd',
             unit_amount: Math.round(placement.price * 100),
             recurring: { interval: 'month' },
-            product_data: { name: `AllSeattle banner — ${slot.name}`, metadata: { slotCode: slot.code } },
+            product_data: { name: `AllSeattle banner — ${slot.name}`, tax_code: productTaxCode(), metadata: { slotCode: slot.code } },
           },
         },
       ],
       subscription_data: { description: `Banner ${slot.name} for ${parsed.data.advertiser}`, metadata: meta },
       metadata: meta,
-      custom_text: {
-        submit: { message: 'Charged every month until you cancel. Cancel any time from your AllSeattle account; the banner stays until the end of the paid month.' },
-      },
+      // No custom_text: Stripe's Managed Payments (on by default for new accounts) rejects it.
+      // The monthly-charge consent is the checkbox on our page before this step.
       success_url: absoluteUrl('/account/ads?paid=1'),
       cancel_url: absoluteUrl(`/account/ads/new?slot=${encodeURIComponent(slot.code)}`),
     })
@@ -120,8 +120,8 @@ export async function syncAdSubscription(sub: Sub, _opts: { welcome?: boolean } 
   const customerId = Number(sub.metadata?.customerId)
   if (!status || !slotId || !customerId) return
   const payload = await payloadClient()
-  const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
-  const paidUntil = periodEnd ? new Date(periodEnd * 1000 + GRACE_MS).toISOString() : null
+  // Only a paid period extends the banner (see paidUntilOf); the subscription comes fresh from syncSubscription.
+  const paidUntil = paidUntilOf(sub)
   const existing = (await payload.find({ collection: 'banners', where: { stripeSubscriptionId: { equals: sub.id } }, limit: 1, depth: 0, overrideAccess: true })).docs[0] as
     | Banner
     | undefined

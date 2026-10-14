@@ -4,7 +4,7 @@ import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, type CabinetRes
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
 import { syncAdSubscription } from './ad-billing'
-import { stripe, stripeEnabled, StripeError, type StripeEvent } from './stripe'
+import { managedPaymentsParams, productTaxCode, stripe, stripeEnabled, StripeError, type StripeEvent } from './stripe'
 
 // Stage 3, step 4: package subscriptions through Stripe (ad places, step 5, are in
 // lib/ad-billing.ts and share the webhook: their subscriptions carry kind=banner). The owner picks a
@@ -29,6 +29,22 @@ export type Sub = {
   items?: { data?: { current_period_end?: number }[] }
   metadata?: Record<string, string>
   customer?: string
+  latest_invoice?: string | { status?: string } | null
+}
+
+/**
+ * The subscription as Stripe has it now, with its latest invoice. Events can arrive out
+ * of order and Stripe moves a subscription to its next period (subscription.updated)
+ * before it tries to charge for it, so the event's own copy is not trusted.
+ */
+export const freshSubscription = (id: string) => stripe<Sub>('GET', `/subscriptions/${id}`, { expand: ['latest_invoice'] })
+
+/** The end of the period that is actually paid (+ grace), or null when the latest invoice
+ *  isn't paid yet — a new period must not extend anything before its money arrives. */
+export function paidUntilOf(sub: Sub): string | null {
+  const paid = typeof sub.latest_invoice === 'object' && sub.latest_invoice?.status === 'paid'
+  const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
+  return paid && periodEnd ? new Date(periodEnd * 1000 + GRACE_MS).toISOString() : null
 }
 
 const hasLiveSubscription = (biz: Business) => Boolean(biz.subscriptionStatus && (LIVE as readonly string[]).includes(biz.subscriptionStatus))
@@ -63,6 +79,7 @@ export async function startPackageCheckout(customer: Customer, bizId: number, pa
   try {
     const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
       mode: 'subscription',
+      ...managedPaymentsParams(),
       customer: await stripeCustomerFor(customer),
       client_reference_id: biz.id,
       line_items: [
@@ -72,15 +89,14 @@ export async function startPackageCheckout(customer: Customer, bizId: number, pa
             currency: (pkg.currency ?? 'USD').toLowerCase(),
             unit_amount: Math.round(pkg.priceMonthly * 100),
             recurring: { interval: 'month' },
-            product_data: { name: `AllSeattle ${pkg.name} package`, metadata: { packageId: pkg.id } },
+            product_data: { name: `AllSeattle ${pkg.name} package`, tax_code: productTaxCode(), metadata: { packageId: pkg.id } },
           },
         },
       ],
       subscription_data: { description: `${pkg.name} package for ${biz.name}`, metadata: meta },
       metadata: meta,
-      custom_text: {
-        submit: { message: 'Charged every month until you cancel. Cancel any time from your AllSeattle account; the package stays until the end of the paid month.' },
-      },
+      // No custom_text: Stripe's Managed Payments (on by default for new accounts) rejects it.
+      // The monthly-charge consent is the checkbox on our page before this step.
       success_url: absoluteUrl(`/account/business/${biz.id}/package?paid=1`),
       cancel_url: absoluteUrl(`/account/business/${biz.id}/package`),
     })
@@ -113,7 +129,7 @@ export const statusOf = (s: Sub): Business['subscriptionStatus'] | null => {
 
 /** Brings a business (or, for kind=banner, a banner) in line with its Stripe subscription. Safe to run any number of times. */
 export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: boolean } = {}) {
-  const sub = typeof subOrId === 'string' ? await stripe<Sub>('GET', `/subscriptions/${subOrId}`) : subOrId
+  const sub = await freshSubscription(typeof subOrId === 'string' ? subOrId : subOrId.id)
   if (sub.metadata?.kind === 'banner') return syncAdSubscription(sub, opts)
   const bizId = Number(sub.metadata?.businessId)
   const packageId = Number(sub.metadata?.packageId)
@@ -130,11 +146,11 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
     if (owner) await notifyTeam(payload, `Check Stripe: a second package subscription for ${biz.name} (${biz.stripeSubscriptionId} and ${sub.id})`, `/admin/collections/businesses/${biz.id}`, owner)
   }
 
-  const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
-  const paidUntil = periodEnd ? new Date(periodEnd * 1000 + GRACE_MS).toISOString() : null
+  const paidUntil = paidUntilOf(sub)
   const data: Partial<Business> = { stripeSubscriptionId: sub.id, subscriptionStatus: status }
-  // Active (also when cancelled for the period's end): the package runs to the paid period's end.
-  // Past due keeps the date it had — Stripe retries and an invoice.paid moves it on.
+  // Active (also when cancelled for the period's end): the package runs to the end of the
+  // period that is paid. A period whose invoice isn't paid yet (or failed: past due) keeps
+  // the date it had — Stripe retries, and invoice.paid moves it on.
   if (status === 'active' || status === 'canceling') Object.assign(data, { package: packageId, ...(paidUntil ? { packageExpiresAt: paidUntil } : {}) })
   await payload.update({ collection: 'businesses', id: bizId, data, overrideAccess: true, context: { skipGeocode: true } })
 
