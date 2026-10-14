@@ -1,7 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
 import { canWrite, publishedOrLoggedIn, staffOnlyField } from '../access/roles'
-import { isDemoField, moderatedStatusField, moderationNoteField, ownerField, slugField, slugHistoryField } from '../fields'
+import { isDemoField, moderatedStatusField, moderationNoteField, ownerField, slugHistoryField, uniqueSlugField } from '../fields'
 import { notifyAuthorOfReview } from '../hooks/moderation'
 import { assertBusinessWithinPackage } from '../hooks/packageLimits'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
@@ -224,7 +224,9 @@ export const Businesses: CollectionConfig = {
         },
       ],
     },
-    slugField('name'),
+    // Unique on its own ("-2", "-3"…): businesses are registered from site accounts too, and
+    // two businesses may share a name (stage 3).
+    uniqueSlugField('businesses', 'name'),
     moderatedStatusField,
     ownerField('The site account that manages this business from its account page.'),
     moderationNoteField,
