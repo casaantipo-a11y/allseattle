@@ -11,6 +11,11 @@ export type Role = (typeof ROLES)[number]
 
 type UserWithRoles = { roles?: Role[] | null; collection?: string }
 
+/** Field access: the team only — fields the public REST/GraphQL must not return
+ *  (an owner, a moderation note, billing ids). The site's own queries run with
+ *  overrideAccess and still see them. */
+export const staffOnlyField: FieldAccess = ({ req }) => isStaff(req)
+
 /** Signed in as a member of the team (the `users` collection) — not a site
  *  customer (`customers`, stage 3), who never counts as "logged in" for the
  *  admin's access rules. */

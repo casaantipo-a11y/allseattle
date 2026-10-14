@@ -458,6 +458,11 @@ export interface Business {
    */
   priority?: number | null;
   /**
+   * Online subscription, set by Stripe. Empty = no online payment.
+   */
+  subscriptionStatus?: ('active' | 'canceling' | 'past_due' | 'canceled') | null;
+  stripeSubscriptionId?: string | null;
+  /**
    * yourname → yourname.<site domain>. Luxury and Premium only.
    */
   subdomain?: string | null;
@@ -1587,6 +1592,8 @@ export interface BusinessesSelect<T extends boolean = true> {
   package?: T;
   packageExpiresAt?: T;
   priority?: T;
+  subscriptionStatus?: T;
+  stripeSubscriptionId?: T;
   subdomain?: T;
   branding?:
     | T

@@ -1,5 +1,7 @@
 import type { Field, FieldHook, PayloadRequest } from 'payload'
 
+import { staffOnlyField } from '../access/roles'
+
 export const slugify = (value: string): string =>
   value
     .normalize('NFKD')
@@ -84,6 +86,7 @@ export const ownerField = (description = 'The site account that submitted it.'):
   type: 'relationship',
   relationTo: 'customers',
   index: true,
+  access: { read: staffOnlyField },
   admin: { position: 'sidebar', description },
 })
 
@@ -91,6 +94,7 @@ export const ownerField = (description = 'The site account that submitted it.'):
 export const moderationNoteField: Field = {
   name: 'moderationNote',
   type: 'textarea',
+  access: { read: staffOnlyField },
   admin: { position: 'sidebar', description: 'If you reject it: why. The author sees this.' },
 }
 

@@ -1,0 +1,81 @@
+import { createHmac, timingSafeEqual } from 'node:crypto'
+
+// Stripe over its REST API with fetch — no SDK, like Resend and Telegram
+// (lib/notify.ts). Off while STRIPE_SECRET_KEY is empty. The API version is
+// pinned so the shapes read in lib/billing.ts don't change under us; they're
+// still read defensively (a few fields moved in 2025).
+
+const API = 'https://api.stripe.com/v1'
+const VERSION = '2025-03-31.basil'
+
+export const stripeEnabled = () => Boolean(process.env.STRIPE_SECRET_KEY)
+
+type Params = Record<string, unknown>
+
+/** Stripe's form encoding: nested objects as a[b][c], arrays as a[0][b]. */
+function encode(params: Params, prefix = '', out = new URLSearchParams()) {
+  for (const [k, v] of Object.entries(params)) {
+    if (v === undefined || v === null) continue
+    const key = prefix ? `${prefix}[${k}]` : k
+    if (Array.isArray(v)) v.forEach((item, i) => (typeof item === 'object' ? encode(item as Params, `${key}[${i}]`, out) : out.append(`${key}[${i}]`, String(item))))
+    else if (typeof v === 'object') encode(v as Params, key, out)
+    else out.append(key, String(v))
+  }
+  return out
+}
+
+export class StripeError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
+    super(message)
+  }
+}
+
+export async function stripe<T = Record<string, unknown>>(method: 'GET' | 'POST', path: string, params: Params = {}, idempotencyKey?: string): Promise<T> {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new StripeError('Stripe is not configured', 503)
+  const body = encode(params)
+  const url = method === 'GET' && [...body].length ? `${API}${path}?${body}` : `${API}${path}`
+  const res = await fetch(url, {
+    method,
+    headers: {
+      Authorization: `Bearer ${key}`,
+      'Stripe-Version': VERSION,
+      ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+    },
+    body: method === 'POST' ? body : undefined,
+    signal: AbortSignal.timeout(15000),
+  })
+  const json = (await res.json().catch(() => ({}))) as { error?: { message?: string } }
+  if (!res.ok) throw new StripeError(json.error?.message ?? `Stripe ${res.status}`, res.status)
+  return json as T
+}
+
+export type StripeEvent = { id: string; type: string; data: { object: Record<string, unknown> } }
+
+/**
+ * Checks a webhook's `Stripe-Signature` (HMAC-SHA256 of "timestamp.body" with the
+ * endpoint's signing secret, within 5 minutes) and returns the event, or null.
+ * The body must be the raw text, exactly as received.
+ */
+export function verifyWebhook(rawBody: string, header: string | null, secret: string, now = Date.now()): StripeEvent | null {
+  if (!header) return null
+  const parts = header.split(',').map((p) => p.split('=') as [string, string])
+  const t = parts.find(([k]) => k === 't')?.[1]
+  const sigs = parts.filter(([k]) => k === 'v1').map(([, v]) => v)
+  if (!t || !sigs.length || Math.abs(now / 1000 - Number(t)) > 300) return null
+  const expected = createHmac('sha256', secret).update(`${t}.${rawBody}`).digest()
+  const ok = sigs.some((s) => {
+    const got = Buffer.from(s, 'hex')
+    return got.length === expected.length && timingSafeEqual(got, expected)
+  })
+  if (!ok) return null
+  try {
+    return JSON.parse(rawBody) as StripeEvent
+  } catch {
+    return null
+  }
+}

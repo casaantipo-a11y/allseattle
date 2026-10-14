@@ -7,6 +7,7 @@ import { SubmissionForm } from '@/components/SubmissionForm'
 import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
+import { stripeEnabled } from '@/lib/stripe'
 import type { Package } from '@/payload-types'
 
 // /advertise — the page salespeople show to clients (spec §5): the packages
@@ -143,8 +144,10 @@ export default async function AdvertisePage({ searchParams }: Props) {
                       </li>
                     ))}
                   </ul>
+                  {/* Bought online from the account when it has a price and Stripe is on
+                      (stage 3); otherwise the inquiry form below, as before. */}
                   <a
-                    href={`/advertise?package=${p.id}#inquiry`}
+                    href={p.priceMonthly > 0 && stripeEnabled() ? '/account/business' : `/advertise?package=${p.id}#inquiry`}
                     className={`btn btn-block${featured ? '' : ' btn-outline'}`}
                   >
                     Choose {p.name}

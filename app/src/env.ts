@@ -3,7 +3,7 @@ import { z } from 'zod'
 // Environment is validated once, at import. A missing required variable stops
 // the app with a message naming it, instead of failing later with an opaque
 // database or crypto error. Optional integrations (R2, Telegram, Resend,
-// Turnstile) are simply off while their variables are empty.
+// Turnstile, Stripe) are simply off while their variables are empty.
 
 const optional = z
   .string()
@@ -27,6 +27,8 @@ const schema = z.object({
   NOTIFY_EMAIL: optional,
   TURNSTILE_SITE_KEY: optional,
   TURNSTILE_SECRET_KEY: optional,
+  STRIPE_SECRET_KEY: optional,
+  STRIPE_WEBHOOK_SECRET: optional,
   SEED_ADMIN_EMAIL: optional,
   SEED_ADMIN_PASSWORD: optional,
 })

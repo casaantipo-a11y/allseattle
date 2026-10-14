@@ -1,6 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
-import { canWrite, publishedOrLoggedIn } from '../access/roles'
+import { canWrite, publishedOrLoggedIn, staffOnlyField } from '../access/roles'
 import { isDemoField, moderatedStatusField, moderationNoteField, ownerField, slugField, slugHistoryField } from '../fields'
 import { notifyAuthorOfReview } from '../hooks/moderation'
 import { assertBusinessWithinPackage } from '../hooks/packageLimits'
@@ -176,6 +176,26 @@ export const Businesses: CollectionConfig = {
                   defaultValue: 0,
                   admin: { description: 'Manual ordering inside the same package: higher shows first.' },
                 },
+              ],
+            },
+            {
+              // Filled by the Stripe webhook (stage 3, lib/billing.ts): a package bought on
+              // the site renews monthly and moves packageExpiresAt to the paid period's end.
+              type: 'row',
+              fields: [
+                {
+                  name: 'subscriptionStatus',
+                  type: 'select',
+                  options: [
+                    { label: 'Active (renews monthly)', value: 'active' },
+                    { label: 'Cancelled — runs to the end of the paid month', value: 'canceling' },
+                    { label: 'Payment failed — Stripe is retrying', value: 'past_due' },
+                    { label: 'Ended', value: 'canceled' },
+                  ],
+                  access: { read: staffOnlyField },
+                  admin: { readOnly: true, description: 'Online subscription, set by Stripe. Empty = no online payment.' },
+                },
+                { name: 'stripeSubscriptionId', type: 'text', index: true, access: { read: staffOnlyField }, admin: { readOnly: true } },
               ],
             },
             {

@@ -72,6 +72,7 @@ export default async function MyBusinessPage() {
                     <span className="text-brand-slate">
                       {' '}
                       · {pkg ? `${pkg.name} package${b.packageExpiresAt ? ` until ${day(b.packageExpiresAt)}` : ''}` : 'Basic listing'}
+                      {b.subscriptionStatus === 'active' ? ' · renews monthly' : b.subscriptionStatus === 'past_due' ? ' · payment failed' : ''}
                     </span>
                   </div>
                   {b.status === 'rejected' && b.moderationNote ? <div className="m-0 mt-1 text-sm">Reason: {b.moderationNote}</div> : null}
@@ -87,8 +88,8 @@ export default async function MyBusinessPage() {
                     <Link href={`/account/business/${b.id}/offers`} className="btn btn-outline btn-sm">
                       Promotions &amp; products
                     </Link>
-                    <Link href="/advertise" className="btn btn-outline btn-sm">
-                      Packages
+                    <Link href={`/account/business/${b.id}/package`} className="btn btn-outline btn-sm">
+                      Package
                     </Link>
                   </div>
                 </div>

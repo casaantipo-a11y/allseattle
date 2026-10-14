@@ -109,6 +109,26 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   Counts are one GROUP BY, cached under the `contest-votes` tag, expired on each confirmation.
   Deleting a contest deletes its votes. Migration `stage3_contest_votes`.
 
+- **Stage 3, step 4 (14.10.2026)** — package subscriptions through Stripe, over its REST API
+  (`lib/stripe.ts`, fetch, API version pinned; no SDK). `/account/business/[id]/package`: the
+  current package, then either "Manage billing" (Stripe's billing portal: cancel, card,
+  receipts) or a package choice + an explicit monthly-charge consent → Stripe Checkout
+  (`mode: subscription`, the price sent inline from `Packages.priceMonthly`, so there is no
+  price sync to run). Packages priced 0 stay "contact us". `/api/stripe/webhook` (signature
+  checked on the raw body) handles `checkout.session.completed`, `invoice.paid`,
+  `invoice.payment_failed`, `customer.subscription.updated|deleted` → `syncSubscription`
+  sets the business's `package`, `packageExpiresAt` = paid period end + 1 day of grace,
+  `subscriptionStatus` (active / canceling / past_due / canceled) and `stripeSubscriptionId`;
+  cancelling just stops renewal and the package runs out on its date. Owner, moderation note
+  and billing fields are hidden from the public REST (`staffOnlyField`). With
+  `STRIPE_SECRET_KEY` empty everything says "contact us"; on `/advertise` "Choose …" leads to
+  the account only for a priced package with Stripe on. Migration
+  `stage3_package_subscriptions`. **To switch it on:** set `STRIPE_SECRET_KEY` and
+  `STRIPE_WEBHOOK_SECRET` on Vercel; in Stripe add the webhook endpoint
+  `https://<site>/api/stripe/webhook` with the five events above; save the billing portal's
+  settings once (Settings → Billing → Customer portal: allow cancel, at period end; no plan
+  switching); put real monthly prices on the packages in the admin.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.
