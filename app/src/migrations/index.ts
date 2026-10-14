@@ -12,6 +12,8 @@ import * as migration_20261014_042505_stage3_business_accounts from './20261014_
 import * as migration_20261014_045703_stage3_contest_votes from './20261014_045703_stage3_contest_votes';
 import * as migration_20261014_050730_stage3_package_subscriptions from './20261014_050730_stage3_package_subscriptions';
 import * as migration_20261014_052145_stage3_banner_places from './20261014_052145_stage3_banner_places';
+import * as migration_20261014_164109_site_notes from './20261014_164109_site_notes';
+import * as migration_20261014_174433_stage3_merge_client from './20261014_174433_stage3_merge_client';
 
 export const migrations = [
   {
@@ -82,6 +84,16 @@ export const migrations = [
   {
     up: migration_20261014_052145_stage3_banner_places.up,
     down: migration_20261014_052145_stage3_banner_places.down,
-    name: '20261014_052145_stage3_banner_places'
+    name: '20261014_052145_stage3_banner_places',
+  },
+  {
+    up: migration_20261014_164109_site_notes.up,
+    down: migration_20261014_164109_site_notes.down,
+    name: '20261014_164109_site_notes',
+  },
+  {
+    up: migration_20261014_174433_stage3_merge_client.up,
+    down: migration_20261014_174433_stage3_merge_client.down,
+    name: '20261014_174433_stage3_merge_client'
   },
 ];

@@ -25,7 +25,7 @@ import config from '../payload.config'
 import { revalidateSite } from './revalidate-site'
 import { slugify } from '../fields'
 import { doc, h2, p, paragraphsFrom } from './lexical'
-import { seedBusinesses } from './seed-businesses'
+import { ADVERTISE_TEXT, seedBusinesses } from './seed-businesses'
 import { seedPhase3 } from './seed-phase3'
 import { seedPhase4 } from './seed-phase4'
 
@@ -220,8 +220,8 @@ async function run() {
       slug: 'advertise',
       intro: 'Put your business in front of Seattle.',
       content: doc(
-        p('Banner placements on the home page, in the news and in every section of the directory are available by the week.'),
-        p('Ask us about combining a package with banners — send the form below and we will prepare options.'),
+        p(ADVERTISE_TEXT[0]),
+        p(ADVERTISE_TEXT[1]),
       ),
     },
     {

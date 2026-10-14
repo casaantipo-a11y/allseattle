@@ -83,6 +83,7 @@ export interface Config {
     'event-categories': EventCategory;
     contests: Contest;
     'contest-votes': ContestVote;
+    'site-notes': SiteNote;
     submissions: Submission;
     'ad-slots': AdSlot;
     banners: Banner;
@@ -115,6 +116,7 @@ export interface Config {
     'event-categories': EventCategoriesSelect<false> | EventCategoriesSelect<true>;
     contests: ContestsSelect<false> | ContestsSelect<true>;
     'contest-votes': ContestVotesSelect<false> | ContestVotesSelect<true>;
+    'site-notes': SiteNotesSelect<false> | SiteNotesSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
     'ad-slots': AdSlotsSelect<false> | AdSlotsSelect<true>;
     banners: BannersSelect<false> | BannersSelect<true>;
@@ -1048,6 +1050,58 @@ export interface ContestVote {
   createdAt: string;
 }
 /**
+ * Notes left on site pages. Only admins see them — on the site (the Notes button) and here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-notes".
+ */
+export interface SiteNote {
+  id: number;
+  /**
+   * The page, e.g. /news or /biz/some-business.
+   */
+  path: string;
+  text: string;
+  author?: (number | null) | User;
+  /**
+   * Done — kept for the record.
+   */
+  resolved?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name?: string | null;
+  /**
+   * Admin: everything. Editor: news, events, contest, news tips. Sales: businesses, packages, banners, placement requests.
+   */
+  roles: ('admin' | 'editor' | 'sales')[];
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
@@ -1278,37 +1332,6 @@ export interface Page {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name?: string | null;
-  /**
-   * Admin: everything. Editor: news, events, contest, news tips. Sales: businesses, packages, banners, placement requests.
-   */
-  roles: ('admin' | 'editor' | 'sales')[];
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1430,6 +1453,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contest-votes';
         value: number | ContestVote;
+      } | null)
+    | ({
+        relationTo: 'site-notes';
+        value: number | SiteNote;
       } | null)
     | ({
         relationTo: 'submissions';
@@ -1929,6 +1956,18 @@ export interface ContestVotesSelect<T extends boolean = true> {
   confirmedAt?: T;
   ip?: T;
   sentAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-notes_select".
+ */
+export interface SiteNotesSelect<T extends boolean = true> {
+  path?: T;
+  text?: T;
+  author?: T;
+  resolved?: T;
   updatedAt?: T;
   createdAt?: T;
 }

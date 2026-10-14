@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { EventCard } from '@/components/events'
 import { fmtMileage, fmtPrice, toCarItem } from '@/lib/cars'
+import { EVENTS_COMING_SOON } from '@/lib/events'
 import { toJobItem } from '@/lib/jobs'
 import type { CarListing, Event, Job } from '@/payload-types'
 
@@ -24,10 +25,11 @@ export function StatsWidget({ stats }: { stats: { businesses: Stat; cars: Stat; 
         <div className="stat-grid">
           {tiles.map(([label, s, href]) => (
             <Link key={label} href={href} className="stat-tile no-underline">
-              <span className="num">{s.total.toLocaleString('en-US')}</span>
+              {/* Events are "Coming soon" (lib/events.ts): the tile keeps its place in the 2×2 grid. */}
+              <span className="num">{href === '/events' && EVENTS_COMING_SOON ? 'Soon' : s.total.toLocaleString('en-US')}</span>
               <span className="label">
                 {label}
-                {s.today ? <span className="block text-brand-red">+{s.today} today</span> : null}
+                {s.today && !(href === '/events' && EVENTS_COMING_SOON) ? <span className="block text-brand-red">+{s.today} today</span> : null}
               </span>
             </Link>
           ))}

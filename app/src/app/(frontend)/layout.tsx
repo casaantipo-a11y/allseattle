@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Libre_Franklin, Public_Sans } from 'next/font/google'
 import type { ReactNode } from 'react'
 
+import { AdminNotes } from '@/components/AdminNotes'
 import { Announcements } from '@/components/Announcements'
 import { CookieConsent } from '@/components/CookieConsent'
 import { HeroBanner } from '@/components/HeroBanner'
@@ -90,6 +91,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
         </HiddenOn>
         {children}
         <SiteFooter />
+        <AdminNotes />
         <CookieConsent gaId={settings.ga4MeasurementId} />
       </body>
     </html>

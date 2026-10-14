@@ -4,6 +4,8 @@ import { getPayload, type Where } from 'payload'
 
 import type { CarListing, CarMake, Contest, Event, EventCategory, Job, JobCategory } from '@/payload-types'
 
+import { EVENTS_COMING_SOON } from './events'
+
 // Phase 3 reads: cars, jobs, events, contests, site statistics. Same rules as
 // queries.ts — every read cached under a tag that the collection hooks expire.
 
@@ -88,7 +90,13 @@ export const getEventCategories = unstable_cache(
 )
 
 /** Events not over yet: an end in the future, or (without an end) a start within the last 24 hours. */
-export const getUpcomingEvents = unstable_cache(
+/** Upcoming events for the home page, the map and the sitemap — none while the section
+ *  is "Coming soon" (lib/events.ts). The events page itself reads them directly. */
+export async function getUpcomingEvents(): Promise<Event[]> {
+  return EVENTS_COMING_SOON ? [] : getAllUpcomingEvents()
+}
+
+export const getAllUpcomingEvents = unstable_cache(
   async (): Promise<Event[]> => {
     const dayAgo = new Date(Date.now() - 24 * 3600 * 1000).toISOString()
     return (
@@ -225,7 +233,10 @@ export async function searchSite(q: string, limit = 60): Promise<SearchHit[]> {
     return { d, rank, title, k }
   })
   ranked.sort((a, b) => b.rank - a.rank || (PRIORITY[b.k] ?? 0) - (PRIORITY[a.k] ?? 0) || a.title.localeCompare(b.title))
-  return ranked.slice(0, limit).map(({ d }) => ({
+  return ranked
+    .filter(({ k }) => !(EVENTS_COMING_SOON && k === 'events'))
+    .slice(0, limit)
+    .map(({ d }) => ({
     id: d.id as number,
     title: (d.title as string) ?? '',
     url: (d as { url?: string }).url ?? '/',

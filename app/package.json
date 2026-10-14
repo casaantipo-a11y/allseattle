@@ -15,8 +15,10 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "seed:prod": "node scripts/prod.mjs seed",
     "purge-demo:prod": "node scripts/prod.mjs purge-demo",
+    "update-content:prod": "node scripts/prod.mjs update-content",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/seed.ts",
     "purge-demo": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/purge-demo.ts",
+    "update-content": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/update-content.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "vercel-build": "pnpm migrate && pnpm build"

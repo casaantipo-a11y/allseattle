@@ -250,3 +250,102 @@
   position: relative;
   z-index: 1;
 }
+
+/* ---------- Business page (client, 15.10.2026, Commercial.pdf p. 3) ----------
+   Laid out after the client's "Lux" example: a data table with icons, a wide map,
+   promotions as rows, a gallery with a thumbnail strip, "About", related
+   categories; on the right the logo card, similar places and socials. Headings
+   and rows live here (not in Tailwind) because the prototype's unlayered h2 / p
+   rules would beat a utility. */
+.biz-section {
+  margin-top: var(--space-8);
+}
+
+.biz-section-title {
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-3);
+}
+
+.biz-info {
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.biz-info-row {
+  display: grid;
+  grid-template-columns: var(--space-6) minmax(0, 1fr);
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-slate-soft);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+.biz-info-row:first-child {
+  border-top: 0;
+}
+
+.biz-info-row:nth-child(even) {
+  background: var(--color-bg-soft);
+}
+
+.biz-info-icon {
+  grid-row: 1 / 3;
+  color: var(--color-slate);
+  padding-top: 2px;
+}
+
+.biz-info-label {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+@media (min-width: 640px) {
+  .biz-info-row {
+    grid-template-columns: var(--space-6) 140px minmax(0, 1fr);
+  }
+
+  .biz-info-icon {
+    grid-row: auto;
+  }
+}
+
+/* "0627 views this month" — the digits in boxes, like the client's example. */
+.biz-views {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.biz-views-digit {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 36px;
+  border: 1px solid var(--color-slate-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-soft);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-slate);
+}
+
+.biz-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  color: var(--color-navy);
+  font-size: var(--text-2xl);
+  line-height: 1;
+  cursor: pointer;
+}

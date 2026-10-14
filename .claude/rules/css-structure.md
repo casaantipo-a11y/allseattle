@@ -300,3 +300,11 @@ Directory. Pagination of the News feed and the directory list sits midway betwee
 the footer: 16px above (`margin-top: var(--space-4)`, overrides Tailwind's `mt-6`) and 16 below —
 measured equal on News and Directory at 1280/1440/1920, where the list is the tallest column (at
 1024 News's rails are taller, on phones the rails follow the list).
+
+**App, 15.10.2026 (client, Commercial.pdf):** Home banner prices follow the PDF's "Main page"
+column (B1/B2 $299, A3 $199, the rest $149). The PDF also lists a Home C2; the client said there
+is **no C2 on Home** — a HOME_RIGHT_2 slot was added and removed the same day, don't bring it
+back. Price cards on /advertise: the package name is a full-width bar in its tier colour
+(`.pricing-name--*`, pricing.css), the price at `--text-4xl`, 1/3/6/12-month rows; the features
+list left the cards. The middle package stays **"Luxury"** (the PDF says "Lux"; the client chose
+Luxury). The seed finds packages by `order`, not name.

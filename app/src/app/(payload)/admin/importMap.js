@@ -32,7 +32,6 @@ import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from 
 import { AdminIcon as AdminIcon_33c93f4499cc1046be4c39fcd5ae4edf } from '../../../components/admin/AdminGraphics'
 import { AdminLogo as AdminLogo_33c93f4499cc1046be4c39fcd5ae4edf } from '../../../components/admin/AdminGraphics'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
-import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -69,6 +68,5 @@ export const importMap = {
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "/components/admin/AdminGraphics#AdminIcon": AdminIcon_33c93f4499cc1046be4c39fcd5ae4edf,
   "/components/admin/AdminGraphics#AdminLogo": AdminLogo_33c93f4499cc1046be4c39fcd5ae4edf,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

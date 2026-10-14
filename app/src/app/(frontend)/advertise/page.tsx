@@ -6,6 +6,7 @@ import { PlacementPrices } from '@/components/PlacementPrices'
 import { SubmissionForm } from '@/components/SubmissionForm'
 import { reservedSlotCodes } from '@/lib/ad-billing'
 import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
+import { ANIMATED_BANNER_PRICE, ARTICLE_PRICES, BANNER_SIZES, TAX_NOTE } from '@/lib/ad-placements'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
 import { stripeEnabled } from '@/lib/stripe'
@@ -109,9 +110,9 @@ export default async function AdvertisePage({ searchParams }: Props) {
                 >
                   {featured ? <span className="pricing-featured-tag">Most popular</span> : null}
                   <div className="pricing-card-head">
-                    {badge ? (
-                      <span className={`badge ${badge.cls} self-start`}>{p.name}</span>
-                    ) : null}
+                    {/* The package name as a full-width bar in its tier's colour (client's price
+                        cards, 15.10.2026). */}
+                    {badge ? <div className={`pricing-name ${badge.cls.replace('badge-', 'pricing-name--')}`}>{p.name}</div> : null}
                     <div className="pricing-price">
                       <span className="amount">
                         {p.priceMonthly > 0 || p.priceYearly <= 0
@@ -126,25 +127,30 @@ export default async function AdvertisePage({ searchParams }: Props) {
                     </div>
                   </div>
                   <ul className="pricing-cycles">
-                    {/* Price rows only when there are prices; "Contact us" above says it once. */}
-                    {p.priceMonthly > 0 ? (
-                      <li>
-                        <span>1 month</span>
-                        <strong>{priceText(p.priceMonthly, p.currency)}</strong>
-                      </li>
-                    ) : null}
+                    {/* Price rows only when there are prices; "Contact us" above says it once.
+                        1, 3 and 6 months are the monthly price times the months; 12 months shows
+                        the full sum struck through next to the yearly price (Commercial.pdf). */}
+                    {p.priceMonthly > 0
+                      ? [1, 3, 6].map((n) => (
+                          <li key={n}>
+                            <span>
+                              {n} {n === 1 ? 'month' : 'months'}
+                            </span>
+                            <strong>{priceText(p.priceMonthly * n, p.currency)}</strong>
+                          </li>
+                        ))
+                      : null}
                     {p.priceYearly > 0 ? (
                       <li>
                         <span>12 months</span>
-                        <strong>{priceText(p.priceYearly, p.currency)}</strong>
+                        <strong>
+                          {p.priceMonthly > 0 && p.priceMonthly * 12 > p.priceYearly ? (
+                            <s className="strike">{priceText(p.priceMonthly * 12, p.currency)}</s>
+                          ) : null}
+                          {priceText(p.priceYearly, p.currency)}
+                        </strong>
                       </li>
                     ) : null}
-                    {(p.features ?? []).map((f) => (
-                      <li key={f.id ?? f.text}>
-                        <span>{f.text}</span>
-                        <strong aria-hidden="true">&#10003;</strong>
-                      </li>
-                    ))}
                   </ul>
                   {/* Bought online from the account when it has a price and Stripe is on
                       (stage 3); otherwise the inquiry form below, as before. */}
@@ -158,6 +164,8 @@ export default async function AdvertisePage({ searchParams }: Props) {
               )
             })}
           </div>
+
+          {packages.some((p) => p.priceMonthly > 0 || p.priceYearly > 0) ? <div className="muted mt-4 text-sm">{TAX_NOTE}</div> : null}
 
           <div className="section-head section-head--spaced">
             <div>
@@ -202,6 +210,50 @@ export default async function AdvertisePage({ searchParams }: Props) {
             means a banner is running there right now; ask us for the next free dates.
           </p>
           <PlacementPrices booked={booked} online={stripeEnabled()} />
+          {/* The client's wording (price sheet, 15.10.2026). */}
+          <div className="muted mt-4 text-sm">
+            <div>The cost of producing an animated banner is {priceText(ANIMATED_BANNER_PRICE)}.</div>
+            <div>Banner sizes: {BANNER_SIZES.join(', ')}.</div>
+            <div>{TAX_NOTE}</div>
+          </div>
+
+          {/* Advertising articles (Commercial.pdf, 15.10.2026): prices in lib/ad-placements.ts. */}
+          <div id="articles" className="section-head section-head--spaced scroll-mt-40">
+            <div>
+              <span className="eyebrow">Advertising articles</span>
+              <h2>Tell your story in the news</h2>
+            </div>
+          </div>
+          <p className="muted">If you want to tell more about yourself, publish an advertising article on the Seattle city website — www.allSeattle.org.</p>
+          <div className="table-scroll">
+            <table className="feature-table placement-table">
+              <thead>
+                <tr>
+                  <th>The number of articles</th>
+                  <th>The cost of placement</th>
+                  <th>The cost of writing</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ARTICLE_PRICES.map((a) => (
+                  <tr key={a.label}>
+                    <td className="feature-label">{a.label}</td>
+                    <td className="num">
+                      <strong>{priceText(a.placement)}</strong>
+                    </td>
+                    <td className="num">{priceText(a.writing)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="muted mt-4 text-sm">
+            <div>
+              The article is displayed on the website&rsquo;s main page for 2 days among other non-commercial news items. After that, the
+              news automatically moves to the news section for an indefinite period.
+            </div>
+            <div className="mt-2">{TAX_NOTE}</div>
+          </div>
 
           {page?.content ? (
             <div className="mt-10">

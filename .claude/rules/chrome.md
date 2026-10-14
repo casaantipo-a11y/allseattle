@@ -266,3 +266,7 @@ tablet layout (logo + icons, Contact | Explore, copyright | credit). The credit'
 to 1280 with it. The address may wrap inside the narrow tablet Contact column
 (`.footer-contact a { overflow-wrap: anywhere }`). Measured: no overflow 320–1920; 1440 unchanged
 (219px tall, Contact at 351).
+
+**App footer, 15.10.2026 (client):** the "Developed by · Alexander" pill links to WhatsApp
+(`https://wa.me/380958191272`, green `#25d366` icon circle) instead of Telegram; size and position
+unchanged (32px pill at 1440, 44px on phones).

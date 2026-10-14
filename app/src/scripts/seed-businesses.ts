@@ -58,10 +58,21 @@ const coordsFor = (hood: string, i: number) => {
   return { lat: +(base[0] + dy).toFixed(6), lng: +(base[1] + dx).toFixed(6) }
 }
 
-const PACKAGES = [
+/** The text under the price lists on /advertise (the Advertise page in the admin). Banner
+ *  places are sold by the month since 12.10.2026; it used to say "by the week". */
+export const ADVERTISE_TEXT = [
+  'Banner placements on the home page, in the news and in every section of the site are sold by the month — see the positions and prices above.',
+  'Ask us about combining a package with banners — send the form below and we will prepare options.',
+]
+
+/** The three packages as the client sells them (Commercial.pdf, 15.10.2026): monthly and
+ *  yearly prices in USD and the limits from its "What's included" table. */
+export const PACKAGES = [
   {
     name: 'Standard',
     order: 1,
+    priceMonthly: 69,
+    priceYearly: 690,
     maxCategories: 2,
     maxPhotos: 10,
     maxListings: 5,
@@ -75,6 +86,8 @@ const PACKAGES = [
   {
     name: 'Luxury',
     order: 2,
+    priceMonthly: 99,
+    priceYearly: 990,
     maxCategories: 10,
     maxPhotos: 100,
     maxListings: 50,
@@ -88,10 +101,12 @@ const PACKAGES = [
   {
     name: 'Premium',
     order: 3,
+    priceMonthly: 169,
+    priceYearly: 1690,
     maxCategories: 15,
-    maxPhotos: 1000,
-    maxListings: 1000,
-    maxProducts: 1000,
+    maxPhotos: 500,
+    maxListings: 100,
+    maxProducts: 500,
     subdomain: true,
     priorityPlacement: true,
     categoryBannerFirstMonth: true,
@@ -157,15 +172,14 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   // ---- Packages (structure — kept by purge-demo) --------------------------
   const pkgIds: Record<string, number> = {}
   for (const pk of PACKAGES) {
-    const found = await payload.find({ collection: 'packages', where: { name: { equals: pk.name } }, limit: 1 })
+    // Found by order, not name, so a package renamed in the admin is not created twice.
+    const found = await payload.find({ collection: 'packages', where: { order: { equals: pk.order } }, limit: 1 })
     const docu =
       found.docs[0] ??
       (await payload.create({
         collection: 'packages',
         data: {
           ...pk,
-          priceMonthly: 0,
-          priceYearly: 0,
           currency: 'USD',
           mapPlacement: true,
           promotions: true,
@@ -176,7 +190,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       }))
     pkgIds[pk.name] = docu.id
   }
-  log('3 packages (Standard, Luxury, Premium; prices 0 = "Contact us")')
+  log('3 packages (Standard $69, Luxury $99, Premium $169 a month)')
 
   // ---- Categories -----------------------------------------------------------
   const catIds = new Map<string, number>() // key: `${section}:${name}`
@@ -401,6 +415,9 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
     })
     if (exists.totalDocs) continue
     const until = new Date(`${d.validUntil}, 2026 23:59:00 GMT-0700`)
+    // The prototype's deals carry fixed dates; one that has already ended would start
+    // after it ends (validFrom is today) and fail validation, so it is left out.
+    if (until.getTime() < Date.now()) continue
     await payload.create({
       collection: 'promotions',
       data: {
