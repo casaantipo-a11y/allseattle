@@ -2,7 +2,9 @@
  * pnpm update-content — brings an existing database in line with what the client
  * agreed on, without touching anything else. Safe to run again: it only sets values.
  *
- *   - packages: prices and limits from Commercial.pdf (15.10.2026)
+ *   - packages: names, prices and limits from Commercial.pdf (15.10.2026; Luxury → Lux)
+ *   - the Advertise page text: banner places are sold by the month, not by the week
+ *   - the HOME_RIGHT_2 ad slot (home page, Block C2)
  *   - news: the "Safety" category becomes "Crime & Safety" (the slug, and so every
  *     article URL, stays /news/safety/…)
  *   - NEW_ADMIN_EMAIL=… : creates that team member as an admin with a temporary
@@ -16,7 +18,9 @@ import { getPayload } from 'payload'
 
 import config from '../payload.config'
 import { revalidateSite } from './revalidate-site'
-import { PACKAGES } from './seed-businesses'
+import { doc, p } from './lexical'
+import { ADVERTISE_TEXT, PACKAGES } from './seed-businesses'
+import { SLOTS } from './seed-phase4'
 
 const log = (m: string) => console.log(`[update-content] ${m}`)
 
@@ -31,9 +35,9 @@ async function run() {
       log(`no package with order ${pk.order} (${pk.name}) — run the seed first`)
       continue
     }
-    const { name: _name, features: _features, ...values } = pk
-    await payload.update({ collection: 'packages', id: found.id, data: values, context: ctx })
-    log(`package ${found.name}: $${pk.priceMonthly}/mo, $${pk.priceYearly}/yr, ${pk.maxCategories} categories, ${pk.maxPhotos} photos, ${pk.maxProducts} products`)
+    const { features, ...values } = pk
+    await payload.update({ collection: 'packages', id: found.id, data: { ...values, features: features.map((text) => ({ text })) }, context: ctx })
+    log(`package ${found.name}${found.name !== pk.name ? ` → ${pk.name}` : ''}: $${pk.priceMonthly}/mo, $${pk.priceYearly}/yr, ${pk.maxCategories} categories, ${pk.maxPhotos} photos, ${pk.maxProducts} products`)
   }
 
   // ---- News: Safety → Crime & Safety
@@ -47,6 +51,29 @@ async function run() {
     })
     log('news category "Safety" → "Crime & Safety" (/news/safety)')
   } else log('no "safety" news category — nothing renamed')
+
+  // ---- The Advertise page text
+  const advertise = (await payload.find({ collection: 'pages', where: { slug: { equals: 'advertise' } }, limit: 1, depth: 0 })).docs[0]
+  if (advertise) {
+    await payload.update({ collection: 'pages', id: advertise.id, data: { content: doc(...ADVERTISE_TEXT.map(p)) } as never, context: ctx })
+    log('Advertise page text: banner places by the month')
+  }
+
+  // ---- Home page Block C2 (HOME_RIGHT_2), the place the client added on 15.10.2026
+  const c2 = await payload.find({ collection: 'ad-slots', where: { code: { equals: 'HOME_RIGHT_2' } }, limit: 1, depth: 0 })
+  const slot = SLOTS.find((s) => s.code === 'HOME_RIGHT_2')
+  if (c2.docs[0] && slot && c2.docs[0].desktopSize !== slot.desktopSize) {
+    await payload.update({ collection: 'ad-slots', id: c2.docs[0].id, data: { desktopSize: slot.desktopSize, name: `${slot.name} · Block C2` } as never, context: ctx })
+    log(`ad slot HOME_RIGHT_2 resized to ${slot.desktopSize}`)
+  }
+  if (!c2.totalDocs && slot) {
+    await payload.create({
+      collection: 'ad-slots',
+      data: { ...slot, name: `${slot.name} · Block C2`, sortOrder: SLOTS.indexOf(slot), isActive: true },
+      context: ctx,
+    })
+    log('ad slot HOME_RIGHT_2 (Home — right column, Block C2) created')
+  }
 
   // ---- A new admin, only when asked for
   const email = process.env.NEW_ADMIN_EMAIL?.trim().toLowerCase()

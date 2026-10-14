@@ -43,7 +43,7 @@ export default async function AddBusinessPage() {
                 {[
                   'A page for your business: contacts, hours, photos, map',
                   'A place in the directory and on the city map',
-                  'Promotions and products with Luxury and Premium',
+                  'Promotions and products with Lux and Premium',
                 ].map((t) => (
                   <li key={t} className="flex gap-3">
                     <span className="font-bold text-brand-red" aria-hidden="true">

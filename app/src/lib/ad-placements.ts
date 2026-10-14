@@ -65,6 +65,7 @@ export const PLACEMENTS: Placement[] = [
   { group: 'home', position: 'B1', size: '728x90', price: 299, codes: ['HOME_TOP'] },
   { group: 'home', position: 'B2', size: '728x90', price: 299, codes: ['HOME_INFEED_1'] },
   { group: 'home', position: 'C1', size: '300x250', price: 149, codes: ['HOME_RIGHT_1'] },
+  { group: 'home', position: 'C2', size: '300x250', price: 149, codes: ['HOME_RIGHT_2'] },
 
   { group: 'news', position: 'A1', size: '300x600', price: 169, codes: ['NEWS_SIDEBAR_2'] },
   { group: 'news', position: 'B1', size: '728x90', price: 149, codes: ['NEWS_TOP'] },
@@ -113,11 +114,11 @@ export const TAX_NOTE =
 
 /** Banner production and sizes (Commercial.pdf). */
 export const ANIMATED_BANNER_PRICE = 100
-export const BANNER_SIZES = ['300×250', '728×90', '300×600']
+export const BANNER_SIZES = ['300x250 pxl', '728x90 pxl', '300x600 pxl']
 
 /** Advertising articles (Commercial.pdf, 15.10.2026): placement for the series, writing per article. USD. */
 export const ARTICLE_PRICES = [
   { label: '1 article', placement: 198, writing: 99 },
-  { label: 'Series of 5 articles', placement: 850, writing: 69 },
-  { label: 'Series of 20 articles', placement: 2990, writing: 50 },
+  { label: 'A series of 5 articles', placement: 850, writing: 69 },
+  { label: 'A series of 20 articles', placement: 2990, writing: 50 },
 ]

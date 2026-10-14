@@ -432,7 +432,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
 
               {view === 'standard' ? (
                 <Widget title="Is this your business?">
-                  <div className="muted">Add photos, products and a branded page with a Luxury or Premium package.</div>
+                  <div className="muted">Add photos, products and a branded page with a Lux or Premium package.</div>
                   <Link href="/advertise" className="btn btn-sm btn-block">
                     See packages
                   </Link>

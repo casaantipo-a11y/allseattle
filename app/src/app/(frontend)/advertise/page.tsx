@@ -107,9 +107,9 @@ export default async function AdvertisePage({ searchParams }: Props) {
                 >
                   {featured ? <span className="pricing-featured-tag">Most popular</span> : null}
                   <div className="pricing-card-head">
-                    {badge ? (
-                      <span className={`badge ${badge.cls} self-start`}>{p.name}</span>
-                    ) : null}
+                    {/* The package name as a full-width bar in its tier's colour (client's price
+                        cards, 15.10.2026). */}
+                    {badge ? <div className={`pricing-name ${badge.cls.replace('badge-', 'pricing-name--')}`}>{p.name}</div> : null}
                     <div className="pricing-price">
                       <span className="amount">
                         {p.priceMonthly > 0 || p.priceYearly <= 0
@@ -148,12 +148,6 @@ export default async function AdvertisePage({ searchParams }: Props) {
                         </strong>
                       </li>
                     ) : null}
-                    {(p.features ?? []).map((f) => (
-                      <li key={f.id ?? f.text}>
-                        <span>{f.text}</span>
-                        <strong aria-hidden="true">&#10003;</strong>
-                      </li>
-                    ))}
                   </ul>
                   <a
                     href={`/advertise?package=${p.id}#inquiry`}
@@ -211,8 +205,11 @@ export default async function AdvertisePage({ searchParams }: Props) {
             means a banner is running there right now; ask us for the next free dates.
           </p>
           <PlacementPrices booked={(codes) => codes.some((c) => booked(c))} />
+          {/* The client's wording (price sheet, 15.10.2026). */}
           <div className="muted mt-4 text-sm">
-            Banner sizes: {BANNER_SIZES.join(', ')} px. Producing an animated banner costs {priceText(ANIMATED_BANNER_PRICE)}. {TAX_NOTE}
+            <div>The cost of producing an animated banner is {priceText(ANIMATED_BANNER_PRICE)}.</div>
+            <div>Banner sizes: {BANNER_SIZES.join(', ')}.</div>
+            <div>{TAX_NOTE}</div>
           </div>
 
           {/* Advertising articles (Commercial.pdf, 15.10.2026): prices in lib/ad-placements.ts. */}
@@ -222,17 +219,14 @@ export default async function AdvertisePage({ searchParams }: Props) {
               <h2>Tell your story in the news</h2>
             </div>
           </div>
-          <p className="muted">
-            An advertising article runs on the home page for 2 days among the regular news, then moves to the News section and stays
-            there.
-          </p>
+          <p className="muted">If you want to tell more about yourself, publish an advertising article on the Seattle city website — www.allSeattle.org.</p>
           <div className="table-scroll">
             <table className="feature-table placement-table">
               <thead>
                 <tr>
-                  <th>Articles</th>
-                  <th>Placement</th>
-                  <th>Writing, per article</th>
+                  <th>The number of articles</th>
+                  <th>The cost of placement</th>
+                  <th>The cost of writing</th>
                 </tr>
               </thead>
               <tbody>
@@ -248,7 +242,13 @@ export default async function AdvertisePage({ searchParams }: Props) {
               </tbody>
             </table>
           </div>
-          <div className="muted mt-4 text-sm">{TAX_NOTE}</div>
+          <div className="muted mt-4 text-sm">
+            <div>
+              The article is displayed on the website&rsquo;s main page for 2 days among other non-commercial news items. After that, the
+              news automatically moves to the news section for an indefinite period.
+            </div>
+            <div className="mt-2">{TAX_NOTE}</div>
+          </div>
 
           {page?.content ? (
             <div className="mt-10">

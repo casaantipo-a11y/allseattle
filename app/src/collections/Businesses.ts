@@ -183,7 +183,7 @@ export const Businesses: CollectionConfig = {
               index: true,
               validate: (v: string | null | undefined) =>
                 !v || /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(v) || 'Lowercase letters, digits and hyphens only',
-              admin: { description: 'yourname → yourname.<site domain>. Luxury and Premium only.' },
+              admin: { description: 'yourname → yourname.<site domain>. Lux and Premium only.' },
             },
             {
               name: 'branding',
