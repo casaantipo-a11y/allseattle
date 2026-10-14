@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound, permanentRedirect } from 'next/navigation'
+import { notFound, permanentRedirect, redirect } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
 import { RichText } from '@/components/RichText'
 import { MapClient } from '@/components/map/MapClient'
-import { categoryOf, dateParts, priceLabel } from '@/lib/events'
+import { EVENTS_COMING_SOON, categoryOf, dateParts, priceLabel } from '@/lib/events'
 import { mediaAlt, mediaUrl } from '@/lib/media'
 import { findEventByOldSlug, getEvent, getUpcomingEvents } from '@/lib/queries-phase3'
 import { absoluteUrl } from '@/lib/site'
@@ -29,6 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function EventPage({ params }: Props) {
+  // While events are "Coming soon" an event page leads to the section (a temporary redirect).
+  if (EVENTS_COMING_SOON) redirect('/events')
   const { slug } = await params
   const ev = await getEvent(slug)
   if (!ev) {

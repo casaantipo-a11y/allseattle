@@ -251,7 +251,6 @@ export interface Media {
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
    */
   isDemo?: boolean | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1863,7 +1862,6 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
   isDemo?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

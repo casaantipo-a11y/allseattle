@@ -401,6 +401,9 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
     })
     if (exists.totalDocs) continue
     const until = new Date(`${d.validUntil}, 2026 23:59:00 GMT-0700`)
+    // The prototype's deals carry fixed dates; one that has already ended would start
+    // after it ends (validFrom is today) and fail validation, so it is left out.
+    if (until.getTime() < Date.now()) continue
     await payload.create({
       collection: 'promotions',
       data: {

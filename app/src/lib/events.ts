@@ -2,6 +2,14 @@ import type { Event, EventCategory } from '@/payload-types'
 
 import { SITE_TZ } from './site'
 
+/**
+ * Events are not open yet (client, 15.10.2026): /events shows "Coming soon", an event
+ * page leads back there, and events are left out of the home page, the map, search and
+ * the sitemap. The data and the admin stay as they are — set this to false to bring the
+ * whole section back.
+ */
+export const EVENTS_COMING_SOON = true
+
 // Date windows for the events filter (spec §5: today / weekend / month), all
 // in Seattle time.
 
