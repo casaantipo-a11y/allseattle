@@ -1,4 +1,5 @@
-import type { Access, CollectionConfig, FieldAccess } from 'payload'
+import type { Access, CollectionBeforeChangeHook, CollectionBeforeOperationHook, CollectionConfig, FieldAccess } from 'payload'
+import { APIError, ValidationError } from 'payload'
 
 import { hasRole, isStaff } from '../access/roles'
 import { emailLayout } from '../lib/email'
@@ -20,6 +21,41 @@ const self: Access = ({ req, id }) => {
 }
 
 const staffField: FieldAccess = ({ req }) => isStaff(req)
+
+// A customer can't switch the account to an email nobody confirmed; the team can.
+const keepEmail: CollectionBeforeChangeHook = ({ data, originalDoc, operation, req }) => {
+  if (operation !== 'update' || !req.user || isStaff(req)) return data
+  if (typeof data.email === 'string' && data.email.trim().toLowerCase() !== originalDoc?.email) {
+    throw new ValidationError({ errors: [{ path: 'email', message: 'To change the email of the account, write to us.' }] })
+  }
+  return data
+}
+
+/** A reset link is valid for an hour (Payload's default); a new one goes out at most every 5 minutes. */
+const RESET_LINK_MS = 60 * 60 * 1000
+const RESET_GAP_MS = 5 * 60 * 1000
+
+// "Forgot password" sends an email to any registered address on request: without
+// a gap, anyone could flood a customer's inbox with reset emails.
+const throttleForgotPassword: CollectionBeforeOperationHook = async ({ args, operation, req }) => {
+  if (operation !== 'forgotPassword') return args
+  const email = String((args as { data?: { email?: unknown } })?.data?.email ?? '').trim().toLowerCase()
+  if (!email) return args
+  const { docs } = await req.payload.find({
+    collection: 'customers',
+    where: { email: { equals: email } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+    showHiddenFields: true,
+    req,
+  })
+  const exp = (docs[0] as { resetPasswordExpiration?: string | null } | undefined)?.resetPasswordExpiration
+  if (exp && new Date(exp).getTime() - Date.now() > RESET_LINK_MS - RESET_GAP_MS) {
+    throw new APIError('We just sent a reset link. Please check your inbox, or try again in a few minutes.', 429, null, true)
+  }
+  return args
+}
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
@@ -58,6 +94,10 @@ export const Customers: CollectionConfig = {
     maxLoginAttempts: 5,
     lockTime: 15 * 60 * 1000,
     tokenExpiration: 30 * 24 * 60 * 60,
+  },
+  hooks: {
+    beforeOperation: [throttleForgotPassword],
+    beforeChange: [keepEmail],
   },
   access: {
     // Sign-up goes through /api/account/register; nobody creates accounts through REST.

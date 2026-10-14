@@ -56,6 +56,12 @@ export async function overDailyLimit(payload: Payload, customerId: number) {
 
 export const DAILY_LIMIT_ERROR = 'You have sent a lot today. Please try again tomorrow.'
 
+/** Every save notifies the team, so one document is saved at most every 30 seconds. */
+const SAVE_GAP_MS = 30 * 1000
+export const tooSoon = (doc: { updatedAt?: string | null } | null | undefined) =>
+  Boolean(doc?.updatedAt && Date.now() - new Date(doc.updatedAt).getTime() < SAVE_GAP_MS)
+export const TOO_SOON_ERROR = 'Saved a moment ago — please wait half a minute before saving again.'
+
 export const toFields = (fd: FormData) => {
   const raw: Record<string, string> = {}
   for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v

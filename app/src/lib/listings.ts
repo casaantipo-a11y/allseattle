@@ -15,6 +15,8 @@ import {
   payloadClient,
   richFromText,
   saveFailed,
+  tooSoon,
+  TOO_SOON_ERROR,
   settlePhotos,
   takePhotos,
   toFields,
@@ -138,6 +140,7 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
   if (id) {
     existing = (await payload.findByID({ collection, id, depth: 0, overrideAccess: true, disableErrors: true })) as CarListing | Job | null
     if (!existing || !isOwner(existing, customer)) return fail(404, 'Listing not found.')
+    if (tooSoon(existing)) return fail(429, TOO_SOON_ERROR)
   }
   if (await overDailyLimit(payload, customer.id)) return fail(429, DAILY_LIMIT_ERROR)
   if (!existing || existing.status === 'draft' || existing.status === 'rejected') {
@@ -260,6 +263,7 @@ export async function listingAction(customer: Customer, kind: Kind, id: number, 
     }
     if (action === 'show') {
       if (doc.status !== 'draft') return fail(400, 'Only a hidden listing can be shown again.')
+      if (tooSoon(doc)) return fail(429, TOO_SOON_ERROR)
       if ((await activeCount(payload, customer.id, { kind, id })) >= ACTIVE_LIMIT) {
         return fail(400, `An account can have up to ${ACTIVE_LIMIT} live or waiting listings. Hide or delete one first.`)
       }

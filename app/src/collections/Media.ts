@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { isLoggedIn } from '../access/roles'
+import { isLoggedIn, staffOnlyField } from '../access/roles'
 import { isDemoField } from '../fields'
 
 // Uploads go to Cloudflare R2 when the S3_* variables are set (see
@@ -45,6 +45,7 @@ export const Media: CollectionConfig = {
       type: 'relationship',
       relationTo: 'customers',
       index: true,
+      access: { read: staffOnlyField },
       admin: { position: 'sidebar', readOnly: true, description: 'Uploaded from this site account.' },
     },
     isDemoField,

@@ -17,6 +17,8 @@ import {
   relId,
   richFromText,
   saveFailed,
+  tooSoon,
+  TOO_SOON_ERROR,
   settlePhotos,
   takePhotos,
   toFields,
@@ -117,6 +119,7 @@ export async function saveBusiness(customer: Customer, fd: FormData, id?: number
   if (id) {
     existing = (await ownBusiness(customer, id)).biz
     if (!existing) return fail(404, 'Business not found.')
+    if (tooSoon(existing)) return fail(429, TOO_SOON_ERROR)
   } else {
     const { totalDocs } = await payload.count({
       collection: 'businesses',
@@ -214,6 +217,12 @@ export async function saveItem(customer: Customer, bizId: number, kind: ItemKind
   if (itemId) {
     existing = (await payload.findByID({ collection, id: itemId, depth: 0, overrideAccess: true, disableErrors: true })) as Promotion | Product | null
     if (!existing || relId(existing.business) !== biz.id) return fail(404, 'Not found.')
+  }
+  if (tooSoon(existing)) return fail(429, TOO_SOON_ERROR)
+  if (!existing) {
+    // a new item notifies the team: one per business every 30 seconds
+    const latest = (await payload.find({ collection, where: { business: { equals: biz.id } }, sort: '-createdAt', limit: 1, depth: 0, overrideAccess: true })).docs[0]
+    if (latest && tooSoon({ updatedAt: latest.createdAt })) return fail(429, TOO_SOON_ERROR)
   }
   const parsed = (kind === 'promotion' ? promotionSchema : productSchema).safeParse(toFields(fd))
   if (!parsed.success) return fail(400, CHECK, zodErrors(parsed.error.issues))

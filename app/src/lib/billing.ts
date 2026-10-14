@@ -124,6 +124,11 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
   if (!biz) return console.error('[billing] subscription for a missing business', sub.id, bizId)
   // A newer subscription replaced this one: don't let the old one's events overwrite it.
   if (biz.stripeSubscriptionId && biz.stripeSubscriptionId !== sub.id && hasLiveSubscription(biz) && status === 'canceled') return
+  // Two checkouts paid for one business (two tabs): both subscriptions charge. Tell the team to refund one.
+  if (opts.welcome && biz.stripeSubscriptionId && biz.stripeSubscriptionId !== sub.id && hasLiveSubscription(biz)) {
+    const owner = await payload.findByID({ collection: 'customers', id: Number(sub.metadata?.customerId), depth: 0, overrideAccess: true, disableErrors: true })
+    if (owner) await notifyTeam(payload, `Check Stripe: a second package subscription for ${biz.name} (${biz.stripeSubscriptionId} and ${sub.id})`, `/admin/collections/businesses/${biz.id}`, owner)
+  }
 
   const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
   const paidUntil = periodEnd ? new Date(periodEnd * 1000 + GRACE_MS).toISOString() : null

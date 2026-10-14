@@ -5,7 +5,7 @@ import type { AdSlot, Banner, Customer } from '@/payload-types'
 
 import { placementFor } from './ad-placements'
 import { GRACE_MS, LIVE, NOT_SET_UP, statusOf, stripeCustomerFor, type Sub } from './billing'
-import { CHECK, fail, isOwner, mediaIds, notifyTeam, payloadClient, relId, saveFailed, settlePhotos, takePhotos, toFields, zodErrors, type CabinetResult, type PhotoChange } from './cabinet'
+import { CHECK, TOO_SOON_ERROR, fail, isOwner, tooSoon, mediaIds, notifyTeam, payloadClient, relId, saveFailed, settlePhotos, takePhotos, toFields, zodErrors, type CabinetResult, type PhotoChange } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
 import { stripe, stripeEnabled, StripeError } from './stripe'
@@ -132,6 +132,8 @@ export async function syncAdSubscription(sub: Sub, _opts: { welcome?: boolean } 
     return
   }
   if (status !== 'active' || !paidUntil) return
+  // Bought by two people at the same moment (both passed the check before paying): flag it to the team.
+  const doubleBooked = await slotTaken(slotId)
   const banner = await payload.create({
     collection: 'banners',
     data: {
@@ -162,7 +164,12 @@ export async function syncAdSubscription(sub: Sub, _opts: { welcome?: boolean } 
     button: { label: 'Upload the picture', href: absoluteUrl(`/account/ads/${banner.id}`) },
   })
   await sendMail({ to: owner.email, subject: `Banner place booked: ${slot?.name ?? ''}`, ...mail })
-  await notifyTeam(payload, `Banner place bought online: ${slot?.name ?? slotId}`, `/admin/collections/banners/${banner.id}`, owner)
+  await notifyTeam(
+    payload,
+    `${doubleBooked ? 'Check: place already taken — ' : ''}Banner place bought online: ${slot?.name ?? slotId}`,
+    `/admin/collections/banners/${banner.id}`,
+    owner,
+  )
 }
 
 /** The buyer saves the banner: pictures (exact sizes, checked by the collection hook), name, link. Goes to review. */
@@ -170,6 +177,7 @@ export async function saveAd(customer: Customer, id: number, fd: FormData): Prom
   const payload = await payloadClient()
   const banner = (await payload.findByID({ collection: 'banners', id, depth: 0, overrideAccess: true, disableErrors: true })) as Banner | null
   if (!banner || !isOwner(banner, customer)) return fail(404, 'Banner not found.')
+  if (tooSoon(banner)) return fail(429, TOO_SOON_ERROR)
   const parsed = adSchema.safeParse(toFields(fd))
   if (!parsed.success) return fail(400, CHECK, zodErrors(parsed.error.issues))
   const changes: PhotoChange[] = []
