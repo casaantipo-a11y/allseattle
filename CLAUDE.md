@@ -21,7 +21,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   CSS kept as is, redirects for renamed slugs answer 308 (Next's permanent redirect; Google treats
   it like 301). Phases 2 (directory, packages, business pages, map, forms) and 3 (cars, jobs, events, weather,
   contest, Share the news, search, home blocks) are done; the user asked
-  to build all phases locally first and choose hosting afterwards.
+  to build all phases locally first and choose hosting afterwards. The portal is live on Vercel
+  (Neon + R2). **Stage 3** (site accounts, listings and businesses from accounts with
+  moderation, contest voting by email, Stripe for packages and banner places, daily reminders)
+  is built on branch `stage3`, not merged or deployed yet: it waits for the client's domain,
+  Resend and Stripe keys. Each step is a section of `app/README.md`; the owner's side is in
+  `app/ADMIN_GUIDE.md`. The account UI lives in `app/src/app/(frontend)/account/` and
+  `src/components/account/`; write routes go through `src/lib/cabinet.ts` and friends.
 
 ## What this is
 
