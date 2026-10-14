@@ -11,7 +11,8 @@
 // a code in the admin, so the codes stay; this file only says which position a
 // code is and what it costs. Slots that are not on the client's sheets (e.g.
 // HOME_INFEED_2, the business pages) have no entry and show no price.
-// To change a price, change it here and deploy.
+// To change a price, change it here and deploy. Home prices follow Commercial.pdf
+// (15.10.2026); the PDF has no prices for the other sections, so those stay from 12.10.
 
 import type { Size } from '@/components/BannerSlot'
 
@@ -56,12 +57,13 @@ export const PLACEMENT_GROUPS: {
 const OTHER_PAGES = ['CARS_SERVICES', 'SHOPPING', 'LEISURE', 'EVENTS', 'JOBS', 'WEATHER', 'MAP'] as const
 
 export const PLACEMENTS: Placement[] = [
+  // Home: the "Main page" column of Commercial.pdf (client, 15.10.2026).
   { group: 'home', position: 'A1', size: '300x250', price: 149, codes: ['HOME_SIDEBAR_1'] },
-  { group: 'home', position: 'A2', size: '300x250', price: 129, codes: ['HOME_SIDEBAR_2'] },
-  { group: 'home', position: 'A3', size: '300x600', price: 169, codes: ['HOME_SIDEBAR_3'] },
-  { group: 'home', position: 'A4', size: '300x250', price: 129, codes: ['HOME_SIDEBAR_4'] },
-  { group: 'home', position: 'B1', size: '728x90', price: 149, codes: ['HOME_TOP'] },
-  { group: 'home', position: 'B2', size: '728x90', price: 129, codes: ['HOME_INFEED_1'] },
+  { group: 'home', position: 'A2', size: '300x250', price: 149, codes: ['HOME_SIDEBAR_2'] },
+  { group: 'home', position: 'A3', size: '300x600', price: 199, codes: ['HOME_SIDEBAR_3'] },
+  { group: 'home', position: 'A4', size: '300x250', price: 149, codes: ['HOME_SIDEBAR_4'] },
+  { group: 'home', position: 'B1', size: '728x90', price: 299, codes: ['HOME_TOP'] },
+  { group: 'home', position: 'B2', size: '728x90', price: 299, codes: ['HOME_INFEED_1'] },
   { group: 'home', position: 'C1', size: '300x250', price: 149, codes: ['HOME_RIGHT_1'] },
 
   { group: 'news', position: 'A1', size: '300x600', price: 169, codes: ['NEWS_SIDEBAR_2'] },
@@ -104,3 +106,18 @@ export const placementsOf = (group: PlacementGroup) =>
   PLACEMENTS.filter((p) => p.group === group).sort((a, b) => a.position.localeCompare(b.position))
 
 export const priceLabel = (price: number) => `$${price}/month`
+
+/** "Prices shown are before applicable sales tax…" — under every price list (Commercial.pdf). */
+export const TAX_NOTE =
+  'Prices shown are before applicable sales tax. Sales tax is calculated based on your location and added to the total. Annual plans offer savings compared to monthly billing.'
+
+/** Banner production and sizes (Commercial.pdf). */
+export const ANIMATED_BANNER_PRICE = 100
+export const BANNER_SIZES = ['300×250', '728×90', '300×600']
+
+/** Advertising articles (Commercial.pdf, 15.10.2026): placement for the series, writing per article. USD. */
+export const ARTICLE_PRICES = [
+  { label: '1 article', placement: 198, writing: 99 },
+  { label: 'Series of 5 articles', placement: 850, writing: 69 },
+  { label: 'Series of 20 articles', placement: 2990, writing: 50 },
+]

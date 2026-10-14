@@ -5,6 +5,7 @@ import { ContactEmail } from '@/components/ContactEmail'
 import { PlacementPrices } from '@/components/PlacementPrices'
 import { SubmissionForm } from '@/components/SubmissionForm'
 import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
+import { ANIMATED_BANNER_PRICE, ARTICLE_PRICES, BANNER_SIZES, TAX_NOTE } from '@/lib/ad-placements'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
 import type { Package } from '@/payload-types'
@@ -123,17 +124,28 @@ export default async function AdvertisePage({ searchParams }: Props) {
                     </div>
                   </div>
                   <ul className="pricing-cycles">
-                    {/* Price rows only when there are prices; "Contact us" above says it once. */}
-                    {p.priceMonthly > 0 ? (
-                      <li>
-                        <span>1 month</span>
-                        <strong>{priceText(p.priceMonthly, p.currency)}</strong>
-                      </li>
-                    ) : null}
+                    {/* Price rows only when there are prices; "Contact us" above says it once.
+                        1, 3 and 6 months are the monthly price times the months; 12 months shows
+                        the full sum struck through next to the yearly price (Commercial.pdf). */}
+                    {p.priceMonthly > 0
+                      ? [1, 3, 6].map((n) => (
+                          <li key={n}>
+                            <span>
+                              {n} {n === 1 ? 'month' : 'months'}
+                            </span>
+                            <strong>{priceText(p.priceMonthly * n, p.currency)}</strong>
+                          </li>
+                        ))
+                      : null}
                     {p.priceYearly > 0 ? (
                       <li>
                         <span>12 months</span>
-                        <strong>{priceText(p.priceYearly, p.currency)}</strong>
+                        <strong>
+                          {p.priceMonthly > 0 && p.priceMonthly * 12 > p.priceYearly ? (
+                            <s className="strike">{priceText(p.priceMonthly * 12, p.currency)}</s>
+                          ) : null}
+                          {priceText(p.priceYearly, p.currency)}
+                        </strong>
                       </li>
                     ) : null}
                     {(p.features ?? []).map((f) => (
@@ -153,6 +165,8 @@ export default async function AdvertisePage({ searchParams }: Props) {
               )
             })}
           </div>
+
+          {packages.some((p) => p.priceMonthly > 0 || p.priceYearly > 0) ? <div className="muted mt-4 text-sm">{TAX_NOTE}</div> : null}
 
           <div className="section-head section-head--spaced">
             <div>
@@ -197,6 +211,44 @@ export default async function AdvertisePage({ searchParams }: Props) {
             means a banner is running there right now; ask us for the next free dates.
           </p>
           <PlacementPrices booked={(codes) => codes.some((c) => booked(c))} />
+          <div className="muted mt-4 text-sm">
+            Banner sizes: {BANNER_SIZES.join(', ')} px. Producing an animated banner costs {priceText(ANIMATED_BANNER_PRICE)}. {TAX_NOTE}
+          </div>
+
+          {/* Advertising articles (Commercial.pdf, 15.10.2026): prices in lib/ad-placements.ts. */}
+          <div id="articles" className="section-head section-head--spaced scroll-mt-40">
+            <div>
+              <span className="eyebrow">Advertising articles</span>
+              <h2>Tell your story in the news</h2>
+            </div>
+          </div>
+          <p className="muted">
+            An advertising article runs on the home page for 2 days among the regular news, then moves to the News section and stays
+            there.
+          </p>
+          <div className="table-scroll">
+            <table className="feature-table placement-table">
+              <thead>
+                <tr>
+                  <th>Articles</th>
+                  <th>Placement</th>
+                  <th>Writing, per article</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ARTICLE_PRICES.map((a) => (
+                  <tr key={a.label}>
+                    <td className="feature-label">{a.label}</td>
+                    <td className="num">
+                      <strong>{priceText(a.placement)}</strong>
+                    </td>
+                    <td className="num">{priceText(a.writing)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="muted mt-4 text-sm">{TAX_NOTE}</div>
 
           {page?.content ? (
             <div className="mt-10">

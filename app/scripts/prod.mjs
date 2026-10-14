@@ -2,6 +2,7 @@
 //
 //   pnpm seed:prod         → pnpm seed
 //   pnpm purge-demo:prod   → pnpm purge-demo (asks to type DELETE)
+//   pnpm update-content:prod → pnpm update-content (client-agreed prices, limits, names)
 //
 // Settings come from the local, gitignored files .env.neon.local, .env.r2.local
 // and .env.vercel.local. They are read here in Node, not sourced by the shell:
@@ -11,7 +12,7 @@ import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const script = process.argv[2]
-if (!['seed', 'purge-demo'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo')
+if (!['seed', 'purge-demo', 'update-content'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content')
 
 const read = (f) =>
   Object.fromEntries(

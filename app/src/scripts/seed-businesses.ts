@@ -58,10 +58,14 @@ const coordsFor = (hood: string, i: number) => {
   return { lat: +(base[0] + dy).toFixed(6), lng: +(base[1] + dx).toFixed(6) }
 }
 
-const PACKAGES = [
+/** The three packages as the client sells them (Commercial.pdf, 15.10.2026): monthly and
+ *  yearly prices in USD and the limits from its "What's included" table. */
+export const PACKAGES = [
   {
     name: 'Standard',
     order: 1,
+    priceMonthly: 69,
+    priceYearly: 690,
     maxCategories: 2,
     maxPhotos: 10,
     maxListings: 5,
@@ -75,6 +79,8 @@ const PACKAGES = [
   {
     name: 'Luxury',
     order: 2,
+    priceMonthly: 99,
+    priceYearly: 990,
     maxCategories: 10,
     maxPhotos: 100,
     maxListings: 50,
@@ -88,10 +94,12 @@ const PACKAGES = [
   {
     name: 'Premium',
     order: 3,
+    priceMonthly: 169,
+    priceYearly: 1690,
     maxCategories: 15,
-    maxPhotos: 1000,
-    maxListings: 1000,
-    maxProducts: 1000,
+    maxPhotos: 500,
+    maxListings: 100,
+    maxProducts: 500,
     subdomain: true,
     priorityPlacement: true,
     categoryBannerFirstMonth: true,
@@ -164,8 +172,6 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
         collection: 'packages',
         data: {
           ...pk,
-          priceMonthly: 0,
-          priceYearly: 0,
           currency: 'USD',
           mapPlacement: true,
           promotions: true,
@@ -176,7 +182,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       }))
     pkgIds[pk.name] = docu.id
   }
-  log('3 packages (Standard, Luxury, Premium; prices 0 = "Contact us")')
+  log('3 packages (Standard $69, Luxury $99, Premium $169 a month)')
 
   // ---- Categories -----------------------------------------------------------
   const catIds = new Map<string, number>() // key: `${section}:${name}`
