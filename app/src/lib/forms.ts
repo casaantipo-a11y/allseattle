@@ -91,8 +91,8 @@ const QUIET_FORMS: readonly FormKey[] = ['newsletter']
 
 // Photos for news tips (spec §8): up to 5, JPEG/PNG/WebP, 10 MB each.
 const MAX_PHOTOS = 5
-const MAX_BYTES = 10 * 1024 * 1024
-const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+export const MAX_BYTES = 10 * 1024 * 1024
+export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 export type FormKey = keyof typeof FORMS
 

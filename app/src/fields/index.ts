@@ -63,6 +63,44 @@ export const statusField: Field = {
   admin: { position: 'sidebar' },
 }
 
+/** Status of collections that take submissions from site customers (stage 3):
+ *  `pending` waits for the team, `rejected` was sent back (the reason goes in
+ *  `moderationNote`). Public queries show `published` only, as before. */
+export const moderatedStatusField: Field = {
+  ...(statusField as Extract<Field, { type: 'select' }>),
+  options: [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Pending review', value: 'pending' },
+    { label: 'Published', value: 'published' },
+    { label: 'Rejected', value: 'rejected' },
+  ],
+  admin: { position: 'sidebar', description: 'Submissions from site accounts arrive as Pending review.' },
+}
+
+/** Who submitted it (a site account) and the team's note on rejection, which the
+ *  author sees in their account and in the email. */
+export const submissionFields: Field[] = [
+  {
+    name: 'owner',
+    type: 'relationship',
+    relationTo: 'customers',
+    index: true,
+    admin: { position: 'sidebar', description: 'The site account that submitted it.' },
+  },
+  {
+    name: 'moderationNote',
+    type: 'textarea',
+    admin: { position: 'sidebar', description: 'If you reject it: why. The author sees this.' },
+  },
+  {
+    // Counted by /api/views (one per browser session), shown to the author in the account.
+    name: 'viewsCount',
+    type: 'number',
+    defaultValue: 0,
+    admin: { position: 'sidebar', readOnly: true },
+  },
+]
+
 export const isDemoField: Field = {
   name: 'isDemo',
   type: 'checkbox',

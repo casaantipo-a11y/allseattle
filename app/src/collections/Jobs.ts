@@ -2,8 +2,9 @@ import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 import { ValidationError } from 'payload'
 
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
-import { isDemoField, slugField, slugHistoryField, statusField, uniqueSlugField } from '../fields'
+import { isDemoField, moderatedStatusField, slugField, slugHistoryField, submissionFields, uniqueSlugField } from '../fields'
 import { withinListingLimit } from '../hooks/listingLimit'
+import { notifyAuthorOfReview } from '../hooks/moderation'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 
 const revalidate = revalidateCollection(['jobs'])
@@ -41,7 +42,8 @@ export const Jobs: CollectionConfig = {
   slug: 'jobs',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'business', 'companyName', 'category', 'status', 'expiresAt'],
+    defaultColumns: ['title', 'companyName', 'category', 'status', 'source', 'expiresAt'],
+    description: 'Jobs sent from site accounts arrive with status Pending review — filter by Status to see them.',
     group: 'Jobs',
     listSearchableFields: ['title', 'companyName'],
   },
@@ -55,7 +57,7 @@ export const Jobs: CollectionConfig = {
   hooks: {
     beforeValidate: [companyOrBusiness],
     beforeChange: [rememberOldSlug, withinListingLimit('business')],
-    afterChange: [revalidate.afterChange],
+    afterChange: [revalidate.afterChange, notifyAuthorOfReview('job')],
     afterDelete: [revalidate.afterDelete],
   },
   fields: [
@@ -143,7 +145,8 @@ export const Jobs: CollectionConfig = {
       ],
     },
     uniqueSlugField('jobs'),
-    statusField,
+    moderatedStatusField,
+    ...submissionFields,
     { name: 'expiresAt', type: 'date', index: true, admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } } },
     {
       name: 'source',

@@ -218,14 +218,14 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
           <span className="eyebrow">Work in Seattle</span>
           <h1>Job board</h1>
         </div>
-        <Link href="/advertise" className="btn">
+        <Link href="/account/listings/new?type=job" className="btn">
           Post a job
         </Link>
       </div>
 
       <div className="jobs-layout">
         <aside className="jobs-filters">
-          <Link href="/advertise" className="jobs-post-side post-card">
+          <Link href="/account/listings/new?type=job" className="jobs-post-side post-card">
             <span className="post-card-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="7" width="18" height="13" rx="2" />

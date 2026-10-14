@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
+import { ViewBeacon } from '@/components/ViewBeacon'
 import { CarGallery } from '@/components/cars/CarGallery'
 import { bizPath, telHref } from '@/lib/business'
 import { BODY_LABEL, fmtMileage, fmtPrice, toCarItem } from '@/lib/cars'
@@ -73,6 +74,7 @@ export default async function CarPage({ params }: Props) {
 
   return (
     <main id="content" data-page="cars">
+      <ViewBeacon kind="car" id={car.id} />
       <section className="section">
         <div className="container">
           <AdSlot code="CARS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />

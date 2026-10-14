@@ -33,7 +33,7 @@ export default async function CarsPage() {
               <h1>Cars for sale</h1>
             </div>
             {/* Same card as Jobs' "Post a job" (client, 04.10.2026). */}
-            <Link href="/advertise" className="post-card">
+            <Link href="/account/listings/new?type=car" className="post-card">
               <span className="post-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 17h14M5 17a2 2 0 1 1-4 0v-4l2-5h18l2 5v4a2 2 0 1 1-4 0" />

@@ -272,7 +272,6 @@ export interface Media {
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
    */
   isDemo?: boolean | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -593,6 +592,8 @@ export interface Product {
   createdAt: string;
 }
 /**
+ * Listings sent from site accounts arrive with status Pending review — filter by Status to see them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "car-listings".
  */
@@ -638,16 +639,25 @@ export interface CarListing {
    * Part of the page address. Leave empty to generate it.
    */
   slug?: string | null;
-  status: 'draft' | 'published';
+  /**
+   * Submissions from site accounts arrive as Pending review.
+   */
+  status: 'draft' | 'pending' | 'published' | 'rejected';
+  /**
+   * The site account that submitted it.
+   */
+  owner?: (number | null) | Customer;
+  /**
+   * If you reject it: why. The author sees this.
+   */
+  moderationNote?: string | null;
+  viewsCount?: number | null;
   isFeatured?: boolean | null;
   /**
    * "Bump" a listing to the top of the catalog by setting this to now.
    */
   bumpedAt?: string | null;
   expiresAt?: string | null;
-  /**
-   * User submissions arrive in stage 3.
-   */
   source: 'admin' | 'user';
   /**
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
@@ -688,6 +698,45 @@ export interface CarMake {
   createdAt: string;
 }
 /**
+ * People and businesses who signed up on the site. They log in at /account, never in this admin.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  name: string;
+  phone?: string | null;
+  signupIp?: string | null;
+  /**
+   * Set by the payment step.
+   */
+  stripeCustomerId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'customers';
+}
+/**
+ * Jobs sent from site accounts arrive with status Pending review — filter by Status to see them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "jobs".
  */
@@ -744,7 +793,19 @@ export interface Job {
    * Part of the page address. Leave empty to generate it.
    */
   slug?: string | null;
-  status: 'draft' | 'published';
+  /**
+   * Submissions from site accounts arrive as Pending review.
+   */
+  status: 'draft' | 'pending' | 'published' | 'rejected';
+  /**
+   * The site account that submitted it.
+   */
+  owner?: (number | null) | Customer;
+  /**
+   * If you reject it: why. The author sees this.
+   */
+  moderationNote?: string | null;
+  viewsCount?: number | null;
   expiresAt?: string | null;
   source?: ('admin' | 'user') | null;
   /**
@@ -1181,43 +1242,6 @@ export interface User {
   collection: 'users';
 }
 /**
- * People and businesses who signed up on the site. They log in at /account, never in this admin.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers".
- */
-export interface Customer {
-  id: number;
-  name: string;
-  phone?: string | null;
-  signupIp?: string | null;
-  /**
-   * Set by the payment step.
-   */
-  stripeCustomerId?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  _verified?: boolean | null;
-  _verificationToken?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'customers';
-}
-/**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1642,6 +1666,9 @@ export interface CarListingsSelect<T extends boolean = true> {
   dealer?: T;
   slug?: T;
   status?: T;
+  owner?: T;
+  moderationNote?: T;
+  viewsCount?: T;
   isFeatured?: T;
   bumpedAt?: T;
   expiresAt?: T;
@@ -1698,6 +1725,9 @@ export interface JobsSelect<T extends boolean = true> {
   isFeatured?: T;
   slug?: T;
   status?: T;
+  owner?: T;
+  moderationNote?: T;
+  viewsCount?: T;
   expiresAt?: T;
   source?: T;
   isDemo?: T;
@@ -1935,7 +1965,6 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
   isDemo?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

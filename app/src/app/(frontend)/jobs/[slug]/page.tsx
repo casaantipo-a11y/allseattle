@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
+import { ViewBeacon } from '@/components/ViewBeacon'
 import { RichText } from '@/components/RichText'
 import { feedDate } from '@/lib/format'
 import { EMPLOYMENT_LABEL, companyOf, lexicalText, salaryText } from '@/lib/jobs'
@@ -60,6 +61,7 @@ export default async function JobPage({ params }: Props) {
 
   return (
     <main id="content" data-page="jobs">
+      <ViewBeacon kind="job" id={job.id} />
       <section className="section">
         <div className="container">
           <AdSlot code="JOBS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />

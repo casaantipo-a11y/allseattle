@@ -2,8 +2,9 @@ import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 import { ValidationError } from 'payload'
 
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
-import { isDemoField, slugHistoryField, statusField, uniqueSlug, uniqueSlugField } from '../fields'
+import { isDemoField, moderatedStatusField, slugHistoryField, submissionFields, uniqueSlug, uniqueSlugField } from '../fields'
 import { withinListingLimit } from '../hooks/listingLimit'
+import { notifyAuthorOfReview } from '../hooks/moderation'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 
 const revalidate = revalidateCollection(['cars'])
@@ -39,7 +40,8 @@ export const CarListings: CollectionConfig = {
   labels: { singular: 'Car listing', plural: 'Car listings' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'price', 'mileage', 'status', 'isFeatured', 'expiresAt'],
+    defaultColumns: ['title', 'price', 'status', 'source', 'isFeatured', 'expiresAt'],
+    description: 'Listings sent from site accounts arrive with status Pending review — filter by Status to see them.',
     group: 'Cars',
     listSearchableFields: ['title', 'vin', 'sellerName'],
   },
@@ -53,7 +55,7 @@ export const CarListings: CollectionConfig = {
   hooks: {
     beforeValidate: [titleAndModel],
     beforeChange: [rememberOldSlug, withinListingLimit('dealer')],
-    afterChange: [revalidate.afterChange],
+    afterChange: [revalidate.afterChange, notifyAuthorOfReview('car')],
     afterDelete: [revalidate.afterDelete],
   },
   fields: [
@@ -130,7 +132,8 @@ export const CarListings: CollectionConfig = {
       admin: { description: 'If a dealership sells it. Counts towards the dealer package’s listing limit.' },
     },
     uniqueSlugField('car-listings'),
-    statusField,
+    moderatedStatusField,
+    ...submissionFields,
     {
       name: 'isFeatured',
       type: 'checkbox',
@@ -157,7 +160,7 @@ export const CarListings: CollectionConfig = {
         { label: 'Added by the team', value: 'admin' },
         { label: 'Submitted by a user', value: 'user' },
       ],
-      admin: { position: 'sidebar', readOnly: true, description: 'User submissions arrive in stage 3.' },
+      admin: { position: 'sidebar', readOnly: true },
     },
     isDemoField,
     slugHistoryField,

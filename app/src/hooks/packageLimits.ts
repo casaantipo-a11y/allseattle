@@ -66,7 +66,10 @@ export async function packageOfBusiness(payload: Payload, business: unknown, req
   if (!id) return null
   const biz = await payload.findByID({ collection: 'businesses', id, depth: 0, req }).catch(() => null)
   if (!biz) return null
-  return packageFor(payload, biz.package, req)
+  // An expired package no longer counts — the business is back on the cheapest one,
+  // the same rule the site uses to show it (lib/business.ts effectivePackage).
+  const expired = biz.packageExpiresAt && new Date(biz.packageExpiresAt).getTime() < Date.now()
+  return packageFor(payload, expired ? null : biz.package, req)
 }
 
 /**

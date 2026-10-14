@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: 'Log in' }
 type Props = { searchParams: Promise<{ next?: string }> }
 
 // Only paths on this site, so the link can't send someone elsewhere after login.
-const safeNext = (n?: string) => (n && n.startsWith('/') && !n.startsWith('//') ? n : '/account')
+const safeNext = (n?: string) => (n && /^\/(?![/\\])/.test(n) ? n : '/account')
 
 export default async function LoginPage({ searchParams }: Props) {
   const next = safeNext((await searchParams).next)

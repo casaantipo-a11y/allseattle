@@ -60,8 +60,24 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   `lib/email.ts` — a Payload email adapter on Resend's REST API; without `RESEND_API_KEY` the
   message is printed to the server console (local testing). Payload accepts the auth cookie
   only from browsers (`Sec-Fetch-Site`), so test the cookie session with a browser or that
-  header, not plain curl. Next steps (listings with moderation, business accounts, Stripe,
-  contest voting) are in the stage 3 plan.
+  header, not plain curl.
+
+- **Stage 3, step 2 (14.10.2026)** — cars and jobs from site accounts, with moderation.
+  "Place a listing" (`/cars`) and "Post a job" (Jobs) lead to `/account/listings/new`; the
+  account has "My listings" (`/account/listings`: status, views, Edit / Hide / Show again /
+  Renew 30 days / Delete) and an edit page per listing. Everything goes through
+  `/api/account/listings*` and `lib/listings.ts` (local API, ownership checked in code) — the
+  collections' REST write access stays team-only. A new or edited listing is saved as
+  `source: user`, `status: pending` (new status, as is `rejected`), `owner`, `expiresAt` +30
+  days, and the team gets a Telegram / email notice with the admin link. Publishing or
+  rejecting it in the admin (with `moderationNote` as the reason) emails the author
+  (`hooks/moderation.ts`). Limits: 3 live-or-waiting listings per account, 10 sends a day,
+  10 photos per car. Photos are scaled to 1600px JPEG in the browser before upload, because
+  Vercel caps a request at 4.5 MB (the older `/add-business` and Share-the-news forms send the
+  originals and can hit that cap with large phone photos). `viewsCount` on cars and jobs is
+  counted by `/api/views` (one per browser session, a plain SQL increment so a view never
+  revalidates the page). An expired package (`packageExpiresAt`) now counts as no package in
+  `packageOfBusiness`. Migration `stage3_listings_moderation`.
 
 ## Local development
 
