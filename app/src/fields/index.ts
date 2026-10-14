@@ -77,21 +77,27 @@ export const moderatedStatusField: Field = {
   admin: { position: 'sidebar', description: 'Submissions from site accounts arrive as Pending review.' },
 }
 
-/** Who submitted it (a site account) and the team's note on rejection, which the
- *  author sees in their account and in the email. */
+/** The site account that owns a document — a submitted car or job, or a business
+ *  it manages (stage 3). Set by the account routes or by the team in the admin. */
+export const ownerField = (description = 'The site account that submitted it.'): Field => ({
+  name: 'owner',
+  type: 'relationship',
+  relationTo: 'customers',
+  index: true,
+  admin: { position: 'sidebar', description },
+})
+
+/** The team's reason for a rejection, which the author sees in their account and in the email. */
+export const moderationNoteField: Field = {
+  name: 'moderationNote',
+  type: 'textarea',
+  admin: { position: 'sidebar', description: 'If you reject it: why. The author sees this.' },
+}
+
+/** Owner, rejection note and views of the cars and jobs site customers post. */
 export const submissionFields: Field[] = [
-  {
-    name: 'owner',
-    type: 'relationship',
-    relationTo: 'customers',
-    index: true,
-    admin: { position: 'sidebar', description: 'The site account that submitted it.' },
-  },
-  {
-    name: 'moderationNote',
-    type: 'textarea',
-    admin: { position: 'sidebar', description: 'If you reject it: why. The author sees this.' },
-  },
+  ownerField(),
+  moderationNoteField,
   {
     // Counted by /api/views (one per browser session), shown to the author in the account.
     name: 'viewsCount',

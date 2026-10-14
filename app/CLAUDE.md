@@ -25,7 +25,12 @@ config. Verify UI by running it (no test suite) — see `../.claude/rules/layout
 
 - `src/app/(frontend)/` — public routes; `styles/` holds the prototype's CSS, copied unchanged
   (home.css/news.css wrapped in `[data-page="…"]` on each page's `<main>`). Tailwind only for parts
-  new in stage 2, without its reset.
+  new in stage 2, without its reset. **The prototype CSS is unlayered, Tailwind is in cascade
+  layers, so any prototype rule wins over a utility on the same property**: `base.css` sets
+  margins on `p`, `h1–h4`, `ul` and font sizes on `h1–h4`, so `mt-4` on a `<p>`, `text-xl` on an
+  `<h2>` or `mb-3` on a `<ul>` silently do nothing. Put spacing on a `div` (or wrapper), keep the
+  site's heading sizes, and reset a heading margin inline when it must be 0 (the account pages
+  do this).
 - `src/components/` — shared UI (`SiteHeader` + client `NavLinks`, `HeroBanner`, `AdSlot`,
   `business.tsx` `BizRow`, per-section folders `cars/`, `jobs/`, `map/`, `weather/`).
 - `src/collections`, `src/globals` (e.g. `Header.ts` — the editable menu with `subLinks`),

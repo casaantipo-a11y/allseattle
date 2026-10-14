@@ -40,9 +40,9 @@ export function ListingActions({ kind, id, actions }: { kind: 'car' | 'job'; id:
         </button>
       ))}
       {error ? (
-        <p role="alert" className="m-0 w-full text-sm text-[#c53030]">
+        <div role="alert" className="m-0 w-full text-sm text-[#c53030]">
           {error}
-        </p>
+        </div>
       ) : null}
     </>
   )

@@ -1,31 +1,32 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 import { AccountForm, LogoutButton } from '@/components/account/AccountForm'
 import { AccountShell } from '@/components/account/AccountShell'
 import { getCustomer } from '@/lib/account'
-import { activeCount, payloadClient } from '@/lib/listings'
+import { myBusinesses } from '@/lib/business-cabinet'
+import { payloadClient } from '@/lib/cabinet'
+import { activeCount } from '@/lib/listings'
 
 export const metadata: Metadata = { title: 'Your account' }
 
-// The account home (stage 3): My listings and the profile; "My business" and
-// billing join it in the next steps.
+// The account home (stage 3): My listings, My business and the profile; billing
+// joins it with the payment step.
 export default async function AccountPage() {
   const me = await getCustomer()
   if (!me) redirect('/account/login')
-  const active = await activeCount(await payloadClient(), me.id)
+  const [active, businesses] = await Promise.all([payloadClient().then((p) => activeCount(p, me.id)), myBusinesses(me.id)])
   return (
     <AccountShell eyebrow="Your account" title={`Hello, ${me.name}`} intro={<span>Signed in as {me.email}</span>}>
       <div className="mb-8 border-b border-brand-line pb-8">
         <div className="mb-3 flex items-center justify-between gap-4">
-          <h2 className="m-0 text-xl">My listings</h2>
+          <h2 style={{ margin: 0 }}>My listings</h2>
           <Link href="/account/listings" className="btn btn-outline btn-sm">
             Open
           </Link>
         </div>
-        <p className="m-0 text-brand-slate">
+        <div className="m-0 text-brand-slate">
           {active ? `${active} live or waiting for review.` : 'No live listings.'}{' '}
           <Link href="/account/listings/new?type=car" className="text-brand-navy underline">
             Sell a car
@@ -35,10 +36,26 @@ export default async function AccountPage() {
             post a job
           </Link>
           .
-        </p>
+        </div>
+      </div>
+      <div className="mb-8 border-b border-brand-line pb-8">
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <h2 style={{ margin: 0 }}>My business</h2>
+          <Link href="/account/business" className="btn btn-outline btn-sm">
+            Open
+          </Link>
+        </div>
+        <div className="m-0 text-brand-slate">
+          {businesses.length ? businesses.map((b) => b.name).join(', ') : 'Your page in the directory and on the city map.'}{' '}
+          {businesses.length ? null : (
+            <Link href="/account/business/new" className="text-brand-navy underline">
+              Register a business
+            </Link>
+          )}
+        </div>
       </div>
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h2 className="m-0 text-xl">Profile</h2>
+        <h2 style={{ margin: 0 }}>Profile</h2>
         <LogoutButton />
       </div>
       <AccountForm mode="profile" customerId={me.id} values={{ name: me.name ?? '', phone: me.phone ?? '' }} />

@@ -148,7 +148,7 @@ export function AccountForm({
         <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
       ) : null}
       {message ? (
-        <p
+        <div
           role={mode === 'profile' && message === 'Saved.' ? 'status' : 'alert'}
           className={
             mode === 'profile' && message === 'Saved.'
@@ -157,7 +157,7 @@ export function AccountForm({
           }
         >
           {message}
-        </p>
+        </div>
       ) : null}
       {FIELDS[mode].map((f) => {
         const id = `acc-${mode}-${f.name}`
@@ -199,11 +199,11 @@ export function AccountForm({
         </>
       ) : null}
       {mode === 'login' ? (
-        <p className="mb-4 text-sm">
+        <div className="mb-4 text-sm">
           <Link href="/account/forgot" className="text-brand-navy underline">
             Forgot your password?
           </Link>
-        </p>
+        </div>
       ) : null}
       <button type="submit" className="btn btn-lg btn-block" disabled={state === 'sending'}>
         {state === 'sending' ? 'Please wait…' : SUBMIT[mode]}

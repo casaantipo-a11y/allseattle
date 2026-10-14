@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation'
 import { AccountShell } from '@/components/account/AccountShell'
 import { ListingForm } from '@/components/account/ListingForm'
 import { getCustomer } from '@/lib/account'
-import { ACTIVE_LIMIT, activeCount, payloadClient } from '@/lib/listings'
+import { payloadClient } from '@/lib/cabinet'
+import { ACTIVE_LIMIT, activeCount } from '@/lib/listings'
 import { getCarMakes, getJobCategories } from '@/lib/queries-phase3'
 
 export const metadata: Metadata = { title: 'New listing' }
@@ -23,13 +24,13 @@ export default async function NewListingPage({ searchParams }: Props) {
   if (active >= ACTIVE_LIMIT) {
     return (
       <AccountShell eyebrow="My listings" title={title}>
-        <p className="m-0">
+        <div className="m-0">
           You already have {ACTIVE_LIMIT} live or waiting listings — the most an account can have at once. Hide or delete one in{' '}
           <Link href="/account/listings" className="text-brand-navy underline">
             My listings
           </Link>{' '}
           to add another.
-        </p>
+        </div>
       </AccountShell>
     )
   }

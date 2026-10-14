@@ -1,14 +1,27 @@
-import config from '@payload-config'
-import { getPayload, type Payload, type Where } from 'payload'
+import type { Payload, Where } from 'payload'
 import { z } from 'zod'
 
 import type { CarListing, Customer, Job } from '@/payload-types'
 
 import { slugify } from '../fields'
-import { doc as lexDoc, p as lexP } from '../scripts/lexical'
-import { MAX_BYTES, PHOTO_TYPES } from './forms'
-import { notifyEmail, notifyTelegram } from './notify'
-import { absoluteUrl } from './site'
+import {
+  CHECK,
+  DAILY_LIMIT_ERROR,
+  fail,
+  isOwner,
+  mediaIds,
+  notifyTeam,
+  overDailyLimit,
+  payloadClient,
+  richFromText,
+  saveFailed,
+  settlePhotos,
+  takePhotos,
+  toFields,
+  zodErrors,
+  type CabinetResult,
+  type PhotoChange,
+} from './cabinet'
 
 // Stage 3, step 2: cars and jobs posted by site customers. Everything a customer
 // may do goes through here (api/account/listings/*), with the local API and the
@@ -23,8 +36,6 @@ export const COLLECTION = { car: 'car-listings', job: 'jobs' } as const
 export const ACTIVE_LIMIT = 3
 /** How long a listing stays up before it needs renewing. */
 export const LISTING_DAYS = 30
-/** Listings an account may send (create or edit) per 24 hours — a brake on spam. */
-const DAILY_SENDS = 10
 export const MAX_CAR_PHOTOS = 10
 
 const intField = (label: string, min: number, max: number) =>
@@ -80,26 +91,7 @@ export const jobSchema = z.object({
   howToApply: z.string().trim().min(5, 'Tell people how to apply').max(500),
 })
 
-export type ListingResult = { ok: true; id: number; message: string } | { ok: false; status: number; error: string; fieldErrors?: Record<string, string> }
-
-const fail = (status: number, error: string, fieldErrors?: Record<string, string>): ListingResult => ({ ok: false, status, error, fieldErrors })
-
-export async function payloadClient() {
-  return getPayload({ config })
-}
-
-/** The site customer behind a request (auth cookie), or null for anyone else. */
-export async function customerFrom(req: Request): Promise<Customer | null> {
-  const payload = await payloadClient()
-  try {
-    const { user } = await payload.auth({ headers: req.headers })
-    return user && user.collection === 'customers' ? (user as Customer) : null
-  } catch {
-    return null
-  }
-}
-
-const ownerId = (d: { owner?: number | Customer | null }) => (typeof d.owner === 'object' && d.owner ? d.owner.id : d.owner)
+export type ListingResult = CabinetResult
 
 /** Pending and live (not expired) listings of an account, cars and jobs together. */
 export async function activeCount(payload: Payload, customerId: number, excludeId?: { kind: Kind; id: number }) {
@@ -119,28 +111,6 @@ export async function activeCount(payload: Payload, customerId: number, excludeI
   return cars.totalDocs + jobs.totalDocs
 }
 
-async function sentToday(payload: Payload, customerId: number) {
-  const since = new Date(Date.now() - 86400000).toISOString()
-  const where: Where = { and: [{ owner: { equals: customerId } }, { updatedAt: { greater_than: since } }] }
-  const [cars, jobs] = await Promise.all([
-    payload.count({ collection: 'car-listings', where, overrideAccess: true }),
-    payload.count({ collection: 'jobs', where, overrideAccess: true }),
-  ])
-  return cars.totalDocs + jobs.totalDocs
-}
-
-const toFields = (fd: FormData) => {
-  const raw: Record<string, string> = {}
-  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v
-  return raw
-}
-
-const zodErrors = (issues: z.core.$ZodIssue[]) => {
-  const out: Record<string, string> = {}
-  for (const i of issues) out[String(i.path[0] ?? 'form')] ??= i.message
-  return out
-}
-
 /** A free slug for a retitled listing (the old one goes to its slug history and redirects). */
 async function freeSlug(payload: Payload, kind: Kind, title: string, id: number) {
   const base = slugify(title)
@@ -156,32 +126,8 @@ async function freeSlug(payload: Payload, kind: Kind, title: string, id: number)
   return `${base}-${Date.now()}`
 }
 
-/** Plain text → the job page's rich text, one paragraph per line break. */
-const richFromText = (t?: string) => {
-  const parts = (t ?? '').split(/\n+/).map((s) => s.trim()).filter(Boolean)
-  return parts.length ? lexDoc(...parts.map(lexP)) : undefined
-}
-
-async function notifyTeam(payload: Payload, kind: Kind, title: string, id: number, customer: Customer, isEdit: boolean) {
-  try {
-    const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
-    const notice = {
-      title: `${isEdit ? 'Edited' : 'New'} ${kind === 'car' ? 'car listing' : 'job posting'} to review: ${title}`,
-      lines: [
-        ['From', `${customer.name} <${customer.email}>`],
-        ['Phone', customer.phone],
-      ] as [string, string | null | undefined][],
-      adminUrl: absoluteUrl(`/admin/collections/${COLLECTION[kind]}/${id}`),
-      photo: null,
-    }
-    await Promise.all([
-      notifyTelegram(settings.telegramChatId, notice),
-      notifyEmail(settings.notifyEmail || process.env.NOTIFY_EMAIL, notice),
-    ])
-  } catch (e) {
-    console.error('[listings] could not notify the team', e)
-  }
-}
+const notifyListing = (payload: Payload, kind: Kind, title: string, id: number, customer: Customer, isEdit: boolean) =>
+  notifyTeam(payload, `${isEdit ? 'Edited' : 'New'} ${kind === 'car' ? 'car listing' : 'job posting'} to review: ${title}`, `/admin/collections/${COLLECTION[kind]}/${id}`, customer)
 
 /** Create (no id) or edit (id) a customer's listing from the account form. */
 export async function saveListing(customer: Customer, kind: Kind, fd: FormData, id?: number): Promise<ListingResult> {
@@ -191,11 +137,9 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
   let existing: CarListing | Job | null = null
   if (id) {
     existing = (await payload.findByID({ collection, id, depth: 0, overrideAccess: true, disableErrors: true })) as CarListing | Job | null
-    if (!existing || ownerId(existing) !== customer.id) return fail(404, 'Listing not found.')
+    if (!existing || !isOwner(existing, customer)) return fail(404, 'Listing not found.')
   }
-  if ((await sentToday(payload, customer.id)) >= DAILY_SENDS) {
-    return fail(429, 'You have sent many listings today. Please try again tomorrow.')
-  }
+  if (await overDailyLimit(payload, customer.id)) return fail(429, DAILY_LIMIT_ERROR)
   if (!existing || existing.status === 'draft' || existing.status === 'rejected') {
     const active = await activeCount(payload, customer.id, existing ? { kind, id: existing.id } : undefined)
     if (active >= ACTIVE_LIMIT) {
@@ -204,60 +148,35 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
   }
 
   const parsed = (kind === 'car' ? carSchema : jobSchema).safeParse(toFields(fd))
-  if (!parsed.success) return fail(400, 'Please check the highlighted fields.', zodErrors(parsed.error.issues))
+  if (!parsed.success) return fail(400, CHECK, zodErrors(parsed.error.issues))
   const d = parsed.data as Record<string, unknown>
 
   let carTitle = ''
   if (kind === 'car') {
     const make = await payload.findByID({ collection: 'car-makes', id: d.make as number, depth: 0, disableErrors: true })
-    if (!make) return fail(400, 'Please check the highlighted fields.', { make: 'Choose a make' })
+    if (!make) return fail(400, CHECK, { make: 'Choose a make' })
     if (make.models?.length && !make.models.includes(d.model as string)) {
-      return fail(400, 'Please check the highlighted fields.', { model: 'Choose a model from the list' })
+      return fail(400, CHECK, { model: 'Choose a model from the list' })
     }
     carTitle = `${d.year} ${make.name} ${d.model}`
   } else {
     const cat = await payload.findByID({ collection: 'job-categories', id: d.category as number, depth: 0, disableErrors: true })
-    if (!cat) return fail(400, 'Please check the highlighted fields.', { category: 'Choose a category' })
+    if (!cat) return fail(400, CHECK, { category: 'Choose a category' })
     if (d.salaryMin != null && d.salaryMax != null && (d.salaryMax as number) < (d.salaryMin as number)) {
-      return fail(400, 'Please check the highlighted fields.', { salaryMax: 'Maximum is below the minimum' })
+      return fail(400, CHECK, { salaryMax: 'Maximum is below the minimum' })
     }
   }
 
   // Photos (cars): the ones kept from before, in the order the form sends them, then new uploads.
-  let photos: number[] | undefined
-  let removed: number[] = []
+  let photoChange: PhotoChange | null = null
   if (kind === 'car') {
-    const before = ((existing as CarListing | null)?.photos ?? []).map((m) => (typeof m === 'object' && m ? m.id : (m as number)))
-    const keep = fd
-      .getAll('keepPhotos')
-      .map((v) => Number(v))
-      .filter((v) => before.includes(v))
-    removed = before.filter((v) => !keep.includes(v))
-    const files = fd.getAll('photos').filter((f): f is File => typeof f === 'object' && f !== null && (f as File).size > 0)
-    if (keep.length + files.length === 0) return fail(400, 'Please check the highlighted fields.', { photos: 'Add at least one photo' })
-    if (keep.length + files.length > MAX_CAR_PHOTOS) {
-      return fail(400, 'Please check the highlighted fields.', { photos: `Up to ${MAX_CAR_PHOTOS} photos` })
-    }
-    const bad = files.find((f) => !PHOTO_TYPES.includes(f.type) || f.size > MAX_BYTES)
-    if (bad) return fail(400, 'Please check the highlighted fields.', { photos: `${bad.name}: JPEG, PNG or WebP up to 10 MB only` })
-    const added: number[] = []
-    try {
-      for (const f of files) {
-        const data = Buffer.from(await f.arrayBuffer())
-        const m = await payload.create({
-          collection: 'media',
-          overrideAccess: true,
-          data: { alt: `${d.year} ${d.model} — photo` },
-          file: { data, mimetype: f.type, name: f.name.replace(/[^\w.-]+/g, '-'), size: f.size },
-        })
-        added.push(m.id)
-      }
-    } catch (e) {
-      console.error('[listings] could not store photos', e)
-      for (const mid of added) await payload.delete({ collection: 'media', id: mid, overrideAccess: true }).catch(() => null)
-      return fail(500, 'Could not upload the photos. Please try again.')
-    }
-    photos = [...keep, ...added]
+    const took = await takePhotos(payload, customer, fd, 'photos', mediaIds((existing as CarListing | null)?.photos), {
+      max: MAX_CAR_PHOTOS,
+      min: 1,
+      alt: `${carTitle} — photo`,
+    })
+    if (!took.ok) return took.result
+    photoChange = took.change
   }
 
   const expiresAt = new Date(Date.now() + LISTING_DAYS * 86400000).toISOString()
@@ -282,7 +201,7 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
           description: (d.description as string) || null,
           sellerName: d.sellerName as string,
           sellerPhone: d.sellerPhone as string,
-          photos,
+          photos: photoChange?.ids,
           ...(existing ? {} : { expiresAt }),
         }
       : {
@@ -311,12 +230,11 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
       ? await payload.update({ collection, id: existing.id, data: data as never, overrideAccess: true, depth: 0 })
       : await payload.create({ collection, data: data as never, overrideAccess: true, depth: 0 })) as CarListing | Job
   } catch (e) {
-    console.error('[listings] could not save', e)
-    const msg = e instanceof Error ? e.message : ''
-    return fail(400, msg && msg.length < 200 ? msg : 'Something went wrong on our side. Please try again in a minute.')
+    if (photoChange) await settlePhotos(payload, customer, [photoChange], false)
+    return saveFailed(e, 'listings')
   }
-  for (const mid of removed) await payload.delete({ collection: 'media', id: mid, overrideAccess: true }).catch(() => null)
-  await notifyTeam(payload, kind, saved.title ?? '', saved.id, customer, Boolean(existing))
+  if (photoChange) await settlePhotos(payload, customer, [photoChange], true)
+  await notifyListing(payload, kind, saved.title ?? '', saved.id, customer, Boolean(existing))
   return { ok: true, id: saved.id, message: 'Sent for review. We usually check new listings within a day — you will get an email.' }
 }
 
@@ -327,13 +245,13 @@ export async function listingAction(customer: Customer, kind: Kind, id: number, 
   const payload = await payloadClient()
   const collection = COLLECTION[kind]
   const doc = (await payload.findByID({ collection, id, depth: 0, overrideAccess: true, disableErrors: true })) as CarListing | Job | null
-  if (!doc || ownerId(doc) !== customer.id) return fail(404, 'Listing not found.')
+  if (!doc || !isOwner(doc, customer)) return fail(404, 'Listing not found.')
   const expiresAt = new Date(Date.now() + LISTING_DAYS * 86400000).toISOString()
   try {
     if (action === 'delete') {
-      const photoIds = kind === 'car' ? ((doc as CarListing).photos ?? []).map((m) => (typeof m === 'object' && m ? m.id : (m as number))) : []
+      const removed = kind === 'car' ? mediaIds((doc as CarListing).photos) : []
       await payload.delete({ collection, id, overrideAccess: true })
-      for (const mid of photoIds) await payload.delete({ collection: 'media', id: mid, overrideAccess: true }).catch(() => null)
+      await settlePhotos(payload, customer, [{ ids: [], added: [], removed }], true)
       return { ok: true, id, message: 'Deleted.' }
     }
     if (action === 'hide') {
@@ -346,7 +264,7 @@ export async function listingAction(customer: Customer, kind: Kind, id: number, 
         return fail(400, `An account can have up to ${ACTIVE_LIMIT} live or waiting listings. Hide or delete one first.`)
       }
       await payload.update({ collection, id, data: { status: 'pending', expiresAt } as never, overrideAccess: true })
-      await notifyTeam(payload, kind, doc.title ?? '', id, customer, true)
+      await notifyListing(payload, kind, doc.title ?? '', id, customer, true)
       return { ok: true, id, message: 'Sent for review again.' }
     }
     // renew: live listings only; expired ones count as live again for another 30 days

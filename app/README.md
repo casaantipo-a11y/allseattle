@@ -79,6 +79,25 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   revalidates the page). An expired package (`packageExpiresAt`) now counts as no package in
   `packageOfBusiness`. Migration `stage3_listings_moderation`.
 
+- **Stage 3, step 3 (14.10.2026)** — business accounts. Businesses have `owner` (a site
+  account), `moderationNote` and the pending / rejected statuses. `/account/business` lists the
+  account's businesses (status, package and its end date); `/account/business/new` registers
+  one (up to 3 per account) as Pending review; `/account/business/[id]` edits name, categories,
+  summary, description, contacts, socials, opening hours, logo, cover and gallery;
+  `/account/business/[id]/offers` adds / edits / deletes promotions and products. Rules: a new
+  or not-yet-live business waits for review; once live, the owner's edits go live at once and
+  the team gets a notice (a paying business shouldn't vanish from the directory for a day over
+  new hours); promotions and products are live at once. Package limits come from the existing
+  collection hooks (categories, photos, promotions, product count) and come back as field
+  errors; a new business gets the cheapest package's limits. An existing business is handed to
+  its owner by the team (Owner field in the admin); an unchanged description keeps its rich-text
+  formatting when the owner saves. `/add-business` stays a guest application form; a signed-in
+  customer sees "Register a business" instead (checked in the browser, the page stays cached).
+  Shared server code for the account's write routes is `lib/cabinet.ts` (auth, daily cap of 10
+  saves across cars, jobs and businesses, team notices, photo upload/cleanup); photos uploaded
+  from an account are marked `media.uploadedBy`, and only those are deleted when the owner
+  removes them — team uploads can be used elsewhere. Migration `stage3_business_accounts`.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.

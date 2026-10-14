@@ -1,7 +1,8 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
-import { isDemoField, slugField, slugHistoryField, statusField } from '../fields'
+import { isDemoField, moderatedStatusField, moderationNoteField, ownerField, slugField, slugHistoryField } from '../fields'
+import { notifyAuthorOfReview } from '../hooks/moderation'
 import { assertBusinessWithinPackage } from '../hooks/packageLimits'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
@@ -38,6 +39,7 @@ export const Businesses: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'package', 'packageExpiresAt', 'status', 'categories'],
+    description: 'Businesses registered from site accounts arrive with status Pending review. To hand an existing business to its owner, pick their account in Owner.',
     group: 'Business',
     listSearchableFields: ['name', 'address', 'phone'],
   },
@@ -50,7 +52,7 @@ export const Businesses: CollectionConfig = {
   },
   hooks: {
     beforeChange: [rememberOldSlug, enforcePackage, geocodeAddress],
-    afterChange: [revalidate.afterChange],
+    afterChange: [revalidate.afterChange, notifyAuthorOfReview('business')],
     afterDelete: [revalidate.afterDelete],
   },
   fields: [
@@ -203,7 +205,9 @@ export const Businesses: CollectionConfig = {
       ],
     },
     slugField('name'),
-    statusField,
+    moderatedStatusField,
+    ownerField('The site account that manages this business from its account page.'),
+    moderationNoteField,
     { name: 'viewsCount', type: 'number', defaultValue: 0, admin: { position: 'sidebar', readOnly: true } },
     isDemoField,
     slugHistoryField,

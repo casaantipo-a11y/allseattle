@@ -25,21 +25,21 @@ export default async function VerifyPage({ searchParams }: Props) {
   return (
     <AccountShell title={ok ? 'Email confirmed' : 'Link not valid'}>
       {ok ? (
-        <p className="m-0">
+        <div className="m-0">
           Your account is ready.{' '}
           <Link href="/account/login" className="text-brand-navy underline">
             Log in
           </Link>{' '}
           to post your first listing.
-        </p>
+        </div>
       ) : (
-        <p className="m-0">
+        <div className="m-0">
           This confirmation link has expired or was already used. If you confirmed before, just{' '}
           <Link href="/account/login" className="text-brand-navy underline">
             log in
           </Link>
           .
-        </p>
+        </div>
       )}
     </AccountShell>
   )

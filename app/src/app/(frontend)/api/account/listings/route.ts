@@ -1,5 +1,6 @@
 import { HONEYPOT } from '@/lib/forms'
-import { customerFrom, saveListing, type Kind } from '@/lib/listings'
+import { customerFrom } from '@/lib/cabinet'
+import { saveListing, type Kind } from '@/lib/listings'
 
 // POST /api/account/listings — a site customer sends a new car or job (multipart,
 // `kind` = car | job). It goes to the team as Pending review; see lib/listings.ts.

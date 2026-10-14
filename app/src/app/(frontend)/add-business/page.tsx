@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { SECTIONS } from '@/collections/BusinessCategories'
 import { ContactEmail } from '@/components/ContactEmail'
+import { AddBusinessSwitch } from '@/components/account/AddBusinessSwitch'
 import { SubmissionForm } from '@/components/SubmissionForm'
 import { getBusinessCategories, getPackages } from '@/lib/queries'
 
@@ -14,8 +15,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/add-business' },
 }
 
-// Business registration (spec §8): lands in Submissions as
-// business_registration; a salesperson creates the listing from it.
+// Business registration (spec §8): a guest's application lands in Submissions as
+// business_registration and a salesperson creates the listing from it; a
+// signed-in site customer is sent to register it from the account (stage 3).
 export default async function AddBusinessPage() {
   const [categories, packages] = await Promise.all([getBusinessCategories(), getPackages()])
   const sectionLabel = Object.fromEntries(SECTIONS.map((s) => [s.value, s.label]))
@@ -64,25 +66,27 @@ export default async function AddBusinessPage() {
             {/* 12px padding on phones: the Turnstile widget is a fixed 300px and did not fit
                 a 360px screen with 20px (the page scrolled sideways). */}
             <div className="rounded-xl border border-brand-line bg-white p-3 sm:p-8">
-              <SubmissionForm
-                form="business-registration"
-                submitLabel="Send"
-                turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
-                fields={[
-                  { name: 'businessName', label: 'Business name', required: true, autoComplete: 'organization' },
-                  { name: 'category', label: 'Category', type: 'select', options },
-                  { name: 'name', label: 'Your name', required: true, autoComplete: 'name' },
-                  { name: 'email', label: 'Email', type: 'email', autoComplete: 'email', hint: 'Email or phone — one is enough.' },
-                  { name: 'phone', label: 'Phone', type: 'tel', autoComplete: 'tel' },
-                  {
-                    name: 'desiredPackage',
-                    label: 'Package you’re interested in',
-                    type: 'select',
-                    options: packages.map((p) => ({ value: String(p.id), label: p.name })),
-                  },
-                  { name: 'message', label: 'Anything else?', type: 'textarea' },
-                ]}
-              />
+              <AddBusinessSwitch>
+                <SubmissionForm
+                  form="business-registration"
+                  submitLabel="Send"
+                  turnstileSiteKey={process.env.TURNSTILE_SITE_KEY}
+                  fields={[
+                    { name: 'businessName', label: 'Business name', required: true, autoComplete: 'organization' },
+                    { name: 'category', label: 'Category', type: 'select', options },
+                    { name: 'name', label: 'Your name', required: true, autoComplete: 'name' },
+                    { name: 'email', label: 'Email', type: 'email', autoComplete: 'email', hint: 'Email or phone — one is enough.' },
+                    { name: 'phone', label: 'Phone', type: 'tel', autoComplete: 'tel' },
+                    {
+                      name: 'desiredPackage',
+                      label: 'Package you’re interested in',
+                      type: 'select',
+                      options: packages.map((p) => ({ value: String(p.id), label: p.name })),
+                    },
+                    { name: 'message', label: 'Anything else?', type: 'textarea' },
+                  ]}
+                />
+              </AddBusinessSwitch>
             </div>
           </div>
         </div>

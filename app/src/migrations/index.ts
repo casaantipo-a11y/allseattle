@@ -8,6 +8,7 @@ import * as migration_20261007_105644_map_ad_slot_page from './20261007_105644_m
 import * as migration_20261012_132825_newsletter_submission_type from './20261012_132825_newsletter_submission_type';
 import * as migration_20261014_030515_stage3_customers from './20261014_030515_stage3_customers';
 import * as migration_20261014_032801_stage3_listings_moderation from './20261014_032801_stage3_listings_moderation';
+import * as migration_20261014_042505_stage3_business_accounts from './20261014_042505_stage3_business_accounts';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261014_032801_stage3_listings_moderation.up,
     down: migration_20261014_032801_stage3_listings_moderation.down,
-    name: '20261014_032801_stage3_listings_moderation'
+    name: '20261014_032801_stage3_listings_moderation',
+  },
+  {
+    up: migration_20261014_042505_stage3_business_accounts.up,
+    down: migration_20261014_042505_stage3_business_accounts.down,
+    name: '20261014_042505_stage3_business_accounts'
   },
 ];

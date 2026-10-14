@@ -37,6 +37,16 @@ export const Media: CollectionConfig = {
       admin: { description: 'What the picture shows, for screen readers and search engines.' },
     },
     { name: 'credit', type: 'text' },
+    {
+      // Set when a site customer uploads it from their account (stage 3). Only such
+      // files are deleted when the customer removes them — anything the team uploaded
+      // may be used elsewhere too.
+      name: 'uploadedBy',
+      type: 'relationship',
+      relationTo: 'customers',
+      index: true,
+      admin: { position: 'sidebar', readOnly: true, description: 'Uploaded from this site account.' },
+    },
     isDemoField,
   ],
 }

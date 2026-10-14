@@ -1,4 +1,5 @@
-import { customerFrom, listingAction, type ListingAction } from '@/lib/listings'
+import { customerFrom } from '@/lib/cabinet'
+import { listingAction, type ListingAction } from '@/lib/listings'
 
 // POST /api/account/listings/:kind/:id/action {action: hide | show | renew | delete}
 // — the buttons on /account/listings.

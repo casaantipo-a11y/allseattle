@@ -59,7 +59,7 @@ export default async function MyListingsPage() {
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="m-0 text-brand-slate">No listings yet.</p>
+        <div className="m-0 text-brand-slate">No listings yet.</div>
       ) : (
         <ul className="m-0 list-none p-0">
           {rows.map(({ kind, doc }) => {
@@ -81,8 +81,8 @@ export default async function MyListingsPage() {
                 ) : null}
                 <div className="min-w-0 flex-1">
                   <span className="eyebrow">{kind === 'car' ? 'Car' : 'Job'}</span>
-                  <h2 className="m-0 text-lg">{doc.title}</h2>
-                  <p className="m-0 mt-1 text-sm">
+                  <h3>{doc.title}</h3>
+                  <div className="m-0 mt-1 text-sm">
                     <span className={`font-semibold ${s.tone}`}>{s.label}</span>
                     {doc.status === 'published' && doc.expiresAt ? (
                       <span className="text-brand-slate">
@@ -91,8 +91,8 @@ export default async function MyListingsPage() {
                       </span>
                     ) : null}
                     <span className="text-brand-slate"> · {doc.viewsCount ?? 0} views</span>
-                  </p>
-                  {doc.status === 'rejected' && doc.moderationNote ? <p className="m-0 mt-1 text-sm">Reason: {doc.moderationNote}</p> : null}
+                  </div>
+                  {doc.status === 'rejected' && doc.moderationNote ? <div className="m-0 mt-1 text-sm">Reason: {doc.moderationNote}</div> : null}
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     {live ? (
                       <Link href={kind === 'car' ? `/cars/${doc.slug}` : `/jobs/${doc.slug}`} className="btn btn-sm">

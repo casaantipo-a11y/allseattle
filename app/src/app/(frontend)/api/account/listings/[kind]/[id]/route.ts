@@ -1,4 +1,5 @@
-import { customerFrom, saveListing } from '@/lib/listings'
+import { customerFrom } from '@/lib/cabinet'
+import { saveListing } from '@/lib/listings'
 
 // POST /api/account/listings/:kind/:id — the author edits their car or job. Any
 // edit sends it back to Pending review.

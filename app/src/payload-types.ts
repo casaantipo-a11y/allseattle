@@ -269,6 +269,10 @@ export interface Media {
   alt: string;
   credit?: string | null;
   /**
+   * Uploaded from this site account.
+   */
+  uploadedBy?: (number | null) | Customer;
+  /**
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
    */
   isDemo?: boolean | null;
@@ -311,6 +315,43 @@ export interface Media {
   };
 }
 /**
+ * People and businesses who signed up on the site. They log in at /account, never in this admin.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  name: string;
+  phone?: string | null;
+  signupIp?: string | null;
+  /**
+   * Set by the payment step.
+   */
+  stripeCustomerId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'customers';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news-categories".
  */
@@ -331,6 +372,8 @@ export interface NewsCategory {
   createdAt: string;
 }
 /**
+ * Businesses registered from site accounts arrive with status Pending review. To hand an existing business to its owner, pick their account in Owner.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "businesses".
  */
@@ -427,7 +470,18 @@ export interface Business {
    * Part of the page address. Leave empty to generate it from the title.
    */
   slug?: string | null;
-  status: 'draft' | 'published';
+  /**
+   * Submissions from site accounts arrive as Pending review.
+   */
+  status: 'draft' | 'pending' | 'published' | 'rejected';
+  /**
+   * The site account that manages this business from its account page.
+   */
+  owner?: (number | null) | Customer;
+  /**
+   * If you reject it: why. The author sees this.
+   */
+  moderationNote?: string | null;
   viewsCount?: number | null;
   /**
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
@@ -696,43 +750,6 @@ export interface CarMake {
   models?: string[] | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * People and businesses who signed up on the site. They log in at /account, never in this admin.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers".
- */
-export interface Customer {
-  id: number;
-  name: string;
-  phone?: string | null;
-  signupIp?: string | null;
-  /**
-   * Set by the payment step.
-   */
-  stripeCustomerId?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  _verified?: boolean | null;
-  _verificationToken?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'customers';
 }
 /**
  * Jobs sent from site accounts arrive with status Pending review — filter by Status to see them.
@@ -1548,6 +1565,8 @@ export interface BusinessesSelect<T extends boolean = true> {
       };
   slug?: T;
   status?: T;
+  owner?: T;
+  moderationNote?: T;
   viewsCount?: T;
   isDemo?: T;
   slugHistory?:
@@ -1964,6 +1983,7 @@ export interface PagesSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
+  uploadedBy?: T;
   isDemo?: T;
   updatedAt?: T;
   createdAt?: T;
