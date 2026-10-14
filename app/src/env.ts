@@ -29,6 +29,7 @@ const schema = z.object({
   TURNSTILE_SECRET_KEY: optional,
   STRIPE_SECRET_KEY: optional,
   STRIPE_WEBHOOK_SECRET: optional,
+  CRON_SECRET: optional,
   SEED_ADMIN_EMAIL: optional,
   SEED_ADMIN_PASSWORD: optional,
 })

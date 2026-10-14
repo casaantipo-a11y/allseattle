@@ -145,6 +145,15 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   owner, moderation note, subscription fields; `imageDesktop` is required only to publish; the
   public REST shows published banners only. Migration `stage3_banner_places`.
 
+- **Stage 3, launch prep (14.10.2026).** Security pass: customers can't change the account
+  email themselves; "forgot password" at most every 5 minutes per account; one document saved
+  at most every 30 s (each save notifies the team); `media.uploadedBy` hidden from the public
+  REST; the team is told about a double package subscription or a banner place bought twice.
+  The older public forms (Share the news, Add your business) now scale photos to 1600px before
+  sending too. **Daily reminders** (`lib/reminders.ts`, `/api/cron/daily`, Vercel Cron at 16:00
+  UTC in `vercel.json`): an owner is emailed 2–3 days before a car or job comes off the site,
+  and before a package set by hand ends; needs `CRON_SECRET` on Vercel (off while empty).
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.
