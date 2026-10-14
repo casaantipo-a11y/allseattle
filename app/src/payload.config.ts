@@ -28,6 +28,8 @@ import { Submissions } from './collections/Submissions'
 import { AdSlots } from './collections/AdSlots'
 import { Banners } from './collections/Banners'
 import { BannerStats } from './collections/BannerStats'
+import { Customers } from './collections/Customers'
+import { resendAdapter } from './lib/email'
 import { Users } from './collections/Users'
 import { env, s3Enabled } from './env'
 import { Footer } from './globals/Footer'
@@ -133,6 +135,7 @@ export default buildConfig({
     Media,
     Documents,
     Users,
+    Customers,
   ],
   globals: [SiteSettings, Header, Footer],
   editor: lexicalEditor(),
@@ -145,6 +148,9 @@ export default buildConfig({
     pool: { connectionString: env.DATABASE_URL },
     push: /@(localhost|127\.0\.0\.1)[:/]/.test(env.DATABASE_URL),
   }),
+  // Account emails (verification, password reset) through Resend; printed to the
+  // console while RESEND_API_KEY is not set (lib/email.ts).
+  email: resendAdapter,
   sharp,
   plugins,
 })

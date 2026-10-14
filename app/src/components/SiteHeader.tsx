@@ -31,7 +31,8 @@ export async function SiteHeader() {
           <Link href="/add-business" className="nav-stub nav-stub--accent">
             Add your business
           </Link>
-          <Link href="/admin" className="account-btn" aria-label="Log in" prefetch={false}>
+          {/* Site accounts (stage 3); the team keeps logging in at /admin directly. */}
+          <Link href="/account" className="account-btn" aria-label="Your account" prefetch={false}>
             <Svg html={UI_ICONS.account} />
           </Link>
         </div>

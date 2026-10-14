@@ -50,6 +50,19 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   Available/Booked. GA4 has been in since phase 1 (after cookie consent, Consent Mode v2).
   The owner's guide is [`ADMIN_GUIDE.md`](ADMIN_GUIDE.md) (Russian).
 
+- **Stage 3, step 1 (14.10.2026)** — site accounts. `customers` is a second auth collection,
+  separate from the team's `users`: sign-up at `/account/register` (`/api/account/register`:
+  honeypot, Turnstile, 5 sign-ups per IP per hour), email confirmation (`verify`), log in,
+  forgot / reset password, profile at `/account`; the header's account icon leads there.
+  Customers never reach `/admin` (it lets only `users` in) and are not "logged in" for the
+  admin's access rules: `isStaff` in `access/roles.ts` backs `isLoggedIn` and
+  `publishedOrLoggedIn`, so a signed-in customer sees no drafts. Email goes through
+  `lib/email.ts` — a Payload email adapter on Resend's REST API; without `RESEND_API_KEY` the
+  message is printed to the server console (local testing). Payload accepts the auth cookie
+  only from browsers (`Sec-Fetch-Site`), so test the cookie session with a browser or that
+  header, not plain curl. Next steps (listings with moderation, business accounts, Stripe,
+  contest voting) are in the stage 3 plan.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.

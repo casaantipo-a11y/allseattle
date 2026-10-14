@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { hasRole, isAdmin, isAdminField, ROLES } from '../access/roles'
+import { hasRole, isAdmin, isAdminField, isStaff, ROLES } from '../access/roles'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -13,11 +13,12 @@ export const Users: CollectionConfig = {
   access: {
     // Everyone signed in sees the team list; only admins manage it. A user can
     // always update their own profile (name, password), but not their roles.
-    read: ({ req }) => Boolean(req.user),
+    read: ({ req }) => isStaff(req),
     create: isAdmin,
     delete: isAdmin,
-    update: ({ req, id }) => hasRole(req, 'admin') || (req.user?.id != null && req.user.id === id),
-    admin: ({ req }) => Boolean(req.user),
+    update: ({ req, id }) =>
+      hasRole(req, 'admin') || (isStaff(req) && req.user?.id != null && req.user.id === id),
+    admin: ({ req }) => isStaff(req),
   },
   fields: [
     { name: 'name', type: 'text' },

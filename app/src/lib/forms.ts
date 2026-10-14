@@ -101,7 +101,7 @@ export function clientIp(req: Request): string {
   return (fwd?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown').trim()
 }
 
-async function turnstileOk(token: FormDataEntryValue | null, ip: string): Promise<boolean> {
+export async function turnstileOk(token: FormDataEntryValue | null, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
   if (!secret) return true // not configured: honeypot and rate limit still apply
   if (typeof token !== 'string' || !token) return false

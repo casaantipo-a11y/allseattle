@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { canWrite } from '../access/roles'
+import { canWrite, isStaff } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 
@@ -15,7 +15,7 @@ export const Contests: CollectionConfig = {
   admin: { useAsTitle: 'title', defaultColumns: ['title', 'status', 'startAt', 'endAt'], group: 'Content' },
   access: {
     // Public: everything but upcoming drafts is visible — a contest has its own status.
-    read: ({ req }) => (req.user ? true : { status: { in: ['active', 'finished', 'upcoming'] } }),
+    read: ({ req }) => (isStaff(req) ? true : { status: { in: ['active', 'finished', 'upcoming'] } }),
     create: canWrite('editor'),
     update: canWrite('editor'),
     delete: canWrite('editor'),
