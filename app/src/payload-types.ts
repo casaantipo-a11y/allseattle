@@ -476,7 +476,7 @@ export interface Business {
     brandColor?: string | null;
   };
   /**
-   * Part of the page address. Leave empty to generate it from the title.
+   * Part of the page address. Leave empty to generate it.
    */
   slug?: string | null;
   /**
