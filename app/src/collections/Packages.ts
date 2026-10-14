@@ -37,7 +37,7 @@ export const Packages: CollectionConfig = {
           type: 'number',
           required: true,
           defaultValue: 1,
-          admin: { description: 'Higher = more expensive tier. Premium ranks above Lux in the directory.' },
+          admin: { description: 'Higher = more expensive tier. Premium ranks above Luxury in the directory.' },
         },
       ],
     },

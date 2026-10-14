@@ -78,12 +78,9 @@ export default async function HomePage() {
           </div>
 
           <aside className="home-sidebar home-sidebar-right">
-            {/* C1 above "AllSeattle at a glance" (client's Home scheme, 12.10.2026); C2 under it
-                (Commercial.pdf, 15.10.2026: $149 like the other 300x250 places — the tall 300x600
-                is A3 at $199), the same order as the directory. */}
+            {/* C1 above "AllSeattle at a glance" (client's Home scheme, 12.10.2026). */}
             <AdSlot code="HOME_RIGHT_1" size="300x250" className="ad-desktop-slot" />
             <StatsWidget stats={stats} />
-            <AdSlot code="HOME_RIGHT_2" size="300x250" className="ad-desktop-slot" />
             <TopNewsWidget articles={top} />
             <JobsWidget jobs={jobs} />
           </aside>

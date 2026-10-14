@@ -11,7 +11,7 @@ export type ExplorerCategory = { id: number; name: string; group: string; ids: n
 // Events join the same map in phase 3 as another group.
 const LEGEND = [
   { kind: 'premium', label: 'Premium business' },
-  { kind: 'luxury', label: 'Lux business' },
+  { kind: 'luxury', label: 'Luxury business' },
   { kind: 'standard', label: 'Business' },
   { kind: 'event', label: 'Event' },
 ] as const

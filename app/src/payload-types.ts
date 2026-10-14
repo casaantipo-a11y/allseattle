@@ -394,7 +394,7 @@ export interface Business {
    */
   priority?: number | null;
   /**
-   * yourname → yourname.<site domain>. Lux and Premium only.
+   * yourname → yourname.<site domain>. Luxury and Premium only.
    */
   subdomain?: string | null;
   /**
@@ -494,7 +494,7 @@ export interface Package {
   id: number;
   name: string;
   /**
-   * Higher = more expensive tier. Premium ranks above Lux in the directory.
+   * Higher = more expensive tier. Premium ranks above Luxury in the directory.
    */
   order: number;
   /**

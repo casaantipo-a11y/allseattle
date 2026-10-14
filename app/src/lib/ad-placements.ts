@@ -65,7 +65,6 @@ export const PLACEMENTS: Placement[] = [
   { group: 'home', position: 'B1', size: '728x90', price: 299, codes: ['HOME_TOP'] },
   { group: 'home', position: 'B2', size: '728x90', price: 299, codes: ['HOME_INFEED_1'] },
   { group: 'home', position: 'C1', size: '300x250', price: 149, codes: ['HOME_RIGHT_1'] },
-  { group: 'home', position: 'C2', size: '300x250', price: 149, codes: ['HOME_RIGHT_2'] },
 
   { group: 'news', position: 'A1', size: '300x600', price: 169, codes: ['NEWS_SIDEBAR_2'] },
   { group: 'news', position: 'B1', size: '728x90', price: 149, codes: ['NEWS_TOP'] },

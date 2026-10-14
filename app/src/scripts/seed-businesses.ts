@@ -84,7 +84,7 @@ export const PACKAGES = [
     features: ['Directory listing and business page', 'City map placement', 'Promotions and price lists'],
   },
   {
-    name: 'Lux',
+    name: 'Luxury',
     order: 2,
     priceMonthly: 99,
     priceYearly: 990,
@@ -111,7 +111,7 @@ export const PACKAGES = [
     priorityPlacement: true,
     categoryBannerFirstMonth: true,
     brandedPage: true,
-    features: ['Everything in Lux', 'Branded page, no other ads on it', 'Banner in your category for the first month'],
+    features: ['Everything in Luxury', 'Branded page, no other ads on it', 'Banner in your category for the first month'],
   },
 ]
 
@@ -172,7 +172,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   // ---- Packages (structure — kept by purge-demo) --------------------------
   const pkgIds: Record<string, number> = {}
   for (const pk of PACKAGES) {
-    // Found by order, not name: the client renamed Luxury to Lux (15.10.2026).
+    // Found by order, not name, so a package renamed in the admin is not created twice.
     const found = await payload.find({ collection: 'packages', where: { order: { equals: pk.order } }, limit: 1 })
     const docu =
       found.docs[0] ??
@@ -190,7 +190,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
       }))
     pkgIds[pk.name] = docu.id
   }
-  log('3 packages (Standard $69, Lux $99, Premium $169 a month)')
+  log('3 packages (Standard $69, Luxury $99, Premium $169 a month)')
 
   // ---- Categories -----------------------------------------------------------
   const catIds = new Map<string, number>() // key: `${section}:${name}`
@@ -292,7 +292,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   }
 
   for (const [i, b] of BUSINESSES.entries()) {
-    const pkgName = b.package
+    const pkgName = b.package === 'Lux' ? 'Luxury' : b.package
     const hood = b.address.split(', ').pop() ?? 'Downtown'
     const sub = BUSINESS_SUBCATEGORY[b.name]
     const categories = sub ? [catIds.get(`directory:${sub[0]}/${sub[1]}`)!] : []
@@ -379,7 +379,7 @@ export async function seedBusinesses(payload: Payload, prototypeDir: string, log
   }
 
   for (const [i, v] of VENUES.entries()) {
-    const pkgName = i % 4 === 0 ? 'Lux' : 'Standard'
+    const pkgName = i % 4 === 0 ? 'Luxury' : 'Standard'
     const cover = await media(v.photo, v.name)
     await upsertBusiness(v.id, {
       name: v.name,

@@ -105,8 +105,6 @@ export const SLOTS: Slot[] = [
   // spread over the year's weeks; the site shows the monthly one.
   side('HOME_SIDEBAR_4', 'home', 'Home', 4, '300x250', weekly(129), false),
   { ...side('HOME_RIGHT_1', 'home', 'Home', 1, '300x250', weekly(149), false), name: 'Home — right column (300x250)' },
-  // 15.10.2026, Commercial.pdf: Home also sells C2 in the right column ($149/month, a 300x250).
-  { ...side('HOME_RIGHT_2', 'home', 'Home', 2, '300x250', weekly(149), false), name: 'Home — right column 2 (300x250)' },
   feed('NEWS_INFEED_1', 'news', 'News', 1, weekly(129)),
   feed('CARS_INFEED_1', 'cars', 'Cars', 1, weekly(129)),
   { ...feed('CARS_SERVICES_INFEED_1', 'cars', 'Cars', 1, weekly(129)), name: 'Cars — auto services, under the list' },

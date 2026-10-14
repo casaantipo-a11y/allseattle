@@ -299,12 +299,10 @@ the footer: 16px above (`margin-top: var(--space-4)`, overrides Tailwind's `mt-6
 measured equal on News and Directory at 1280/1440/1920, where the list is the tallest column (at
 1024 News's rails are taller, on phones the rails follow the list).
 
-**App, 15.10.2026 (client, Commercial.pdf):** Home sells **C2** too — `HOME_RIGHT_2`, 300x250,
-$149/month, in the right column under "AllSeattle at a glance" (C1 → glance → C2, as in the
-directory). 300x250 because its price is that of the other 300x250 places (the tall A3 is $199);
-a 300x600 there left the right column 395px longer than the news column at 1440, now 68px.
-The client's home scheme image (`public/images/advertising/home.*`) still shows only C1. Home
-banner prices follow the PDF's "Main page" column (B1/B2 $299, A3 $199, the rest $149). Price cards
-on /advertise: the package name is a full-width bar in its tier colour (`.pricing-name--*`,
-pricing.css), the price at `--text-4xl`, 1/3/6/12-month rows; the features list left the cards.
-The middle package is "Lux" (was "Luxury"); the seed finds packages by `order`, not name.
+**App, 15.10.2026 (client, Commercial.pdf):** Home banner prices follow the PDF's "Main page"
+column (B1/B2 $299, A3 $199, the rest $149). The PDF also lists a Home C2; the client said there
+is **no C2 on Home** — a HOME_RIGHT_2 slot was added and removed the same day, don't bring it
+back. Price cards on /advertise: the package name is a full-width bar in its tier colour
+(`.pricing-name--*`, pricing.css), the price at `--text-4xl`, 1/3/6/12-month rows; the features
+list left the cards. The middle package stays **"Luxury"** (the PDF says "Lux"; the client chose
+Luxury). The seed finds packages by `order`, not name.
