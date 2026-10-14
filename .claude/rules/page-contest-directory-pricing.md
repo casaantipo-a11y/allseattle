@@ -174,6 +174,16 @@ centred on the page with "Rules" and the rule lines centred (`.contest-rules` in
 Before, the shared `RichText` capped itself at 72ch of its own 17px font inside a 72ch-of-18px
 wrapper, so the text hugged the wrapper's left edge and the block read as shifted left.
 
+**App business page (`/biz/[slug]`, `biz/BusinessView.tsx`), 15.10.2026:** rebuilt after the
+client's "Lux" example (Commercial.pdf p. 3): name + categories with the month's views as digit
+boxes; a data table with icons (`.biz-info`, business.css); "On the map" (wide, `#biz-map`,
+"Show on map" links to it); "Promotions & deals" as rows; "Photos" (`BizGallery`: large 16:9 photo,
+arrows, counter, thumbnail strip); "About"; products; downloads; "Related categories". Right
+column: logo card with Visit website / Call, BUSINESS_SIDEBAR_1 (not on Premium), "Similar
+places" (same category, paid first, 3), "We're hiring", contacts and socials, and on Standard
+"Is this your business?". The tabs are gone — every section is on the page. Section headings are
+`.biz-section-title` in business.css because the prototype's h2 rule beats Tailwind.
+
 **App Directory, 09.10.2026:** 10 businesses a page (was 20 — "too many"); `PER_PAGE` in
 `BusinessSection.tsx` is per section, Shopping and Leisure keep 20. The head carries
 `dir-head--<section>`; Shopping/Leisure also get `.section-head--snug` (in directory.css as
