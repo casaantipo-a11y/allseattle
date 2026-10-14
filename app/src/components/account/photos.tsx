@@ -17,7 +17,7 @@ const PHOTO_QUALITY = 0.82
 export const BODY_LIMIT = 4.2 * 1024 * 1024
 
 /** A photo scaled to fit PHOTO_EDGE, as JPEG; the original when the browser can't decode it. */
-async function shrink(file: File): Promise<File> {
+export async function shrink(file: File): Promise<File> {
   try {
     const bmp = await createImageBitmap(file)
     const k = Math.min(1, PHOTO_EDGE / Math.max(bmp.width, bmp.height))

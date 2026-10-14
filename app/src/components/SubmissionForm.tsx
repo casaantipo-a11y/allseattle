@@ -3,6 +3,8 @@
 import Script from 'next/script'
 import { useRef, useState, type FormEvent } from 'react'
 
+import { shrink } from './account/photos'
+
 // A public form (spec §8): posts to /api/forms/{form}, shows the server's
 // field errors next to the fields (the prototype's .field / .field-error
 // styles), and a clear confirmation on success. Cloudflare Turnstile renders
@@ -112,7 +114,15 @@ export function SubmissionForm({
     setMessage(null)
     setErrors({})
     try {
-      const res = await fetch(`/api/forms/${form}`, { method: 'POST', body: new FormData(e.currentTarget) })
+      const fd = new FormData(e.currentTarget)
+      // Photos go out scaled to 1600px (stage 3): Vercel takes at most 4.5 MB per
+      // request, and five phone photos are well over that. The server makes its own sizes.
+      for (const name of new Set([...fd.entries()].filter(([, v]) => v instanceof File && v.size).map(([k]) => k))) {
+        const files = fd.getAll(name).filter((v): v is File => v instanceof File && v.size > 0)
+        fd.delete(name)
+        for (const f of await Promise.all(files.map(shrink))) fd.append(name, f, f.name)
+      }
+      const res = await fetch(`/api/forms/${form}`, { method: 'POST', body: fd })
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string; error?: string; fieldErrors?: Record<string, string> }
       if (res.ok && data.ok) {
         setState('done')
