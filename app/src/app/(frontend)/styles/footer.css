@@ -577,13 +577,8 @@
   width: 24px;
   height: 24px;
   border-radius: var(--radius-full);
-  background: #2aabee;
+  background: #25d366; /* WhatsApp green (client, 15.10.2026; was Telegram blue) */
   color: var(--color-white);
-}
-
-.footer-credit-icon svg {
-  position: relative;
-  left: -1px;
 }
 
 .site-footer .footer-credit-link:hover {
