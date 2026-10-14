@@ -9,6 +9,7 @@ import * as migration_20261012_132825_newsletter_submission_type from './2026101
 import * as migration_20261014_030515_stage3_customers from './20261014_030515_stage3_customers';
 import * as migration_20261014_032801_stage3_listings_moderation from './20261014_032801_stage3_listings_moderation';
 import * as migration_20261014_042505_stage3_business_accounts from './20261014_042505_stage3_business_accounts';
+import * as migration_20261014_045703_stage3_contest_votes from './20261014_045703_stage3_contest_votes';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261014_042505_stage3_business_accounts.up,
     down: migration_20261014_042505_stage3_business_accounts.down,
-    name: '20261014_042505_stage3_business_accounts'
+    name: '20261014_042505_stage3_business_accounts',
+  },
+  {
+    up: migration_20261014_045703_stage3_contest_votes.up,
+    down: migration_20261014_045703_stage3_contest_votes.down,
+    name: '20261014_045703_stage3_contest_votes'
   },
 ];

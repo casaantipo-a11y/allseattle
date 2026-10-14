@@ -82,6 +82,7 @@ export interface Config {
     events: Event;
     'event-categories': EventCategory;
     contests: Contest;
+    'contest-votes': ContestVote;
     submissions: Submission;
     'ad-slots': AdSlot;
     banners: Banner;
@@ -113,6 +114,7 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     'event-categories': EventCategoriesSelect<false> | EventCategoriesSelect<true>;
     contests: ContestsSelect<false> | ContestsSelect<true>;
+    'contest-votes': ContestVotesSelect<false> | ContestVotesSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
     'ad-slots': AdSlotsSelect<false> | AdSlotsSelect<true>;
     banners: BannersSelect<false> | BannersSelect<true>;
@@ -1016,6 +1018,31 @@ export interface Contest {
   createdAt: string;
 }
 /**
+ * Votes are counted once confirmed from the emailed link. Delete a vote here to take it back.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contest-votes".
+ */
+export interface ContestVote {
+  id: number;
+  contest: number | Contest;
+  /**
+   * The entry row in the contest.
+   */
+  entryId: string;
+  /**
+   * The entry’s title when the vote was cast.
+   */
+  entryTitle?: string | null;
+  email: string;
+  tokenHash?: string | null;
+  confirmedAt?: string | null;
+  ip?: string | null;
+  sentAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
@@ -1376,6 +1403,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contests';
         value: number | Contest;
+      } | null)
+    | ({
+        relationTo: 'contest-votes';
+        value: number | ContestVote;
       } | null)
     | ({
         relationTo: 'submissions';
@@ -1857,6 +1888,22 @@ export interface ContestsSelect<T extends boolean = true> {
         slug?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contest-votes_select".
+ */
+export interface ContestVotesSelect<T extends boolean = true> {
+  contest?: T;
+  entryId?: T;
+  entryTitle?: T;
+  email?: T;
+  tokenHash?: T;
+  confirmedAt?: T;
+  ip?: T;
+  sentAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

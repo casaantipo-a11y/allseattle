@@ -28,6 +28,7 @@ import { Submissions } from './collections/Submissions'
 import { AdSlots } from './collections/AdSlots'
 import { Banners } from './collections/Banners'
 import { BannerStats } from './collections/BannerStats'
+import { ContestVotes } from './collections/ContestVotes'
 import { Customers } from './collections/Customers'
 import { resendAdapter } from './lib/email'
 import { Users } from './collections/Users'
@@ -127,6 +128,7 @@ export default buildConfig({
     Events,
     EventCategories,
     Contests,
+    ContestVotes,
     Submissions,
     AdSlots,
     Banners,

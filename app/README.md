@@ -98,6 +98,17 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   from an account are marked `media.uploadedBy`, and only those are deleted when the owner
   removes them — team uploads can be used elsewhere. Migration `stage3_business_accounts`.
 
+- **Stage 3, step 6 (14.10.2026)** — contest voting (done ahead of the Stripe steps, which wait
+  for the client's keys). "Vote" on an entry opens a modal: email + Turnstile →
+  `POST /api/contests/vote` (honeypot, 10 per IP per hour, one link per 2 minutes) → an email
+  with `/contests/vote?token=…`. That page shows the entry and counts the vote only on the
+  "Confirm my vote" button (`POST /api/contests/confirm`) — mail scanners open links, they
+  don't press buttons. `contest-votes` (team-only read, unique contest + email, the token
+  stored as a SHA-256 hash). Voting is open while the contest is Active and today (Seattle) is
+  within startAt–endAt; `votingState` in `lib/contest-votes.ts` also gives the card label.
+  Counts are one GROUP BY, cached under the `contest-votes` tag, expired on each confirmation.
+  Deleting a contest deletes its votes. Migration `stage3_contest_votes`.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.

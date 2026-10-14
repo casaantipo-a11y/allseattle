@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
 
 import { canWrite, isStaff } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField } from '../fields'
@@ -6,10 +6,15 @@ import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 
 const revalidate = revalidateCollection(['contests'])
 
+// A contest's votes go with it (they reference it, and purge-demo deletes demo contests).
+const deleteVotes: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  await req.payload.delete({ collection: 'contest-votes', where: { contest: { equals: id } }, overrideAccess: true, req })
+}
+
 // Contests (spec §4). Entries are children's work, so the record keeps as
 // little as possible: a first name and an age — never a surname or contact —
 // and an entry can't be saved without the parent's consent ticked. Voting
-// arrives in a later stage; the page shows "Voting opens soon".
+// is by email with a confirmation link (stage 3): see collections/ContestVotes.ts.
 export const Contests: CollectionConfig = {
   slug: 'contests',
   admin: { useAsTitle: 'title', defaultColumns: ['title', 'status', 'startAt', 'endAt'], group: 'Content' },
@@ -23,6 +28,7 @@ export const Contests: CollectionConfig = {
   hooks: {
     beforeChange: [rememberOldSlug],
     afterChange: [revalidate.afterChange],
+    beforeDelete: [deleteVotes],
     afterDelete: [revalidate.afterDelete],
   },
   fields: [
