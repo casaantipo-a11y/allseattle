@@ -7,8 +7,11 @@ import { Tabs } from './Tabs'
 // client's page scheme (opens full size on click) and the price table, set in
 // HTML from lib/ad-placements.ts so the text stays sharp and a price changes in
 // one place. Status: Booked when a paid banner runs in that position right now
-// (demo fillers don't count), otherwise Available.
-export function PlacementPrices({ booked }: { booked: (codes: string[]) => boolean }) {
+// (demo fillers don't count) or the place was bought online and waits for its
+// picture, otherwise Available. A row covering several pages ("Other sections")
+// is Available while any of its pages is free. "Available" leads to booking in
+// the account when online payment is on (stage 3), else to the inquiry form.
+export function PlacementPrices({ booked, online = false }: { booked: (code: string) => boolean; online?: boolean }) {
   return (
     <Tabs
       tabs={PLACEMENT_GROUPS.map((g) => ({
@@ -42,7 +45,8 @@ export function PlacementPrices({ booked }: { booked: (codes: string[]) => boole
                   </thead>
                   <tbody>
                     {placementsOf(g.key).map((p: Placement) => {
-                      const isBooked = booked(p.codes)
+                      const free = p.codes.find((c) => !booked(c))
+                      const isBooked = !free
                       return (
                         <tr key={p.position}>
                           <td className="feature-label">
@@ -59,7 +63,10 @@ export function PlacementPrices({ booked }: { booked: (codes: string[]) => boole
                             {isBooked ? (
                               <span className="ad-slot-status is-occupied">Booked</span>
                             ) : (
-                              <a href={`/advertise?slot=${encodeURIComponent(p.codes[0])}#inquiry`} className="ad-slot-status is-available">
+                              <a
+                                href={online ? `/account/ads/new?slot=${encodeURIComponent(free)}` : `/advertise?slot=${encodeURIComponent(free)}#inquiry`}
+                                className="ad-slot-status is-available"
+                              >
                                 Available
                               </a>
                             )}

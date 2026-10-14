@@ -129,6 +129,22 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   settings once (Settings → Billing → Customer portal: allow cancel, at period end; no plan
   switching); put real monthly prices on the packages in the admin.
 
+- **Stage 3, step 5 (14.10.2026)** — banner places bought online (`lib/ad-billing.ts`). A place
+  is one AdSlot code with a price in `lib/ad-placements.ts`. On `/advertise` "Available" leads
+  to `/account/ads/new?slot=…` when Stripe is on (else the inquiry form, as before); a row
+  that covers several pages ("Other sections") is Available while any page is free and the
+  buyer picks the page. Checkout (subscription, metadata `kind=banner`) is refused when the
+  place is taken: a paid banner running there, or one bought online and still paid for. The
+  shared webhook creates the banner as a draft on the first event (owner, slot, start now,
+  `endAt` = paid period end + 1 day; welcome email + team notice), moves `endAt` on with every
+  payment and records cancellation. `/account/ads`: the account's places with status ("Waiting
+  for your picture", In review, Live until…, Not approved), lifetime views / clicks / CTR from
+  `banner_stats`, "Manage billing"; `/account/ads/[id]`: picture(s) at the slot's exact size
+  (sent as picked, not scaled — the collection's `checkSizes` reports a wrong size per field),
+  name and link → Pending review; the team publishes. Banners: pending / rejected statuses,
+  owner, moderation note, subscription fields; `imageDesktop` is required only to publish; the
+  public REST shows published banners only. Migration `stage3_banner_places`.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.

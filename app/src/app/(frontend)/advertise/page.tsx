@@ -4,6 +4,7 @@ import { RichText } from '@/components/RichText'
 import { ContactEmail } from '@/components/ContactEmail'
 import { PlacementPrices } from '@/components/PlacementPrices'
 import { SubmissionForm } from '@/components/SubmissionForm'
+import { reservedSlotCodes } from '@/lib/ad-billing'
 import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
@@ -77,7 +78,8 @@ export default async function AdvertisePage({ searchParams }: Props) {
   ])
   const chosen = packages.find((p) => String(p.id) === sp.package)
   // Demo fillers don't make a slot Booked — only a paid banner does.
-  const booked = (code: string) => isBooked(pool[code] ?? [])
+  const reserved = await reservedSlotCodes()
+  const booked = (code: string) => reserved.has(code) || isBooked(pool[code] ?? [])
   const slotName = (s: (typeof slots)[number]) =>
     s.name || `${PAGE_LABEL[s.page] ?? s.page} — ${POSITION_LABEL[s.position] ?? s.position}`
   // The middle tier is highlighted, as in the prototype.
@@ -199,7 +201,7 @@ export default async function AdvertisePage({ searchParams }: Props) {
             Every position is shown on 100% of the page&rsquo;s views. Prices are per month. Booked
             means a banner is running there right now; ask us for the next free dates.
           </p>
-          <PlacementPrices booked={(codes) => codes.some((c) => booked(c))} />
+          <PlacementPrices booked={booked} online={stripeEnabled()} />
 
           {page?.content ? (
             <div className="mt-10">

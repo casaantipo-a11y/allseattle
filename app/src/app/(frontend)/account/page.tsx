@@ -5,18 +5,18 @@ import { redirect } from 'next/navigation'
 import { AccountForm, LogoutButton } from '@/components/account/AccountForm'
 import { AccountShell } from '@/components/account/AccountShell'
 import { getCustomer } from '@/lib/account'
+import { myAds } from '@/lib/ad-billing'
 import { myBusinesses } from '@/lib/business-cabinet'
 import { payloadClient } from '@/lib/cabinet'
 import { activeCount } from '@/lib/listings'
 
 export const metadata: Metadata = { title: 'Your account' }
 
-// The account home (stage 3): My listings, My business and the profile; billing
-// joins it with the payment step.
+// The account home (stage 3): My listings, My business, My ads and the profile.
 export default async function AccountPage() {
   const me = await getCustomer()
   if (!me) redirect('/account/login')
-  const [active, businesses] = await Promise.all([payloadClient().then((p) => activeCount(p, me.id)), myBusinesses(me.id)])
+  const [active, businesses, ads] = await Promise.all([payloadClient().then((p) => activeCount(p, me.id)), myBusinesses(me.id), myAds(me.id)])
   return (
     <AccountShell eyebrow="Your account" title={`Hello, ${me.name}`} intro={<span>Signed in as {me.email}</span>}>
       <div className="mb-8 border-b border-brand-line pb-8">
@@ -52,6 +52,20 @@ export default async function AccountPage() {
               Register a business
             </Link>
           )}
+        </div>
+      </div>
+      <div className="mb-8 border-b border-brand-line pb-8">
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <h2 style={{ margin: 0 }}>My ads</h2>
+          <Link href="/account/ads" className="btn btn-outline btn-sm">
+            Open
+          </Link>
+        </div>
+        <div className="text-brand-slate">
+          {ads.length ? `${ads.length} banner ${ads.length === 1 ? 'place' : 'places'}.` : 'Banner places on the site, by the month.'}{' '}
+          <Link href="/advertise#placements" className="text-brand-navy underline">
+            See places and prices
+          </Link>
         </div>
       </div>
       <div className="mb-6 flex items-center justify-between gap-4">

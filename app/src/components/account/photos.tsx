@@ -34,7 +34,8 @@ async function shrink(file: File): Promise<File> {
   }
 }
 
-export function usePhotos(field: string, initial: Photo[], max: number) {
+/** `raw`: send the files as picked — banner pictures must keep their exact pixel size. */
+export function usePhotos(field: string, initial: Photo[], max: number, { raw = false }: { raw?: boolean } = {}) {
   const [kept, setKept] = useState<Photo[]>(initial)
   const [added, setAdded] = useState<Added[]>([])
   const [problem, setProblem] = useState<string | null>(null)
@@ -51,7 +52,7 @@ export function usePhotos(field: string, initial: Photo[], max: number) {
     const room = Math.max(0, max - kept.length - added.length)
     const picked = [...list].filter((f) => /^image\/(jpeg|png|webp)$/.test(f.type)).slice(0, room)
     setProblem(picked.length < list.length ? (max === 1 ? 'One JPEG, PNG or WebP picture' : `JPEG, PNG or WebP only, up to ${max} in all`) : null)
-    const shrunk = await Promise.all(picked.map(shrink))
+    const shrunk = raw ? picked : await Promise.all(picked.map(shrink))
     setAdded((a) => [...a, ...shrunk.map((file) => ({ file, url: URL.createObjectURL(file) }))])
   }
 
@@ -81,7 +82,20 @@ export function usePhotos(field: string, initial: Photo[], max: number) {
 export type PhotoState = ReturnType<typeof usePhotos>
 
 /** The previews with "Remove" and the "Add photos" button. `id` is what the field's label points at. */
-export function PhotoPicker({ id, photos, label = 'Add photos', errorId }: { id: string; photos: PhotoState; label?: string; errorId?: string }) {
+export function PhotoPicker({
+  id,
+  photos,
+  label = 'Add photos',
+  errorId,
+  whole = false,
+}: {
+  id: string
+  photos: PhotoState
+  label?: string
+  errorId?: string
+  /** Show the picture whole, at its own proportions (a banner), not cropped to 4:3. */
+  whole?: boolean
+}) {
   const input = useRef<HTMLInputElement>(null)
   const items = [...photos.kept.map((p) => ({ key: `k${p.id}`, url: p.url, remove: () => photos.removeKept(p.id) })), ...photos.added.map((a) => ({ key: a.url, url: a.url, remove: () => photos.removeAdded(a.url) }))]
   return (
@@ -89,11 +103,11 @@ export function PhotoPicker({ id, photos, label = 'Add photos', errorId }: { id:
       {items.length ? (
         // the margin sits on a wrapper: base.css resets ul margins outside any layer
         <div className="mb-3">
-          <ul className={`list-none p-0 ${photos.max === 1 ? 'max-w-[200px]' : 'grid grid-cols-3 gap-2 sm:grid-cols-5'}`}>
+          <ul className={`list-none p-0 ${whole ? 'max-w-[480px]' : photos.max === 1 ? 'max-w-[200px]' : 'grid grid-cols-3 gap-2 sm:grid-cols-5'}`}>
             {items.map((it) => (
               <li key={it.key}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={it.url} alt="" className="aspect-[4/3] w-full rounded-lg object-cover" />
+                <img src={it.url} alt="" className={whole ? 'w-full rounded-lg' : 'aspect-[4/3] w-full rounded-lg object-cover'} />
                 <button type="button" className="btn btn-outline btn-sm mt-1 w-full" onClick={it.remove}>
                   Remove
                 </button>

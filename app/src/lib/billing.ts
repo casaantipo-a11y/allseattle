@@ -3,9 +3,11 @@ import type { Business, Customer, Package } from '@/payload-types'
 import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, type CabinetResult } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
+import { syncAdSubscription } from './ad-billing'
 import { stripe, stripeEnabled, StripeError, type StripeEvent } from './stripe'
 
-// Stage 3, step 4: package subscriptions through Stripe. The owner picks a
+// Stage 3, step 4: package subscriptions through Stripe (ad places, step 5, are in
+// lib/ad-billing.ts and share the webhook: their subscriptions carry kind=banner). The owner picks a
 // package in the account and pays in Stripe Checkout (monthly, renews until
 // cancelled); the webhook (/api/stripe/webhook) then sets the business's
 // package and moves packageExpiresAt to the end of the paid month. Cancelling
@@ -14,12 +16,12 @@ import { stripe, stripeEnabled, StripeError, type StripeEvent } from './stripe'
 // Prices come from the Packages collection (priceMonthly); 0 means "contact us".
 
 /** Extra time after a paid period ends, so a renewal webhook that arrives late doesn't drop the package. */
-const GRACE_MS = 24 * 3600 * 1000
-const LIVE = ['active', 'canceling', 'past_due'] as const
+export const GRACE_MS = 24 * 3600 * 1000
+export const LIVE = ['active', 'canceling', 'past_due'] as const
 
 export const NOT_SET_UP = 'Online payment is not available yet. Please contact us to get a package.'
 
-type Sub = {
+export type Sub = {
   id: string
   status: string
   cancel_at_period_end?: boolean
@@ -31,7 +33,7 @@ type Sub = {
 
 const hasLiveSubscription = (biz: Business) => Boolean(biz.subscriptionStatus && (LIVE as readonly string[]).includes(biz.subscriptionStatus))
 
-async function stripeCustomerFor(customer: Customer) {
+export async function stripeCustomerFor(customer: Customer) {
   if (customer.stripeCustomerId) return customer.stripeCustomerId
   const c = await stripe<{ id: string }>(
     'POST',
@@ -102,16 +104,17 @@ export async function openBillingPortal(customer: Customer, returnPath: string):
   }
 }
 
-const statusOf = (s: Sub): Business['subscriptionStatus'] | null => {
+export const statusOf = (s: Sub): Business['subscriptionStatus'] | null => {
   if (s.status === 'active' || s.status === 'trialing') return s.cancel_at_period_end ? 'canceling' : 'active'
   if (s.status === 'past_due' || s.status === 'unpaid') return 'past_due'
   if (s.status === 'canceled' || s.status === 'incomplete_expired') return 'canceled'
   return null // incomplete: nothing paid yet
 }
 
-/** Brings a business in line with its Stripe subscription. Safe to run any number of times. */
+/** Brings a business (or, for kind=banner, a banner) in line with its Stripe subscription. Safe to run any number of times. */
 export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: boolean } = {}) {
   const sub = typeof subOrId === 'string' ? await stripe<Sub>('GET', `/subscriptions/${subOrId}`) : subOrId
+  if (sub.metadata?.kind === 'banner') return syncAdSubscription(sub, opts)
   const bizId = Number(sub.metadata?.businessId)
   const packageId = Number(sub.metadata?.packageId)
   const status = statusOf(sub)

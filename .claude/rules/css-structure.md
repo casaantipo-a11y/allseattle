@@ -288,7 +288,9 @@ banner is attached to a code in the admin; the seed adds the new codes (HOME_SID
 HOME_RIGHT_1, *_INFEED_1 for News, Cars, Directory and every "other" page) and puts "· Block A1"
 into each slot's name for the admin's picker. Demo banners stay in every slot (user's choice),
 so the placeholder only shows where no banner runs. Slots that are not on the sheets stay and
-show no price. Shared `.ad-slot-under` = a B2 under the main content (32px above).
+show no price. Stage 3 (14.10.2026): the status column counts a place bought online but still
+without its picture as Booked too; a row covering several pages (Other sections) is Available
+while any of its pages is free, and "Available" leads to booking in the account when Stripe is on. Shared `.ad-slot-under` = a B2 under the main content (32px above).
 
 **App, 12.10.2026 (later):** `.section--footer-tight` (components.css) = 16px from a page's last
 block to the footer instead of the shared 36 (`margin-bottom: -20px` on the section, the same trick

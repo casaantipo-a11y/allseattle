@@ -5,8 +5,9 @@ import type {
 } from 'payload'
 import { ValidationError } from 'payload'
 
-import { canWrite } from '../access/roles'
-import { isDemoField, statusField } from '../fields'
+import { canWrite, publishedOrLoggedIn, staffOnlyField } from '../access/roles'
+import { isDemoField, moderatedStatusField, moderationNoteField, ownerField } from '../fields'
+import { notifyAuthorOfReview } from '../hooks/moderation'
 import { revalidateCollection } from '../hooks/revalidate'
 import type { AdSlot, Media } from '../payload-types'
 
@@ -35,7 +36,11 @@ const checkSizes: CollectionBeforeChangeHook = async ({ data, originalDoc, req }
   const slotIds = ((data.slots ?? originalDoc?.slots ?? []) as unknown[])
     .map(idOf)
     .filter(Boolean) as number[]
-  const desktopId = idOf(data.imageDesktop ?? originalDoc?.imageDesktop)
+  const desktopId = idOf(data.imageDesktop !== undefined ? data.imageDesktop : originalDoc?.imageDesktop)
+  // A banner bought online starts without a picture (the buyer uploads it in the
+  // account); it can't go live until it has one.
+  if (!desktopId && (data.status ?? originalDoc?.status) === 'published')
+    errors.push({ path: 'imageDesktop', message: 'Add the banner picture before publishing.' })
   const mobileId = idOf(
     data.imageMobile !== undefined ? data.imageMobile : originalDoc?.imageMobile,
   )
@@ -83,7 +88,8 @@ const checkSizes: CollectionBeforeChangeHook = async ({ data, originalDoc, req }
         path: 'imageDesktop',
         message: `Slot ${slot.code} needs a ${sizes(slot.desktopSize)} image; this one is ${dims(desktop)}.`,
       })
-    if (slot.mobileSize) {
+    // (a draft bought online has no pictures yet: the mobile one is asked for with the desktop one)
+    if (slot.mobileSize && desktopId) {
       if (!mobile)
         errors.push({
           path: 'imageMobile',
@@ -115,11 +121,13 @@ export const Banners: CollectionConfig = {
   admin: {
     useAsTitle: 'advertiser',
     defaultColumns: ['advertiser', 'slots', 'startAt', 'endAt', 'status'],
+    description: 'Places bought online arrive as drafts; when the buyer uploads the picture the banner turns Pending review — check it and publish.',
     group: 'Advertising',
   },
   defaultSort: '-startAt',
   access: {
-    read: () => true,
+    // Drafts and banners waiting for review stay out of the public REST (the site reads banners server-side).
+    read: publishedOrLoggedIn,
     create: canWrite('sales'),
     update: canWrite('sales'),
     delete: canWrite('sales'),
@@ -127,7 +135,7 @@ export const Banners: CollectionConfig = {
   hooks: {
     beforeChange: [checkSizes],
     beforeDelete: [deleteStats],
-    afterChange: [revalidate.afterChange],
+    afterChange: [revalidate.afterChange, notifyAuthorOfReview('banner')],
     afterDelete: [revalidate.afterDelete],
   },
   fields: [
@@ -166,7 +174,6 @@ export const Banners: CollectionConfig = {
                   name: 'imageDesktop',
                   type: 'upload',
                   relationTo: 'media',
-                  required: true,
                   admin: {
                     description:
                       "The slot's desktop size (±2px), best at 2x — e.g. 1456x180 for 728x90",
@@ -216,7 +223,24 @@ export const Banners: CollectionConfig = {
         },
       ],
     },
-    statusField,
+    moderatedStatusField,
+    ownerField('The site account that bought this place online.'),
+    moderationNoteField,
+    {
+      // Set by the Stripe webhook for a place bought online (stage 3, lib/billing.ts):
+      // each paid month moves endAt on.
+      name: 'subscriptionStatus',
+      type: 'select',
+      options: [
+        { label: 'Active (renews monthly)', value: 'active' },
+        { label: 'Cancelled — runs to the end of the paid month', value: 'canceling' },
+        { label: 'Payment failed — Stripe is retrying', value: 'past_due' },
+        { label: 'Ended', value: 'canceled' },
+      ],
+      access: { read: staffOnlyField },
+      admin: { position: 'sidebar', readOnly: true, description: 'Online subscription, set by Stripe.' },
+    },
+    { name: 'stripeSubscriptionId', type: 'text', index: true, access: { read: staffOnlyField }, admin: { position: 'sidebar', readOnly: true } },
     isDemoField,
   ],
 }

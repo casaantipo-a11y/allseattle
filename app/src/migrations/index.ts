@@ -11,6 +11,7 @@ import * as migration_20261014_032801_stage3_listings_moderation from './2026101
 import * as migration_20261014_042505_stage3_business_accounts from './20261014_042505_stage3_business_accounts';
 import * as migration_20261014_045703_stage3_contest_votes from './20261014_045703_stage3_contest_votes';
 import * as migration_20261014_050730_stage3_package_subscriptions from './20261014_050730_stage3_package_subscriptions';
+import * as migration_20261014_052145_stage3_banner_places from './20261014_052145_stage3_banner_places';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20261014_050730_stage3_package_subscriptions.up,
     down: migration_20261014_050730_stage3_package_subscriptions.down,
-    name: '20261014_050730_stage3_package_subscriptions'
+    name: '20261014_050730_stage3_package_subscriptions',
+  },
+  {
+    up: migration_20261014_052145_stage3_banner_places.up,
+    down: migration_20261014_052145_stage3_banner_places.down,
+    name: '20261014_052145_stage3_banner_places'
   },
 ];

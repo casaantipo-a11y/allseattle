@@ -1125,6 +1125,8 @@ export interface AdSlot {
   createdAt: string;
 }
 /**
+ * Places bought online arrive as drafts; when the buyer uploads the picture the banner turns Pending review — check it and publish.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "banners".
  */
@@ -1142,14 +1144,30 @@ export interface Banner {
   /**
    * The slot's desktop size (±2px), best at 2x — e.g. 1456x180 for 728x90
    */
-  imageDesktop: number | Media;
+  imageDesktop?: (number | null) | Media;
   /**
    * For slots shown on phones: the slot's mobile size, best at 2x — e.g. 640x200
    */
   imageMobile?: (number | null) | Media;
   startAt: string;
   endAt: string;
-  status: 'draft' | 'published';
+  /**
+   * Submissions from site accounts arrive as Pending review.
+   */
+  status: 'draft' | 'pending' | 'published' | 'rejected';
+  /**
+   * The site account that bought this place online.
+   */
+  owner?: (number | null) | Customer;
+  /**
+   * If you reject it: why. The author sees this.
+   */
+  moderationNote?: string | null;
+  /**
+   * Online subscription, set by Stripe.
+   */
+  subscriptionStatus?: ('active' | 'canceling' | 'past_due' | 'canceled') | null;
+  stripeSubscriptionId?: string | null;
   /**
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
    */
@@ -1967,6 +1985,10 @@ export interface BannersSelect<T extends boolean = true> {
   startAt?: T;
   endAt?: T;
   status?: T;
+  owner?: T;
+  moderationNote?: T;
+  subscriptionStatus?: T;
+  stripeSubscriptionId?: T;
   isDemo?: T;
   updatedAt?: T;
   createdAt?: T;
