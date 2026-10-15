@@ -64,7 +64,9 @@ export function AdCheckoutForm({ slots, chosen, price, values = {} }: { slots: (
         <input {...input('linkUrl', { type: 'url', inputMode: 'url', maxLength: 400, placeholder: 'https://' })} />
       </Field>
       <div className={`field${errors.consent ? ' invalid' : ''}`}>
-        <label className="flex items-start gap-3" style={{ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' }}>
+        {/* display and padding inline: the prototype's .field label (display: block) and the account
+            labels' 4px indent would beat the utilities and glue the box to the text (15.10.2026). */}
+        <label className="flex items-start gap-3" style={{ display: 'flex', paddingLeft: 0, fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' }}>
           <input type="checkbox" name="consent" value="yes" className="mt-1 h-5 w-5 shrink-0" style={{ width: 20, minHeight: 0, padding: 0 }} />
           <span>
             I agree that <strong>{price}</strong> is charged to my card <strong>every month</strong> for this place until I cancel. I can cancel any time in

@@ -449,3 +449,10 @@ body:has(> main[data-page='account']) > main.account-middle {
   flex-direction: column;
   justify-content: center;
 }
+
+/* The "Already in the directory?" note under My business: ContactEmail is a <p>, and the
+   prototype's unlayered p margin (0 0 12px) beat Tailwind's mt-2 and left 12px under the
+   last line. 8px above it, nothing below (client, 15.10.2026). */
+main[data-page='account'] .account-note > p {
+  margin: var(--space-2) 0 0;
+}

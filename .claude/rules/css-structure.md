@@ -327,4 +327,7 @@ Share-the-news `.photo-picker-box` (a `<button>` there, reset in business.css; d
 the business form's note and Save sit under a rule (`.account-submit`); My listings is
 AccountShell `middle` (`.account-middle`: the block centred between header and footer on a short
 page); "Delete my account" centred in its strip (strip top padding = the card's padding);
-/account/ads: 24px above and below the billing rule and under "Manage billing".
+/account/ads and /account/business: 24px above and below the rule and under the last line (the
+business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
+The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and
+`padding-left: 0` inline — `.field label` and the account label indent beat the utilities.

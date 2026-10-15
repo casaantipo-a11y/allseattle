@@ -60,7 +60,7 @@ export default async function MyBusinessPage() {
             const pkg = effectivePackage({ package: b.package as Package | null, packageExpiresAt: b.packageExpiresAt })
             const logo = mediaUrl((b.logo ?? b.cover) as Media | number | null, 'thumb')
             return (
-              <li key={b.id} className="flex gap-4 border-t border-brand-line py-5 first:border-t-0 first:pt-0">
+              <li key={b.id} className="flex gap-4 border-t border-brand-line py-5 first:border-t-0 first:pt-0 last:pb-0">
                 {logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={logo} alt="" className="h-16 w-20 shrink-0 rounded-lg object-cover sm:h-20 sm:w-28" />
@@ -98,12 +98,13 @@ export default async function MyBusinessPage() {
           })}
         </ul>
       )}
-      <div className="mt-8 border-t border-brand-line pt-6 text-brand-slate">
+      {/* 24px above the rule, under it and under the text, as on /account/ads (client, 15.10.2026). */}
+      <div className="account-note mt-6 border-t border-brand-line pt-6 text-brand-slate sm:-mb-2">
         <div className="m-0">
           Already in the directory? Write to us from <strong>{me.email}</strong> with the name of your business, and we will connect it to
           this account.
         </div>
-        <ContactEmail label="Our email:" className="mt-2" />
+        <ContactEmail label="Our email:" />
       </div>
     </AccountShell>
   )

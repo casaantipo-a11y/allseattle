@@ -261,3 +261,12 @@
     margin-right: var(--space-3);
   }
 }
+
+/* «Advertise on AllSeattle» опущен к заголовку на те же 16px, что и надзаголовок
+   общей шапки (.section-head .eyebrow): здесь шапка — .section-intro, и общий сдвиг
+   её не касался, между надписями было 19–23px против 3–7 на остальных страницах
+   (клиент, 15.10.2026). relative — заголовок и страница не двигаются. */
+[data-page="advertise"] .section-intro .eyebrow {
+  position: relative;
+  top: var(--space-4);
+}

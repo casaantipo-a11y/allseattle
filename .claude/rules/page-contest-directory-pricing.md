@@ -218,3 +218,8 @@ Build note (12.10.2026): `sectionStaticParams` pre-renders only categories that 
 (with their descendants). Building all ~117 directory categories exhausted the local Postgres's
 connections ("too many clients") and gains nothing for an empty page; the rest render on first
 visit and are cached like the others.
+
+**App /advertise, 15.10.2026:** the head is `.section-intro`, not `.section-head`, so the shared
+16px eyebrow drop never reached it — "Advertise on AllSeattle" stood 19–23px above "Placement
+packages" against 3–7 elsewhere. `[data-page="advertise"] .section-intro .eyebrow` (pricing.css)
+now drops it 16px (relative): letters 3.3px apart at 375, 7.1 at 1440, same as News.
