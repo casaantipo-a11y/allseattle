@@ -67,12 +67,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = { themeColor: '#0D1B2A' }
 
-// Pages shown without the photo banner and the announcement plates (client, 07.10.2026).
+// Pages shown without the photo banner and the announcement plates (client, 07.10.2026;
+// every account page since 15.10.2026).
 const CHROME_FREE_PAGES = ['/add-business']
+const CHROME_FREE_SECTIONS = ['/account']
 // Pages that keep the photo banner but go without the announcement plates (client,
-// 14.10.2026): Share the news and every account page.
+// 14.10.2026): Share the news.
 const PLATE_FREE_PAGES = ['/share-news']
-const PLATE_FREE_SECTIONS = ['/account']
 
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
   const settings = await getSiteSettings()
@@ -83,9 +84,9 @@ export default async function FrontendLayout({ children }: { children: ReactNode
           Skip to content
         </a>
         <SiteHeader />
-        <HiddenOn paths={CHROME_FREE_PAGES}>
+        <HiddenOn paths={CHROME_FREE_PAGES} sections={CHROME_FREE_SECTIONS}>
           <HeroBanner />
-          <HiddenOn paths={PLATE_FREE_PAGES} sections={PLATE_FREE_SECTIONS}>
+          <HiddenOn paths={PLATE_FREE_PAGES}>
             <Announcements />
           </HiddenOn>
         </HiddenOn>

@@ -374,6 +374,9 @@ a.underline {
 /* Account pages have no announcement plates, so the photo banner sits right above the
    heading; the section adds no padding of its own (client, 15.10.2026: 32 → 16 → 0) —
    the eyebrow's own 16px shift is what remains under the banner. */
+/* No top padding on any account page: the account goes without the photo banner (layout's
+   CHROME_FREE_SECTIONS), and the eyebrow's own top: 16px (.section-head .eyebrow) leaves
+   16px under the header (client, 15.10.2026). */
 main[data-page='account'] > .section:first-child {
   padding-top: 0;
 }
@@ -381,7 +384,41 @@ main[data-page='account'] > .section:first-child {
 /* Field labels sit 4px in from the field's edge, and "Forgot your password?" with them
    (client, 15.10.2026: 8px was a touch too far). Account pages only. No "*" on required
    fields there either (the client's call) — the fields keep `required`. */
+/* The sign-up anti-bot check (interaction-only): no room while hidden, 16px under it
+   when Cloudflare does show it. */
+.account-turnstile:has(iframe:not([style*='display: none'])) {
+  margin-bottom: var(--space-4);
+}
+
 main[data-page='account'] .field > label,
 main[data-page='account'] .account-indent {
   padding-left: var(--space-1);
+}
+
+/* The intro line under an account page's heading ("Already have one? Log in.") sits
+   midway between the heading's letters and the card (client, 15.10.2026). Centred by
+   boxes (12/12) it read low: the heading's line box carries room under its baseline.
+   Measured on the letters, the line has to go up by 3px with a 30px heading and 5.9px
+   with the 48px one, linearly in between — the same clamp() as the h1 size
+   (clamp(30px, 4vw, 48px)), so it holds at every width. The total stays 24px. */
+main[data-page='account'] .account-intro {
+  --intro-shift: clamp(3px, 0.644vw - 1.83px, 5.9px);
+  margin: calc(var(--space-3) - var(--intro-shift)) 0 calc(var(--space-3) + var(--intro-shift));
+}
+
+/* Short account pages (Log in, Reset your password…) end above the bottom of the window and
+   left white under the footer (client, 15.10.2026): the body becomes a full-height column and
+   <main> takes the rest, so the space goes under the card and the footer sits at the bottom.
+   Taller pages are unchanged — there is nothing left to take. The 16px to the footer stays:
+   the section's -20px margin and the footer's 36px now add up inside the flex column instead
+   of collapsing, with the same result. */
+body:has(> main[data-page='account']) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body:has(> main[data-page='account']) > main {
+  flex: 1 0 auto;
 }

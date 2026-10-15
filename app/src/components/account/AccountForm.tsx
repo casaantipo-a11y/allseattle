@@ -194,7 +194,9 @@ export function AccountForm({
             <label htmlFor="acc-hp">Fax</label>
             <input id="acc-hp" type="text" name="company_fax" tabIndex={-1} autoComplete="off" />
           </div>
-          {turnstileSiteKey ? <div className="cf-turnstile mb-4" data-sitekey={turnstileSiteKey} /> : null}
+          {/* interaction-only: the anti-bot check stays out of sight unless Cloudflare needs
+              the visitor to click — no empty 65px box above the button (client, 15.10.2026). */}
+          {turnstileSiteKey ? <div className="cf-turnstile account-turnstile" data-sitekey={turnstileSiteKey} data-appearance="interaction-only" /> : null}
         </>
       ) : null}
       {mode === 'login' ? (

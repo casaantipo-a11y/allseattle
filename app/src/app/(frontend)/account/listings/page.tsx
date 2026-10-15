@@ -50,7 +50,8 @@ export default async function MyListingsPage() {
         </>
       }
     >
-      <div className="mb-6 flex flex-wrap gap-3">
+      {/* Centred in the card (client, 15.10.2026), and the empty-state line under them with it. */}
+      <div className="mb-6 flex flex-wrap justify-center gap-3">
         <Link href="/account/listings/new?type=car" className="btn">
           Sell a car
         </Link>
@@ -59,7 +60,7 @@ export default async function MyListingsPage() {
         </Link>
       </div>
       {rows.length === 0 ? (
-        <div className="m-0 text-brand-slate">No listings yet.</div>
+        <div className="m-0 text-center text-brand-slate">No listings yet.</div>
       ) : (
         <ul className="m-0 list-none p-0">
           {rows.map(({ kind, doc }) => {

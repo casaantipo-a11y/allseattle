@@ -17,7 +17,8 @@ export function AccountShell({ eyebrow = 'Your account', title, intro, children,
               <h1>{title}</h1>
             </div>
           </div>
-          {intro ? <div className="mb-6 text-brand-slate">{intro}</div> : null}
+          {/* Midway between the heading's letters and the card (client): .account-intro in business.css. */}
+          {intro ? <div className="account-intro text-brand-slate">{intro}</div> : null}
           <div className="rounded-xl border border-brand-line bg-white p-5 sm:p-8">{children}</div>
           </div>
         </div>
