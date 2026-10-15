@@ -308,3 +308,10 @@ back. Price cards on /advertise: the package name is a full-width bar in its tie
 (`.pricing-name--*`, pricing.css), the price at `--text-4xl`, 1/3/6/12-month rows; the features
 list left the cards. The middle package stays **"Luxury"** (the PDF says "Lux"; the client chose
 Luxury). The seed finds packages by `order`, not name.
+
+**App, 15.10.2026 — links with Tailwind `underline`:** the prototype's unlayered
+`a { text-decoration: none }` (base.css) silently cancelled every `className="… underline"` link
+(43 of them: account pages, intros, "Forgot your password?"), so they read as plain text.
+`a.underline` in business.css restores the underline (offset 3px). The way between Log in and
+Create an account is `.account-switch` (accent, bold, underlined). Account pages
+(`main[data-page='account']`) start 16px under the photo banner instead of 32 (no plates there).

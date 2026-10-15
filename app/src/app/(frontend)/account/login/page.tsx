@@ -22,7 +22,7 @@ export default async function LoginPage({ searchParams }: Props) {
       intro={
         <>
           New here?{' '}
-          <Link href={`/account/register${next !== '/account' ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-brand-navy underline">
+          <Link href={`/account/register${next !== '/account' ? `?next=${encodeURIComponent(next)}` : ''}`} className="account-switch">
             Create an account
           </Link>{' '}
           — it takes a minute and lets you post cars and jobs.

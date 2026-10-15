@@ -349,3 +349,30 @@
   line-height: 1;
   cursor: pointer;
 }
+
+/* Links written with Tailwind's `underline` (account pages, notes, intros): the
+   prototype's unlayered `a { text-decoration: none }` beat the utility, so they read
+   as plain text (client, 15.10.2026). An unlayered rule restores what was meant. */
+a.underline {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* "Create an account" / "Log in" under the heading of the other form: the way between
+   the two pages, in the accent so it reads as a link at a glance. */
+.account-switch {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.account-switch:hover {
+  color: var(--color-accent-dark);
+}
+
+/* Account pages have no announcement plates, so the photo banner sits right above the
+   heading: 16px of section padding instead of 32 (client, 15.10.2026). */
+main[data-page='account'] > .section:first-child {
+  padding-top: var(--space-4);
+}

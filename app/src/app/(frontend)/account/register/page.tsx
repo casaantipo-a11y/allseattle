@@ -16,7 +16,7 @@ export default async function RegisterPage() {
       intro={
         <>
           Already have one?{' '}
-          <Link href="/account/login" className="text-brand-navy underline">
+          <Link href="/account/login" className="account-switch">
             Log in
           </Link>
           .
