@@ -8,7 +8,7 @@ export type Option = { value: string; label: string }
 export function Field({
   id,
   label,
-  required,
+  required: _required, // kept for the callers; account forms show no "*" (client, 15.10.2026)
   error,
   hint,
   children,
@@ -26,7 +26,6 @@ export function Field({
     <div className={`field${error ? ' invalid' : ''}${wide ? ' sm:col-span-2' : ''}`}>
       <label htmlFor={id}>
         {label}
-        {required ? <span aria-hidden="true"> *</span> : null}
       </label>
       {children}
       {hint && !error ? <span className="form-note">{hint}</span> : null}

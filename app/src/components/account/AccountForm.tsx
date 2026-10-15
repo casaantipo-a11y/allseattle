@@ -166,7 +166,6 @@ export function AccountForm({
           <div key={f.name} className={`field${err ? ' invalid' : ''}`}>
             <label htmlFor={id}>
               {f.label}
-              {f.required ? <span aria-hidden="true"> *</span> : null}
             </label>
             <input
               id={id}
@@ -199,7 +198,7 @@ export function AccountForm({
         </>
       ) : null}
       {mode === 'login' ? (
-        <div className="mb-4 text-sm">
+        <div className="account-indent mb-4 text-sm">
           <Link href="/account/forgot" className="text-brand-navy underline">
             Forgot your password?
           </Link>

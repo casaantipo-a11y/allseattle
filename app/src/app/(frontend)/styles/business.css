@@ -372,7 +372,16 @@ a.underline {
 }
 
 /* Account pages have no announcement plates, so the photo banner sits right above the
-   heading: 16px of section padding instead of 32 (client, 15.10.2026). */
+   heading; the section adds no padding of its own (client, 15.10.2026: 32 → 16 → 0) —
+   the eyebrow's own 16px shift is what remains under the banner. */
 main[data-page='account'] > .section:first-child {
-  padding-top: var(--space-4);
+  padding-top: 0;
+}
+
+/* Field labels sit 4px in from the field's edge, and "Forgot your password?" with them
+   (client, 15.10.2026: 8px was a touch too far). Account pages only. No "*" on required
+   fields there either (the client's call) — the fields keep `required`. */
+main[data-page='account'] .field > label,
+main[data-page='account'] .account-indent {
+  padding-left: var(--space-1);
 }

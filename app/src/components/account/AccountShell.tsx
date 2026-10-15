@@ -5,7 +5,8 @@ import type { ReactNode } from 'react'
 export function AccountShell({ eyebrow = 'Your account', title, intro, children, wide = false }: { eyebrow?: string; title: string; intro?: ReactNode; children: ReactNode; wide?: boolean }) {
   return (
     <main id="content" data-page="account">
-      <section className="section">
+      {/* section--footer-tight: 16px to the footer, as on Services, Jobs and the rest (client). */}
+      <section className="section section--footer-tight">
         {/* The width limit sits on an inner block: the prototype's unlayered .container
             max-width would beat a Tailwind utility on the container itself. */}
         <div className="container">

@@ -314,4 +314,7 @@ Luxury). The seed finds packages by `order`, not name.
 (43 of them: account pages, intros, "Forgot your password?"), so they read as plain text.
 `a.underline` in business.css restores the underline (offset 3px). The way between Log in and
 Create an account is `.account-switch` (accent, bold, underlined). Account pages
-(`main[data-page='account']`) start 16px under the photo banner instead of 32 (no plates there).
+(`main[data-page='account']`): the section has no top padding (photo → eyebrow 16px, the
+eyebrow's own shift), `section--footer-tight` (card → footer 16px), field labels and
+`.account-indent` ("Forgot your password?") 4px in from the field edge, and no "*" on required
+fields (client's call; the inputs keep `required`).
