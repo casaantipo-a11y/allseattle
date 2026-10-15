@@ -226,3 +226,5 @@ now drops it 16px (relative): letters 3.3px apart at 375, 7.1 at 1440, same as N
 The intro → package cards gap is 16px there (`[data-page="advertise"] .section-intro`, instead
 of the shared 32), plus the grid's own 12px for the "Most popular" badge: text → cards 28px
 (was 44), text → badge 18 from 1024.
+The section's top padding is 16px there (`[data-page="advertise"] > .section:first-child`): the
+16px eyebrow drop had pushed it 16px further from the plates; plates → eyebrow letters 37.4px.

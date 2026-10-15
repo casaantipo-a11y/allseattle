@@ -276,3 +276,9 @@
 [data-page="advertise"] .section-intro {
   margin-bottom: var(--space-4);
 }
+
+/* Сверху секции 16px вместо общих 32: надзаголовок опущен на 16px (правило выше),
+   и расстояние от плашек до него выросло на те же 16 (клиент, 15.10.2026). */
+[data-page="advertise"] > .section:first-child {
+  padding-top: var(--space-4);
+}
