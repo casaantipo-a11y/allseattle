@@ -322,3 +322,9 @@ footer sits at the bottom of the window instead of leaving white under it;
 box is not where its letters are); field labels and
 `.account-indent` ("Forgot your password?") 4px in from the field edge, and no "*" on required
 fields (client's call; the inputs keep `required`).
+Also 15.10.2026: every account photo field (PhotoPicker, components/account/photos.tsx) is the
+Share-the-news `.photo-picker-box` (a `<button>` there, reset in business.css; drop works too);
+the business form's note and Save sit under a rule (`.account-submit`); My listings is
+AccountShell `middle` (`.account-middle`: the block centred between header and footer on a short
+page); "Delete my account" centred in its strip (strip top padding = the card's padding);
+/account/ads: 24px above and below the billing rule and under "Manage billing".

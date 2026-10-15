@@ -81,29 +81,33 @@ export function usePhotos(field: string, initial: Photo[], max: number, { raw = 
 
 export type PhotoState = ReturnType<typeof usePhotos>
 
-/** The previews with "Remove" and the "Add photos" button. `id` is what the field's label points at. */
+/** The previews with "Remove" and the "Add photos" picker. `id` is what the field's label points at. */
 export function PhotoPicker({
   id,
   photos,
   label = 'Add photos',
+  hint = 'JPEG, PNG or WebP',
   errorId,
   whole = false,
 }: {
   id: string
   photos: PhotoState
   label?: string
+  /** The small line under the picker's title. */
+  hint?: string
   errorId?: string
   /** Show the picture whole, at its own proportions (a banner), not cropped to 4:3. */
   whole?: boolean
 }) {
   const input = useRef<HTMLInputElement>(null)
   const items = [...photos.kept.map((p) => ({ key: `k${p.id}`, url: p.url, remove: () => photos.removeKept(p.id) })), ...photos.added.map((a) => ({ key: a.url, url: a.url, remove: () => photos.removeAdded(a.url) }))]
+  const many = photos.max > 1
   return (
     <>
       {items.length ? (
         // the margin sits on a wrapper: base.css resets ul margins outside any layer
         <div className="mb-3">
-          <ul className={`list-none p-0 ${whole ? 'max-w-[480px]' : photos.max === 1 ? 'max-w-[200px]' : 'grid grid-cols-3 gap-2 sm:grid-cols-5'}`}>
+          <ul className={`list-none p-0 ${whole ? 'max-w-[480px]' : many ? 'grid grid-cols-3 gap-2 sm:grid-cols-5' : 'max-w-[200px]'}`}>
             {items.map((it) => (
               <li key={it.key}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -117,17 +121,40 @@ export function PhotoPicker({
         </div>
       ) : null}
       {photos.count < photos.max ? (
-        <div className="mb-2">
-          {/* The native picker reads "Choose files" in the visitor's OS language;
-              an own button keeps the page in English. */}
-          <button type="button" id={id} className="btn btn-outline" aria-describedby={errorId} onClick={() => input.current?.click()}>
-            {label}
+        <>
+          {/* The site's photo picker (.photo-picker-box, as on Share the news), not the native
+              "Choose files", which speaks the visitor's OS language. Pictures can be dropped on it too. */}
+          <button
+            type="button"
+            id={id}
+            className="photo-picker-box"
+            aria-describedby={errorId}
+            onClick={() => input.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault()
+              void photos.add(e.dataTransfer.files)
+            }}
+          >
+            <span className="photo-picker-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+                <circle cx="12" cy="13" r="3.5" />
+              </svg>
+            </span>
+            <span className="photo-picker-text">
+              <span className="photo-picker-title">{label}</span>
+              <span className="photo-picker-hint">{many && photos.count ? `${hint} · ${photos.count} of ${photos.max}` : hint}</span>
+            </span>
+            <span className="photo-picker-btn" aria-hidden="true">
+              {many ? 'Choose files' : 'Choose file'}
+            </span>
           </button>
           <input
             ref={input}
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            multiple={photos.max > 1}
+            multiple={many}
             tabIndex={-1}
             style={{ display: 'none' }}
             onChange={async (e) => {
@@ -135,7 +162,7 @@ export function PhotoPicker({
               e.target.value = ''
             }}
           />
-        </div>
+        </>
       ) : null}
     </>
   )

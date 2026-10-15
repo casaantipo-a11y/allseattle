@@ -422,3 +422,30 @@ body:has(> main[data-page='account']) {
 body:has(> main[data-page='account']) > main {
   flex: 1 0 auto;
 }
+
+/* Account photo fields (PhotoPicker in components/account/photos.tsx) use the site's
+   .photo-picker-box from Share the news (client, 15.10.2026). There the box is a <label>
+   over a hidden input; here it is a <button>, so the browser's button look comes off. */
+.field button.photo-picker-box {
+  width: 100%;
+  min-height: 0;
+  text-align: left;
+  color: inherit;
+}
+
+/* Business form: the note and Save, set apart from the last field by a rule. */
+main[data-page='account'] .account-submit {
+  margin-top: var(--space-2);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-slate-soft);
+}
+
+/* My listings (AccountShell `middle`): with few listings the page is short and the free
+   space all went under the card (client, 15.10.2026: "too much empty space, lower the whole
+   block"). <main> already takes the rest of the window (above); here it centres its section
+   in that height. A long page has no free space, so nothing moves. */
+body:has(> main[data-page='account']) > main.account-middle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

@@ -62,9 +62,11 @@ export function DeleteAccount() {
   }
   if (!open) {
     return (
-      <button type="button" className="btn btn-outline btn-sm" onClick={() => setOpen(true)}>
-        Delete my account
-      </button>
+      <div className="flex justify-center">
+        <button type="button" className="btn btn-outline btn-sm" onClick={() => setOpen(true)}>
+          Delete my account
+        </button>
+      </div>
     )
   }
   return (

@@ -256,30 +256,27 @@ export function BusinessForm({
       <h2>Pictures</h2>
       <div className="grid gap-x-4 sm:grid-cols-2">
         <Field id="bf-logo" label="Logo" error={err('logo') ?? logoPhotos.problem ?? undefined}>
-          <PhotoPicker id="bf-logo" photos={logoPhotos} label="Add a logo" />
+          <PhotoPicker id="bf-logo" photos={logoPhotos} label="Add a logo" hint="A square picture works best" />
         </Field>
-        <Field id="bf-cover" label="Cover" error={err('cover') ?? coverPhotos.problem ?? undefined} hint="The picture in the directory list">
-          <PhotoPicker id="bf-cover" photos={coverPhotos} label="Add a cover" />
+        <Field id="bf-cover" label="Cover" error={err('cover') ?? coverPhotos.problem ?? undefined}>
+          <PhotoPicker id="bf-cover" photos={coverPhotos} label="Add a cover" hint="The picture in the directory list" />
         </Field>
-        <Field
-          id="bf-gallery"
-          label={`Gallery (up to ${limits.maxPhotos} with ${limits.packageName})`}
-          error={err('gallery') ?? galleryPhotos.problem ?? undefined}
-          wide
-          hint="JPEG, PNG or WebP. Many photos? Save a few at a time."
-        >
-          <PhotoPicker id="bf-gallery" photos={galleryPhotos} />
+        <Field id="bf-gallery" label="Gallery" error={err('gallery') ?? galleryPhotos.problem ?? undefined} wide hint="Many photos? Save a few at a time.">
+          <PhotoPicker id="bf-gallery" photos={galleryPhotos} hint={`Up to ${limits.maxPhotos} with ${limits.packageName} · JPEG, PNG or WebP`} />
         </Field>
       </div>
 
-      <div className="form-note mb-4">
-        {live
-          ? 'Your business is live: changes show on the site as soon as you save. The team may review them.'
-          : 'The team checks every new business before it goes live, usually within a day.'}
+      {/* The note and Save set apart from the last field by a rule (client, 15.10.2026). */}
+      <div className="account-submit">
+        <div className="form-note mb-4">
+          {live
+            ? 'Your business is live: changes show on the site as soon as you save. The team may review them.'
+            : 'The team checks every new business before it goes live, usually within a day.'}
+        </div>
+        <button type="submit" className="btn btn-lg btn-block" disabled={state === 'sending'}>
+          {state === 'sending' ? 'Saving…' : live ? 'Save' : id ? 'Save and send for review' : 'Send for review'}
+        </button>
       </div>
-      <button type="submit" className="btn btn-lg btn-block" disabled={state === 'sending'}>
-        {state === 'sending' ? 'Saving…' : live ? 'Save' : id ? 'Save and send for review' : 'Send for review'}
-      </button>
     </form>
   )
 }

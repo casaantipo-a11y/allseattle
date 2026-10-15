@@ -74,7 +74,9 @@ export default async function AccountPage() {
         <LogoutButton />
       </div>
       <AccountForm mode="profile" customerId={me.id} values={{ name: me.name ?? '', phone: me.phone ?? '' }} />
-      <div className="mt-8 border-t border-brand-line pt-6">
+      {/* Above the button as much as the card's own padding below it (p-5 sm:p-8, AccountShell),
+          so "Delete my account" sits in the middle of its strip (client, 15.10.2026). */}
+      <div className="mt-8 border-t border-brand-line pt-5 sm:pt-8">
         <DeleteAccount />
       </div>
     </AccountShell>

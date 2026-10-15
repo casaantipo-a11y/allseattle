@@ -2,9 +2,11 @@ import type { ReactNode } from 'react'
 
 // The frame of the account pages: the site's section head and a narrow card,
 // like /add-business.
-export function AccountShell({ eyebrow = 'Your account', title, intro, children, wide = false }: { eyebrow?: string; title: string; intro?: ReactNode; children: ReactNode; wide?: boolean }) {
+// `middle`: on a short page the block stands midway between the header and the footer
+// instead of under the header with the free space below it (.account-middle, business.css).
+export function AccountShell({ eyebrow = 'Your account', title, intro, children, wide = false, middle = false }: { eyebrow?: string; title: string; intro?: ReactNode; children: ReactNode; wide?: boolean; middle?: boolean }) {
   return (
-    <main id="content" data-page="account">
+    <main id="content" data-page="account" className={middle ? 'account-middle' : undefined}>
       {/* section--footer-tight: 16px to the footer, as on Services, Jobs and the rest (client). */}
       <section className="section section--footer-tight">
         {/* The width limit sits on an inner block: the prototype's unlayered .container
