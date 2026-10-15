@@ -174,6 +174,12 @@ centred on the page with "Rules" and the rule lines centred (`.contest-rules` in
 Before, the shared `RichText` capped itself at 72ch of its own 17px font inside a 72ch-of-18px
 wrapper, so the text hugged the wrapper's left edge and the block read as shifted left.
 
+**App contest page, stage 3 (14.10.2026): voting.** The entry grid is the client component
+`ContestVoting` (the prototype's `.contest-card` with `.contest-vote-count` and a `btn-block`
+"Vote", as in contest.js) and the vote form is the prototype's `.modal-overlay` / `.modal`.
+Closed or not-yet-open voting shows the old grey pill with `votingState().label` instead of the
+button; the hero's status line ends with the same label.
+
 **App business page (`/biz/[slug]`, `biz/BusinessView.tsx`), 15.10.2026:** rebuilt after the
 client's "Lux" example (Commercial.pdf p. 3): name + categories with the month's views as digit
 boxes; a data table with icons (`.biz-info`, business.css); "On the map" (wide, `#biz-map`,
@@ -212,3 +218,11 @@ Build note (12.10.2026): `sectionStaticParams` pre-renders only categories that 
 (with their descendants). Building all ~117 directory categories exhausted the local Postgres's
 connections ("too many clients") and gains nothing for an empty page; the rest render on first
 visit and are cached like the others.
+
+**App /advertise, 15.10.2026:** the head is `.section-intro`, not `.section-head`, so the shared
+16px eyebrow drop never reached it — "Advertise on AllSeattle" stood 19–23px above "Placement
+packages" against 3–7 elsewhere. `[data-page="advertise"] .section-intro .eyebrow` (pricing.css)
+now drops it 16px (relative): letters 3.3px apart at 375, 7.1 at 1440, same as News.
+The intro → package cards gap is 16px there (`[data-page="advertise"] .section-intro`, instead
+of the shared 32), plus the grid's own 12px for the "Most popular" badge: text → cards 28px
+(was 44), text → badge 18 from 1024.

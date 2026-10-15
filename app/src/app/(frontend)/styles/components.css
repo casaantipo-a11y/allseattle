@@ -1686,6 +1686,13 @@ body.modal-open {
     position: relative;
     z-index: 1;
     margin-bottom: -90px;
+    /* The slot's box spans the whole row and lay over the card on the right, so
+       «Place a listing» on Cars did not click (client, 15.10.2026): only the
+       banner itself takes clicks. */
+    pointer-events: none;
+  }
+  .ad-slot-top--in-head .ad-slot {
+    pointer-events: auto;
   }
   .ad-slot-top--in-head + .section-head {
     min-height: 90px;
