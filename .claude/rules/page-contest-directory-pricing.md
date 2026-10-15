@@ -223,3 +223,6 @@ visit and are cached like the others.
 16px eyebrow drop never reached it — "Advertise on AllSeattle" stood 19–23px above "Placement
 packages" against 3–7 elsewhere. `[data-page="advertise"] .section-intro .eyebrow` (pricing.css)
 now drops it 16px (relative): letters 3.3px apart at 375, 7.1 at 1440, same as News.
+The intro → package cards gap is 16px there (`[data-page="advertise"] .section-intro`, instead
+of the shared 32), plus the grid's own 12px for the "Most popular" badge: text → cards 28px
+(was 44), text → badge 18 from 1024.

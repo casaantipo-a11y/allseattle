@@ -270,3 +270,9 @@
   position: relative;
   top: var(--space-4);
 }
+
+/* Вступление → карточки пакетов: 16px вместо общих 32 у .section-intro (клиент,
+   15.10.2026). Ещё 12px сверху у .pricing-grid — место под плашку «Most popular». */
+[data-page="advertise"] .section-intro {
+  margin-bottom: var(--space-4);
+}
