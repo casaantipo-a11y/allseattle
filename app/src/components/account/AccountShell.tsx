@@ -21,7 +21,9 @@ export function AccountShell({ eyebrow = 'Your account', title, intro, children,
           </div>
           {/* Midway between the heading's letters and the card (client): .account-intro in business.css. */}
           {intro ? <div className="account-intro text-brand-slate">{intro}</div> : null}
-          <div className="rounded-xl border border-brand-line bg-white p-5 sm:p-8">{children}</div>
+          {/* Bottom padding 24 (16 on phones) against 32/20 elsewhere: after the last button the
+              card ended on too much white (client, 16.10.2026). */}
+          <div className="rounded-xl border border-brand-line bg-white px-5 pb-4 pt-5 sm:px-8 sm:pb-6 sm:pt-8">{children}</div>
           </div>
         </div>
       </section>

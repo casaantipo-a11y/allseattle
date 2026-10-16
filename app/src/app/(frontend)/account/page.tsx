@@ -20,7 +20,7 @@ export default async function AccountPage() {
   const [active, businesses, ads] = await Promise.all([payloadClient().then((p) => activeCount(p, me.id)), myBusinesses(me.id), myAds(me.id)])
   return (
     <AccountShell eyebrow="Your account" title={`Hello, ${me.name}`} intro={<span>Signed in as {me.email}</span>}>
-      <div className="mb-8 border-b border-brand-line pb-8">
+      <div className="mb-6 border-b border-brand-line pb-6">
         <div className="mb-3 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My listings</h2>
           <Link href="/account/listings" className="btn btn-outline btn-sm">
@@ -39,7 +39,7 @@ export default async function AccountPage() {
           .
         </div>
       </div>
-      <div className="mb-8 border-b border-brand-line pb-8">
+      <div className="mb-6 border-b border-brand-line pb-6">
         <div className="mb-3 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My business</h2>
           <Link href="/account/business" className="btn btn-outline btn-sm">
@@ -55,7 +55,7 @@ export default async function AccountPage() {
           )}
         </div>
       </div>
-      <div className="mb-8 border-b border-brand-line pb-8">
+      <div className="mb-6 border-b border-brand-line pb-6">
         <div className="mb-3 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My ads</h2>
           <Link href="/account/ads" className="btn btn-outline btn-sm">
@@ -74,9 +74,9 @@ export default async function AccountPage() {
         <LogoutButton />
       </div>
       <AccountForm mode="profile" customerId={me.id} values={{ name: me.name ?? '', phone: me.phone ?? '' }} />
-      {/* Above the button as much as the card's own padding below it (p-5 sm:p-8, AccountShell),
+      {/* Above the button as much as the card's own padding below it (pb-4 sm:pb-6, AccountShell),
           so "Delete my account" sits in the middle of its strip (client, 15.10.2026). */}
-      <div className="mt-8 border-t border-brand-line pt-5 sm:pt-8">
+      <div className="mt-6 border-t border-brand-line pt-4 sm:pt-6">
         <DeleteAccount />
       </div>
     </AccountShell>

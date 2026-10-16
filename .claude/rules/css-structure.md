@@ -327,6 +327,12 @@ Share-the-news `.photo-picker-box` (a `<button>` there, reset in business.css; d
 the business form's note and Save sit under a rule (`.account-submit`); My listings is
 AccountShell `middle` (`.account-middle`: the block centred between header and footer on a short
 page); "Delete my account" centred in its strip (strip top padding = the card's padding);
+16.10.2026 (client: less white after buttons and rules, the head a little to the right): rules
+inside account cards are 16px each side (list rows `py-4`, last row `last:pb-0`, notes `mt-4 pt-4`),
+24 where a headed section follows (/account blocks `mb-6 pb-6`, offers' Products `mt-6 pt-6`),
+16 after an "Add a …" button, `.account-submit` 16 under its rule; the AccountShell card's bottom
+padding is 24 (16 on phones) against 32/20 on the other sides; the head (eyebrow, h1, intro) is 4px
+in (`padding-left` on `.section-head` and `.account-intro`). Before that, 15.10:
 /account/ads and /account/business: 24px above and below the rule and under the last line (the
 business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
 The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and

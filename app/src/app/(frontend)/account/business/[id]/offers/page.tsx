@@ -70,7 +70,7 @@ export default async function OffersPage({ params }: Props) {
         canAdd={Boolean(pkg?.promotions)}
         note={pkg?.promotions ? 'An offer with its dates. It leaves the page by itself when it ends.' : `The ${pkgName} package doesn’t include promotions.`}
       />
-      <div className="mt-8 border-t border-brand-line pt-8">
+      <div className="mt-6 border-t border-brand-line pt-6">
         <h2>Products</h2>
       </div>
       <ItemsEditor
