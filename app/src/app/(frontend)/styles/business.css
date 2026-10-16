@@ -381,9 +381,10 @@ main[data-page='account'] > .section:first-child {
   padding-top: 0;
 }
 
-/* Field labels sit 4px in from the field's edge, and "Forgot your password?" with them
-   (client, 15.10.2026: 8px was a touch too far). Account pages only. No "*" on required
-   fields there either (the client's call) — the fields keep `required`. */
+/* Field labels sit 6px in from the field's edge, and "Forgot your password?" with them
+   (client: 8px was a touch too far on 15.10.2026, 4px a touch too close on 16.10 — the
+   middle, written as a sum since 6 is off the scale). Account pages only. No "*" on
+   required fields there either (the client's call) — the fields keep `required`. */
 /* The sign-up anti-bot check (interaction-only): no room while hidden, 16px under it
    when Cloudflare does show it. */
 .account-turnstile:has(iframe:not([style*='display: none'])) {
@@ -392,7 +393,7 @@ main[data-page='account'] > .section:first-child {
 
 main[data-page='account'] .field > label,
 main[data-page='account'] .account-indent {
-  padding-left: var(--space-1);
+  padding-left: calc(var(--space-1) + 2px);
 }
 
 /* The intro line under an account page's heading ("Already have one? Log in.") sits

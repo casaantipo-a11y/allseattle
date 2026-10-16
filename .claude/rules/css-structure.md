@@ -320,7 +320,7 @@ on a short account page the body is a full-height flex column and `<main>` takes
 footer sits at the bottom of the window instead of leaving white under it;
 `.account-intro` sits midway between the heading's letters and the card (a clamp shift, since its
 box is not where its letters are); field labels and
-`.account-indent` ("Forgot your password?") 4px in from the field edge, and no "*" on required
+`.account-indent` ("Forgot your password?") 6px in from the field edge (4 on 15.10, then "a bit right" on 16.10; 8 had been too far), and no "*" on required
 fields (client's call; the inputs keep `required`).
 Also 15.10.2026: every account photo field (PhotoPicker, components/account/photos.tsx) is the
 Share-the-news `.photo-picker-box` (a `<button>` there, reset in business.css; drop works too);
