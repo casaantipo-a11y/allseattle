@@ -337,7 +337,11 @@ intro) is 8px in (`padding-left` on `.section-head` and `.account-intro`). Two r
 (`.account-actions`: business, ads, listings, items) sit 4px left of the text above — a pill's edge
 reaches the text line only at mid-height, so flush boxes looked indented; and field grids in account
 forms (`.grid:has(> .field)`) have no row-gap — the prototype's unlayered `.grid { gap: 24px }` beat
-Tailwind's `gap-x-4` and put 40px between grid rows against 16 elsewhere. Before that, 15.10:
+Tailwind's `gap-x-4` and put 40px between grid rows against 16 elsewhere. Field hints (`.field > .form-note`) are blocks
+6px in like the labels and 4px under the control (textareas made `display: block` so their
+descender gap went); the business form's "Your business is live…" note is 6px in too; "Many
+photos?" sits midway between the gallery picker and the Save rule (letters 12.8 / 12.8: hint 8px
+under the box, that field's margin 11 instead of 16). Before that, 15.10:
 /account/ads and /account/business: 24px above and below the rule and under the last line (the
 business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
 The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and

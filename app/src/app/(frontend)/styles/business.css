@@ -483,3 +483,35 @@ main[data-page='account'] .account-actions {
 main[data-page='account'] .grid:has(> .field) {
   row-gap: 0;
 }
+
+/* Подсказки под полями кабинета — на тех же 6px от края поля, что и подписи над
+   ними (клиент, 16.10.2026). Блоком, чтобы перенесённая на вторую строку подсказка
+   (на телефоне) тоже стояла с отступом, а не возвращалась к краю. */
+main[data-page='account'] .field > .form-note {
+  display: block;
+  margin-top: var(--space-1);
+  padding-left: calc(var(--space-1) + 2px);
+}
+
+/* textarea — строчный блок, под ним оставалась щель под нижние выносные (8px),
+   и подсказка стояла дальше, чем под однострочным полем. */
+main[data-page='account'] .field > textarea {
+  display: block;
+}
+
+/* «Many photos? Save a few at a time.» посередине между плашкой галереи и линией
+   над Save (клиент, 16.10.2026): было 9px до букв сверху и 18 снизу. Подсказка на
+   4px ниже, а линия под ней на 5px выше (низ поля 11 вместо 16) — по буквам 12.8
+   и 12.8. */
+main[data-page='account'] .field:has(#bf-gallery) > .form-note {
+  margin-top: var(--space-2);
+}
+main[data-page='account'] .field:has(#bf-gallery) {
+  margin-bottom: calc(var(--space-3) - 1px);
+}
+
+/* «Your business is live…» над Save — вровень с подсказками над ним (6px от края
+   полей), клиент, 16.10.2026. */
+main[data-page='account'] .account-submit > .form-note {
+  padding-left: calc(var(--space-1) + 2px);
+}
