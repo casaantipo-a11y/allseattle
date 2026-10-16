@@ -504,15 +504,10 @@
   }
 }
 
-/* ---------- Подпись разработчика (клиент, 07.10.2026) ----------
-   Под строкой копирайта и по центру относительно неё: копирайт и подпись
-   стоят в одной стопке шириной по самой широкой строке (.footer-copy-stack),
-   подпись выровнена по её центру. Тихое «Developed by» и кнопка-таблетка со
-   значком Telegram и именем. Тонкая светлая рамка на тёмном фоне, значок в
-   голубом круге Telegram; при наведении рамка и имя становятся белыми.
-   Без анимации. */
-/* На телефоне копирайт и подпись по центру подвала (09.10.2026), на
-   планшете — одной строкой по краям, с 1024 — стопкой в колонке логотипа. */
+/* ---------- Строка копирайта ----------
+   На телефоне по центру подвала (09.10.2026), на планшете — слева, с 1280 —
+   под логотипом в колонке бренда. Подпись разработчика переехала в нижнюю
+   строку служебных ссылок (.footer-credit ниже, 16.10.2026). */
 .footer-copy-stack {
   display: flex;
   flex-direction: column;
@@ -525,63 +520,45 @@
   text-align: center;
 }
 
-/* В узкой колонке (1024px) «Developed by» не помещается рядом с кнопкой —
-   тогда надпись целиком встаёт над ней, а не ломается на два слова. */
-.footer-credit {
-  display: flex;
-  flex-wrap: wrap;
+/* ---------- Подпись разработчика (клиент, 16.10.2026) ----------
+   Раньше — таблетка со значком WhatsApp по центру под копирайтом; клиенту она
+   казалась слишком заметной («не именитая компания, пусть не отвлекает»).
+   Теперь мелкая приглушённая ссылка в правом конце строки служебных ссылок:
+   кому нужно — найдёт. На телефоне и планшете — своей строкой под ссылками,
+   по правому краю; с 1024 — в той же строке, а ссылки по-прежнему ровно по
+   центру (сетка 1fr auto 1fr). */
+.footer-meta-row {
+  display: grid;
+}
+
+.site-footer .footer-credit {
+  justify-self: end;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-1) var(--space-2);
-}
-
-/* Кнопка Telegram «немного вниз» (клиент, 09.10.2026) — на 4px, потом ещё
-   на 2: 6px вместе с подписью «Developed by», чтобы они остались одной
-   строкой. Сдвиг поверх потока: высота подвала не меняется. Только с 1280,
-   где подпись стоит стопкой под копирайтом (правка делалась там). */
-@media (min-width: 1280px) {
-  .footer-credit {
-    position: relative;
-    top: calc(var(--space-1) + 2px);
-  }
-}
-
-.footer-credit-label {
+  min-height: 44px;
+  /* до 1024 своей строкой: на 8px выше, в пустой нижний отступ строки ссылок */
+  margin-top: calc(-1 * var(--space-2));
+  padding-bottom: var(--space-2);
+  font-size: var(--text-xs);
+  color: #5f6f82;
   white-space: nowrap;
 }
 
-.site-footer .footer-credit-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  /* 44px под палец до 1024, 32 с мышью (как вторая строка меню). */
-  min-height: 44px;
-  padding: 0 var(--space-3) 0 var(--space-2);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: var(--radius-full);
-  font-weight: 600;
+.site-footer .footer-credit:hover {
   color: #c9d3de;
-  text-decoration: none;
 }
 
 @media (min-width: 1024px) {
-  .site-footer .footer-credit-link {
-    min-height: 32px;
-    padding-left: var(--space-1);
+  .footer-meta-row {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
   }
-}
-
-.footer-credit-icon {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-full);
-  background: #25d366; /* WhatsApp green (client, 15.10.2026; was Telegram blue) */
-  color: var(--color-white);
-}
-
-.site-footer .footer-credit-link:hover {
-  border-color: var(--color-white);
-  color: var(--color-white);
+  .footer-meta-row .footer-meta {
+    grid-column: 2;
+  }
+  .site-footer .footer-credit {
+    grid-column: 3;
+    margin-top: 0;
+    padding-bottom: 0;
+  }
 }
