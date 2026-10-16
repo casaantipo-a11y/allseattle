@@ -392,6 +392,7 @@ main[data-page='account'] > .section:first-child {
 }
 
 main[data-page='account'] .field > label,
+main[data-page='account'] .field > .grid > div > label, /* Opening hours: Days, Time */
 main[data-page='account'] .account-indent {
   padding-left: calc(var(--space-1) + 2px);
 }
