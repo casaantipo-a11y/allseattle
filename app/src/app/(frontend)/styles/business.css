@@ -435,7 +435,9 @@ body:has(> main[data-page='account']) > main {
 
 /* Business form: the note and Save, set apart from the last field by a rule. */
 main[data-page='account'] .account-submit {
-  padding-top: var(--space-4);
+  /* the last field's 16px margin above, 4px of it taken back: 12 like the other rules */
+  margin-top: calc(-1 * var(--space-1));
+  padding-top: var(--space-3);
   border-top: 1px solid var(--color-slate-soft);
 }
 
@@ -456,10 +458,10 @@ main[data-page='account'] .account-note > p {
   margin: var(--space-2) 0 0;
 }
 
-/* Шапка страниц кабинета — надзаголовок, заголовок и строка под ним — на 4px
-   правее края карточки (клиент, 16.10.2026: «чуть вправо»). Сдвиг общий, так что
+/* Шапка страниц кабинета — надзаголовок, заголовок и строка под ним — на 8px
+   правее края карточки (клиент, 16.10.2026: «чуть вправо», потом «ещё чуть-чуть» — 8px). Сдвиг общий, так что
    надзаголовок остаётся на свои 4px правее заголовка (.section-head .eyebrow). */
 main[data-page='account'] .section-head,
 main[data-page='account'] .account-intro {
-  padding-left: var(--space-1);
+  padding-left: var(--space-2);
 }

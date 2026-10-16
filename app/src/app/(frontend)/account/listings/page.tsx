@@ -76,7 +76,7 @@ export default async function MyListingsPage() {
               'delete',
             ]
             return (
-              <li key={`${kind}${doc.id}`} className="flex gap-4 border-t border-brand-line py-4 first:border-t-0 first:pt-0 last:pb-0">
+              <li key={`${kind}${doc.id}`} className="flex gap-4 border-t border-brand-line py-3 first:border-t-0 first:pt-0 last:pb-0">
                 {photo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={photo} alt="" className="h-16 w-20 shrink-0 rounded-lg object-cover sm:h-20 sm:w-28" />

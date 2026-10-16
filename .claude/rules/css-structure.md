@@ -328,11 +328,12 @@ the business form's note and Save sit under a rule (`.account-submit`); My listi
 AccountShell `middle` (`.account-middle`: the block centred between header and footer on a short
 page); "Delete my account" centred in its strip (strip top padding = the card's padding);
 16.10.2026 (client: less white after buttons and rules, the head a little to the right): rules
-inside account cards are 16px each side (list rows `py-4`, last row `last:pb-0`, notes `mt-4 pt-4`),
-24 where a headed section follows (/account blocks `mb-6 pb-6`, offers' Products `mt-6 pt-6`),
-16 after an "Add a …" button, `.account-submit` 16 under its rule; the AccountShell card's bottom
-padding is 24 (16 on phones) against 32/20 on the other sides; the head (eyebrow, h1, intro) is 4px
-in (`padding-left` on `.section-head` and `.account-intro`). Before that, 15.10:
+inside account cards are 12px each side (list rows `py-3`, last row `last:pb-0`, notes `mt-3 pt-3`),
+16 where a headed section follows (/account blocks `mb-4 pb-4`, offers' Products `mt-4 pt-4`),
+12 after an "Add a …" button, `.account-submit` 12 above and under its rule; the AccountShell
+card's bottom padding is 16 (12 on phones) against 32/20 on the other sides; the head (eyebrow, h1,
+intro) is 8px in (`padding-left` on `.section-head` and `.account-intro`). Two rounds the same day:
+16/24/24 and 4px first, then "a bit less, a bit further right". Before that, 15.10:
 /account/ads and /account/business: 24px above and below the rule and under the last line (the
 business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
 The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and

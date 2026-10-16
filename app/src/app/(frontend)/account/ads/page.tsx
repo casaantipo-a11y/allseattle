@@ -65,7 +65,7 @@ export default async function MyAdsPage({ searchParams }: Props) {
             const img = mediaUrl(b.imageDesktop as Media | null, 'thumb')
             const ctr = stats.impressions ? ((stats.clicks / stats.impressions) * 100).toFixed(1) : null
             return (
-              <li key={b.id} className="flex gap-4 border-t border-brand-line py-4 first:border-t-0 first:pt-0 last:pb-0">
+              <li key={b.id} className="flex gap-4 border-t border-brand-line py-3 first:border-t-0 first:pt-0 last:pb-0">
                 {img ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={img} alt="" className="h-16 w-28 shrink-0 rounded-lg object-contain" style={{ background: '#f7f8fa' }} />
@@ -95,8 +95,8 @@ export default async function MyAdsPage({ searchParams }: Props) {
         </ul>
       )}
       {me.stripeCustomerId ? (
-        // 16px above and under the rule (client, 16.10.2026); the last row has no bottom padding.
-        <div className="mt-4 border-t border-brand-line pt-4">
+        // 12px above and under the rule (client, 16.10.2026); the last row has no bottom padding.
+        <div className="mt-3 border-t border-brand-line pt-3">
           <div className="mb-3 text-brand-slate">Cancel a place, change the card or download receipts:</div>
           <ManageBilling returnPath="/account/ads" />
         </div>

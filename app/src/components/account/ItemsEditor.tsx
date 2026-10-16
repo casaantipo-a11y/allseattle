@@ -119,11 +119,11 @@ export function ItemsEditor({ bizId, kind, items, canAdd, note }: { bizId: numbe
         </div>
       ) : null}
       {open === 'new' ? (
-        <div className="mb-4">
+        <div className="mb-3">
           <ItemForm bizId={bizId} kind={kind} onDone={() => setOpen(null)} />
         </div>
       ) : canAdd ? (
-        <div className="mb-4">
+        <div className="mb-3">
           <button type="button" className="btn" onClick={() => setOpen('new')}>
             Add a {NOUN[kind]}
           </button>
@@ -134,7 +134,7 @@ export function ItemsEditor({ bizId, kind, items, canAdd, note }: { bizId: numbe
       ) : (
         <ul className="m-0 list-none p-0">
           {items.map((it) => (
-            <li key={it.id} className="border-t border-brand-line py-4 first:border-t-0 first:pt-0">
+            <li key={it.id} className="border-t border-brand-line py-3 first:border-t-0 first:pt-0">
               {open === it.id ? (
                 <ItemForm bizId={bizId} kind={kind} item={it} onDone={() => setOpen(null)} />
               ) : (
