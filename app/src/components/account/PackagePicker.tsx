@@ -104,7 +104,7 @@ export function ManageBilling({ returnPath }: { returnPath: string }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   return (
-    <div>
+    <div className="account-actions">
       <button
         type="button"
         className="btn"

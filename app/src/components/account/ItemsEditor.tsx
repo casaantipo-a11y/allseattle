@@ -123,7 +123,7 @@ export function ItemsEditor({ bizId, kind, items, canAdd, note }: { bizId: numbe
           <ItemForm bizId={bizId} kind={kind} onDone={() => setOpen(null)} />
         </div>
       ) : canAdd ? (
-        <div className="mb-3">
+        <div className="account-actions mb-3">
           <button type="button" className="btn" onClick={() => setOpen('new')}>
             Add a {NOUN[kind]}
           </button>
