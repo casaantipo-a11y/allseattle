@@ -183,7 +183,7 @@ news") hides the question below 640px (`.announcement-lead` in components.css �
 both rows (was 28 on top); "Services / For sale" sits 12px after "Cars" (`.nav-sub` margin
 `--space-1`); both rows stay centred on the logo–utilities gap (measured 0.0px). The photo
 banner and the announcement plates are skipped on `/add-business` (`HiddenOn` in the layout,
-list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). Since 14.10.2026 `PLATE_FREE_PAGES` / `PLATE_FREE_SECTIONS` drop only the announcement plates and keep the photo (client): `/share-news` — the photo banner's bottom to the page eyebrow is then 48px at 375 and 1440. Since 15.10.2026 every page under `/account` goes without the photo too (`CHROME_FREE_SECTIONS`; `HiddenOn`'s `sections` matches a path and everything below it) — client. On that page the
+list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). Since 14.10.2026 `PLATE_FREE_PAGES` / `PLATE_FREE_SECTIONS` drop only the announcement plates and keep the photo (client): `/share-news` (until 16.10.2026, when it moved to `CHROME_FREE_PAGES` — no photo either, header → eyebrow box 48px like /add-business; `PLATE_FREE_PAGES` is empty now) — the photo banner's bottom to the page eyebrow is then 48px at 375 and 1440. Since 15.10.2026 every page under `/account` goes without the photo too (`CHROME_FREE_SECTIONS`; `HiddenOn`'s `sections` matches a path and everything below it) — client. On that page the
 Turnstile widget is centred in the form card with rounded corners (components.css). Footer: the
 About / Advertise / Contact / Privacy / Terms links left Explore for a `.footer-meta-bar` at the
 bottom of the footer — a hairline across the whole viewport and the links as one centred group
