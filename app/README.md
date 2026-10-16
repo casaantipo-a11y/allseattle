@@ -191,6 +191,15 @@ windows to stop.
 In development Payload updates the database schema automatically. When you change a collection,
 also create a migration for production: `pnpm migrate:create <name>` (commit `src/migrations/`).
 
+The local cluster is UTF-8 (`initdbFlags` in `scripts/db.mjs`), like Neon. Until 16.10.2026 it
+took the Windows codepage (WIN1251 here) and refused text such as "café" with error 22P05; that
+database was copied into a UTF-8 one built by `pnpm migrate`, and the old one is kept in the same
+cluster as `allseattle_win1251`. A migrated database carries `media._objectkey` (R2 only); locally,
+without R2, `pnpm dev` then asks to drop it ("Accept warnings and push schema?") — the column is
+empty there, so it was dropped by hand. If `pnpm dev` routes `/api/...[id]` calls to Payload's
+"Route not found", or `pnpm build` stops on `.next/dev/types/validator.ts`, the dev cache is
+corrupt: move `.next/dev/types` aside and restart.
+
 Checks before every commit: `pnpm typecheck`, `pnpm lint`, `pnpm build` (the build needs the
 database running).
 

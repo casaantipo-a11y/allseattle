@@ -16,6 +16,9 @@ const pg = new EmbeddedPostgres({
   password: 'postgres',
   port: 5433,
   persistent: true,
+  // UTF-8, like Neon. Left to itself initdb takes the Windows codepage (WIN1251 on this
+  // machine), and the local database then refused text such as "café" (16.10.2026).
+  initdbFlags: ['--encoding=UTF8', '--locale=English_United States.1252'],
 })
 
 const fresh = !existsSync(path.join(dataDir, 'PG_VERSION'))
