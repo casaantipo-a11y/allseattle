@@ -21,7 +21,7 @@ export default async function AccountPage() {
   return (
     <AccountShell eyebrow="Your account" title={`Hello, ${me.name}`} intro={<span>Signed in as {me.email}</span>}>
       <div className="mb-4 border-b border-brand-line pb-4">
-        <div className="mb-3 flex items-center justify-between gap-4">
+        <div className="mb-1 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My listings</h2>
           <Link href="/account/listings" className="btn btn-outline btn-sm">
             Open
@@ -40,7 +40,7 @@ export default async function AccountPage() {
         </div>
       </div>
       <div className="mb-4 border-b border-brand-line pb-4">
-        <div className="mb-3 flex items-center justify-between gap-4">
+        <div className="mb-1 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My business</h2>
           <Link href="/account/business" className="btn btn-outline btn-sm">
             Open
@@ -56,7 +56,7 @@ export default async function AccountPage() {
         </div>
       </div>
       <div className="mb-4 border-b border-brand-line pb-4">
-        <div className="mb-3 flex items-center justify-between gap-4">
+        <div className="mb-1 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My ads</h2>
           <Link href="/account/ads" className="btn btn-outline btn-sm">
             Open
@@ -69,7 +69,8 @@ export default async function AccountPage() {
           </Link>
         </div>
       </div>
-      <div className="mb-6 flex items-center justify-between gap-4">
+      {/* heading → text 4px, Profile → its form 16 (client, 16.10.2026: was 12 and 24) */}
+      <div className="mb-4 flex items-center justify-between gap-4">
         <h2 style={{ margin: 0 }}>Profile</h2>
         <LogoutButton />
       </div>

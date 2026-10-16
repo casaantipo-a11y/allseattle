@@ -343,7 +343,14 @@ descender gap went); the business form's "Your business is live…" note is 6px 
 photos?" sits midway between the gallery picker and the Save rule (letters 12.8 / 12.8: hint 8px
 under the box, that field's margin 11 instead of 16). The AccountShell card's top padding is 24 (16 on
 phones) since 16.10 too; the intro line is 12px in (4 more than the h1, in line with the eyebrow's
-ink — the h1's big letters carry their own side bearing, so a flush intro looked 2–3px left). Before that, 15.10:
+ink — the h1's big letters carry their own side bearing, so a flush intro looked 2–3px left). My listings
+(16.10, "looks untidy"): with listings, a toolbar ("N of 3 active" left — counted like
+lib/listings activeCount — Sell a car / Post a job right, a rule under it) and `.listing-row`
+grid rows: the same 80px (112 from 1024) thumbnail slot for every row (car photo or a tinted tile
+with a car / briefcase icon), title, a status badge (`.listing-status.is-live|pending|rejected|muted`)
+with "Job · N views", actions full width under it on phones and tablets and on the right from
+1024. Without listings the centred buttons + "No listings yet." stay. "Add a promotion / product"
+8px left (`.items-add`). /account: heading → text 4px (`mb-1`), Profile → its form 16. Before that, 15.10:
 /account/ads and /account/business: 24px above and below the rule and under the last line (the
 business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
 The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and

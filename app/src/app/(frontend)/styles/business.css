@@ -525,3 +525,147 @@ main[data-page='account'] .account-submit > .form-note {
 main[data-page='account'] .account-intro {
   padding-left: var(--space-3);
 }
+
+/* «Add a promotion» / «Add a product» — на 8px левее текста над ними (клиент,
+   16.10.2026: после 4px «ещё чуть левее»). Сплошная красная таблетка без рамки
+   кажется правее, чем ряды контурных кнопок. */
+main[data-page='account'] .items-add {
+  margin-left: calc(-1 * var(--space-2));
+}
+
+/* ---------- My listings (клиент, 16.10.2026: «выглядит неаккуратно») ----------
+   Панель сверху: слева «N of 3 active», справа Sell a car / Post a job, под ней
+   линия. Строки одинаковые: у каждой миниатюра одного размера (фото машины или
+   плитка со значком), название, статус значком и тип/просмотры, кнопки — под
+   фото и текстом во всю ширину, с 1024 справа в строке по центру высоты. Своими классами, не
+   утилитами: .grid прототипа перебивает Tailwind. */
+.listings-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-slate-soft);
+}
+
+.listings-toolbar-count {
+  color: var(--color-slate);
+  font-size: var(--text-sm);
+}
+
+.listings-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.listing-row {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-4);
+  row-gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-slate-soft);
+}
+
+.listing-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.listing-row:last-child {
+  padding-bottom: 0;
+}
+
+.listing-row-thumb {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-soft);
+  color: var(--color-slate);
+  object-fit: cover;
+}
+
+main[data-page='account'] .listing-row-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.listing-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin-top: var(--space-1);
+  color: var(--color-slate);
+  font-size: var(--text-xs);
+}
+
+.listing-row-note {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+.listing-row-actions {
+  /* до 1024 — во всю ширину строки под фото и текстом: в узкой колонке текста
+     три кнопки переносились на две строки */
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.listing-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.listing-status.is-live {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.listing-status.is-pending {
+  background: var(--color-gold-tint);
+  color: #8a5a00;
+}
+
+.listing-status.is-rejected {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.listing-status.is-muted {
+  background: var(--color-navy-tint);
+  color: var(--color-slate);
+}
+
+@media (min-width: 1024px) {
+  .listing-row {
+    grid-template-columns: 112px minmax(0, 1fr) auto;
+  }
+  .listing-row-thumb {
+    width: 112px;
+  }
+  .listing-row-actions {
+    grid-column: 3;
+    justify-content: flex-end;
+  }
+  /* справа строки оптическая поправка таблеток (.account-actions) не нужна */
+  main[data-page='account'] .listing-row-actions {
+    margin-left: 0;
+  }
+}
