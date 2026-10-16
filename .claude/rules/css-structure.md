@@ -341,7 +341,9 @@ Tailwind's `gap-x-4` and put 40px between grid rows against 16 elsewhere. Field 
 6px in like the labels and 4px under the control (textareas made `display: block` so their
 descender gap went); the business form's "Your business is live…" note is 6px in too; "Many
 photos?" sits midway between the gallery picker and the Save rule (letters 12.8 / 12.8: hint 8px
-under the box, that field's margin 11 instead of 16). Before that, 15.10:
+under the box, that field's margin 11 instead of 16). The AccountShell card's top padding is 24 (16 on
+phones) since 16.10 too; the intro line is 12px in (4 more than the h1, in line with the eyebrow's
+ink — the h1's big letters carry their own side bearing, so a flush intro looked 2–3px left). Before that, 15.10:
 /account/ads and /account/business: 24px above and below the rule and under the last line (the
 business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
 The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and

@@ -515,3 +515,11 @@ main[data-page='account'] .field:has(#bf-gallery) {
 main[data-page='account'] .account-submit > .form-note {
   padding-left: calc(var(--space-1) + 2px);
 }
+
+/* Строка под заголовком кабинета («Promotions & products · Back to my business» и
+   т.п.) — ещё на 4px правее, в линию с надзаголовком: у крупных букв заголовка
+   свой отступ слева, и мелкий текст под ним казался съехавшим влево на 2–3px
+   (клиент, 16.10.2026). */
+main[data-page='account'] .account-intro {
+  padding-left: var(--space-3);
+}
