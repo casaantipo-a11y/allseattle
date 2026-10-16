@@ -414,15 +414,16 @@ main[data-page='account'] .account-intro {
    <main> takes the rest, so the space goes under the card and the footer sits at the bottom.
    Taller pages are unchanged — there is nothing left to take. The 16px to the footer stays:
    the section's -20px margin and the footer's 36px now add up inside the flex column instead
-   of collapsing, with the same result. */
-body:has(> main[data-page='account']) {
+   of collapsing, with the same result. The same for the other pages without the photo banner,
+   Add your business and Share the news (client, 16.10.2026: white under the footer there too). */
+body:has(> main:is([data-page='account'], [data-page='add-business'], [data-page='share-news'])) {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
 }
 
-body:has(> main[data-page='account']) > main {
+body:has(> main:is([data-page='account'], [data-page='add-business'], [data-page='share-news'])) > main {
   flex: 1 0 auto;
 }
 
@@ -671,4 +672,13 @@ main[data-page='account'] .listing-row-title {
   main[data-page='account'] .listing-row-actions {
     margin-left: 0;
   }
+}
+
+/* Add your business для вошедшего — короткая (справа карточка «You're signed in»
+   вместо формы): содержимое посередине между шапкой и футером, как короткие
+   страницы кабинета (клиент, 16.10.2026). У гостя форма длиннее окна — не сдвигается. */
+body:has(> main[data-page='add-business']) > main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

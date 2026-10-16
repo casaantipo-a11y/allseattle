@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 // to Media, the first one to Telegram.
 export default function ShareNewsPage() {
   return (
-    <main id="content">
+    <main id="content" data-page="share-news">
       <section className="section">
         <div className="container">
           <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
