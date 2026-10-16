@@ -40,6 +40,12 @@ export async function SiteFooter() {
               <p>
                 &copy; {year} {footer.copyright || 'AllSeattle. All rights reserved.'}
               </p>
+              {/* Developer credit under the copyright, as before, but a small quiet link instead
+                  of the WhatsApp pill (client, 16.10.2026). Lives in code, not in the Footer
+                  global — it is not the owner's content. */}
+              <a href="https://wa.me/380958191272" target="_blank" rel="noopener" className="footer-credit">
+                Developed by Alexander
+              </a>
             </div>
           </div>
         </div>
@@ -111,25 +117,17 @@ export async function SiteFooter() {
       {/* About, Advertise, Contact, Privacy, Terms: a bar across the whole footer under a
           full-width hairline, the links spread evenly from the content's left edge to its
           right (client, 07.10.2026). */}
-      <div className="footer-meta-bar">
-        <div className="container footer-meta-row">
-          {metaLinks.length ? (
-            <ul className="footer-meta">
-              {metaLinks.map((l) => (
-                <li key={l.url}>
-                  <Link href={l.url}>{l.label}</Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {/* Developer credit: small and quiet at the right end of this bar, not a centred
-              pill under the copyright (client, 16.10.2026). Lives in code, not in the Footer
-              global — it is not the owner's content. WhatsApp since 15.10.2026. */}
-          <a href="https://wa.me/380958191272" target="_blank" rel="noopener" className="footer-credit">
-            Developed by Alexander
-          </a>
+      {metaLinks.length ? (
+        <div className="footer-meta-bar">
+          <ul className="container footer-meta">
+            {metaLinks.map((l) => (
+              <li key={l.url}>
+                <Link href={l.url}>{l.label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
+      ) : null}
     </footer>
   )
 }

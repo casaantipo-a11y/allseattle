@@ -271,10 +271,11 @@ to 1280 with it. The address may wrap inside the narrow tablet Contact column
 (`https://wa.me/380958191272`, green `#25d366` icon circle) instead of Telegram; size and position
 unchanged (32px pill at 1440, 44px on phones).
 
-**App footer, 16.10.2026 (client: "not a famous company — smaller, quieter, to the side"):** the
-credit left the brand column. It is now a plain text link "Developed by Alexander" (no pill, no
-icon; still WhatsApp) at the right end of the bottom meta bar: `.footer-meta-row` is a grid,
-`1fr auto 1fr` from 1024 with the links in the middle column (still exactly centred) and the
-credit in the third, right-aligned; below 1024 the credit is its own row under the links, right
-edge, pulled 8px up into the links' bottom padding. 14px, `#5f6f82` (hover `#c9d3de`), 44px tall.
-The earlier notes above about the credit's position under the copyright are history.
+**App footer, 16.10.2026 (client: "not a famous company — smaller, quieter"):** the credit is a
+plain text link "Developed by Alexander" (no pill, no icon; still WhatsApp), 14px, `#5f6f82`
+(hover `#c9d3de`), in its old place under the copyright (`.footer-copy-stack`): centred under it
+on phones and from 1280, on its right in the same row on tablets. It spent an hour at the right
+end of the meta bar; the user asked for it back under the logo. Same day: 8px less above and
+below the meta bar's line (`.footer-meta-bar` margin-top −8px into the columns' bottom padding,
+`.footer-meta` without its 8px top/bottom padding; links stay 44px tall) — at 1440 the lowest
+column text → line 10px, line → link box 1px, link box → footer bottom 0.
