@@ -146,7 +146,7 @@ export function ItemsEditor({ bizId, kind, items, canAdd, note }: { bizId: numbe
                   <div className="min-w-0 flex-1">
                     <h3>{it.title}</h3>
                     {it.meta ? <div className="m-0 mt-1 text-sm text-brand-slate">{it.meta}</div> : null}
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="account-actions mt-3 flex flex-wrap gap-2">
                       <button type="button" className="btn btn-outline btn-sm" onClick={() => setOpen(it.id)}>
                         Edit
                       </button>

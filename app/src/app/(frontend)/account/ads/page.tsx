@@ -83,7 +83,7 @@ export default async function MyAdsPage({ searchParams }: Props) {
                     </span>
                   </div>
                   {b.status === 'rejected' && b.moderationNote ? <div className="mt-1 text-sm">Reason: {b.moderationNote}</div> : null}
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <div className="account-actions mt-3 flex flex-wrap items-center gap-2">
                     <Link href={`/account/ads/${b.id}`} className="btn btn-outline btn-sm">
                       {b.imageDesktop ? 'Change the banner' : 'Upload the picture'}
                     </Link>

@@ -95,7 +95,7 @@ export default async function MyListingsPage() {
                     <span className="text-brand-slate"> · {doc.viewsCount ?? 0} views</span>
                   </div>
                   {doc.status === 'rejected' && doc.moderationNote ? <div className="m-0 mt-1 text-sm">Reason: {doc.moderationNote}</div> : null}
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <div className="account-actions mt-3 flex flex-wrap items-center gap-2">
                     {live ? (
                       <Link href={kind === 'car' ? `/cars/${doc.slug}` : `/jobs/${doc.slug}`} className="btn btn-sm">
                         View

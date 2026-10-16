@@ -76,7 +76,7 @@ export default async function MyBusinessPage() {
                     </span>
                   </div>
                   {b.status === 'rejected' && b.moderationNote ? <div className="m-0 mt-1 text-sm">Reason: {b.moderationNote}</div> : null}
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <div className="account-actions mt-3 flex flex-wrap items-center gap-2">
                     {b.status === 'published' ? (
                       <Link href={bizPath(b.slug)} className="btn btn-sm">
                         View

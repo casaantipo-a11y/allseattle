@@ -333,7 +333,11 @@ inside account cards are 12px each side (list rows `py-3`, last row `last:pb-0`,
 12 after an "Add a …" button, `.account-submit` 12 above and under its rule; the AccountShell
 card's bottom padding is 16 (12 on phones) against 32/20 on the other sides; the head (eyebrow, h1,
 intro) is 8px in (`padding-left` on `.section-head` and `.account-intro`). Two rounds the same day:
-16/24/24 and 4px first, then "a bit less, a bit further right". Before that, 15.10:
+16/24/24 and 4px first, then "a bit less, a bit further right". Also 16.10: list-row button rows
+(`.account-actions`: business, ads, listings, items) sit 4px left of the text above — a pill's edge
+reaches the text line only at mid-height, so flush boxes looked indented; and field grids in account
+forms (`.grid:has(> .field)`) have no row-gap — the prototype's unlayered `.grid { gap: 24px }` beat
+Tailwind's `gap-x-4` and put 40px between grid rows against 16 elsewhere. Before that, 15.10:
 /account/ads and /account/business: 24px above and below the rule and under the last line (the
 business note's ContactEmail `<p>` lost the prototype's 12px bottom margin via `.account-note > p`).
 The banner-booking consent checkbox sits inside a `.field`, so its label needs `display: flex` and
