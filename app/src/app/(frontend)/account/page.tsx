@@ -20,7 +20,7 @@ export default async function AccountPage() {
   const [active, businesses, ads] = await Promise.all([payloadClient().then((p) => activeCount(p, me.id)), myBusinesses(me.id), myAds(me.id)])
   return (
     <AccountShell eyebrow="Your account" title={`Hello, ${me.name}`} intro={<span>Signed in as {me.email}</span>}>
-      <div className="mb-4 border-b border-brand-line pb-4">
+      <div className="mb-3 border-b border-brand-line pb-3">
         <div className="mb-1 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My listings</h2>
           <Link href="/account/listings" className="btn btn-outline btn-sm">
@@ -39,7 +39,7 @@ export default async function AccountPage() {
           .
         </div>
       </div>
-      <div className="mb-4 border-b border-brand-line pb-4">
+      <div className="mb-3 border-b border-brand-line pb-3">
         <div className="mb-1 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My business</h2>
           <Link href="/account/business" className="btn btn-outline btn-sm">
@@ -55,7 +55,7 @@ export default async function AccountPage() {
           )}
         </div>
       </div>
-      <div className="mb-4 border-b border-brand-line pb-4">
+      <div className="mb-3 border-b border-brand-line pb-3">
         <div className="mb-1 flex items-center justify-between gap-4">
           <h2 style={{ margin: 0 }}>My ads</h2>
           <Link href="/account/ads" className="btn btn-outline btn-sm">
@@ -77,7 +77,7 @@ export default async function AccountPage() {
       <AccountForm mode="profile" customerId={me.id} values={{ name: me.name ?? '', phone: me.phone ?? '' }} />
       {/* Above the button as much as the card's own padding below it (pb-3 sm:pb-4, AccountShell),
           so "Delete my account" sits in the middle of its strip (client, 15.10.2026). */}
-      <div className="mt-4 border-t border-brand-line pt-3 sm:pt-4">
+      <div className="mt-3 border-t border-brand-line pt-3 sm:pt-4">
         <DeleteAccount />
       </div>
     </AccountShell>

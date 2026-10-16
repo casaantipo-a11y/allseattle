@@ -18,6 +18,7 @@ export default async function LoginPage({ searchParams }: Props) {
   if (await getCustomer()) redirect(next)
   return (
     <AccountShell
+      middle
       title="Log in"
       intro={
         <>

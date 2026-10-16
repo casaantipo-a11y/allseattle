@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: 'Reset your password' }
 
 export default function ForgotPage() {
   return (
-    <AccountShell title="Reset your password" intro="Enter the email you signed up with — we will send you a link to choose a new password.">
+    <AccountShell middle title="Reset your password" intro="Enter the email you signed up with — we will send you a link to choose a new password.">
       <AccountForm mode="forgot" />
     </AccountShell>
   )

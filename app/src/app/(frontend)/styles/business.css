@@ -402,10 +402,11 @@ main[data-page='account'] .account-indent {
    boxes (12/12) it read low: the heading's line box carries room under its baseline.
    Measured on the letters, the line has to go up by 3px with a 30px heading and 5.9px
    with the 48px one, linearly in between — the same clamp() as the h1 size
-   (clamp(30px, 4vw, 48px)), so it holds at every width. The total stays 24px. */
+   (clamp(30px, 4vw, 48px)), so it holds at every width. The total is 16px (24 until
+   16.10.2026, the client: "a little less between the heading, the text and the card"). */
 main[data-page='account'] .account-intro {
   --intro-shift: clamp(3px, 0.644vw - 1.83px, 5.9px);
-  margin: calc(var(--space-3) - var(--intro-shift)) 0 calc(var(--space-3) + var(--intro-shift));
+  margin: calc(var(--space-2) - var(--intro-shift)) 0 calc(var(--space-2) + var(--intro-shift));
 }
 
 /* Short account pages (Log in, Reset your password…) end above the bottom of the window and
@@ -551,6 +552,8 @@ main[data-page='account'] .items-add {
 }
 
 .listings-toolbar-count {
+  /* 6px in, like the field labels (client, 16.10.2026) */
+  padding-left: calc(var(--space-1) + 2px);
   color: var(--color-slate);
   font-size: var(--text-sm);
 }

@@ -23,7 +23,7 @@ export default async function VerifyPage({ searchParams }: Props) {
     }
   }
   return (
-    <AccountShell title={ok ? 'Email confirmed' : 'Link not valid'}>
+    <AccountShell middle title={ok ? 'Email confirmed' : 'Link not valid'}>
       {ok ? (
         <div className="m-0">
           Your account is ready.{' '}
