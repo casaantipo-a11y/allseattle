@@ -35,25 +35,11 @@ export async function SiteFooter() {
       <div className="container footer-inner">
         <div className="footer-col footer-brand">
           <Logo href="/" variant="dark" />
-          {/* Developer credit (client, 07.10.2026): centred under the copyright line, a
-              Telegram pill. Not owner content, so it lives in code, not in the Footer global. */}
           <div className="footer-copy">
             <div className="footer-copy-stack">
               <p>
                 &copy; {year} {footer.copyright || 'AllSeattle. All rights reserved.'}
               </p>
-              <div className="footer-credit">
-                <span className="footer-credit-label">Developed by</span>
-                {/* WhatsApp instead of Telegram (client, 15.10.2026). */}
-                <a href="https://wa.me/380958191272" target="_blank" rel="noopener" className="footer-credit-link" aria-label="Developed by Alexander — WhatsApp">
-                  <span className="footer-credit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                      <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2l-.5-.2z" />
-                    </svg>
-                  </span>
-                  Alexander
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -125,17 +111,25 @@ export async function SiteFooter() {
       {/* About, Advertise, Contact, Privacy, Terms: a bar across the whole footer under a
           full-width hairline, the links spread evenly from the content's left edge to its
           right (client, 07.10.2026). */}
-      {metaLinks.length ? (
-        <div className="footer-meta-bar">
-          <ul className="container footer-meta">
-            {metaLinks.map((l) => (
-              <li key={l.url}>
-                <Link href={l.url}>{l.label}</Link>
-              </li>
-            ))}
-          </ul>
+      <div className="footer-meta-bar">
+        <div className="container footer-meta-row">
+          {metaLinks.length ? (
+            <ul className="footer-meta">
+              {metaLinks.map((l) => (
+                <li key={l.url}>
+                  <Link href={l.url}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {/* Developer credit: small and quiet at the right end of this bar, not a centred
+              pill under the copyright (client, 16.10.2026). Lives in code, not in the Footer
+              global — it is not the owner's content. WhatsApp since 15.10.2026. */}
+          <a href="https://wa.me/380958191272" target="_blank" rel="noopener" className="footer-credit">
+            Developed by Alexander
+          </a>
         </div>
-      ) : null}
+      </div>
     </footer>
   )
 }

@@ -270,3 +270,11 @@ to 1280 with it. The address may wrap inside the narrow tablet Contact column
 **App footer, 15.10.2026 (client):** the "Developed by · Alexander" pill links to WhatsApp
 (`https://wa.me/380958191272`, green `#25d366` icon circle) instead of Telegram; size and position
 unchanged (32px pill at 1440, 44px on phones).
+
+**App footer, 16.10.2026 (client: "not a famous company — smaller, quieter, to the side"):** the
+credit left the brand column. It is now a plain text link "Developed by Alexander" (no pill, no
+icon; still WhatsApp) at the right end of the bottom meta bar: `.footer-meta-row` is a grid,
+`1fr auto 1fr` from 1024 with the links in the middle column (still exactly centred) and the
+credit in the third, right-aligned; below 1024 the credit is its own row under the links, right
+edge, pulled 8px up into the links' bottom padding. 14px, `#5f6f82` (hover `#c9d3de`), 44px tall.
+The earlier notes above about the credit's position under the copyright are history.
