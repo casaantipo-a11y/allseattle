@@ -17,7 +17,7 @@ import type {
 } from '@/payload-types'
 
 import type { BusinessFull } from './business'
-import { SITE_TZ } from './site'
+import { SITE_TZ, seattleToday } from './site'
 
 // Every public read goes through unstable_cache with a tag. Payload hooks
 // expire the tag on save (src/hooks/revalidate.ts); the time-based
@@ -374,15 +374,16 @@ export const getBusinessBySubdomain = unstable_cache(
   { tags: ['businesses', 'packages'], revalidate: HOUR },
 )
 
-/** Promotions still running today; expired ones never show. */
+/** Promotions running today (Seattle), from the start day to the end day inclusive.
+ *  It used to compare the start with this very moment, and a start day stored as noon UTC
+ *  kept a promotion off its own first day until 5 am Seattle (client, 17.10.2026). */
 export const getActivePromotions = unstable_cache(
   async (businessId?: number): Promise<Promotion[]> => {
-    const today = new Date()
-    today.setUTCHours(0, 0, 0, 0)
+    const today = seattleToday()
     const where: Where = {
       and: [
-        { validUntil: { greater_than_equal: today.toISOString() } },
-        { validFrom: { less_than_equal: new Date().toISOString() } },
+        { validUntil: { greater_than_equal: `${today}T00:00:00.000Z` } },
+        { validFrom: { less_than_equal: `${today}T23:59:59.999Z` } },
         ...(businessId ? [{ business: { equals: businessId } }] : []),
       ],
     }

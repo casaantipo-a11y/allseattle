@@ -8,7 +8,7 @@ import { getCustomer } from '@/lib/account'
 import { priceText } from '@/lib/business'
 import { myBusiness } from '@/lib/business-cabinet'
 import { mediaUrl } from '@/lib/media'
-import { SITE_TZ } from '@/lib/site'
+import { SITE_TZ, seattleToday } from '@/lib/site'
 import type { Media } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'Promotions & products' }
@@ -29,12 +29,13 @@ export default async function OffersPage({ params }: Props) {
   const mine = await myBusiness(me, Number(id))
   if (!mine) notFound()
   const { biz, promotions, products, pkg } = mine
-  const now = new Date()
+  // a promotion ends after its last Seattle day, not at the noon UTC its end date is stored as
+  const todayStart = `${seattleToday()}T00:00:00.000Z`
 
   const promoItems: Item[] = promotions.map((p) => ({
     id: p.id,
     title: p.title,
-    meta: `${day(p.validFrom)} – ${day(p.validUntil)}${new Date(p.validUntil) < now ? ' · ended' : ''}`,
+    meta: `${day(p.validFrom)} – ${day(p.validUntil)}${p.validUntil < todayStart ? ' · ended' : ''}`,
     values: { title: p.title, description: p.description ?? '', validFrom: ymd(p.validFrom), validUntil: ymd(p.validUntil) },
     image: image(p.image),
   }))
