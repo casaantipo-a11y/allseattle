@@ -493,7 +493,8 @@ main[data-page='account'] .grid:has(> .field) {
    (на телефоне) тоже стояла с отступом, а не возвращалась к краю. */
 main[data-page='account'] .field > .form-note {
   display: block;
-  margin-top: var(--space-1);
+  /* 2px under the field (4 until 17.10.2026, the client: "a little up") */
+  margin-top: calc(var(--space-1) / 2);
   padding-left: calc(var(--space-1) + 2px);
 }
 
@@ -525,7 +526,15 @@ main[data-page='account'] .account-submit > .form-note {
    свой отступ слева, и мелкий текст под ним казался съехавшим влево на 2–3px
    (клиент, 16.10.2026). */
 main[data-page='account'] .account-intro {
-  padding-left: var(--space-3);
+  /* 10px: 12 was «чуть-чуть» too far (client, 17.10.2026) */
+  padding-left: calc(var(--space-2) + 2px);
+}
+
+/* A page without the intro line (Choose a new password, Email confirmed): the heading sat
+   on the card — 7–12px from its baseline, the "p" of "password" almost touching. 16px more
+   (client, 17.10.2026). */
+main[data-page='account'] .section-head + .rounded-xl {
+  margin-top: var(--space-4);
 }
 
 /* «Add a promotion» / «Add a product» — на 8px левее текста над ними (клиент,
