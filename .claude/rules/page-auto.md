@@ -238,5 +238,5 @@ the panel's bottom edge: `margin-top: 4px` on top of the grid's 12px gap = 16, t
 padding (16 / 16 at 375/1024/1440).
 
 **App Cars, 17.10.2026:** search panel → catalog 12px (`.auto-search` margin-bottom, was 24). Car
-photo frames (`.car-card-photo`: home Fresh cars, "Similar cars") are slate-soft #E2E8F0 instead of
+photo frames (`.car-card-photo`: home Fresh cars, "Similar cars") are 60% slate-soft on white (#EDF1F6) instead of
 the near-white bg-soft around upright photos; the catalog rows crop to fill and are unaffected.

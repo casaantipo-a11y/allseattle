@@ -123,6 +123,6 @@ on phones, where "All cars" is its own row) and the button centred on the head l
 (`--head-btn-dy: calc(var(--space-1) - 9px)`, button → cards 9px); the block 12px closer to
 HOME_INFEED_1 from 1024 (`margin-top: -12px`, banner → eyebrow box 12); cards → "More from Seattle"
 eyebrow 44px — the section's bottom padding 8 (`& > .section.home-cars`, stronger than base.css
-`main > .section:not(:last-of-type)`). Car photo frames are slate-soft (#E2E8F0) site-wide now
+`main > .section:not(:last-of-type)`). Car photo frames are 60% slate-soft on white (#EDF1F6) site-wide now
 (`.car-card-photo`, components.css; was the near-white bg-soft, which melted into the page around
 upright photos).

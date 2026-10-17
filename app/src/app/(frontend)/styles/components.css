@@ -686,10 +686,11 @@
 
 .car-card-photo {
   /* a slightly darker white than bg-soft: around an upright photo (object-fit: contain)
-     the near-white grey melted into the white page (client, 17.10.2026) */
+     the near-white grey melted into the white page (client, 17.10.2026). slate-soft was
+     "a touch too dark": 60% of it on white (#EDF1F6). */
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: var(--color-slate-soft);
+  background: color-mix(in srgb, var(--color-slate-soft) 60%, var(--color-white));
 }
 
 .car-card-photo img {
