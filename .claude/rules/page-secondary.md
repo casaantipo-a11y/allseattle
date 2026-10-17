@@ -301,3 +301,4 @@ directory.css; the Business Directory keeps 12); their B2 under the list 16px fr
 the same as banner → footer (`.biz-infeed-ad--last` margin-top, components.css; was 8).
 City Map (17.10.2026): the head carries `.section-head--snug` too — banner → "Neighborhood guide"
 letters 13.4px (was 21.4); the legend / category select stay ≥14px under the banner.
+Weather (17.10.2026): "Around the region" (`.weather-h`) 32px under the board, was 48.

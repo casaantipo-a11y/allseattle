@@ -528,7 +528,8 @@
 
 /* ---------- Соседние города ---------- */
 .weather-h {
-  margin: var(--space-12) 0 var(--space-4);
+  /* 32px above, was 48 («Around the region»: client, 17.10.2026, «чуть убрать») */
+  margin: var(--space-8) 0 var(--space-4);
   font-size: var(--text-xl);
 }
 
