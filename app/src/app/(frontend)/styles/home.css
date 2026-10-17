@@ -292,4 +292,22 @@
    здесь больше не нужно; на главной остаётся только арифметика шва между
    двумя её секциями — 8px паддинга выше плюс 28px сдвигов заголовка. */
 
+/* Правая колонка: реклама C1 (HOME_RIGHT_1) над «AllSeattle at a glance» отстоит
+   от него на те же 40px, что виджеты друг от друга — у виджетов свои 16px снизу
+   поверх общих 24, у рекламы их не было, и было 24 (клиент, 17.10.2026). */
+.home-sidebar-right > .ad-desktop-slot {
+  margin-bottom: var(--space-4);
+}
+
+/* «AllSeattle Auto / Fresh cars»: карточки на 12px под шапкой, а не на общие 24
+   главной; и от карточек до «More from Seattle» на 12px меньше — у секции снизу
+   24px вместо 36 (клиент, 17.10.2026, «убрать пустое пространство»). */
+.home-cars .section-head {
+  margin-bottom: var(--space-3);
+}
+
+/* сильнее общего main > .section:not(:last-of-type) из base.css */
+& > .section.home-cars {
+  padding-bottom: var(--space-6);
+}
 }

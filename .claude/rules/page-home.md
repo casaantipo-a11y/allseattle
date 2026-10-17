@@ -115,3 +115,10 @@ below 1024 the right rail's widgets follow the banner and a negative margin woul
 + new HOME_SIDEBAR_4, 300x250), C1 = new HOME_RIGHT_1 (300x250) at the top of the right column
 above "AllSeattle at a glance", B1 = HOME_TOP, B2 = HOME_INFEED_1. Side slots are desktop-only like
 the rest of Home's rails. HOME_INFEED_2 is not on the scheme and stays (no price).
+
+**App home, 17.10.2026:** right column — C1 (HOME_RIGHT_1) → "AllSeattle at a glance" 40px like
+the widgets between themselves (`.home-sidebar-right > .ad-desktop-slot` margin-bottom 16 on top of
+the 24 gap; was 24). "AllSeattle Auto / Fresh cars" (`section.home-cars`): head → cards 12px (was
+the home-wide 24); cards → "More from Seattle" eyebrow 60px (was 72) — the section's bottom padding
+24 instead of the shared 36 (`& > .section.home-cars`, stronger than base.css
+`main > .section:not(:last-of-type)`). The "All cars" button (btn-lower) ends ~4px above the cards.

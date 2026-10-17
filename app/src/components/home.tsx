@@ -94,7 +94,7 @@ export function FreshCars({ cars }: { cars: CarListing[] }) {
   if (!cars.length) return null
   const items = cars.slice(0, 4).map(toCarItem)
   return (
-    <section className="section">
+    <section className="section home-cars">
       <div className="container">
         <div className="section-head section-head--btn-lower">
           <div>
