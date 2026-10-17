@@ -215,7 +215,8 @@
    надзаголовка 6px вместо 18, как в News с 1440. Карточки справа в этой
    шапке нет — ничто не наезжает на баннер, поэтому на всех ширинах. */
 .section-head.dir-head--directory {
-  margin-top: calc(-2px - var(--space-3));
+  /* 8px lower again (client, 17.10.2026, «чуть вниз»): banner → eyebrow letters ~17px */
+  margin-top: calc(-2px - var(--space-1));
 }
 
 /* «Shopping немного вправо» (клиент, 09.10.2026): надзаголовок на 12px правее
