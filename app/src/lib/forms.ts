@@ -104,16 +104,23 @@ export function clientIp(req: Request): string {
 export async function turnstileOk(token: FormDataEntryValue | null, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
   if (!secret) return true // not configured: honeypot and rate limit still apply
-  if (typeof token !== 'string' || !token) return false
+  // Why a check failed goes to the server log (Vercel), so a visitor's "anti-spam check
+  // failed" can be traced: no token at all, or Cloudflare's error codes.
+  if (typeof token !== 'string' || !token) {
+    console.warn('[turnstile] no token in the request')
+    return false
+  }
   try {
     const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       body: new URLSearchParams({ secret, response: token, remoteip: ip }),
       signal: AbortSignal.timeout(8000),
     })
-    const data = (await res.json()) as { success?: boolean }
+    const data = (await res.json()) as { success?: boolean; 'error-codes'?: string[]; hostname?: string }
+    if (!data.success) console.warn('[turnstile] rejected', JSON.stringify({ codes: data['error-codes'], hostname: data.hostname }))
     return Boolean(data.success)
-  } catch {
+  } catch (e) {
+    console.warn('[turnstile] siteverify unreachable', e)
     return false
   }
 }
