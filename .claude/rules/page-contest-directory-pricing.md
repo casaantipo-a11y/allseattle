@@ -239,6 +239,3 @@ h1 margin 0 (letters 14.5 / 19px), intro margin 0 (intro → cards 19px).
 **App business page, 17.10.2026:** the breadcrumb sat right on BUSINESS_TOP — now 16px under it
 (`mt-4` on the nav, only when the banner is there, i.e. not Premium), and the title block's bottom
 margin is 8 instead of 24, so the info table stays where it was (title → table 20px at 1440).
-
-**App Directory, 17.10.2026:** the head 8px lower ("a touch down") — `.dir-head--directory`
-margin-top `calc(var(--space-1) - 2px)` (was −14; −6 first, then "lower still"): banner → eyebrow letters 25.4px (was 9.4).
