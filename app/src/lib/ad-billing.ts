@@ -8,7 +8,7 @@ import { LIVE, NOT_SET_UP, paidUntilOf, statusOf, stripeCustomerFor, type Sub } 
 import { CHECK, TOO_SOON_ERROR, fail, isOwner, tooSoon, mediaIds, notifyTeam, payloadClient, relId, saveFailed, settlePhotos, takePhotos, toFields, zodErrors, type CabinetResult, type PhotoChange } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
-import { managedPaymentsParams, productTaxCode, stripe, stripeEnabled, StripeError } from './stripe'
+import { automaticTaxParams, managedPaymentsParams, productTaxCode, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR } from './stripe'
 
 // Stage 3, step 5: banner places bought online. A place is one AdSlot code with
 // a price in lib/ad-placements.ts; it is sold by the month through Stripe
@@ -87,6 +87,7 @@ export async function startAdCheckout(customer: Customer, fd: FormData): Promise
     const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
       mode: 'subscription',
       ...managedPaymentsParams(),
+      ...automaticTaxParams(),
       customer: await stripeCustomerFor(customer),
       line_items: [
         {
@@ -95,6 +96,7 @@ export async function startAdCheckout(customer: Customer, fd: FormData): Promise
             currency: 'usd',
             unit_amount: Math.round(placement.price * 100),
             recurring: { interval: 'month' },
+            tax_behavior: TAX_BEHAVIOR,
             product_data: { name: `AllSeattle banner — ${slot.name}`, tax_code: productTaxCode(), metadata: { slotCode: slot.code } },
           },
         },

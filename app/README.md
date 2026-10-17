@@ -141,6 +141,14 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   it on and set `STRIPE_TAX_CODE` — the client's choice (Stripe as merchant of record handling
   US sales tax for a fee, or not). Stripe's Adaptive Pricing shows prices in the buyer's
   currency (e.g. UAH from Ukraine); US buyers see USD.
+  **Sales tax (17.10.2026):** the client chose Stripe Tax "Basic" (0.5% a transaction) and set it
+  up in his account (head office and a Washington sales-tax registration). `STRIPE_AUTOMATIC_TAX=on`
+  turns on `automatic_tax` in both Checkouts with a required billing address, prices are
+  `tax_behavior: exclusive` (tax on top, as the note under the prices says) and the subscription
+  keeps the tax on renewals. Tested in the sandbox (tax set up the same way there): $69 + $7.28
+  (10.55%, Seattle) = $76.28. `STRIPE_PORTAL_CONFIGURATION` can name a portal configuration made
+  through the API instead of the Dashboard default. The client's live key is a restricted
+  `rk_live_` key; its permissions were checked to cover everything the site calls.
 
 - **Stage 3, step 5 (14.10.2026)** — banner places bought online (`lib/ad-billing.ts`). A place
   is one AdSlot code with a price in `lib/ad-placements.ts`. On `/advertise` "Available" leads

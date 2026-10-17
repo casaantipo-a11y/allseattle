@@ -24,6 +24,26 @@ export function managedPaymentsParams(): Record<string, unknown> {
 }
 export const productTaxCode = () => process.env.STRIPE_TAX_CODE?.trim() || undefined
 
+/**
+ * Stripe Tax — the client's choice of 17.10.2026 ("Basic", 0.5% a transaction; the account
+ * has its Washington registration): Checkout works out the sales tax from the buyer's
+ * billing address and adds it on top of the price, as the note under the prices says; the
+ * subscription keeps it on every renewal. On with STRIPE_AUTOMATIC_TAX=on (needs Managed
+ * Payments off). The address is required so the city's local rate applies, and it is saved
+ * on the Stripe customer we pass in.
+ */
+export function automaticTaxParams(): Record<string, unknown> {
+  if (process.env.STRIPE_AUTOMATIC_TAX?.trim().toLowerCase() !== 'on') return {}
+  return { automatic_tax: { enabled: true }, billing_address_collection: 'required', customer_update: { address: 'auto', name: 'auto' } }
+}
+
+/** Our prices are before sales tax, which Stripe Tax adds on top. */
+export const TAX_BEHAVIOR = 'exclusive'
+
+/** A customer-portal configuration made for the site (cancel at period end, card, receipts);
+ *  unset → the account's default, saved in the Dashboard. */
+export const portalConfiguration = () => process.env.STRIPE_PORTAL_CONFIGURATION?.trim() || undefined
+
 type Params = Record<string, unknown>
 
 /** Stripe's form encoding: nested objects as a[b][c], arrays as a[0][b]. */

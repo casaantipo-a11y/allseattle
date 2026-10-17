@@ -4,7 +4,7 @@ import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, type CabinetRes
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
 import { syncAdSubscription } from './ad-billing'
-import { managedPaymentsParams, productTaxCode, stripe, stripeEnabled, StripeError, type StripeEvent } from './stripe'
+import { automaticTaxParams, managedPaymentsParams, portalConfiguration, productTaxCode, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR, type StripeEvent } from './stripe'
 
 // Stage 3, step 4: package subscriptions through Stripe (ad places, step 5, are in
 // lib/ad-billing.ts and share the webhook: their subscriptions carry kind=banner). The owner picks a
@@ -80,6 +80,7 @@ export async function startPackageCheckout(customer: Customer, bizId: number, pa
     const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
       mode: 'subscription',
       ...managedPaymentsParams(),
+      ...automaticTaxParams(),
       customer: await stripeCustomerFor(customer),
       client_reference_id: biz.id,
       line_items: [
@@ -89,6 +90,7 @@ export async function startPackageCheckout(customer: Customer, bizId: number, pa
             currency: (pkg.currency ?? 'USD').toLowerCase(),
             unit_amount: Math.round(pkg.priceMonthly * 100),
             recurring: { interval: 'month' },
+            tax_behavior: TAX_BEHAVIOR,
             product_data: { name: `AllSeattle ${pkg.name} package`, tax_code: productTaxCode(), metadata: { packageId: pkg.id } },
           },
         },
@@ -112,7 +114,11 @@ export async function openBillingPortal(customer: Customer, returnPath: string):
   if (!stripeEnabled()) return fail(503, NOT_SET_UP)
   if (!customer.stripeCustomerId) return fail(400, 'There is no online payment on this account yet.')
   try {
-    const s = await stripe<{ url: string }>('POST', '/billing_portal/sessions', { customer: customer.stripeCustomerId, return_url: absoluteUrl(returnPath) })
+    const s = await stripe<{ url: string }>('POST', '/billing_portal/sessions', {
+      customer: customer.stripeCustomerId,
+      configuration: portalConfiguration(),
+      return_url: absoluteUrl(returnPath),
+    })
     return { ok: true, id: customer.id, message: 'Opening billing…', url: s.url }
   } catch (e) {
     console.error('[billing] portal failed', e)
