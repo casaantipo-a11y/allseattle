@@ -3,12 +3,14 @@
 import Script from 'next/script'
 import { useRef, useState, type FormEvent } from 'react'
 
+import { TURNSTILE_SCRIPT, useTurnstile } from './useTurnstile'
+
 import { shrink } from './account/photos'
 
 // A public form (spec §8): posts to /api/forms/{form}, shows the server's
 // field errors next to the fields (the prototype's .field / .field-error
-// styles), and a clear confirmation on success. Cloudflare Turnstile renders
-// only when a site key is configured; the hidden honeypot field is always on.
+// styles), and a clear confirmation on success. Cloudflare Turnstile (useTurnstile,
+// rendered from code) only when a site key is configured; the hidden honeypot field is always on.
 
 export type FieldSpec = {
   name: string
@@ -86,12 +88,6 @@ function PhotoInput(props: { id: string; name: string; 'aria-describedby'?: stri
   )
 }
 
-declare global {
-  interface Window {
-    turnstile?: { reset: (el?: string | HTMLElement) => void }
-  }
-}
-
 export function SubmissionForm({
   form,
   fields,
@@ -107,14 +103,27 @@ export function SubmissionForm({
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [message, setMessage] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const { box: turnstileBox, answer: turnstileAnswer, reset: resetTurnstile } = useTurnstile(turnstileSiteKey, { enabled: state !== 'done' })
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setState('sending')
     setMessage(null)
     setErrors({})
+    const formEl = e.currentTarget
+    let answer = ''
+    if (turnstileSiteKey) {
+      // the check needs a second or two after the widget loads; wait rather than send without it
+      answer = await turnstileAnswer()
+      if (!answer) {
+        setMessage('The anti-spam check is still running. If a checkbox appeared above the button, tick it, then send again.')
+        setState('idle')
+        return
+      }
+    }
     try {
-      const fd = new FormData(e.currentTarget)
+      const fd = new FormData(formEl)
+      if (answer) fd.set('cf-turnstile-response', answer)
       // Photos go out scaled to 1600px (stage 3): Vercel takes at most 4.5 MB per
       // request, and five phone photos are well over that. The server makes its own sizes.
       for (const name of new Set([...fd.entries()].filter(([, v]) => v instanceof File && v.size).map(([k]) => k))) {
@@ -132,8 +141,9 @@ export function SubmissionForm({
       setErrors(data.fieldErrors ?? {})
       setMessage(data.error ?? 'Something went wrong. Please try again.')
       setState('idle')
-      window.turnstile?.reset()
+      resetTurnstile()
     } catch {
+      resetTurnstile()
       setMessage('Could not send the form — check your connection and try again.')
       setState('idle')
     }
@@ -152,7 +162,7 @@ export function SubmissionForm({
 
   return (
     <form ref={ref} onSubmit={onSubmit} noValidate>
-      {turnstileSiteKey ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer /> : null}
+      {turnstileSiteKey ? <Script src={TURNSTILE_SCRIPT} async defer /> : null}
 
       {message ? (
         <p role="alert" className="mb-4 rounded-lg border border-[#c53030] bg-[#fdecec] px-4 py-3 text-sm text-[#c53030]">
@@ -213,7 +223,7 @@ export function SubmissionForm({
         <input id={`f-${form}-hp`} type="text" name="company_fax" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {turnstileSiteKey ? <div className="cf-turnstile mb-4" data-sitekey={turnstileSiteKey} /> : null}
+      {turnstileSiteKey ? <div ref={turnstileBox} className="cf-turnstile mb-4" /> : null}
 
       <button type="submit" className="btn btn-lg btn-block" disabled={state === 'sending'}>
         {state === 'sending' ? 'Sending…' : submitLabel}

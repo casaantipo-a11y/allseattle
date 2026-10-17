@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import Script from 'next/script'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
+
+import { TURNSTILE_SCRIPT, useTurnstile } from '../useTurnstile'
 
 // The account forms (stage 3) in the site's form style (.field / .field-error,
 // like SubmissionForm): sign up, log in, forgot / reset password, profile. Log in,
@@ -13,18 +15,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 
 type Mode = 'register' | 'login' | 'forgot' | 'reset' | 'profile'
 
-// Cloudflare Turnstile's explicit API. The sign-up widget is rendered from code (as in the
-// contest's Vote) rather than by the script's one-time scan for .cf-turnstile, which missed the
-// box when the script had already loaded on another page, and its answer is single-use, so it
-// is reset after every attempt (17.10.2026: sign-up failed with "anti-spam check failed").
-type Turnstile = {
-  render: (el: HTMLElement, opts: { sitekey: string; appearance?: string }) => string
-  remove: (id: string) => void
-  reset: (id?: string) => void
-  getResponse: (id?: string) => string | undefined
-}
-const turnstile = () => (window as unknown as { turnstile?: Turnstile }).turnstile
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 type Field = { name: string; label: string; type?: string; autoComplete?: string; required?: boolean; hint?: string; defaultValue?: string }
 
 const FIELDS: Record<Mode, Field[]> = {
@@ -73,25 +64,8 @@ export function AccountForm({
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [message, setMessage] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const widget = useRef<HTMLDivElement>(null)
-  const widgetId = useRef<string | null>(null)
-
-  useEffect(() => {
-    if (mode !== 'register' || !turnstileSiteKey || state === 'done') return
-    let id: string | null = null
-    const timer = window.setInterval(() => {
-      const ts = turnstile()
-      if (!ts || !widget.current || id) return
-      id = ts.render(widget.current, { sitekey: turnstileSiteKey, appearance: 'interaction-only' })
-      widgetId.current = id
-      window.clearInterval(timer)
-    }, 100)
-    return () => {
-      window.clearInterval(timer)
-      if (id) turnstile()?.remove(id)
-      widgetId.current = null
-    }
-  }, [mode, turnstileSiteKey, state])
+  // the sign-up's anti-bot check: out of sight unless Cloudflare needs a click (client, 15.10.2026)
+  const { box: turnstileBox, answer: turnstileAnswer, reset: resetTurnstile } = useTurnstile(turnstileSiteKey, { enabled: mode === 'register' && state !== 'done', appearance: 'interaction-only' })
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -106,11 +80,7 @@ export function AccountForm({
     setMessage(null)
     if (mode === 'register' && turnstileSiteKey) {
       // the invisible check takes a second or two; an autofilled form can be sent sooner
-      let answer = ''
-      for (let i = 0; i < 50 && !answer; i++) {
-        answer = (widgetId.current && turnstile()?.getResponse(widgetId.current)) || ''
-        if (!answer) await sleep(200)
-      }
+      const answer = await turnstileAnswer()
       if (!answer) {
         setMessage('The anti-spam check is still running. If a checkbox appeared above the button, tick it, then press Create account again.')
         setState('idle')
@@ -139,7 +109,7 @@ export function AccountForm({
       }
       if (!res.ok) {
         // a Turnstile answer works once: get a fresh one for the next attempt
-        if (mode === 'register' && widgetId.current) turnstile()?.reset(widgetId.current)
+        if (mode === 'register') resetTurnstile()
         if (body.fieldErrors) setErrors(body.fieldErrors)
         const raw = body.error ?? body.errors?.[0]?.message ?? ''
         setMessage(
@@ -174,7 +144,7 @@ export function AccountForm({
       )
       setState('done')
     } catch {
-      if (mode === 'register' && widgetId.current) turnstile()?.reset(widgetId.current)
+      if (mode === 'register') resetTurnstile()
       setMessage('Could not reach the server. Please try again.')
       setState('idle')
     }
@@ -194,7 +164,7 @@ export function AccountForm({
   return (
     <form onSubmit={onSubmit} noValidate>
       {mode === 'register' && turnstileSiteKey ? (
-        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer />
+        <Script src={TURNSTILE_SCRIPT} async defer />
       ) : null}
       {message ? (
         <div
@@ -245,7 +215,7 @@ export function AccountForm({
           </div>
           {/* interaction-only: the anti-bot check stays out of sight unless Cloudflare needs
               the visitor to click — no empty 65px box above the button (client, 15.10.2026). */}
-          {turnstileSiteKey ? <div ref={widget} className="cf-turnstile account-turnstile" /> : null}
+          {turnstileSiteKey ? <div ref={turnstileBox} className="cf-turnstile account-turnstile" /> : null}
         </>
       ) : null}
       {mode === 'login' ? (

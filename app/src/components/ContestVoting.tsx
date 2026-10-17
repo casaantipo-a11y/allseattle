@@ -11,7 +11,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 export type VoteEntry = { id: string; title: string; byline: string; img: string; alt: string; votes: number }
 
 type Turnstile = { render: (el: HTMLElement, opts: { sitekey: string }) => string; remove: (id: string) => void; reset: () => void }
-// (SubmissionForm declares window.turnstile with reset only; the explicit API is read through this)
+// (the same explicit API as useTurnstile, which the other forms use)
 const turnstile = () => (window as unknown as { turnstile?: Turnstile }).turnstile
 
 const plural = (n: number) => `${n} ${n === 1 ? 'vote' : 'votes'}`
