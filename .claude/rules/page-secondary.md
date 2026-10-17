@@ -299,3 +299,5 @@ already had EVENTS_INFEED_1. The app has no Real Estate page, so nothing there. 
 16). Shopping / Leisure — head → columns 8px (`.section-head--snug` margin-bottom in
 directory.css; the Business Directory keeps 12); their B2 under the list 16px from the last card,
 the same as banner → footer (`.biz-infeed-ad--last` margin-top, components.css; was 8).
+City Map (17.10.2026): the head carries `.section-head--snug` too — banner → "Neighborhood guide"
+letters 13.4px (was 21.4); the legend / category select stay ≥14px under the banner.

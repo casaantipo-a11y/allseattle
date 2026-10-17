@@ -40,7 +40,7 @@ export function MapExplorer({
       {/* Heading on the left, the pin legend in the middle of the page, the category
           filter at the right edge; the map 10px under the heading, as the blocks on
           Shopping (client, 05.10.2026). Layout in business.css (.map-head). */}
-      <div className="section-head map-head">
+      <div className="section-head section-head--snug map-head">
         {head}
         <div className="field map-filter">
           {/* The label is for screen readers: in the heading row a visible "Category" made
