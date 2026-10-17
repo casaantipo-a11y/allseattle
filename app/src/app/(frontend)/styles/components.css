@@ -1651,7 +1651,7 @@ body.modal-open {
 .ad-slot-under {
   display: flex;
   justify-content: center;
-  margin-top: var(--space-8);
+  margin-top: var(--space-4); /* 16 — the same as banner → footer (client, 17.10.2026; was 32) */
 }
 
 /* «Всё, что ниже верхнего баннера, немного поднять» (клиент, 09.10.2026:

@@ -66,7 +66,7 @@ export default async function EventsPage({ searchParams }: Props) {
           {EVENTS_COMING_SOON ? (
             // The section isn't open yet (client, 15.10.2026; switch in lib/events.ts). Heading,
             // "Submit an event" and both banner places stay.
-            <div className="events-soon mx-auto my-10 max-w-[640px] rounded-xl border border-brand-line bg-white px-6 py-12 text-center">
+            <div className="events-soon mx-auto mb-4 mt-10 max-w-[640px] rounded-xl border border-brand-line bg-white px-6 py-12 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fdecec] text-brand-red" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="5" width="18" height="16" rx="2" />
@@ -131,7 +131,7 @@ export default async function EventsPage({ searchParams }: Props) {
             </div>
             </>
           )}
-          <AdSlot code="EVENTS_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-bottom mt-8" />
+          <AdSlot code="EVENTS_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-bottom" />
         </div>
       </section>
     </main>

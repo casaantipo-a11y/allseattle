@@ -339,5 +339,8 @@
    17.10.2026). The rest of the site keeps the whole photo (object-fit: contain). */
 .home-cars .car-card-photo img {
   object-fit: cover;
+  /* the crop takes the lower part of an upright photo, where the car usually is
+     (client, 17.10.2026: the Tucson «чуть поднять»); a landscape photo is unaffected */
+  object-position: 50% 75%;
 }
 }
