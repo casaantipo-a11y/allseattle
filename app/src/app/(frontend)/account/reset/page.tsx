@@ -11,7 +11,7 @@ type Props = { searchParams: Promise<{ token?: string }> }
 export default async function ResetPage({ searchParams }: Props) {
   const { token } = await searchParams
   return (
-    <AccountShell middle title="Choose a new password">
+    <AccountShell middle roomy title="Choose a new password">
       {token ? (
         <AccountForm mode="reset" token={token} />
       ) : (
