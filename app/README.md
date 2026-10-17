@@ -69,7 +69,8 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   `/api/account/listings*` and `lib/listings.ts` (local API, ownership checked in code) — the
   collections' REST write access stays team-only. A new or edited listing is saved as
   `source: user`, `status: pending` (new status, as is `rejected`), `owner`, `expiresAt` +30
-  days, and the team gets a Telegram / email notice with the admin link. Publishing or
+  days, and the team gets a Telegram / email notice with the admin link (production: email
+  only, to `NOTIFY_EMAIL` — Telegram is not wanted, the user's decision of 17.10.2026). Publishing or
   rejecting it in the admin (with `moderationNote` as the reason) emails the author
   (`hooks/moderation.ts`). Limits: 3 live-or-waiting listings per account, 10 sends a day,
   10 photos per car. Photos are scaled to 1600px JPEG in the browser before upload, because
