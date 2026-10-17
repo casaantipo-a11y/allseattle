@@ -200,7 +200,9 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
         <div className="container">
           {view !== 'premium' ? <AdSlot code="BUSINESS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" /> : null}
 
-          <nav aria-label="Breadcrumb" className="mb-3 text-sm text-brand-slate">
+          {/* 16px under the top banner — it sat right on it — and 16px less under the title
+              block (mb-2, was mb-6), so the info below stays put (client, 17.10.2026). */}
+          <nav aria-label="Breadcrumb" className={`${view !== 'premium' ? 'mt-4 ' : ''}mb-3 text-sm text-brand-slate`}>
             <Link href="/directory" className="text-brand-slate hover:text-brand-red">
               Directory
             </Link>
@@ -226,7 +228,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
               <div className="biz-hero-title absolute inset-x-0 bottom-0 p-4 sm:p-8">{titleBlock}</div>
             </div>
           ) : (
-            <div className="mb-6">{titleBlock}</div>
+            <div className="mb-2">{titleBlock}</div>
           )}
 
           <div className="grid items-start gap-[var(--grid-gap)] lg:grid-cols-[minmax(0,1fr)_300px]">

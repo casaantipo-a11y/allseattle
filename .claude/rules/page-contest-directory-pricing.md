@@ -235,3 +235,7 @@ margin-bottom 8, its `p` margin 0); every part's head (`.section-head--spaced`: 
 Banner placement & prices, Advertising articles) 32px instead of 64, "Get started" (`#inquiry`) 24
 instead of 48 — ~53px / 45px from the text above to the eyebrow letters. Second round the same day:
 h1 margin 0 (letters 14.5 / 19px), intro margin 0 (intro → cards 19px).
+
+**App business page, 17.10.2026:** the breadcrumb sat right on BUSINESS_TOP — now 16px under it
+(`mt-4` on the nav, only when the banner is there, i.e. not Premium), and the title block's bottom
+margin is 8 instead of 24, so the info table stays where it was (title → table 20px at 1440).
