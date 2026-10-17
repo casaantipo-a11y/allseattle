@@ -206,6 +206,8 @@
    выше, а без повтора их правило перебило бы общее. */
 .section-head.section-head--snug {
   margin-top: calc(-2px - var(--space-2));
+  /* 8px до колонок вместо 12 (клиент, 17.10.2026, «капельку») */
+  margin-bottom: var(--space-2);
 }
 
 /* Business Directory (не Shopping / Leisure): шапка на 12px ближе к баннеру

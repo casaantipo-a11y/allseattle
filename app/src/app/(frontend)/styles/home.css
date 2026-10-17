@@ -292,22 +292,45 @@
    здесь больше не нужно; на главной остаётся только арифметика шва между
    двумя её секциями — 8px паддинга выше плюс 28px сдвигов заголовка. */
 
-/* Правая колонка: реклама C1 (HOME_RIGHT_1) над «AllSeattle at a glance» отстоит
-   от него на те же 40px, что виджеты друг от друга — у виджетов свои 16px снизу
-   поверх общих 24, у рекламы их не было, и было 24 (клиент, 17.10.2026). */
-.home-sidebar-right > .ad-desktop-slot {
-  margin-bottom: var(--space-4);
+/* Колонки главной: между всеми блоками один промежуток колонки (24px на компьютере),
+   как между рекламой C1 и «AllSeattle at a glance». У виджетов были свои 16px снизу
+   поверх него — между ними выходило 40 (клиент, 17.10.2026). */
+.home-sidebar .widget {
+  margin-bottom: 0;
 }
 
-/* «AllSeattle Auto / Fresh cars»: карточки на 12px под шапкой, а не на общие 24
-   главной; и от карточек до «More from Seattle» на 12px меньше — у секции снизу
-   24px вместо 36 (клиент, 17.10.2026, «убрать пустое пространство»). */
+/* «AllSeattle Auto / Fresh cars»: карточки сразу под шапкой, а не на общие 24
+   главной; и от карточек до «More from Seattle» меньше — у секции снизу 8px вместо
+   36 (клиент, 17.10.2026, «убрать пустое пространство», потом «ещё»). Кнопка
+   «All cars» поднята на середину шапки, как «All news» (иначе её низ ложится на
+   карточки): общий сдвиг --btn-lower опускал её на 12px. */
 .home-cars .section-head {
+  /* на телефоне «All cars» стоит своей строкой под заголовком — ей 12px до карточек */
   margin-bottom: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .home-cars .section-head {
+    margin-bottom: 0;
+  }
+}
+
+/* От баннера HOME_INFEED_1 до «AllSeattle Auto» на 12px ближе (было ~29px до букв):
+   только с 1024, где баннер — последнее в первой секции; ниже под ним идут виджеты. */
+@media (min-width: 1024px) {
+  .home-cars {
+    margin-top: calc(-1 * var(--space-3));
+  }
+}
+
+@media (min-width: 640px) {
+  .home-cars .section-head {
+    --head-btn-dy: calc(var(--space-1) - 9px);
+  }
 }
 
 /* сильнее общего main > .section:not(:last-of-type) из base.css */
 & > .section.home-cars {
-  padding-bottom: var(--space-6);
+  padding-bottom: var(--space-2);
 }
 }

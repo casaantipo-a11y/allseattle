@@ -152,7 +152,7 @@
   background: var(--color-navy);
   border-radius: var(--radius);
   padding: var(--space-4);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-3); /* 12, was 24 (client, 17.10.2026) */
 }
 
 .auto-search-row {

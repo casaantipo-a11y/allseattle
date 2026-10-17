@@ -232,5 +232,6 @@ The section's top padding is 16px there (`[data-page="advertise"] > .section:fir
 **App /advertise, 17.10.2026 (less white):** "Placement packages" → intro letters 18.5px (375) /
 23 (1440), was 26.5 / 31 (h1 margin-bottom 4); intro → cards 27px, was 35 (`.section-intro`
 margin-bottom 8, its `p` margin 0); every part's head (`.section-head--spaced`: Compare packages,
-Banner placement & prices, Advertising articles) 48px instead of 64 — ~69px from the text above to
-the eyebrow letters, the same as before "Get started".
+Banner placement & prices, Advertising articles) 32px instead of 64, "Get started" (`#inquiry`) 24
+instead of 48 — ~53px / 45px from the text above to the eyebrow letters. Second round the same day:
+h1 margin 0 (letters 14.5 / 19px), intro margin 0 (intro → cards 19px).

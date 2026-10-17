@@ -294,3 +294,8 @@ centred on the 104px wider column, 52px right).
 the main content (`.ad-slot-under`): Jobs, Weather, Map, Services, Shopping, Leisure; Events
 already had EVENTS_INFEED_1. The app has no Real Estate page, so nothing there. Existing side slots
 (Jobs, Events) are not on the sheet and stay.
+
+**App, 17.10.2026:** Jobs — "Job board" 4px right (`.jobs-head h1`, relative; the eyebrow stays at
+16). Shopping / Leisure — head → columns 8px (`.section-head--snug` margin-bottom in
+directory.css; the Business Directory keeps 12); their B2 under the list 16px from the last card,
+the same as banner → footer (`.biz-infeed-ad--last` margin-top, components.css; was 8).

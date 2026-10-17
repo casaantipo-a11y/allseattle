@@ -685,9 +685,11 @@
 }
 
 .car-card-photo {
+  /* a slightly darker white than bg-soft: around an upright photo (object-fit: contain)
+     the near-white grey melted into the white page (client, 17.10.2026) */
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: var(--color-bg-soft);
+  background: var(--color-slate-soft);
 }
 
 .car-card-photo img {
@@ -1637,6 +1639,9 @@ body.modal-open {
 /* Растяжка под списком Shopping / Leisure — последний блок страницы: своего
    нижнего поля у неё нет, отступ до подвала держит секция. */
 .biz-infeed-ad--last {
+  /* Shopping / Leisure B2 under the list: 16px from the last card, the same as from the
+     banner to the footer (client, 17.10.2026; was the in-list 8) */
+  margin-top: var(--space-4);
   margin-bottom: 0;
 }
 
