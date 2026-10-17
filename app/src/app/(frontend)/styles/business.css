@@ -467,7 +467,8 @@ main[data-page='account'] .account-note > p {
    надзаголовок остаётся на свои 4px правее заголовка (.section-head .eyebrow). */
 main[data-page='account'] .section-head,
 main[data-page='account'] .account-intro {
-  padding-left: var(--space-2);
+  /* 10px since 17.10.2026 (8 before; the client: «чуть-чуть вправо») */
+  padding-left: calc(var(--space-2) + 2px);
 }
 
 /* Ряды кнопок под строкой списка в кабинете (View / Edit / …), а также одиночные
@@ -526,8 +527,8 @@ main[data-page='account'] .account-submit > .form-note {
    свой отступ слева, и мелкий текст под ним казался съехавшим влево на 2–3px
    (клиент, 16.10.2026). */
 main[data-page='account'] .account-intro {
-  /* 10px: 12 was «чуть-чуть» too far (client, 17.10.2026) */
-  padding-left: calc(var(--space-2) + 2px);
+  /* 12px: 2px more than the heading, in line with the eyebrow's letters (client, 17.10.2026) */
+  padding-left: var(--space-3);
 }
 
 /* A page without the intro line (Choose a new password, Email confirmed): the heading sat
