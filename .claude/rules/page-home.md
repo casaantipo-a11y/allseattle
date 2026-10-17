@@ -126,3 +126,6 @@ eyebrow 44px — the section's bottom padding 8 (`& > .section.home-cars`, stron
 `main > .section:not(:last-of-type)`). Car photo frames are 60% slate-soft on white (#EDF1F6) site-wide now
 (`.car-card-photo`, components.css; was the near-white bg-soft, which melted into the page around
 upright photos).
+Same day: on Home the Fresh cars photos fill their frame (`.home-cars .car-card-photo img
+{ object-fit: cover }`, centre crop, like the /cars catalog) — upright photos stood in a strip with
+empty sides. Elsewhere (Similar cars) `.car-card-photo` keeps `contain` and the light frame.

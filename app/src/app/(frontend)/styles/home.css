@@ -333,4 +333,11 @@
 & > .section.home-cars {
   padding-bottom: var(--space-2);
 }
+
+/* Fresh cars: the photo fills the whole frame (cropped to the centre), as in the /cars
+   catalog — an upright photo no longer stands in a strip with empty sides (client,
+   17.10.2026). The rest of the site keeps the whole photo (object-fit: contain). */
+.home-cars .car-card-photo img {
+  object-fit: cover;
+}
 }
