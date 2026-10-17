@@ -228,3 +228,9 @@ of the shared 32), plus the grid's own 12px for the "Most popular" badge: text �
 (was 44), text → badge 18 from 1024.
 The section's top padding is 16px there (`[data-page="advertise"] > .section:first-child`): the
 16px eyebrow drop had pushed it 16px further from the plates; plates → eyebrow letters 37.4px.
+
+**App /advertise, 17.10.2026 (less white):** "Placement packages" → intro letters 18.5px (375) /
+23 (1440), was 26.5 / 31 (h1 margin-bottom 4); intro → cards 27px, was 35 (`.section-intro`
+margin-bottom 8, its `p` margin 0); every part's head (`.section-head--spaced`: Compare packages,
+Banner placement & prices, Advertising articles) 48px instead of 64 — ~69px from the text above to
+the eyebrow letters, the same as before "Get started".

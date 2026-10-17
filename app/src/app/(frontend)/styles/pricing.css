@@ -274,7 +274,25 @@
 /* Вступление → карточки пакетов: 16px вместо общих 32 у .section-intro (клиент,
    15.10.2026). Ещё 12px сверху у .pricing-grid — место под плашку «Most popular». */
 [data-page="advertise"] .section-intro {
-  margin-bottom: var(--space-4);
+  /* 8px since 17.10.2026 (16 before; the client: «чуть убрать») */
+  margin-bottom: var(--space-2);
+}
+
+/* «Placement packages» → «Put your business…» 8px closer, and the line's own 12px
+   margin off, so it sits 8px over the card row (client, 17.10.2026). */
+[data-page="advertise"] .section-intro h1 {
+  margin-bottom: var(--space-1);
+}
+
+[data-page="advertise"] .section-intro p {
+  margin-bottom: 0;
+}
+
+/* Between the page's parts (Compare packages, Banner placement & prices, Advertising
+   articles) 48px instead of the shared 64 — the same ~69px to the eyebrow's letters as
+   before "Get started" (client, 17.10.2026). */
+[data-page="advertise"] .section-head--spaced {
+  margin-top: var(--space-12);
 }
 
 /* Сверху секции 16px вместо общих 32: надзаголовок опущен на 16px (правило выше),
