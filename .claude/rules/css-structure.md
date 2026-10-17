@@ -324,9 +324,9 @@ box is not where its letters are); field labels and
 fields (client's call; the inputs keep `required`).
 Also 15.10.2026: every account photo field (PhotoPicker, components/account/photos.tsx) is the
 Share-the-news `.photo-picker-box` (a `<button>` there, reset in business.css; drop works too);
-the business form's note and Save sit under a rule (`.account-submit`); My listings is
-AccountShell `middle` (`.account-middle`: the block centred between header and footer on a short
-page); "Delete my account" centred in its strip (strip top padding = the card's padding);
+the business form's note and Save sit under a rule (`.account-submit`); My listings was
+AccountShell `middle` until 17.10.2026, when the client asked it to start at the top like the other
+account tabs; `middle` stays for the sign-in pages only (log in, forgot, reset, verify); "Delete my account" centred in its strip (strip top padding = the card's padding);
 16.10.2026 (client: less white after buttons and rules, the head a little to the right): rules
 inside account cards are 12px each side (list rows `py-3`, last row `last:pb-0`, notes `mt-3 pt-3`),
 16 where a headed section follows (/account blocks `mb-4 pb-4`, offers' Products `mt-4 pt-4`),

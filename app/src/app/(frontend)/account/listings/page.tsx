@@ -56,7 +56,6 @@ export default async function MyListingsPage() {
 
   return (
     <AccountShell
-      middle
       eyebrow="Your account"
       title="My listings"
       wide
