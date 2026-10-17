@@ -1,4 +1,4 @@
-import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
 
 import { canWrite, publishedOrLoggedIn, staffOnlyField } from '../access/roles'
 import { isDemoField, moderatedStatusField, moderationNoteField, ownerField, slugHistoryField, uniqueSlugField } from '../fields'
@@ -34,6 +34,15 @@ const geocodeAddress: CollectionBeforeChangeHook = async ({ data, originalDoc, c
   return { ...data, lat: res.lat, lng: res.lng, geocodeNote: '' }
 }
 
+// Promotions and products can't exist without their business (required relation), so
+// deleting a business that had any failed with a 500 in the admin (17.10.2026). They go
+// with it now, in the same transaction.
+const deleteOffers: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  for (const collection of ['promotions', 'products'] as const) {
+    await req.payload.delete({ collection, where: { business: { equals: id } }, req, overrideAccess: true })
+  }
+}
+
 export const Businesses: CollectionConfig = {
   slug: 'businesses',
   admin: {
@@ -53,6 +62,7 @@ export const Businesses: CollectionConfig = {
   hooks: {
     beforeChange: [rememberOldSlug, enforcePackage, geocodeAddress],
     afterChange: [revalidate.afterChange, notifyAuthorOfReview('business')],
+    beforeDelete: [deleteOffers],
     afterDelete: [revalidate.afterDelete],
   },
   fields: [
