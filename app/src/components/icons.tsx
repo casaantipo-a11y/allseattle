@@ -12,7 +12,8 @@ export const NAV_ICONS: Record<string, string> = {
   directory: stroke(`<path d="M4.5 20V4.8h9.7V20"/><path d="M14.2 10.4h5.3V20"/><path d="M3 20h18"/><path d="M7.5 8h3.2M7.5 11.6h3.2M7.5 15.2h3.2"/>`),
   advertising: stroke(`<path d="M4 10.2v3.6a1 1 0 0 0 1 1h3l6 3.8V5.4l-6 3.8H5a1 1 0 0 0-1 1z"/><path d="M17.6 8.6a5 5 0 0 1 0 6.8"/>`),
   // Wrench — Cars → Services (a sub-link, so it's chosen by URL in NavLinks, not in the admin).
-  tools: stroke(`<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a5.5 5.5 0 0 1-7.3 7.3l-6.6 6.6a2 2 0 0 1-2.9-2.9l6.6-6.6a5.5 5.5 0 0 1 7.3-7.3z"/>`),
+  // Drawn at the others' size: ~15.5px of the 24 box, centred like them (client, 18.10.2026).
+  tools: stroke(`<path d="M13.78 7.74a.87 .87 0 0 0 0 1.21l1.39 1.39a.87 .87 0 0 0 1.21 0l2.94-2.94a4.76 4.76 0 0 1-6.32 6.32l-5.72 5.72a1.73 1.73 0 0 1-2.51-2.51l5.72-5.72a4.76 4.76 0 0 1 6.32-6.32z"/>`),
   cars: stroke(`<path d="M5.2 13.4 7 9a1.6 1.6 0 0 1 1.5-1h7a1.6 1.6 0 0 1 1.5 1l1.8 4.4"/><path d="M4 13.4h16V17H4z"/><circle cx="7.6" cy="17" r="1.5"/><circle cx="16.4" cy="17" r="1.5"/>`),
 }
 
