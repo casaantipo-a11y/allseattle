@@ -130,3 +130,8 @@ Same day: on Home the Fresh cars photos fill their frame (`.home-cars .car-card-
 { object-fit: cover }`, centre crop, like the /cars catalog) — upright photos stood in a strip with
 empty sides; `object-position: 50% 75%` takes the lower part of an upright photo, where the car is
 (the Tucson "a touch up"). Elsewhere (Similar cars) `.car-card-photo` keeps `contain` and the light frame.
+
+**App home, 18.10.2026:** "All news" sits in the head row on phones too (right, centred on the
+"Today in Seattle / Latest news" ink like from 640 — ±0.4px at 320/375/640/1440); the button's own
+row and its empty strip are gone. Base rule in home.css (no media query: from 640 the shared rules
+give the same column, row and `--head-btn-dy`).
