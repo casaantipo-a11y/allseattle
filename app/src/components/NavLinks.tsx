@@ -10,7 +10,7 @@ export type NavItem = {
   url: string
   row: 'primary' | 'secondary'
   icon?: string | null
-  /** Sub-sections shown after the item as "A / B" (e.g. Cars: Services / For sale). */
+  /** Sub-sections shown after the item as "A / B" (e.g. Cars: Services). */
   subLinks?: { label: string; url: string }[]
 }
 
@@ -37,7 +37,10 @@ export function NavLinks({ items }: { items: NavItem[] }) {
     <nav className="nav-stack" aria-label="Main">
       <ul className="nav-links">
         {primary.map((item) => {
-          const active = isActive(pathname, item.url)
+          // On a sub-section's page (/cars/services) the sub-link is the active one, not the
+          // parent: since 18.10.2026 they look alike, and two red items read as two pages.
+          const inSub = item.subLinks?.some((s) => s.url !== item.url && isActive(pathname, s.url))
+          const active = isActive(pathname, item.url) && !inSub
           return (
             <li key={item.url}>
               <Link href={item.url} className={active ? 'active' : undefined} aria-current={active ? 'page' : undefined}>

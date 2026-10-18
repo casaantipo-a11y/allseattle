@@ -58,7 +58,7 @@ export const Header: GlobalConfig = {
           type: 'array',
           admin: {
             description:
-              'Optional sub-sections shown right after this item, separated by "/" (e.g. Cars: Services / For sale). Top row only.',
+              'Optional sub-sections shown right after this item, separated by "/" (e.g. Cars: Services). Top row only.',
           },
           fields: [
             {

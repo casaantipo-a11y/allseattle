@@ -153,10 +153,8 @@ async function run() {
       url: '/cars',
       row: 'primary',
       icon: 'cars',
-      subLinks: [
-        { label: 'Services', url: '/cars/services' },
-        { label: 'For sale', url: '/cars' },
-      ],
+      // "For sale" left on 18.10.2026 (client: it repeated Cars).
+      subLinks: [{ label: 'Services', url: '/cars/services' }],
     },
     { label: 'Shopping', url: '/shopping', row: 'secondary', icon: 'none' },
     { label: 'Jobs', url: '/jobs', row: 'secondary', icon: 'none' },

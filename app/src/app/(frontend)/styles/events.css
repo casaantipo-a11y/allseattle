@@ -191,14 +191,23 @@
     border-bottom-color: var(--color-accent);
   }
 
+  /* Рубрик 20 (клиент, 18.10.2026; было 6). До 1024 — одна строка чипов,
+     которая листается вбок и выходит на поля экрана (переносом на 375 было
+     бы ~10 строк); с 1024 — переносятся по центру. */
   .events-types {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: var(--space-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
   }
 
+  .events-types::-webkit-scrollbar { display: none; }
+
   .events-types a {
+    flex: none;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -233,6 +242,14 @@
   /* Мышиные ширины: правило 44px про касания (design.md §8), здесь чипы
      ниже, как второй ряд меню и сортировка Jobs. */
   @media (min-width: 1024px) {
+    .events-types {
+      flex-wrap: wrap;
+      justify-content: center;
+      overflow: visible;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+
     .events-types a { min-height: 36px; }
   }
 
@@ -269,6 +286,14 @@
 
     .events-filters a {
       pointer-events: auto;
+    }
+
+    /* 20 рубрик в середину полосы не входят: в ней остаются только вкладки
+       периода, а чипы — во всю ширину под шапкой (клиент, 18.10.2026).
+       Чипы без сдвига начались бы в середине полосы; +52 ставят их на 16px
+       ниже нижнего края надписи и «Submit an event» (замер 1440/1920). */
+    .events-types {
+      margin-top: calc(var(--space-12) + var(--space-1));
     }
   }
 }

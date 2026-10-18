@@ -102,6 +102,14 @@ equal at 640/1024/1440. Below 640 it is full width under the heading. Rejected t
 all-left variant and a News-style rail of widgets. Filters stay links with `?when=` /
 `?category=`. No ad placements moved.
 
+**App Events categories, 18.10.2026 (client):** 20 event categories in the client's order (Movies &
+Cinema … Pet-Friendly Events; the six demo ones were renamed into them and un-demoed, so purge-demo
+keeps them — CMS data, not the seed). The old layout couldn't hold them: below 1024 the chips are
+**one row that scrolls sideways**, bled to the screen edges (negative `--gutter` margin + padding);
+from 1024 they wrap centred (4 rows at 1024, 3 at 1440). From 1440 only the WHEN tabs stay in the
+head band; the chips run full width under it, 16px below the heading / "Submit an event"
+(`.events-types` margin-top 52). Still behind `EVENTS_COMING_SOON`.
+
 **The app's event page (`events/[slug]`)**: from 1024 the right column (When & where, map, ad)
 starts level with the **photo** (client, 03.10.2026; a same-day version centred it on the title
 first). Category, `<h1>` and the date line sit **above** the two-column grid, so the grid

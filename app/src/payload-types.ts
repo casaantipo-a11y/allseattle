@@ -2336,7 +2336,7 @@ export interface Header {
         row: 'primary' | 'secondary';
         icon?: ('none' | 'home' | 'news' | 'directory' | 'advertising' | 'cars') | null;
         /**
-         * Optional sub-sections shown right after this item, separated by "/" (e.g. Cars: Services / For sale). Top row only.
+         * Optional sub-sections shown right after this item, separated by "/" (e.g. Cars: Services). Top row only.
          */
         subLinks?:
           | {
