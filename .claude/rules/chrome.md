@@ -285,6 +285,10 @@ to 1280 with it. The address may wrap inside the narrow tablet Contact column
 (`https://wa.me/380958191272`, green `#25d366` icon circle) instead of Telegram; size and position
 unchanged (32px pill at 1440, 44px on phones).
 
+**App footer, 18.10.2026:** the credit got a 16px `</>` icon (#5f6f82), "Developed by" in the
+copyright colour (#8695a6) and "Alexander" white bold (accent on hover) — the plain grey line
+"looked poor". Same place and link (WhatsApp) as below.
+
 **App footer, 16.10.2026 (client: "not a famous company — smaller, quieter"):** the credit is a
 plain text link "Developed by Alexander" (no pill, no icon; still WhatsApp), 14px, `#5f6f82`
 (hover `#c9d3de`), in its old place under the copyright (`.footer-copy-stack`): centred under it
