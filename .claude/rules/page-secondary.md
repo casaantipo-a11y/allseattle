@@ -111,7 +111,9 @@ head band; the chips run full width under it, 16px below the heading / "Submit a
 (`.events-types` margin-top 52). Still behind `EVENTS_COMING_SOON`. Same day, "level with What is
 on / Seattle events": from 1440 the WHEN tabs are `translate: 0 32px` — their letters centred on the
 eyebrow+heading block and on "Submit an event" (chips and cards don't move; tab underline → chips
-32px). The demo events were deleted locally (prod waits for the user's go-ahead).
+32px). Then "a bit lower, and less white under the banner": tabs `translate` 40px, and the whole head
+16px higher from 1440 (`.events-head` margin-top −12, was 4) — banner → "Submit an event" 16px,
+everything under the head moves up with it. The demo events were deleted locally (prod waits for the user's go-ahead).
 
 **The app's event page (`events/[slug]`)**: from 1024 the right column (When & where, map, ad)
 starts level with the **photo** (client, 03.10.2026; a same-day version centred it on the title
