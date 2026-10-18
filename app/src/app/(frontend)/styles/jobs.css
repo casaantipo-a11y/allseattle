@@ -205,8 +205,10 @@
   align-items: center;
   /* Счётчика «14 openings in Seattle» здесь больше нет — клиент попросил
      убрать его (27.09.2026), и сортировка встала на его место, в начало
-     строки, а не к дальнему краю колонки. */
-  justify-content: flex-start;
+     строки, а не к дальнему краю колонки. 18.10.2026 клиент: подпись «Sort»
+     убрана, ряд по центру над карточками на всех ширинах (был у левого края
+     до 1024). */
+  justify-content: center;
   gap: var(--space-2) var(--space-6);
   margin-bottom: var(--space-4);
 }
@@ -219,17 +221,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   min-height: 44px;
-}
-
-.jobs-sort-label {
-  margin-right: var(--space-1);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-slate);
 }
 
 .jobs-sort-chip {
@@ -554,7 +548,7 @@
     top: var(--space-2);
     /* Сортировка — по центру над карточками (просьба клиента 03.10.2026):
        ширина та же, что у .job-card, иначе центр уезжает на 52px вправо.
-       Ниже 1024 ряд переносится, там он остаётся у края. (09.10.2026 её
+       Ниже 1024 карточки во всю ширину — там центр общий. (09.10.2026 её
        сдвигали к правому краю карточек — клиент попросил вернуть.) */
     max-width: calc(100% - 104px);
     justify-content: center;

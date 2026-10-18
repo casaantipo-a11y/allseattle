@@ -297,6 +297,11 @@
     background: var(--color-bg-soft);
   }
 
+  /* «All categories» — по центру своей полосы (клиент, 18.10.2026). */
+  .events-cat-panel .events-cat-all a {
+    justify-content: center;
+  }
+
   .events-cat-panel a.active {
     background: var(--color-navy);
     color: var(--color-white);

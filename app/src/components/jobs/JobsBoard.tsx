@@ -317,10 +317,10 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
         </aside>
 
         <div className="jobs-results">
-          {/* Sort row right above the first card, centred on it from 1024px (client, 03.10.2026). */}
+          {/* Sort row right above the first card, centred on it (client, 03.10.2026; at every width
+              and without the "Sort" label since 18.10.2026 — the group keeps its aria-label). */}
           <div className="jobs-toolbar">
             <div className="jobs-sort" role="group" aria-label="Sort jobs">
-              <span className="jobs-sort-label">Sort</span>
               {SORTS.map(([value, label]) => (
                 <button
                   key={value}
