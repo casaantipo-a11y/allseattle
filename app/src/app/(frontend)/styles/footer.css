@@ -525,12 +525,12 @@
    Раньше — таблетка со значком WhatsApp; клиенту она казалась слишком
    заметной («не именитая компания, пусть не отвлекает»). Теперь мелкая
    приглушённая текстовая ссылка на том же месте — под копирайтом. */
-/* 18.10.2026 клиент: серая строка «выглядит не очень» — значок </> и «Developed
-   by» цветом копирайта, имя белым полужирным. Наведение — имя акцентом. */
+/* 18.10.2026 клиент: серая строка «выглядит не очень» — «Developed by» цветом
+   копирайта, имя полужирным и светлее (не чисто белым — «чуть темнее»; значок
+   </> был и убран). Наведение — имя акцентом. */
 .site-footer .footer-credit {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
   /* 44px под палец до 1024, с мышью — по строке */
   min-height: 44px;
   font-size: var(--text-xs);
@@ -538,14 +538,9 @@
   white-space: nowrap;
 }
 
-.footer-credit-icon {
-  flex: none;
-  color: #5f6f82;
-}
-
 .site-footer .footer-credit-name {
   font-weight: 700;
-  color: var(--color-white);
+  color: #c9d3de;
 }
 
 .site-footer .footer-credit:hover .footer-credit-name {

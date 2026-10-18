@@ -42,15 +42,10 @@ export async function SiteFooter() {
               </p>
               {/* Developer credit under the copyright, as before, but a small quiet link instead
                   of the WhatsApp pill (client, 16.10.2026). Lives in code, not in the Footer
-                  global — it is not the owner's content. 18.10.2026: a small </> icon and the
-                  name brighter than "Developed by" (client: the plain grey line looked poor). */}
+                  global — it is not the owner's content. 18.10.2026: the name brighter than
+                  "Developed by" (client: the plain grey line looked poor; a </> icon came and went). */}
               <a href="https://wa.me/380958191272" target="_blank" rel="noopener" className="footer-credit">
-                <svg className="footer-credit-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4.5l-3 15" />
-                </svg>
-                <span>
-                  Developed by <span className="footer-credit-name">Alexander</span>
-                </span>
+                Developed by&nbsp;<span className="footer-credit-name">Alexander</span>
               </a>
             </div>
           </div>
