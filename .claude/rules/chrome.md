@@ -185,7 +185,12 @@ both rows (was 28 on top); "Services / For sale" sits 12px after "Cars" (`.nav-s
 18.10.2026 (client): Cars has one sub-link, **Services**. "For sale" (= /cars) was removed from the
 Header global as a duplicate of Cars, and `.nav-sub` links are drawn exactly like the main items
 (navy 700, red underline when active; they were smaller and grey, with "/"), 12px after Cars like any
-neighbour. On /cars/services only Services is active, not Cars (`NavLinks`). The photo
+neighbour. On /cars/services only Services is active, not Cars (`NavLinks`). Services carries a
+wrench icon (`tools` in `icons.tsx`, chosen by URL in `NavLinks` `SUB_ICONS` — sub-links have no
+icon field and adding one would be a schema change). Same day, "centre the whole row": **from 1280
+the header grid is `1fr auto 1fr`**, so both menu rows sit on the banner's axis (measured equal at
+1280/1440/1920; were 26–35px left of it, centred in the logo–utilities gap since 03.10.2026). At
+1024–1279 there is no room (row ≈600px, logo 186), so the old `auto 1fr auto` stays there. The photo
 banner and the announcement plates are skipped on `/add-business` (`HiddenOn` in the layout,
 list `CHROME_FREE_PAGES`; renders nothing, so the photo isn't downloaded there). Since 14.10.2026 `PLATE_FREE_PAGES` / `PLATE_FREE_SECTIONS` drop only the announcement plates and keep the photo (client): `/share-news` (until 16.10.2026, when it moved to `CHROME_FREE_PAGES` — no photo either, header → eyebrow box 48px like /add-business; `PLATE_FREE_PAGES` is empty now) — the photo banner's bottom to the page eyebrow is then 48px at 375 and 1440. Since 15.10.2026 every page under `/account` goes without the photo too (`CHROME_FREE_SECTIONS`; `HiddenOn`'s `sections` matches a path and everything below it) — client. On that page the
 Turnstile widget is centred in the form card with rounded corners (components.css). Footer: the

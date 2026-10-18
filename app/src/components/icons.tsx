@@ -11,6 +11,8 @@ export const NAV_ICONS: Record<string, string> = {
   news: stroke(`<path d="M17.5 20H6a2 2 0 0 1-2-2V4.5h12.5V18a2 2 0 0 0 4 0V8.5h-4"/><path d="M7.5 8h6M7.5 11.5h6M7.5 15h4"/>`),
   directory: stroke(`<path d="M4.5 20V4.8h9.7V20"/><path d="M14.2 10.4h5.3V20"/><path d="M3 20h18"/><path d="M7.5 8h3.2M7.5 11.6h3.2M7.5 15.2h3.2"/>`),
   advertising: stroke(`<path d="M4 10.2v3.6a1 1 0 0 0 1 1h3l6 3.8V5.4l-6 3.8H5a1 1 0 0 0-1 1z"/><path d="M17.6 8.6a5 5 0 0 1 0 6.8"/>`),
+  // Wrench — Cars → Services (a sub-link, so it's chosen by URL in NavLinks, not in the admin).
+  tools: stroke(`<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a5.5 5.5 0 0 1-7.3 7.3l-6.6 6.6a2 2 0 0 1-2.9-2.9l6.6-6.6a5.5 5.5 0 0 1 7.3-7.3z"/>`),
   cars: stroke(`<path d="M5.2 13.4 7 9a1.6 1.6 0 0 1 1.5-1h7a1.6 1.6 0 0 1 1.5 1l1.8 4.4"/><path d="M4 13.4h16V17H4z"/><circle cx="7.6" cy="17" r="1.5"/><circle cx="16.4" cy="17" r="1.5"/>`),
 }
 

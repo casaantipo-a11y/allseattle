@@ -21,6 +21,10 @@ function isActive(pathname: string, url: string) {
   return pathname === url || pathname.startsWith(`${url}/`)
 }
 
+/** Icons for sub-links, by URL (client, 18.10.2026: a wrench before Cars → Services). Sub-links
+ * have no icon field in the Header global; adding one would be a schema change for one icon. */
+const SUB_ICONS: Record<string, string> = { '/cars/services': 'tools' }
+
 /** A sub-link is active on its own URL and below it; the one that is also
  * the parent's URL (Cars → For sale = /cars) only when no sibling matches
  * more specifically — /cars/services is "Services", not "For sale". */
@@ -65,6 +69,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
                           className={subActive ? 'active' : undefined}
                           aria-current={subActive ? 'page' : undefined}
                         >
+                          {SUB_ICONS[sub.url] ? <Svg className="nav-icon" html={NAV_ICONS[SUB_ICONS[sub.url]]} /> : null}
                           {sub.label}
                         </Link>
                       </span>

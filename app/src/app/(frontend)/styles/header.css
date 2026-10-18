@@ -444,7 +444,15 @@
 
 /* ---------- 1280: в утилитах появляется Register Business ---------- */
 @media (min-width: 1280px) {
-  .header-top { gap: var(--space-6); }
+  /* Меню — по центру страницы, на оси баннера (клиент, 18.10.2026: «центрируй
+     весь ряд»). С 03.10.2026 оно стояло по центру промежутка между логотипом
+     и утилитами, на 26–35px левее. Боковые колонки равные — логотип и
+     утилиты (с Register Business ≈240px) в них помещаются. На 1024–1279
+     места нет (ряд ≈600px, логотип 186), там прежняя сетка auto 1fr auto. */
+  .header-top {
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-6);
+  }
   .header-utils { gap: var(--space-3); }
   .header-utils .nav-stub { display: flex; }
 }
