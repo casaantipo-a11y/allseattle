@@ -108,7 +108,10 @@ keeps them — CMS data, not the seed). The old layout couldn't hold them: below
 **one row that scrolls sideways**, bled to the screen edges (negative `--gutter` margin + padding);
 from 1024 they wrap centred (4 rows at 1024, 3 at 1440). From 1440 only the WHEN tabs stay in the
 head band; the chips run full width under it, 16px below the heading / "Submit an event"
-(`.events-types` margin-top 52). Still behind `EVENTS_COMING_SOON`.
+(`.events-types` margin-top 52). Still behind `EVENTS_COMING_SOON`. Same day, "level with What is
+on / Seattle events": from 1440 the WHEN tabs are `translate: 0 32px` — their letters centred on the
+eyebrow+heading block and on "Submit an event" (chips and cards don't move; tab underline → chips
+32px). The demo events were deleted locally (prod waits for the user's go-ahead).
 
 **The app's event page (`events/[slug]`)**: from 1024 the right column (When & where, map, ad)
 starts level with the **photo** (client, 03.10.2026; a same-day version centred it on the title
