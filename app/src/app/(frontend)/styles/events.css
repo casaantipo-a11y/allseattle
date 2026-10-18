@@ -191,40 +191,113 @@
     border-bottom-color: var(--color-accent);
   }
 
-  /* Рубрик 20 (клиент, 18.10.2026; было 6). До 1024 — одна строка чипов,
-     которая листается вбок и выходит на поля экрана (переносом на 375 было
-     бы ~10 строк); с 1024 — переносятся по центру. */
+  /* Рубрика (клиент, 18.10.2026): 20 рубрик чипами вышли облаком в 3–10
+     строк — «неудобно, никто так не ищет». Теперь одна кнопка «Category: …»
+     по центру под вкладками; по нажатию — панель со всеми рубриками в
+     колонках (2 / 3 / 4 по ширине), выбранная — тёмная, как была у чипа.
+     <details>: открывается и без JS; закрытие снаружи / Esc —
+     EventCategoryMenu.tsx. Панель — поверх карточек, по центру кнопки,
+     шириной до 880px и не шире экрана без полей. */
   .events-types {
     display: flex;
-    gap: var(--space-2);
-    overflow-x: auto;
-    scrollbar-width: none;
-    margin-inline: calc(-1 * var(--gutter));
-    padding-inline: var(--gutter);
+    justify-content: center;
   }
 
-  .events-types::-webkit-scrollbar { display: none; }
+  .events-cat {
+    position: relative;
+  }
 
-  .events-types a {
-    flex: none;
-    white-space: nowrap;
+  .events-cat-button {
     display: inline-flex;
     align-items: center;
+    gap: var(--space-2);
     min-height: 44px;
-    padding: 0 var(--space-4);
+    padding: 0 var(--space-3) 0 var(--space-4);
+    border: 1px solid var(--color-slate-soft);
     border-radius: var(--radius-full);
-    background: var(--color-bg-soft);
+    background: var(--color-white);
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-navy);
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .events-cat-button::-webkit-details-marker { display: none; }
+
+  .events-cat-button:hover,
+  .events-cat[open] .events-cat-button {
+    border-color: var(--color-navy);
+  }
+
+  .events-cat-label {
+    font-weight: 600;
+    color: var(--color-slate);
+  }
+
+  .events-cat-chevron {
+    flex: none;
+    color: var(--color-slate);
+  }
+
+  /* Поворот отмечает состояние «открыто» — мгновенный, без анимации. */
+  .events-cat[open] .events-cat-chevron {
+    rotate: 180deg;
+  }
+
+  .events-cat-panel {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + var(--space-2));
+    left: 50%;
+    translate: -50% 0;
+    width: min(880px, calc(100vw - 2 * var(--gutter)));
+    padding: var(--space-3);
+    border: 1px solid var(--color-slate-soft);
+    border-radius: var(--radius-lg);
+    background: var(--color-white);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .events-cat-panel ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .events-cat-panel .events-cat-all {
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-slate-soft);
+  }
+
+  .events-cat-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--space-1);
+  }
+
+  .events-cat-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    /* 4px сверху и снизу: пункт в две строки на телефоне не касается соседа. */
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
     font-size: var(--text-xs);
     font-weight: 600;
+    line-height: 1.3;
     color: var(--color-navy);
     text-decoration: none;
   }
 
-  .events-types a:hover {
-    background: var(--color-slate-soft);
+  .events-cat-panel a:hover {
+    background: var(--color-bg-soft);
   }
 
-  .events-types a.active {
+  .events-cat-panel a.active {
     background: var(--color-navy);
     color: var(--color-white);
   }
@@ -237,20 +310,21 @@
     .events-when a {
       font-size: var(--text-lg);
     }
+
+    .events-cat-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
-  /* Мышиные ширины: правило 44px про касания (design.md §8), здесь чипы
-     ниже, как второй ряд меню и сортировка Jobs. */
+  /* Мышиные ширины: правило 44px про касания (design.md §8), здесь кнопка
+     и пункты панели ниже, как второй ряд меню и сортировка Jobs. */
   @media (min-width: 1024px) {
-    .events-types {
-      flex-wrap: wrap;
-      justify-content: center;
-      overflow: visible;
-      margin-inline: 0;
-      padding-inline: 0;
-    }
+    .events-cat-button { min-height: 36px; }
+    .events-cat-panel a { min-height: 36px; }
 
-    .events-types a { min-height: 36px; }
+    .events-cat-list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   /* С 1440 вкладки и чипы стоят в строке заголовка, между ним и «Submit an
@@ -287,7 +361,8 @@
       margin-top: calc(-92px + var(--space-2));
     }
 
-    .events-filters a {
+    .events-filters a,
+    .events-cat {
       pointer-events: auto;
     }
 
@@ -295,15 +370,16 @@
        18.10.2026): середина их букв — на середине надписи (от верха букв
        eyebrow до строки h1) и «Submit an event»; стояли на 32px выше.
        Затем «ещё чуть пониже» — +8, всего 40px.
-       Сдвиг поверх потока — чипы и карточки на месте. */
+       Сдвиг поверх потока — рубрика и карточки на месте. */
     .events-when {
       translate: 0 calc(var(--space-8) + var(--space-2));
     }
 
-    /* 20 рубрик в середину полосы не входят: в ней остаются только вкладки
-       периода, а чипы — во всю ширину под шапкой (клиент, 18.10.2026).
-       Чипы без сдвига начались бы в середине полосы; +52 ставят их на 16px
-       ниже нижнего края надписи и «Submit an event» (замер 1440/1920). */
+    /* Рубрика в середину полосы не входит (рядом с вкладками она наехала
+       бы на «Submit an event»): в полосе только вкладки периода, кнопка
+       «Category» — по центру под шапкой (клиент, 18.10.2026). Без сдвига она
+       начиналась бы в середине полосы; +52 ставят её на 16px ниже нижнего
+       края надписи и «Submit an event». */
     .events-types {
       margin-top: calc(var(--space-12) + var(--space-1));
     }

@@ -104,11 +104,14 @@ all-left variant and a News-style rail of widgets. Filters stay links with `?whe
 
 **App Events categories, 18.10.2026 (client):** 20 event categories in the client's order (Movies &
 Cinema … Pet-Friendly Events; the six demo ones were renamed into them and un-demoed, so purge-demo
-keeps them — CMS data, not the seed). The old layout couldn't hold them: below 1024 the chips are
-**one row that scrolls sideways**, bled to the screen edges (negative `--gutter` margin + padding);
-from 1024 they wrap centred (4 rows at 1024, 3 at 1440). From 1440 only the WHEN tabs stay in the
-head band; the chips run full width under it, 16px below the heading / "Submit an event"
-(`.events-types` margin-top 52). Still behind `EVENTS_COMING_SOON`. Same day, "level with What is
+keeps them — CMS data, not the seed). As chips they were a 3–10-row cloud ("ugly, nobody searches
+like that"), so the category is **one "Category: All ▾" button** (`EventCategoryMenu.tsx`, a native
+`<details>`; JS only closes it on an outside click / Esc / a choice) centred under the WHEN tabs. It
+opens a panel over the cards: "All categories" above a rule, then the 20 as links in 2 / 3 / 4 columns
+(phone / 640 / 1024), the chosen one navy; panel up to 880px wide, never wider than the screen minus
+the gutters. Options stay `?category=` links. From 1440 only the WHEN tabs sit in the head band; the
+button is under it, 16px below the heading / "Submit an event" (`.events-types` margin-top 52; the
+filter block is `pointer-events: none` there, so `.events-cat` turns them back on). Still behind `EVENTS_COMING_SOON`. Same day, "level with What is
 on / Seattle events": from 1440 the WHEN tabs are `translate: 0 32px` — their letters centred on the
 eyebrow+heading block and on "Submit an event" (chips and cards don't move; tab underline → chips
 32px). Then "a bit lower, and less white under the banner": tabs `translate` 40px, and the whole head

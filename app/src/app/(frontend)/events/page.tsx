@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
+import { EventCategoryMenu } from '@/components/EventCategoryMenu'
 import { EventCard } from '@/components/events'
 import { EVENTS_COMING_SOON, WHEN, type When, categoryOf, inWindow } from '@/lib/events'
 import { getAllUpcomingEvents, getEventCategories } from '@/lib/queries-phase3'
@@ -113,14 +114,11 @@ export default async function EventsPage({ searchParams }: Props) {
                   Category
                 </span>
                 <nav className="events-types" aria-labelledby="events-type-label">
-                  <Link href={href(when)} className={!category ? 'active' : undefined} aria-current={!category ? 'page' : undefined}>
-                    All
-                  </Link>
-                  {categories.map((c) => (
-                    <Link key={c.id} href={href(when, c.slug)} className={category?.id === c.id ? 'active' : undefined} aria-current={category?.id === c.id ? 'page' : undefined}>
-                      {c.name}
-                    </Link>
-                  ))}
+                  <EventCategoryMenu
+                    current={category?.name ?? 'All'}
+                    all={{ label: 'All categories', href: href(when), active: !category }}
+                    options={categories.map((c) => ({ label: c.name, href: href(when, c.slug), active: category?.id === c.id }))}
+                  />
                 </nav>
               </div>
             </div>
