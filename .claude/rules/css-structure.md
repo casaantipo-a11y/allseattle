@@ -361,3 +361,9 @@ banner → footer = 16px. `.ad-slot-under` (Jobs, Weather, City Map, Cars Servic
 Shopping / Leisure `.biz-infeed-ad--last` 16; Events' "Coming soon" card `mb-4` (its `my-10` gave 40);
 Home already 16. Rails with widgets (home, directory/shopping/leisure) have no widget margin
 (`.home-sidebar .widget`, `.dir-rail .widget` margin-bottom 0) — one gap between all their blocks.
+
+**App, 18.10.2026 — text from the admin (`RichText`, class `.rich-text`):** links are accent red,
+underlined (hover accent-dark) and lists have their bullets/numbers back — rules in business.css,
+because the prototype's unlayered `a` / `ul` resets silently beat RichText's Tailwind utilities
+(links read as plain navy text, the About list as loose lines). Static pages (`[page]` route,
+`main[data-page='static']`: About, Contact, Privacy, Terms) start 16px under the plates instead of 32.

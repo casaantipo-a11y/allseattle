@@ -358,6 +358,37 @@ a.underline {
   text-underline-offset: 3px;
 }
 
+/* Links inside text from the admin (About, articles, business and event descriptions):
+   they were navy without an underline — the same unlayered `a` rule ate RichText's
+   utilities — so nothing told them from the text (client, 18.10.2026). Accent + underline. */
+.rich-text a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.rich-text a:hover {
+  color: var(--color-accent-dark);
+}
+
+/* Lists in that text: the prototype's reset (`ul { list-style: none }`) beat the list-disc
+   utility too, so a bulleted list read as loose lines (About, 18.10.2026). */
+.rich-text ul {
+  list-style: disc;
+  padding-left: var(--space-6);
+}
+
+.rich-text ol {
+  list-style: decimal;
+  padding-left: var(--space-6);
+}
+
+/* Static pages (About, Contact, Privacy, Terms): the heading 16px closer to the
+   plates above (client, 18.10.2026; the shared first-section padding is 32). */
+main[data-page='static'] > .section:first-child {
+  padding-top: var(--space-4);
+}
+
 /* "Create an account" / "Log in" under the heading of the other form: the way between
    the two pages, in the accent so it reads as a link at a glance. */
 .account-switch {

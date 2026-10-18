@@ -63,7 +63,7 @@ export default async function StaticPage({ params }: Props) {
   }
 
   return (
-    <main id="content">
+    <main id="content" data-page="static">
       <section className="section">
         <div className="container">
           <div className="section-head">
