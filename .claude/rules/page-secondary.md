@@ -110,7 +110,7 @@ like that"), so the category is **one "Category: All ▾" button** (`EventCatego
 opens a panel over the cards: "All categories" above a rule, then the 20 as links in 2 / 3 / 4 columns
 (phone / 640 / 1024), the chosen one navy; panel up to 880px wide, never wider than the screen minus
 the gutters. Options stay `?category=` links. From 1440 only the WHEN tabs sit in the head band; the
-button is under it, 16px below the heading / "Submit an event" (`.events-types` margin-top 52; the
+button is under it, 8px below the heading / "Submit an event" (`.events-types` margin-top 44, was 52; the
 filter block is `pointer-events: none` there, so `.events-cat` turns them back on). Still behind `EVENTS_COMING_SOON`. Same day, "level with What is
 on / Seattle events": from 1440 the WHEN tabs are `translate: 0 32px` — their letters centred on the
 eyebrow+heading block and on "Submit an event" (chips and cards don't move; tab underline → chips
