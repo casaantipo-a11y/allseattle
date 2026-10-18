@@ -21,6 +21,29 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 }
 
+/** The "Coming soon" card: the whole section while it's closed, and the empty state once it's open. */
+function EventsSoon({ className = '' }: { className?: string }) {
+  return (
+    <div className={`events-soon mx-auto mb-4 max-w-[640px] ${className} rounded-xl border border-brand-line bg-white px-6 py-12 text-center`}>
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fdecec] text-brand-red" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        </svg>
+      </div>
+      <div className="eyebrow">Coming soon</div>
+      <div className="mt-2 font-display text-2xl font-bold text-brand-navy">Seattle events are on their way</div>
+      <div className="mx-auto mt-3 max-w-[48ch] text-brand-slate">
+        Concerts, food, community, family, art and sports events in one place — today, this weekend and this month. Hosting one?{' '}
+        <Link href="/advertise" className="text-brand-navy underline">
+          Tell us about it
+        </Link>
+        .
+      </div>
+    </div>
+  )
+}
+
 // The prototype's events page (events.html, css: styles/events.css) on real
 // data, plus the date filter from spec §5. Filters are links, so every view
 // has its own URL and works without JavaScript.
@@ -66,23 +89,7 @@ export default async function EventsPage({ searchParams }: Props) {
           {EVENTS_COMING_SOON ? (
             // The section isn't open yet (client, 15.10.2026; switch in lib/events.ts). Heading,
             // "Submit an event" and both banner places stay.
-            <div className="events-soon mx-auto mb-4 mt-10 max-w-[640px] rounded-xl border border-brand-line bg-white px-6 py-12 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fdecec] text-brand-red" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="5" width="18" height="16" rx="2" />
-                  <path d="M3 10h18M8 3v4M16 3v4" />
-                </svg>
-              </div>
-              <div className="eyebrow">Coming soon</div>
-              <div className="mt-2 font-display text-2xl font-bold text-brand-navy">Seattle events are on their way</div>
-              <div className="mx-auto mt-3 max-w-[48ch] text-brand-slate">
-                Concerts, food, community, family, art and sports events in one place — today, this weekend and this month. Hosting one?{' '}
-                <Link href="/advertise" className="text-brand-navy underline">
-                  Tell us about it
-                </Link>
-                .
-              </div>
-            </div>
+            <EventsSoon className="mt-10" />
           ) : (
             <>
             {/* Period and category (client, 03 and 09.10.2026): the period as underline tabs
@@ -126,7 +133,9 @@ export default async function EventsPage({ searchParams }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="muted">Nothing listed for that choice yet.</p>
+                // No events (or none for this choice): the same "Coming soon" card instead of a
+                // bare line (client, 18.10.2026); the filters above give its top gap.
+                <EventsSoon />
               )}
             </div>
             </>

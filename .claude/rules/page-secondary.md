@@ -113,7 +113,10 @@ on / Seattle events": from 1440 the WHEN tabs are `translate: 0 32px` — their 
 eyebrow+heading block and on "Submit an event" (chips and cards don't move; tab underline → chips
 32px). Then "a bit lower, and less white under the banner": tabs `translate` 40px, and the whole head
 16px higher from 1440 (`.events-head` margin-top −12, was 4) — banner → "Submit an event" 16px,
-everything under the head moves up with it. The demo events were deleted locally (prod waits for the user's go-ahead).
+everything under the head moves up with it; then "a touch more": margin-top −20, banner → card 8px.
+The empty state (no events, or none for the chosen filter) is the same "Coming soon" card as the
+closed section (`EventsSoon` in the page; was "Nothing listed for that choice yet."), 24px under the
+filters, 16 above the bottom banner. The demo events were deleted locally (prod waits for the user's go-ahead).
 
 **The app's event page (`events/[slug]`)**: from 1024 the right column (When & where, map, ad)
 starts level with the **photo** (client, 03.10.2026; a same-day version centred it on the title
