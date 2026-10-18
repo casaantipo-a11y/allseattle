@@ -23,16 +23,20 @@ export function StatsWidget({ stats }: { stats: { businesses: Stat; cars: Stat; 
       <div className="widget-head">AllSeattle at a glance</div>
       <div className="widget-body">
         <div className="stat-grid">
-          {tiles.map(([label, s, href]) => (
-            <Link key={label} href={href} className="stat-tile no-underline">
-              {/* Events are "Coming soon" (lib/events.ts): the tile keeps its place in the 2×2 grid. */}
-              <span className="num">{href === '/events' && EVENTS_COMING_SOON ? 'Soon' : s.total.toLocaleString('en-US')}</span>
-              <span className="label">
-                {label}
-                {s.today && !(href === '/events' && EVENTS_COMING_SOON) ? <span className="block text-brand-red">+{s.today} today</span> : null}
-              </span>
-            </Link>
-          ))}
+          {tiles.map(([label, s, href]) => {
+            // Events say "Soon" instead of a 0 — while the section is closed (lib/events.ts) or
+            // has no events yet (client, 18.10.2026); the tile keeps its place in the 2×2 grid.
+            const soon = href === '/events' && (EVENTS_COMING_SOON || !s.total)
+            return (
+              <Link key={label} href={href} className="stat-tile no-underline">
+                <span className="num">{soon ? 'Soon' : s.total.toLocaleString('en-US')}</span>
+                <span className="label">
+                  {label}
+                  {s.today && !soon ? <span className="block text-brand-red">+{s.today} today</span> : null}
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </div>
