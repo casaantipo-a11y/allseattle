@@ -490,9 +490,16 @@
   translate: var(--space-2) 0;
 }
 
+/* ENG ещё на 8px правее, к значку аккаунта (клиент, 19.10.2026: «большое
+   расстояние»): у значка своё поле 12px, между ними на глаз было 20, стало 12. */
+.header-top .lang-switch {
+  translate: var(--space-2) 0;
+}
+
 @media (min-width: 1024px) {
   .header-top .site-logo,
-  .header-top .header-utils {
+  .header-top .header-utils,
+  .header-top .lang-switch {
     translate: none;
   }
 }
