@@ -729,6 +729,9 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0 var(--space-4);
+  /* на 8px ближе к подписи над ними (клиент, 19.10.2026, «чуть вверх»): у подписи
+     на телефоне и планшете своя высота 44px под палец */
+  margin-top: calc(-1 * var(--space-2));
 }
 
 .fc-meta a {
