@@ -216,18 +216,21 @@
    Иконки — те же круглые кнопки 44px, что на телефоне; ссылки Explore по
    44px в высоту — планшет сенсорный. */
 @media (min-width: 640px) {
+  /* 19.10.2026: слева логотип с иконками (в одной ячейке) и контакты под ними,
+     справа Explore на две строки сетки — см. блок «Планшет, 19.10.2026» в конце. */
   .footer-inner {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "logo    social"
+      "logo    explore"
       "contact explore"
       "copy    copy";
     align-items: start;
     column-gap: var(--space-8);
-    row-gap: var(--space-6);
+    row-gap: var(--space-4);
     padding: var(--space-8) var(--gutter) var(--space-4);
   }
   .footer-follow {
+    grid-area: logo;
     justify-self: end;
     align-self: center;
   }
@@ -564,4 +567,52 @@
 .site-footer .footer-meta {
   padding-top: 0;
   padding-bottom: 0;
+}
+
+/* ---------- Планшет, 19.10.2026 (клиент: «разное расстояние между разделами в
+   Explore, не нравится, как выглядит, и очень длинный») ----------
+   Было четыре этажа: логотип + иконки / Contact и Explore / копирайт / ссылки.
+   Теперь слева логотип с иконками в одной строке и под ними контакты, справа
+   Explore — колонки по ширине подписей с одинаковым промежутком (в колонках
+   равной ширины «News → Business Directory» и «Business Directory → Cars»
+   смотрелись разными). Заголовок CONTACT не нужен — как на телефоне. С 1280 —
+   прежняя раскладка компьютера (всё сброшено ниже). */
+@media (min-width: 640px) {
+  /* сетка .footer-inner и место иконок — в исходном блоке планшета выше по файлу
+     (он стоит до правил компьютера, и те их перекрывают) */
+  .footer-contact h4 {
+    display: none;
+  }
+  .footer-explore ul#footer-explore-list {
+    grid-template-columns: repeat(3, max-content);
+    column-gap: var(--space-6);
+  }
+}
+
+@media (min-width: 768px) {
+  .footer-explore ul#footer-explore-list {
+    column-gap: var(--space-8);
+  }
+}
+
+@media (min-width: 1280px) {
+  .footer-contact h4 {
+    display: block;
+  }
+  /* колонки компьютера; промежуток 32 — тот же, что задан с 768 */
+  .footer-explore ul#footer-explore-list {
+    grid-template-columns: repeat(3, minmax(max-content, 1fr));
+  }
+}
+
+/* Телефон: «Explore all sections» по центру кнопки (клиент, 19.10.2026 — стоял у
+   левого края), стрелка — у правого края. */
+.footer-explore-toggle {
+  position: relative;
+  justify-content: center;
+}
+
+.footer-explore-toggle::after {
+  position: absolute;
+  right: var(--space-4);
 }
