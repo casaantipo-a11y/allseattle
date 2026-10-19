@@ -477,3 +477,22 @@
   .header-utils { gap: var(--space-3); }
   .header-utils .nav-stub { display: flex; }
 }
+
+/* Телефон и планшет: логотип на 4px левее, ENG и вход в аккаунт на 8px правее
+   (клиент, 19.10.2026, «чуть к краям»): у значка аккаунта своё поле 12px внутри
+   кнопки 44px, и справа он стоял дальше от края, чем логотип слева. Сдвиг поверх
+   потока — меню ниже на месте. С 1024 шапка своя, без сдвигов. */
+.header-top .site-logo {
+  translate: calc(-1 * var(--space-1)) 0;
+}
+
+.header-top .header-utils {
+  translate: var(--space-2) 0;
+}
+
+@media (min-width: 1024px) {
+  .header-top .site-logo,
+  .header-top .header-utils {
+    translate: none;
+  }
+}

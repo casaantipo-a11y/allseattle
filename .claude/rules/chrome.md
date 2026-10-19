@@ -330,3 +330,6 @@ the highlighted plate's label red), at 640–1279 three equal cards in a row (la
 highlighted card red border + tint). The desktop row (`.ann-desktop`) shows from 1280 and is
 unchanged; the question part of a text is hidden below 1280. The sideways-scrolling row is gone.
 Footer on phones: contacts in a column, one per line.
+Header below 1024 (19.10.2026): logo `translate` −4px, utilities (ENG, account) +8px — the account
+icon has 12px of its own padding inside the 44px button and sat further from the edge than the
+logo. From 1024 no shift.
