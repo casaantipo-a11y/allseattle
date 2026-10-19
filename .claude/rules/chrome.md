@@ -324,3 +324,9 @@ rows 28–32px tall.
 (`.announcements-row` in components.css, bled to the screen edges; the next plate's edge shows at
 the side) instead of up to three stacked rows; the question in "Saw something newsworthy?" is
 hidden up to 1024 (was 640). From 1024 centred with wrapping, as before.
+**Plates, final for now (19.10.2026, client picked from three variants):** below 1280 a separate
+`.ann-list` (Announcements.tsx) — on phones a thin full-width list (label, text, "›", hairlines;
+the highlighted plate's label red), at 640–1279 three equal cards in a row (label over text,
+highlighted card red border + tint). The desktop row (`.ann-desktop`) shows from 1280 and is
+unchanged; the question part of a text is hidden below 1280. The sideways-scrolling row is gone.
+Footer on phones: contacts in a column, one per line.

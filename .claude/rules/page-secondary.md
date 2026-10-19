@@ -358,3 +358,6 @@ blocks (News left column, Cars Services and the job page had 40).
 Then: "Job board" another 4px lower (top 8 below 1024, 4 from 1024); the map legend from 1280 at
 `top: 12px` (was 8). Directory (directory.css): on phones the head is 8px further from the banner
 (banner → "BUSINESS DIRECTORY" line 14px, was 6); from 640 unchanged.
+Map legend from 1280: centred on the page (`.map-head` `1fr auto 1fr`, the banner's axis; client
+19.10.2026), no longer in the middle of the heading–filter gap. Cars Services on phones: "All auto
+businesses" full width under the heading.

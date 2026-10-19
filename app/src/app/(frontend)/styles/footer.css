@@ -648,13 +648,25 @@
   list-style: none;
 }
 
+/* Телефон: контакты столбиком, каждый своей строкой по центру — в строку с
+   переносом они ложились «телефон / почта + город / Instagram» (клиент,
+   19.10.2026: «на телефоне поменьше выглядит плохо»). С 640 — одной строкой. */
 .fc-contact {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-1) var(--space-6);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
   font-size: var(--text-xs);
   color: #c9d3de;
+}
+
+@media (min-width: 640px) {
+  .fc-contact {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-1) var(--space-6);
+  }
 }
 
 .fc-contact li {

@@ -1871,50 +1871,129 @@ body.modal-open {
 /* Плашки-анонсы под баннером: вопрос в начале текста («Saw something
    newsworthy?») на телефоне скрыт, остаётся призыв «Share the news» —
    иначе плашка переносилась в две строки (просьба клиента 06.10.2026).
-   С 1024px — полный текст (до 19.10.2026 — с 640). Разметка — Announcements.tsx. */
+   С 1280px — полный текст (до 19.10.2026 — с 640, потом с 1024). Разметка —
+   Announcements.tsx. */
 .announcement-lead {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .announcement-lead {
     display: inline;
   }
 }
 
-/* Телефон и планшет: плашки одной строкой, которая листается вбок (клиент,
-   19.10.2026: три плашки друг под другом занимали слишком много места). Строка
-   выходит на поля экрана, край следующей плашки виден у края — понятно, что
-   листается. С 1024 — как было: по центру с переносом. Свойства перебивают
-   утилиты Tailwind на <ul> (они в слое, это правило — нет). */
-.announcements-row {
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  column-gap: var(--space-2);
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin-inline: calc(-1 * var(--gutter));
-  padding-inline: var(--gutter);
+/* Плашки-анонсы до 1280 (клиент, 19.10.2026; до этого — строка, листавшаяся вбок,
+   и до неё — плашки столбиком). Телефон: тонкий список во всю ширину — метка,
+   текст, стрелка, черта между строками. Планшет (640–1279): три одинаковые
+   карточки в ряд — метка сверху, текст под ней. С 1280 — прежний ряд плашек
+   (.ann-desktop), эта разметка скрыта. */
+.ann-desktop {
+  display: none;
 }
 
-.announcements-row::-webkit-scrollbar { display: none; }
+.ann-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-slate-soft);
+  border-bottom: 1px solid var(--color-slate-soft);
+}
 
-.announcements-row > li {
+.ann-list > li + li {
+  border-top: 1px solid var(--color-slate-soft);
+}
+
+.ann-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-1) var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-navy);
+  text-decoration: none;
+}
+
+.ann-label {
   flex: none;
+  padding: 2px var(--space-2);
+  border-radius: 4px;
+  background: var(--color-navy);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-white);
 }
 
-.announcements-row a {
+.ann-item.is-highlight .ann-label {
+  background: var(--color-accent);
+}
+
+.ann-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-@media (min-width: 1024px) {
-  .announcements-row {
-    flex-wrap: wrap;
+.ann-go {
+  margin-left: auto;
+  font-size: var(--text-lg);
+  line-height: 1;
+  color: var(--color-slate);
+}
+
+.ann-item:hover .ann-text {
+  text-decoration: underline;
+}
+
+@media (min-width: 640px) {
+  .ann-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    border: 0;
+  }
+  .ann-list > li + li {
+    border-top: 0;
+  }
+  .ann-item {
+    flex-direction: column;
     justify-content: center;
-    column-gap: var(--space-8);
-    overflow-x: visible;
-    margin-inline: 0;
-    padding-inline: 0;
+    gap: var(--space-1);
+    height: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-slate-soft);
+    border-radius: var(--radius-sm);
+    background: var(--color-white);
+    text-align: center;
+  }
+  .ann-item.is-highlight {
+    border-color: var(--color-accent);
+    background: var(--color-accent-tint);
+  }
+  .ann-item.is-highlight .ann-label {
+    background: var(--color-navy);
+  }
+  .ann-text {
+    white-space: normal;
+  }
+  .ann-go {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ann-list {
+    display: none;
+  }
+  .ann-desktop {
+    display: flex;
   }
 }
 

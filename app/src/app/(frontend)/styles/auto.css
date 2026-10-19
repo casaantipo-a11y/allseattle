@@ -128,16 +128,21 @@
 }
 
 /* «All auto businesses» (клиент, 19.10.2026). Телефон: кнопка своей строкой под
-   длинным заголовком — по центру строки, а не у левого края. С 640: кнопка была
-   на 12px ниже общего (--btn-lower) и ~17px ниже середины надписи — поднята на
-   середину всей шапки, как «All news» и «All cars». */
+   заголовком в две строки — во всю ширину, как «Filters» в Jobs (по центру и у
+   левого края она висела отдельно от заголовка — «плохо выглядит»). С 640: кнопка
+   была на 12px ниже общего (--btn-lower) и ~17px ниже середины надписи — поднята
+   на середину всей шапки, как «All news» и «All cars». */
 .auto-firms-head .btn {
-  justify-self: center;
+  justify-self: stretch;
+  top: 0;
+  margin-top: var(--space-3);
 }
 
 @media (min-width: 640px) {
   .auto-firms-head .btn {
     justify-self: auto;
+    top: calc(-1 * var(--space-1));
+    margin-top: 0;
   }
   .auto-firms-head {
     --head-btn-dy: calc(var(--space-1) - 9px);

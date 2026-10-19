@@ -31,7 +31,26 @@ export async function Announcements() {
       {/* Gap via padding on a wrapper: the prototype's base.css zeroes list
           margins unlayered, which beats a Tailwind margin utility on the <ul>. */}
       <div className="pt-5">
-        <ul className="announcements-row flex flex-wrap justify-center gap-x-8 gap-y-2" aria-label="Announcements">
+        {/* Phones and tablets (below 1280): a thin list on phones, three equal cards in a row
+            on tablets (client, 19.10.2026 — chose it over a sideways-scrolling row; stacked
+            plates took too much room, and at 1024–1279 they broke into 2 + 1). The desktop row
+            below is unchanged and hidden there. Styles: components.css (.ann-*). */}
+        <ul className="ann-list" aria-label="Announcements">
+          {items.map((a) => (
+            <li key={`c-${a.label}-${a.url}`}>
+              <Link href={a.url} className={`ann-item${a.highlight ? ' is-highlight' : ''}`}>
+                <span className="ann-label">{a.label}</span>
+                <span className="ann-text">
+                  <AnnouncementText text={a.text} />
+                </span>
+                <span className="ann-go" aria-hidden="true">
+                  &rsaquo;
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ul className="ann-desktop flex flex-wrap justify-center gap-x-8 gap-y-2" aria-label="Announcements">
           {items.map((a) => (
             <li key={`${a.label}-${a.url}`}>
               {/* "highlight" in the admin draws the plate with the red outline and tint
