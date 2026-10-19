@@ -108,11 +108,12 @@ const Pin = () => (
 // were too many on one screen (client, 09.10.2026: 5, then 6).
 const PAGE = 6
 
+// [value, label, short label for phones — all four fit one row there (client, 19.10.2026)]
 const SORTS = [
-  ['newest', 'Newest'],
-  ['salary-desc', 'Highest pay'],
-  ['salary-asc', 'Lowest pay'],
-  ['company', 'Company A–Z'],
+  ['newest', 'Newest', 'Newest'],
+  ['salary-desc', 'Highest pay', 'Top pay'],
+  ['salary-asc', 'Lowest pay', 'Low pay'],
+  ['company', 'Company A–Z', 'A–Z'],
 ] as const
 
 export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initialQuery?: string }) {
@@ -218,8 +219,21 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
           <span className="eyebrow">Work in Seattle</span>
           <h1>Job board</h1>
         </div>
-        <Link href="/account/listings/new?type=job" className="btn">
-          Post a job
+        {/* Below 1024 the same card as the desktop one in the filter column (client, 19.10.2026;
+            was a plain red button under the heading): opposite "Job board" from 360 — without
+            its icon there, it fits beside the heading — and under it on the narrowest phones. */}
+        <Link href="/account/listings/new?type=job" className="post-card jobs-post-head">
+          <span className="post-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="7" width="18" height="13" rx="2" />
+              <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18" />
+            </svg>
+          </span>
+          <span className="post-card-text">
+            <span className="post-card-kicker">Hiring in Seattle?</span>
+            <span className="post-card-title">Post a job</span>
+          </span>
+          <span className="post-card-go" aria-hidden="true">&rarr;</span>
         </Link>
       </div>
 
@@ -321,15 +335,21 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
               and without the "Sort" label since 18.10.2026 — the group keeps its aria-label). */}
           <div className="jobs-toolbar">
             <div className="jobs-sort" role="group" aria-label="Sort jobs">
-              {SORTS.map(([value, label]) => (
+              {SORTS.map(([value, label, short]) => (
                 <button
                   key={value}
                   type="button"
                   className={`jobs-sort-chip${s.sort === value ? ' is-active' : ''}`}
                   aria-pressed={s.sort === value}
+                  aria-label={label}
                   onClick={() => set({ sort: value })}
                 >
-                  {label}
+                  <span className="jobs-sort-short" aria-hidden="true">
+                    {short}
+                  </span>
+                  <span className="jobs-sort-long" aria-hidden="true">
+                    {label}
+                  </span>
                 </button>
               ))}
             </div>

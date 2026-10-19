@@ -135,3 +135,9 @@ empty sides; `object-position: 50% 75%` takes the lower part of an upright photo
 "Today in Seattle / Latest news" ink like from 640 — ±0.4px at 320/375/640/1440); the button's own
 row and its empty strip are gone. Base rule in home.css (no media query: from 640 the shared rules
 give the same column, row and `--head-btn-dy`).
+
+**App home, 19.10.2026 (phones):** "Latest news" → cards 8px below 640 (`.home-main > .section-head`
+margin-bottom, placed before the 1024 block so that block still wins; 24 at 640–1023); "All cars"
+sits in the "Fresh cars" row like "All news" (same rule, `.home-cars .section-head`), the head's
+bottom margin 0 on phones as from 640 (letters → cards ~7px). Directory (directory.css): heading →
+search 8px on phones (margin-bottom 10 — the labels are shifted 2px down), 12 from 640.

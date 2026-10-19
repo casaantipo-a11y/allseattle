@@ -245,6 +245,36 @@
   color: var(--color-accent);
 }
 
+/* Телефон: короткие подписи и поля поуже — все четыре в один ряд (клиент,
+   19.10.2026; полные переносились на второй). Полные — с 640. */
+.jobs-sort-long {
+  display: none;
+}
+
+/* поля и промежуток поуже — четыре помещаются и на 320 (285 из 288px) */
+.jobs-sort {
+  column-gap: calc(var(--space-1) + 2px);
+}
+
+.jobs-sort .jobs-sort-chip {
+  padding: 0 calc(var(--space-2) + 2px);
+}
+
+@media (min-width: 640px) {
+  .jobs-sort-short {
+    display: none;
+  }
+  .jobs-sort-long {
+    display: inline;
+  }
+  .jobs-sort {
+    column-gap: var(--space-2);
+  }
+  .jobs-sort .jobs-sort-chip {
+    padding: 0 var(--space-4);
+  }
+}
+
 .jobs-sort-chip.is-active {
   border-color: var(--color-navy);
   background: var(--color-navy);
@@ -277,6 +307,70 @@
 .jobs-head h1 {
   position: relative;
   left: var(--space-1);
+}
+
+/* «Post a job» до 1024 — та же карточка, что на компьютере в колонке фильтров
+   (клиент, 19.10.2026; была красная кнопка под заголовком). На самых узких
+   (до 375) — полная, под заголовком во всю ширину, как карточки в News и Cars;
+   с 375 — напротив «Job board», на его строке, компактная: без иконки и
+   «Hiring in Seattle?», заголовок 18px — иначе она наезжает на «WORK IN SEATTLE»
+   (надзаголовок сдвинут на 16px вправо и кончается на ~191px). С 640 — полная,
+   300px, по середине надписи, как .post-card в шапках. */
+@media (min-width: 375px) {
+  .jobs-head {
+    grid-template-columns: 1fr auto;
+    column-gap: var(--space-2);
+    /* карточка — нижняя кромка шапки; +4px, и до кнопок сортировки 8 */
+    margin-bottom: var(--space-1);
+  }
+  .jobs-head .jobs-post-head {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: center;
+    margin-top: 0;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+  .jobs-post-head .post-card-icon,
+  .jobs-post-head .post-card-kicker {
+    display: none;
+  }
+  .jobs-post-head .post-card-title {
+    font-size: var(--text-lg);
+  }
+  .jobs-post-head .post-card-go {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (min-width: 640px) {
+  /* карточка сдвинута на 8px вниз и выходит за шапку — 16px снизу, чтобы
+     сортировка встала в 8px под ней (с 1024 своё правило ниже) */
+  .jobs-head {
+    column-gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  .jobs-head .jobs-post-head {
+    grid-row: 1 / 3;
+    position: relative;
+    top: var(--space-2);
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+  .jobs-post-head .post-card-icon {
+    display: grid;
+  }
+  .jobs-post-head .post-card-kicker {
+    display: block;
+  }
+  .jobs-post-head .post-card-title {
+    font-size: 20px;
+  }
+  .jobs-post-head .post-card-go {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 /* «Show more jobs» под списком: сначала шесть вакансий, кнопка добавляет ещё
@@ -524,7 +618,7 @@
   /* «Post a Job» — наверху колонки фильтров, на всю её ширину (просьба
      клиента 28.09.2026): так кнопка выровнена по левой колонке и не спорит
      с заголовком. Кнопка в шапке на этих ширинах скрыта. */
-  .jobs-head .btn {
+  .jobs-head .jobs-post-head {
     display: none;
   }
   .jobs-post-side {

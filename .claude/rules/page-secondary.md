@@ -321,3 +321,17 @@ the same as banner → footer (`.biz-infeed-ad--last` margin-top, components.css
 City Map (17.10.2026): the head carries `.section-head--snug` too — banner → "Neighborhood guide"
 letters 13.4px (was 21.4); the legend / category select stay ≥14px under the banner.
 Weather (17.10.2026): "Around the region" (`.weather-h`) 32px under the board, was 48.
+
+**App, 19.10.2026 (client's phone list):** heading → first block 8px on phones on every page with a
+head card (shared `.section-head .post-card` margin-top 8, was 16: News, Cars, Weather, Events) and
+on City Map (filter 8 under the heading, legend 8 under the filter). **Map legend on phones**: one
+centred row in a soft rounded strip, "Premium · Luxury · Business" (the word "business" is
+`.map-legend-more`, shown from 640), 12px between items so it fits 320. **Weather**: the sunrise
+tile's "+2 min tomorrow" wraps on phones (it ran out of the 155px card), one line from 640.
+**Jobs**: the head's "Post a job" is the same `.post-card` as the desktop one in the filter column
+(`.jobs-post-head`; was a red `.btn`): below 375 full width under the heading; 375–639 compact
+(no icon / kicker, 18px title) on the heading's row, opposite "Job board" — with the kicker it ran
+into "WORK IN SEATTLE"; 640–1023 the full 300px card centred on the head (+16px under the head so
+the sort row stays 8px below it); from 1024 hidden as before (the side card shows). Sort chips on
+phones: short labels "Newest · Top pay · Low pay · A–Z" (full ones in `aria-label`, shown from
+640), 10px padding and 6px gaps — one row down to 320.

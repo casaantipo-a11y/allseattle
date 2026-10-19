@@ -168,6 +168,18 @@
   margin-bottom: var(--space-3);
 }
 
+/* Телефон: от букв заголовка до поиска 8px (клиент, 19.10.2026; было 10 — сами
+   надписи сдвинуты на 2px вниз, отсюда +2). С 640 — прежние 12. */
+.section-head {
+  margin-bottom: calc(var(--space-2) + 2px);
+}
+
+@media (min-width: 640px) {
+  .section-head {
+    margin-bottom: var(--space-3);
+  }
+}
+
 /* Шапка раздела по линейке клиента.
 
    Заголовок «Find a Seattle Business» опущен на 2px, надзаголовок на 18px.

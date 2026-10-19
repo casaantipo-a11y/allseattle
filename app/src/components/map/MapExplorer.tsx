@@ -9,11 +9,12 @@ export type ExplorerCategory = { id: number; name: string; group: string; ids: n
 
 // /map: every business with coordinates, clustered, filtered by category.
 // Events join the same map in phase 3 as another group.
+// `more` is hidden on phones (business.css .map-legend-more), so the legend fits one row there.
 const LEGEND = [
-  { kind: 'premium', label: 'Premium business' },
-  { kind: 'luxury', label: 'Luxury business' },
-  { kind: 'standard', label: 'Business' },
-  { kind: 'event', label: 'Event' },
+  { kind: 'premium', label: 'Premium', more: ' business' },
+  { kind: 'luxury', label: 'Luxury', more: ' business' },
+  { kind: 'standard', label: 'Business', more: '' },
+  { kind: 'event', label: 'Event', more: '' },
 ] as const
 
 export function MapExplorer({
@@ -71,7 +72,10 @@ export function MapExplorer({
           {LEGEND.filter((l) => shown.some((p) => p.kind === l.kind)).map((l) => (
             <li key={l.kind}>
               <span className={`as-pin as-pin--${l.kind}`} aria-hidden="true" />
-              {l.label}
+              <span>
+                {l.label}
+                {l.more ? <span className="map-legend-more">{l.more}</span> : null}
+              </span>
             </li>
           ))}
         </ul>

@@ -423,11 +423,23 @@
   white-space: nowrap;
 }
 
+/* На телефоне карточка ~155px: «+2 min tomorrow» в одну строку вылезал за край
+   (клиент, 19.10.2026) — там строка переносится («+2 min / tomorrow»). С 640
+   карточки шире — снова в одну строку. */
+.wx-sun-row > span {
+  min-width: 0;
+}
+
 .wx-shift {
   display: block;
   font-size: var(--text-xs);
   color: var(--color-slate);
-  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .wx-shift {
+    white-space: nowrap;
+  }
 }
 
 /* UV: полукруглая шкала 0–12, заполнение — красным (ключевое значение,

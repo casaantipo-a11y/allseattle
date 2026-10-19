@@ -76,13 +76,27 @@
   display: block; /* иначе общее .section-head > div { display: contents } растворяет обёртку */
   grid-column: 1;
   grid-row: 3;
-  margin: var(--space-4) 0 0;
+  /* телефон: 8px от заголовка (клиент, 19.10.2026; было 16) */
+  margin: var(--space-2) 0 0;
 }
 
+/* Телефон (клиент, 19.10.2026: «в два ряда некрасиво»): легенда одной строкой
+   по центру в светлой плашке, подписи без слова «business» (.map-legend-more
+   скрыт до 640) — «Premium · Luxury · Business» помещаются и на 320. */
 .map-head .map-legend {
   grid-column: 1;
   grid-row: 4;
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
+  justify-content: center;
+  /* 12px между пунктами — с 16 на 320 «Business» переносился */
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-soft);
+}
+
+.map-legend-more {
+  display: none;
 }
 
 .map-body {
@@ -129,6 +143,14 @@
     grid-column: 1 / -1;
     grid-row: 3;
     justify-content: center;
+    gap: var(--space-2) var(--space-6);
+    padding: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .map-legend-more {
+    display: inline;
   }
 
   /* «Neighborhood guide / City map» немного вправо, «All categories» немного
