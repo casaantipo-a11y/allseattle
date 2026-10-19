@@ -139,14 +139,16 @@
     top: var(--space-2);
   }
 
+  /* С 640 — та же светлая плашка, что на телефоне (клиент, 19.10.2026: «легенда
+     ещё не нравится» — точки с подписями висели между заголовком и фильтром),
+     по ширине содержимого и по центру; подписи полные. */
   .map-head .map-legend {
     grid-column: 1 / -1;
     grid-row: 3;
+    justify-self: center;
     justify-content: center;
     gap: var(--space-2) var(--space-6);
-    padding: 0;
-    border-radius: 0;
-    background: none;
+    padding: var(--space-2) var(--space-4);
   }
 
   .map-legend-more {

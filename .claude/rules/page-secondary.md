@@ -350,3 +350,8 @@ open above the list it pushed the jobs ~2000px down on a tablet); card → Filte
 12 (`.jobs-layout` gap 8 below 1024). The tablet head is back to heading left + card right centred
 on the text (head margin-bottom 16) — the two-column variant with the sort under the heading no
 longer fits once Filters sits between them.
+19.10.2026 (desktop pass): the map legend keeps the soft rounded strip from 640 too (content-wide,
+centred, 8 / 16 padding; in the head row from 1280). Jobs from 1024: the head 8px closer to
+JOBS_TOP (banner → eyebrow line 10px, was 18), "Post a job" → Filters 24 (was 16) like every side
+column. Side columns site-wide: `main aside .widget { margin-bottom: 0 }` — one 24px gap between
+blocks (News left column, Cars Services and the job page had 40).
