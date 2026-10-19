@@ -319,3 +319,8 @@ dot started the wrapped line) / a hairline / copyright, credit, meta links. The 
 Then "the Instagram icon takes a whole row, less empty space": socials moved into the contact line
 (small icon + "Instagram", `.fc-contact-social`), the column 12px between blocks, 24 top / 8 bottom,
 rows 28–32px tall.
+
+**App, 19.10.2026 — announcement plates below 1024:** one row that scrolls sideways
+(`.announcements-row` in components.css, bled to the screen edges; the next plate's edge shows at
+the side) instead of up to three stacked rows; the question in "Saw something newsworthy?" is
+hidden up to 1024 (was 640). From 1024 centred with wrapping, as before.

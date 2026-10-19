@@ -148,7 +148,8 @@ export async function BusinessSection({
                   total={inSection.length}
                 />
               </div>
-              <div className="widget dir-cta">
+              {/* Desktop only (client, 19.10.2026: not on phones and tablets). */}
+              <div className="widget dir-cta from-1024-block">
                 <div className="widget-head">Add your business</div>
                 <div className="widget-body">
                   <p className="muted">Get listed and reach people searching Seattle every day.</p>

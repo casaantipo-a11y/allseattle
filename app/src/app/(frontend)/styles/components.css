@@ -1871,14 +1871,50 @@ body.modal-open {
 /* Плашки-анонсы под баннером: вопрос в начале текста («Saw something
    newsworthy?») на телефоне скрыт, остаётся призыв «Share the news» —
    иначе плашка переносилась в две строки (просьба клиента 06.10.2026).
-   С 640px — полный текст. Разметка — Announcements.tsx. */
+   С 1024px — полный текст (до 19.10.2026 — с 640). Разметка — Announcements.tsx. */
 .announcement-lead {
   display: none;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .announcement-lead {
     display: inline;
+  }
+}
+
+/* Телефон и планшет: плашки одной строкой, которая листается вбок (клиент,
+   19.10.2026: три плашки друг под другом занимали слишком много места). Строка
+   выходит на поля экрана, край следующей плашки виден у края — понятно, что
+   листается. С 1024 — как было: по центру с переносом. Свойства перебивают
+   утилиты Tailwind на <ul> (они в слое, это правило — нет). */
+.announcements-row {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  column-gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: calc(-1 * var(--gutter));
+  padding-inline: var(--gutter);
+}
+
+.announcements-row::-webkit-scrollbar { display: none; }
+
+.announcements-row > li {
+  flex: none;
+}
+
+.announcements-row a {
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .announcements-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: var(--space-8);
+    overflow-x: visible;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 }
 

@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-
-import { DropPanel } from '@/components/DropPanel'
 import { Fragment, useMemo, useState, type ReactNode } from 'react'
 
 // The prototype's car catalog (auto/index.html + js/pages/auto-catalog.js,
@@ -312,26 +310,8 @@ export function CarsCatalog({
         </aside>
 
         <div className="auto-results">
-          {/* Phones and tablets: the model catalog above the list (client, 19.10.2026) — the
-              left column dropped under all the cars there. */}
-          <DropPanel className="below-1024" label="Model" current={s.model ? modelLabel(s.make, s.model) : 'All models'}>
-            <ul className="auto-cats auto-cats--drop">
-              <li>
-                <button type="button" className={!s.model ? 'active' : undefined} onClick={() => set({ make: '', model: '' })}>
-                  <span>All models</span>
-                  <span className="auto-cats-num">{cars.length}</span>
-                </button>
-              </li>
-              {catalog.map((r) => (
-                <li key={`${r.make}-${r.model}`}>
-                  <button type="button" className={s.model === r.model ? 'active' : undefined} onClick={() => set({ make: r.make, model: r.model })}>
-                    <span>{modelLabel(r.make, r.model)}</span>
-                    <span className="auto-cats-num">{r.n}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </DropPanel>
+          {/* No model catalog below 1024 (client, 19.10.2026: the "Model" button there was
+              removed — the search panel above has Make and Model). */}
           <div className="car-list">
             {found.length ? (
               found.map((c, i) => (

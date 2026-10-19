@@ -138,19 +138,21 @@ export function Pagination({
     return qs ? `${base}?${qs}` : base
   }
   return (
-    <nav className="mt-6 flex items-center justify-between gap-3" aria-label="Pagination">
+    // Three equal outer columns, so "Page N of M" stays in the middle whether or not both
+    // buttons are there (client, 19.10.2026: it sat off-centre next to a single "Older →").
+    <nav className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3" aria-label="Pagination">
       {page > 1 ? (
-        <Link href={href(page - 1)} className="btn btn-outline btn-sm" rel="prev">
+        <Link href={href(page - 1)} className="btn btn-outline btn-sm justify-self-start" rel="prev">
           &larr; Newer
         </Link>
       ) : (
         <span />
       )}
-      <span className="text-sm text-brand-slate">
+      <span className="text-center text-sm text-brand-slate">
         Page {page} of {totalPages}
       </span>
       {page < totalPages ? (
-        <Link href={href(page + 1)} className="btn btn-outline btn-sm" rel="next">
+        <Link href={href(page + 1)} className="btn btn-outline btn-sm justify-self-end" rel="next">
           Older &rarr;
         </Link>
       ) : (

@@ -391,3 +391,8 @@ was 40/48). `.car-infeed-ad > *` is full width — the in-feed car banners were 
 Cars: the model catalog is a "Model: … ▾" button above the list below 1024 (the widget is
 `.from-1024-block`). Jobs filters: each group folds under its title below 1024 (`filter-group--fold`,
 count of picked options next to the title); from 1024 all open as before.
+Also (client): no "Add your business" card in the directory column below 1024 (`dir-cta
+from-1024-block`), no "Model" button on Cars below 1024 (the search panel has Make / Model);
+pagination is a `1fr auto 1fr` grid so "Page N of M" is centred with one or two buttons; Jobs —
+"Job board" 4px lower below 1024, the sort row 12px from Filters and 12 from the first job on
+tablets (toolbar margin-bottom 8 below 1024, 16 from 1024).
