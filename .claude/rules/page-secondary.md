@@ -361,3 +361,9 @@ Then: "Job board" another 4px lower (top 8 below 1024, 4 from 1024); the map leg
 Map legend from 1280: centred on the page (`.map-head` `1fr auto 1fr`, the banner's axis; client
 19.10.2026), no longer in the middle of the heading–filter gap. Cars Services on phones: "All auto
 businesses" full width under the heading.
+20.10.2026: Events — under the Category button the same space as above it from the tabs' rule
+(8px below 1440, 16 from 1440; `.events-filters` margin-bottom, was 24); the grid (or the "Coming
+soon" card) starts right there. Head cards on large tablets (1024–1279, News / Cars / Weather /
+Events) `translate: 0 −4px` — midway between the banner above and the block below (8 / 8). Cars
+Services from 1024: "All auto businesses" full `.btn` size (48px) and centred on the "Directory of
+enterprises" line (`--head-btn-dy: calc(var(--space-1) - 1px)`, ±0.5px).

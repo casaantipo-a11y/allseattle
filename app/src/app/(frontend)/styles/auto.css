@@ -770,3 +770,17 @@
 .cars-list-section {
   margin-bottom: -20px;
 }
+
+/* «All auto businesses» с 1024 — обычного размера (48px, как .btn), а не маленькая,
+   и середина — на середине строки «Directory of enterprises», а не всей шапки
+   (клиент, 20.10.2026: «побольше и вровень с текстом»). */
+@media (min-width: 1024px) {
+  [data-page="cars"] .auto-firms-head .btn {
+    min-height: 48px;
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-sm);
+  }
+  [data-page="cars"] .auto-firms-head {
+    --head-btn-dy: calc(var(--space-1) - 1px);
+  }
+}

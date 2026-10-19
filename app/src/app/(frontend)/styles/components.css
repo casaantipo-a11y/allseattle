@@ -2262,3 +2262,18 @@ main aside:is(.auto-rail, .news-rail, .dir-rail):not(:has(> :not(.from-1024, .fr
 main aside .widget {
   margin-bottom: 0;
 }
+
+/* Большие планшеты (1024–1279): карточка справа в шапке (News, Cars, Weather, Events)
+   по середине между баннером над ней и блоком под ней — на 4px выше (было 12 сверху
+   и 4 снизу, стало 8 и 8; клиент, 20.10.2026). */
+@media (min-width: 1024px) {
+  .section-head .post-card {
+    translate: 0 calc(-1 * var(--space-1));
+  }
+}
+
+@media (min-width: 1280px) {
+  .section-head .post-card {
+    translate: none;
+  }
+}
