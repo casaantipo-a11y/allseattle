@@ -3,6 +3,7 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { en } from '@payloadcms/translations/languages/en'
+import { ru } from '@payloadcms/translations/languages/ru'
 import path from 'path'
 import { buildConfig, type Plugin } from 'payload'
 import sharp from 'sharp'
@@ -100,14 +101,22 @@ export default buildConfig({
       icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/brand/favicon.svg' }],
     },
   },
-  // English only (client, 18.10.2026: the login page came up in Russian from the
-  // browser's language; until then Russian was a per-user option).
+  // The owner reads Russian, the sales team English: English by default, each
+  // user can switch to Russian in their account settings.
   i18n: {
-    supportedLanguages: { en },
+    supportedLanguages: { en, ru },
     fallbackLanguage: 'en',
-    // Checkbox columns in list views print `general:true/false` — read as "Yes / No".
+    // Checkbox columns in list views print `general:true/false`, which Payload's
+    // Russian translates as «Правда / Ложь» — read as "yes / no" instead
+    // (client, 06.10.2026). The two form warnings stay English in Russian too
+    // (client, 19.10.2026: «Пожалуйста, введите корректный адрес email» and «Это
+    // обязательное поле» on the login form).
     translations: {
       en: { general: { true: 'Yes', false: 'No' } },
+      ru: {
+        general: { true: 'Да', false: 'Нет' },
+        validation: { emailAddress: 'Please enter a valid email address.', required: 'This field is required.' },
+      },
     },
   },
   collections: [
