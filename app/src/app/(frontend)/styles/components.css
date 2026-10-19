@@ -2125,3 +2125,17 @@ body.modal-open {
     display: block;
   }
 }
+
+/* Колонка, в которой до 1024 не осталось ничего видимого (всё — .from-1024),
+   не занимает места: пустая, она всё равно добавляла промежуток сетки над
+   нижним баннером (Services, клиент, 19.10.2026). С 1024 — обычная колонка.
+   main aside — чтобы перебить [data-page] .auto-rail { display: flex } страниц. */
+main aside:is(.auto-rail, .news-rail, .dir-rail):not(:has(> :not(.from-1024, .from-1024-block))) {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  main aside:is(.auto-rail, .news-rail, .dir-rail):not(:has(> :not(.from-1024, .from-1024-block))) {
+    display: flex;
+  }
+}
