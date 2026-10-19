@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Script from 'next/script'
-import { useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 // Cookie banner + GA4 with Consent Mode v2 (spec §9). Nothing from Google
 // loads until the visitor accepts: before that there is no gtag script on the
@@ -38,6 +38,19 @@ const subscribe = (cb: () => void) => {
 export function CookieConsent({ gaId }: { gaId?: string | null }) {
   const choice = useSyncExternalStore<Choice | null | 'unknown'>(subscribe, read, () => 'unknown')
 
+  // While the banner is up it covers the bottom of the page (on a phone ~166px — the
+  // footer's links and copyright could not be scrolled into view; client, 19.10.2026).
+  // A spacer of the banner's height after the footer gives that room back.
+  const banner = useRef<HTMLDivElement>(null)
+  const [bannerH, setBannerH] = useState(0)
+  useEffect(() => {
+    const el = banner.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setBannerH(el.offsetHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [choice])
+
   const decide = (c: Choice) => {
     try {
       window.localStorage.setItem(KEY, c)
@@ -60,8 +73,10 @@ gtag('js',new Date());gtag('config','${gaId}');`}
         </>
       ) : null}
 
+      {choice === null ? <div aria-hidden="true" style={{ height: bannerH }} /> : null}
       {choice === null ? (
         <div
+          ref={banner}
           role="dialog"
           aria-live="polite"
           aria-label="Cookie consent"

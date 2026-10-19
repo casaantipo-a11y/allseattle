@@ -210,7 +210,14 @@
      до 1024). */
   justify-content: center;
   gap: var(--space-2) var(--space-6);
-  margin-bottom: var(--space-4);
+  /* телефон: до первой вакансии 12px (8 + 4 внутри ряда), было 20 (клиент, 19.10.2026) */
+  margin-bottom: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .jobs-toolbar {
+    margin-bottom: var(--space-4);
+  }
 }
 
 /* Сортировка — ряд «таблеток» вместо выпадающего списка (просьба клиента
@@ -260,7 +267,8 @@
   padding: 0 calc(var(--space-2) + 2px);
 }
 
-@media (min-width: 640px) {
+/* полные подписи — с 1024: на планшете ряд стоит в левой колонке шапки */
+@media (min-width: 1024px) {
   .jobs-sort-short {
     display: none;
   }
@@ -310,66 +318,32 @@
 }
 
 /* «Post a job» до 1024 — та же карточка, что на компьютере в колонке фильтров
-   (клиент, 19.10.2026; была красная кнопка под заголовком). На самых узких
-   (до 375) — полная, под заголовком во всю ширину, как карточки в News и Cars;
-   с 375 — напротив «Job board», на его строке, компактная: без иконки и
-   «Hiring in Seattle?», заголовок 18px — иначе она наезжает на «WORK IN SEATTLE»
-   (надзаголовок сдвинут на 16px вправо и кончается на ~191px). С 640 — полная,
-   300px, по середине надписи, как .post-card в шапках. */
-@media (min-width: 375px) {
-  .jobs-head {
-    grid-template-columns: 1fr auto;
-    column-gap: var(--space-2);
-    /* карточка — нижняя кромка шапки; +4px, и до кнопок сортировки 8 */
-    margin-bottom: var(--space-1);
-  }
-  .jobs-head .jobs-post-head {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: center;
-    margin-top: 0;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-  }
-  .jobs-post-head .post-card-icon,
-  .jobs-post-head .post-card-kicker {
-    display: none;
-  }
-  .jobs-post-head .post-card-title {
-    font-size: var(--text-lg);
-  }
-  .jobs-post-head .post-card-go {
-    width: 32px;
-    height: 32px;
-  }
+   (клиент, 19.10.2026; была красная кнопка).
+   Телефон: под заголовком во всю ширину, как «Place a listing» в Cars; до
+   кнопок сортировки 8px (у шапки 4 снизу, у ряда сортировки свои 4 сверху).
+   Планшет (640–1023): шапка в две колонки — слева надзаголовок, «Job board» и
+   под ними кнопки сортировки (у левого края, короткие подписи), справа карточка
+   по середине всего этого блока: от верха букв надзаголовка до низа кнопок —
+   сдвиг 34px, не зависит от размера заголовка (замер 640/768/1000). Было три
+   разных выравнивания — заголовок слева, карточка справа, сортировка по центру
+   под ними («выглядит плохо»). */
+.jobs-head {
+  margin-bottom: var(--space-1);
 }
 
 @media (min-width: 640px) {
-  /* карточка сдвинута на 8px вниз и выходит за шапку — 16px снизу, чтобы
-     сортировка встала в 8px под ней (с 1024 своё правило ниже) */
   .jobs-head {
     column-gap: var(--space-4);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
   }
   .jobs-head .jobs-post-head {
     grid-row: 1 / 3;
     position: relative;
-    top: var(--space-2);
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
+    top: calc(var(--space-8) + 2px);
   }
-  .jobs-post-head .post-card-icon {
-    display: grid;
-  }
-  .jobs-post-head .post-card-kicker {
-    display: block;
-  }
-  .jobs-post-head .post-card-title {
-    font-size: 20px;
-  }
-  .jobs-post-head .post-card-go {
-    width: 36px;
-    height: 36px;
+  .jobs-results > .jobs-toolbar {
+    justify-content: flex-start;
+    max-width: calc(100% - 300px - var(--space-4));
   }
 }
 

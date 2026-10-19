@@ -335,3 +335,12 @@ into "WORK IN SEATTLE"; 640–1023 the full 300px card centred on the head (+16p
 the sort row stays 8px below it); from 1024 hidden as before (the side card shows). Sort chips on
 phones: short labels "Newest · Top pay · Low pay · A–Z" (full ones in `aria-label`, shown from
 640), 10px padding and 6px gaps — one row down to 320.
+Later the same day (client's tablet list): **Jobs phone** — the full card under the heading like
+Cars' "Place a listing" at every phone width (the compact 375 variant is gone); head → sort 8px,
+sort → first job 12. **Jobs tablet (640–1023)** — a two-column head: eyebrow, "Job board" and the
+sort chips (short labels until 1024, left-aligned, `max-width: 100% − 316px`) on the left, the full
+card on the right centred on that whole block (`top: 34px`, constant — measured centred at
+640/768/1000). **News / Cars / Weather tablet** — head margin-bottom 16 at 640–1023 (8 again from
+1024) so the card, which hangs 8px below the head, clears the block under it by 8.
+**Cars Services** — "All auto businesses" centred in its row on phones; from 640 centred on the
+head like "All news" (`--head-btn-dy: calc(var(--space-1) - 9px)`, was ~17px low).

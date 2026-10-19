@@ -297,3 +297,7 @@ end of the meta bar; the user asked for it back under the logo. Same day: 8px le
 below the meta bar's line (`.footer-meta-bar` margin-top −8px into the columns' bottom padding,
 `.footer-meta` without its 8px top/bottom padding; links stay 44px tall) — at 1440 the lowest
 column text → line 10px, line → link box 1px, link box → footer bottom 0.
+
+**App, 19.10.2026 — cookie banner:** while it is up, `CookieConsent` renders a spacer of the
+banner's height (ResizeObserver) after the footer, so the footer's bottom (meta links, copyright)
+can be scrolled above the fixed banner — it covered ~166px on phones, 91 on tablets.

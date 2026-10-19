@@ -141,3 +141,4 @@ margin-bottom, placed before the 1024 block so that block still wins; 24 at 640�
 sits in the "Fresh cars" row like "All news" (same rule, `.home-cars .section-head`), the head's
 bottom margin 0 on phones as from 640 (letters → cards ~7px). Directory (directory.css): heading →
 search 8px on phones (margin-bottom 10 — the labels are shifted 2px down), 12 from 640.
+Tablets too (19.10.2026): "Latest news" → cards 8px at 640–1023 as well (was 24).
