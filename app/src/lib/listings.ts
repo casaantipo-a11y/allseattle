@@ -34,8 +34,9 @@ import {
 export type Kind = 'car' | 'job'
 export const COLLECTION = { car: 'car-listings', job: 'jobs' } as const
 
-/** Live or waiting listings a private account may have at once (cars and jobs together). */
-export const ACTIVE_LIMIT = 3
+/** Live or waiting listings a private account may have at once (cars and jobs together).
+ *  15 since 18.10.2026 (client: "unlimited, or 15 — let people post, then we'll see"; was 3). */
+export const ACTIVE_LIMIT = 15
 /** How long a listing stays up before it needs renewing. */
 export const LISTING_DAYS = 30
 export const MAX_CAR_PHOTOS = 10

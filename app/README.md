@@ -72,7 +72,7 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   days, and the team gets a Telegram / email notice with the admin link (production: email
   only, to `NOTIFY_EMAIL` — Telegram is not wanted, the user's decision of 17.10.2026). Publishing or
   rejecting it in the admin (with `moderationNote` as the reason) emails the author
-  (`hooks/moderation.ts`). Limits: 3 live-or-waiting listings per account, 10 sends a day,
+  (`hooks/moderation.ts`). Limits: 15 live-or-waiting listings per account (3 until 18.10.2026), 10 sends a day,
   10 photos per car. Photos are scaled to 1600px JPEG in the browser before upload, because
   Vercel caps a request at 4.5 MB (the older `/add-business` and Share-the-news forms send the
   originals and can hit that cap with large phone photos). `viewsCount` on cars and jobs is
@@ -276,7 +276,7 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
   **admin** everything, **editor** news/pages/header and news tips, **sales** businesses,
   categories, promotions, products, banners and business/ad inquiries. Only admins
   change package prices and limits.
-  The admin UI is English with Russian available per user (account settings → Language).
+  The admin UI is English only (Russian was a per-user option until 18.10.2026; the client asked for English).
 - Public content has `slug`, `status` (draft/published), `isDemo`, an SEO tab, and a hidden
   `slugHistory`: renaming a slug keeps the old URL working as a permanent redirect.
 - `src/lib/queries.ts` — every public read, wrapped in `unstable_cache` with a tag. Payload
