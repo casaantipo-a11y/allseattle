@@ -88,10 +88,13 @@ export function CategoriesWidget({
   categories,
   activeSlug,
   counts,
+  bare = false,
 }: {
   categories: { id: number; name: string; slug?: string | null }[]
   activeSlug?: string
   counts?: { total: number; byCategory: Record<number, number> }
+  /** Just the list, for the phone/tablet "Category" button (DropPanel). */
+  bare?: boolean
 }) {
   const row = (href: string, label: string, active: boolean, n?: number) => (
     <li key={href}>
@@ -101,15 +104,19 @@ export function CategoriesWidget({
       </Link>
     </li>
   )
+  const list = (
+    <ul className="cat-list">
+      {row('/news', 'All news', !activeSlug, counts?.total)}
+      {categories
+        .filter((c) => c.slug)
+        .map((c) => row(`/news/${c.slug}`, c.name, activeSlug === c.slug, counts ? (counts.byCategory[c.id] ?? 0) : undefined))}
+    </ul>
+  )
+  if (bare) return <nav aria-label="News categories">{list}</nav>
   return (
     <nav className="widget" aria-label="News categories">
       <div className="widget-head">Categories</div>
-      <ul className="cat-list">
-        {row('/news', 'All news', !activeSlug, counts?.total)}
-        {categories
-          .filter((c) => c.slug)
-          .map((c) => row(`/news/${c.slug}`, c.name, activeSlug === c.slug, counts ? (counts.byCategory[c.id] ?? 0) : undefined))}
-      </ul>
+      {list}
     </nav>
   )
 }

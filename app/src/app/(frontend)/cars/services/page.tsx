@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
+import { DropPanel } from '@/components/DropPanel'
 import { BizRow } from '@/components/business'
 import { effectivePackage, withDescendants } from '@/lib/business'
 import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
@@ -51,6 +52,25 @@ export default async function CarServicesPage() {
     }))
     .filter((t) => t.n > 0)
 
+  const topicList = (
+    <ul className="cat-list">
+      <li>
+        <Link href={`/directory/${auto?.slug ?? 'automotive'}`} className="cat-row">
+          <span>All auto services</span>
+          <span className="cat-num">{firms.length}</span>
+        </Link>
+      </li>
+      {topics.map(({ c, n }) => (
+        <li key={c.id}>
+          <Link href={`/directory/${c.slug}`} className="cat-row">
+            <span>{c.name}</span>
+            <span className="cat-num">{n}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+
   return (
     <main id="content" data-page="cars">
       <section className="section auto-catalog section--footer-tight">
@@ -73,30 +93,24 @@ export default async function CarServicesPage() {
           </div>
           <div className="auto-layout auto-layout--firms auto-firms-block">
             <aside className="auto-rail auto-rail--left">
+              {/* Below 1024 the list is the "Category" button above the companies instead. */}
               {topics.length ? (
-                <nav className="widget" aria-label="Auto services">
-                  <div className="widget-head">Headings</div>
-                  <ul className="cat-list">
-                    <li>
-                      <Link href={`/directory/${auto?.slug ?? 'automotive'}`} className="cat-row">
-                        <span>All auto services</span>
-                        <span className="cat-num">{firms.length}</span>
-                      </Link>
-                    </li>
-                    {topics.map(({ c, n }) => (
-                      <li key={c.id}>
-                        <Link href={`/directory/${c.slug}`} className="cat-row">
-                          <span>{c.name}</span>
-                          <span className="cat-num">{n}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
+                <div className="from-1024">
+                  <nav className="widget" aria-label="Auto services">
+                    <div className="widget-head">Headings</div>
+                    {topicList}
+                  </nav>
+                </div>
               ) : null}
               <AdSlot code="CARS_SIDEBAR_3" size="300x250" mobileSize="320x100" />
             </aside>
             <div className="auto-results">
+              {/* Phones and tablets: the categories above the list (client, 19.10.2026). */}
+              {topics.length ? (
+                <DropPanel className="below-1024" label="Category" current="All auto services">
+                  <nav aria-label="Auto services">{topicList}</nav>
+                </DropPanel>
+              ) : null}
               {firms.length ? (
                 <div className="biz-list" id="auto-firms">
                   {firms.map((b) => (

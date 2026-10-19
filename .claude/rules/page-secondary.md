@@ -344,3 +344,9 @@ card on the right centred on that whole block (`top: 34px`, constant — measure
 1024) so the card, which hangs 8px below the head, clears the block under it by 8.
 **Cars Services** — "All auto businesses" centred in its row on phones; from 640 centred on the
 head like "All news" (`--head-btn-dy: calc(var(--space-1) - 9px)`, was ~17px low).
+Then (same day, side-columns pass): the Jobs filter column comes **before** the list below 1024
+(`.jobs-results` lost its `order: -1`), as a collapsed "Filters" accordion until 1024 (was 768 —
+open above the list it pushed the jobs ~2000px down on a tablet); card → Filters 8, Filters → sort
+12 (`.jobs-layout` gap 8 below 1024). The tablet head is back to heading left + card right centred
+on the text (head margin-bottom 16) — the two-column variant with the sort under the heading no
+longer fits once Filters sits between them.

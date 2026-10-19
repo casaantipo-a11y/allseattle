@@ -13,21 +13,22 @@
 .jobs-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--grid-gap);
+  /* до 1024 — между кнопкой «Filters» над списком и сортировкой: 8 + 4 внутри ряда */
+  gap: var(--space-2);
   align-items: start;
 }
 
+/* До 1024 колонка фильтров (кнопка «Filters», панель свёрнута) стоит над
+   списком, а не под ним (клиент, 19.10.2026: навигация и сортировка — сверху,
+   как на компьютере, где они слева). Было: список первым, фильтры в самом низу. */
 .jobs-results {
-  order: -1;
   min-width: 0;
 }
 
 @media (min-width: 1024px) {
   .jobs-layout {
     grid-template-columns: 300px 1fr;
-  }
-  .jobs-results {
-    order: 0;
+    gap: var(--grid-gap);
   }
 }
 
@@ -47,7 +48,7 @@
   width: 100%;
   min-height: 44px;
   padding: var(--space-3);
-  margin-bottom: var(--space-3);
+  margin-bottom: 0;
   border: 1.5px solid var(--color-slate-soft);
   border-radius: var(--radius-sm);
   background: var(--color-white);
@@ -78,9 +79,12 @@
 
 .jobs-filters-body.open {
   max-height: none;
+  margin-top: var(--space-3);
 }
 
-@media (min-width: 768px) {
+/* Гармошка — до 1024 (была до 768): над списком развёрнутая колонка фильтров на
+   планшете отодвигала вакансии на ~2000px. Обычная колонка — с 1024, где она слева. */
+@media (min-width: 1024px) {
   .jobs-filters-toggle {
     display: none;
   }
@@ -267,8 +271,7 @@
   padding: 0 calc(var(--space-2) + 2px);
 }
 
-/* полные подписи — с 1024: на планшете ряд стоит в левой колонке шапки */
-@media (min-width: 1024px) {
+@media (min-width: 640px) {
   .jobs-sort-short {
     display: none;
   }
@@ -319,31 +322,26 @@
 
 /* «Post a job» до 1024 — та же карточка, что на компьютере в колонке фильтров
    (клиент, 19.10.2026; была красная кнопка).
-   Телефон: под заголовком во всю ширину, как «Place a listing» в Cars; до
-   кнопок сортировки 8px (у шапки 4 снизу, у ряда сортировки свои 4 сверху).
-   Планшет (640–1023): шапка в две колонки — слева надзаголовок, «Job board» и
-   под ними кнопки сортировки (у левого края, короткие подписи), справа карточка
-   по середине всего этого блока: от верха букв надзаголовка до низа кнопок —
-   сдвиг 34px, не зависит от размера заголовка (замер 640/768/1000). Было три
-   разных выравнивания — заголовок слева, карточка справа, сортировка по центру
-   под ними («выглядит плохо»). */
+   Телефон: под заголовком во всю ширину, как «Place a listing» в Cars; под ней
+   кнопка «Filters» (8px), затем сортировка.
+   Планшет (640–1023): заголовок слева, карточка справа по середине надписи (как в
+   News и Cars), шапке 16px снизу — карточка свисает на 8 и не касается кнопки
+   «Filters» под ней. (В тот же день была шапка в две колонки с сортировкой под
+   заголовком — её не стало, когда «Filters» встал над списком.) */
 .jobs-head {
-  margin-bottom: var(--space-1);
+  /* телефон: карточка → кнопка «Filters» 8px */
+  margin-bottom: var(--space-2);
 }
 
 @media (min-width: 640px) {
   .jobs-head {
     column-gap: var(--space-4);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-4);
   }
   .jobs-head .jobs-post-head {
     grid-row: 1 / 3;
     position: relative;
-    top: calc(var(--space-8) + 2px);
-  }
-  .jobs-results > .jobs-toolbar {
-    justify-content: flex-start;
-    max-width: calc(100% - 300px - var(--space-4));
+    top: var(--space-2);
   }
 }
 

@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import { notFound } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
+import { DropPanel } from '@/components/DropPanel'
 import { NewsArchiveWidget } from '@/components/NewsArchiveWidget'
 import { NewsletterWidget } from '@/components/NewsletterWidget'
 import { CategoriesWidget, NewsListRow, Pagination, TopNewsWidget } from '@/components/news'
@@ -82,12 +83,19 @@ export async function NewsSection({
                 Categories and the prototype's Newsletter and News Archive, back. */}
             <aside className="news-rail news-rail--left">
               <AdSlot code="NEWS_SIDEBAR_2" size="300x600" mobileSize="320x100" />
-              <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
+              {/* Below 1024 the list is the "Category" button above the stories instead. */}
+              <div className="from-1024">
+                <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
+              </div>
               <NewsletterWidget />
               <NewsArchiveWidget months={months} month={month} year={year} base={base} />
             </aside>
 
             <div className="news-feed">
+              {/* Phones and tablets: the categories above the stories (client, 19.10.2026). */}
+              <DropPanel className="below-1024" label="Category" current={category?.name ?? 'All news'}>
+                <CategoriesWidget bare categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
+              </DropPanel>
               {category?.description ? <p className="muted">{category.description}</p> : null}
               {archiveLabel ? (
                 <p className="muted">
@@ -102,6 +110,13 @@ export async function NewsSection({
                   {feed.docs.map((a, i) => (
                     <Fragment key={a.id}>
                       <NewsListRow article={a} />
+                      {/* Phones and tablets: Top news inside the list, after the 5th story (client,
+                          19.10.2026) — in the right column it came after the whole list. */}
+                      {i === 4 && feed.docs.length > 5 && top.length ? (
+                        <div className="below-1024 feed-widget news-feed-widget">
+                          <TopNewsWidget articles={top} />
+                        </div>
+                      ) : null}
                       {/* B2 — the strip inside the list after the 10th story (client's scheme). */}
                       {i === 9 && feed.docs.length > 10 ? (
                         <AdSlot code="NEWS_INFEED_1" size="728x90" mobileSize="320x100" className="news-infeed-ad" />
@@ -117,7 +132,9 @@ export async function NewsSection({
 
             <aside className="news-rail news-rail--right">
               <AdSlot code="NEWS_SIDEBAR_1" size="300x250" mobileSize="320x100" />
-              <TopNewsWidget articles={top} />
+              <div className="from-1024">
+                <TopNewsWidget articles={top} />
+              </div>
             </aside>
           </div>
         </div>

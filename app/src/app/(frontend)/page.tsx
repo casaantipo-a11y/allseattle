@@ -17,6 +17,12 @@ export const revalidate = 3600
 // Phase 4 fills every ad slot with real banners.
 
 const TILE_COUNT = 20
+/** Right-column widgets placed among the tiles below 1024px: after tile 6, 12 and 18. */
+const FEED_WIDGETS = new Map<number, 'stats' | 'jobs' | 'top'>([
+  [6, 'stats'],
+  [12, 'jobs'],
+  [18, 'top'],
+])
 // Mobile echoes of the left-column slots, after full rows of tiles.
 const INLINE_AFTER = new Map([
   [6, 'HOME_SIDEBAR_1'],
@@ -68,7 +74,15 @@ export default async function HomePage() {
                 {tiles.flatMap((a, i) => {
                   const inline = INLINE_AFTER.get(i + 1)
                   const tile = <NewsTile key={a.id} article={a} />
-                  return inline ? [tile, <InlineMobileAd key={`ad-${inline}`} code={inline} />] : [tile]
+                  const out = inline ? [tile, <InlineMobileAd key={`ad-${inline}`} code={inline} />] : [tile]
+                  // Phones and tablets: the right column's widgets inside the tiles (client,
+                  // 19.10.2026) — after it they sat under all 20 tiles, where nobody got to them.
+                  // After every 6th tile, so a full-width row never leaves a hole in a 1/2/3-column grid.
+                  const widget = FEED_WIDGETS.get(i + 1)
+                  if (widget === 'stats') out.push(<div key="w-stats" className="below-1024 feed-widget"><StatsWidget stats={stats} /></div>)
+                  if (widget === 'jobs') out.push(<div key="w-jobs" className="below-1024 feed-widget"><JobsWidget jobs={jobs} /></div>)
+                  if (widget === 'top' && top.length) out.push(<div key="w-top" className="below-1024 feed-widget"><TopNewsWidget articles={top} /></div>)
+                  return out
                 })}
               </div>
             ) : (
@@ -80,9 +94,12 @@ export default async function HomePage() {
           <aside className="home-sidebar home-sidebar-right">
             {/* C1 above "AllSeattle at a glance" (client's Home scheme, 12.10.2026). */}
             <AdSlot code="HOME_RIGHT_1" size="300x250" className="ad-desktop-slot" />
-            <StatsWidget stats={stats} />
-            <TopNewsWidget articles={top} />
-            <JobsWidget jobs={jobs} />
+            {/* Below 1024 these three are inside the tiles instead (FEED_WIDGETS). */}
+            <div className="from-1024">
+              <StatsWidget stats={stats} />
+              <TopNewsWidget articles={top} />
+              <JobsWidget jobs={jobs} />
+            </div>
           </aside>
         </div>
       </section>

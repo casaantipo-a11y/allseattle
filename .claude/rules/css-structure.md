@@ -367,3 +367,15 @@ underlined (hover accent-dark) and lists have their bullets/numbers back — rul
 because the prototype's unlayered `a` / `ul` resets silently beat RichText's Tailwind utilities
 (links read as plain navy text, the About list as loose lines). Static pages (`[page]` route,
 `main[data-page='static']`: About, Contact, Privacy, Terms) start 16px under the plates instead of 32.
+
+**App, 19.10.2026 — side columns below 1024 (client: "on phones/tablets those blocks just sit at
+the bottom, after the news — illogical"):** navigation goes **above** the list as a "Category: … ▾"
+button (`DropPanel.tsx`, native `<details>`, `.drop*` in components.css; the panel holds the page's
+own list — `CategoriesWidget bare`, `CategoryTree bare`, the Cars Services topic list), info widgets
+go **inside** the feed (`.feed-widget`, full grid row). The same widget renders twice: in the column
+wrapped in `.from-1024` (`display: none`, `contents` from 1024) and in the feed / above it with
+`.below-1024` (hidden from 1024). Home: At a glance / Job board / Top news after tiles 6 / 12 / 18
+(`FEED_WIDGETS`; multiples of 6 keep 1-, 2- and 3-column rows whole), the right aside hidden below
+1024. News: Category button above the stories, Top news after the 5th. Directory / Shopping /
+Leisure: Category button above the list, At a glance after the 4th row. Cars Services: Category
+button. Jobs: the Filters accordion (now until 1024, was 768) sits above the list. Ads did not move.

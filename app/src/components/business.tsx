@@ -97,11 +97,14 @@ export function CategoryTree({
   base,
   activeSlug,
   total,
+  bare = false,
 }: {
   tree: Node[]
   base: string
   activeSlug?: string
   total: number
+  /** Just the list, for the phone/tablet "Category" button (DropPanel). */
+  bare?: boolean
 }) {
   const contains = (n: Node): boolean => n.slug === activeSlug || n.children.some(contains)
   const link = (n: Node, depth: number, label = n.name) => {
@@ -139,8 +142,8 @@ export function CategoryTree({
     ),
   )
   return (
-    <nav className="widget" aria-label="Categories">
-      <div className="widget-head">Headings</div>
+    <nav className={bare ? undefined : 'widget'} aria-label="Categories">
+      {bare ? null : <div className="widget-head">Headings</div>}
       <ul className="cat-list">
         <li>
           <Link

@@ -35,6 +35,13 @@
   display: none;
 }
 
+/* Правая колонка до 1024 тоже не нужна (клиент, 19.10.2026): её C1 — только для
+   компьютера, а At a glance, Top news и Job board стоят внутри ленты плиток
+   (FEED_WIDGETS в page.tsx) — под всеми 20 плитками до них никто не доходил. */
+.home-sidebar.home-sidebar-right {
+  display: none;
+}
+
 .home-sidebar {
   display: flex;
   flex-direction: row;
@@ -102,7 +109,8 @@
     flex-wrap: nowrap;
     justify-content: flex-start;
   }
-  .home-sidebar.home-sidebar-left {
+  .home-sidebar.home-sidebar-left,
+  .home-sidebar.home-sidebar-right {
     display: flex;
   }
   /* «Today in Seattle» на одной линии с верхом боковых колонок (клиент,

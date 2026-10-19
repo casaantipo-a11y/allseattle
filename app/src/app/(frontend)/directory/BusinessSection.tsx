@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
+import { DropPanel } from '@/components/DropPanel'
 import { BizRow, CategoryTree, buildTree } from '@/components/business'
 import { Pagination } from '@/components/news'
 import { StatsWidget } from '@/components/home'
@@ -128,12 +129,15 @@ export async function BusinessSection({
 
           <div className="dir-layout">
             <aside className="dir-rail dir-rail--left">
-              <CategoryTree
-                tree={buildTree(categories, counts)}
-                base={meta.base}
-                activeSlug={active?.slug ?? undefined}
-                total={inSection.length}
-              />
+              {/* Below 1024 the tree is the "Category" button above the list instead. */}
+              <div className="from-1024">
+                <CategoryTree
+                  tree={buildTree(categories, counts)}
+                  base={meta.base}
+                  activeSlug={active?.slug ?? undefined}
+                  total={inSection.length}
+                />
+              </div>
               <div className="widget dir-cta">
                 <div className="widget-head">Add your business</div>
                 <div className="widget-body">
@@ -157,6 +161,11 @@ export async function BusinessSection({
                   node: <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} />,
                 }))}
               >
+                {/* Phones and tablets: the categories above the list (client, 19.10.2026) — the
+                    left column drops under the whole list there. */}
+                <DropPanel className="below-1024" label="Category" current={active?.name ?? 'All'}>
+                  <CategoryTree bare tree={buildTree(categories, counts)} base={meta.base} activeSlug={active?.slug ?? undefined} total={inSection.length} />
+                </DropPanel>
                 {active?.description ? <p className="muted">{active.description}</p> : null}
 
                 {rows.length ? (
@@ -164,6 +173,12 @@ export async function BusinessSection({
                     {rows.map((b, i) => (
                       <Fragment key={b.id}>
                         <BizRow biz={b} sectionCategoryIds={sectionIds} />
+                        {/* Phones and tablets: "At a glance" inside the list, after the 4th row. */}
+                        {stats && i === 3 && rows.length > 4 ? (
+                          <div className="below-1024 feed-widget">
+                            <StatsWidget stats={stats} />
+                          </div>
+                        ) : null}
                         {/* Directory B2: the strip in the list after the 8th business (client's scheme, 12.10.2026). */}
                         {section === 'directory' && i === 7 && rows.length > 8 ? (
                           <AdSlot code="DIRECTORY_INFEED_1" size="728x90" mobileSize="320x100" className="biz-infeed-ad" />
@@ -191,7 +206,11 @@ export async function BusinessSection({
               <AdSlot code={`${meta.codePrefix}_SIDEBAR_1`} size="300x250" mobileSize="320x100" />
               {/* "AllSeattle at a glance" between C1 and C2, as in the prototype's directory
                   (client, 12.10.2026) — the same live counts as Home's widget. */}
-              {stats ? <StatsWidget stats={stats} /> : null}
+              {stats ? (
+                <div className="from-1024">
+                  <StatsWidget stats={stats} />
+                </div>
+              ) : null}
               <AdSlot code={`${meta.codePrefix}_SIDEBAR_2`} size="300x600" mobileSize="320x100" />
             </aside>
           </div>
