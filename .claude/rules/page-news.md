@@ -111,3 +111,7 @@ notification, honeypot + rate limit only. Archive (`NewsArchiveWidget`): Month /
 the months that have stories (`getNewsMonths`), `?month=&year=` on /news or a category, Seattle-time
 month bounds, noindex, "Archive: August 2026 · show all" line, pagination keeps the params. B2 =
 NEWS_INFEED_1 inside the list after the 10th story (`.news-infeed-ad`). C1 = NEWS_SIDEBAR_1.
+
+**App article page, 20.10.2026:** the section is `section--footer-tight` — 16px from "Share the
+news" (the last block on a computer) to the footer, as on the other pages (was the shared 36);
+on phones/tablets the last block of the stacked columns is 16px from the footer too.

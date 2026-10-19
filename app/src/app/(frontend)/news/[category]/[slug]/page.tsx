@@ -77,7 +77,9 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <main id="content" data-page="news">
-      <section className="section">
+      {/* section--footer-tight: 16px from the last block ("Share the news" on a computer) to the
+          footer, as on the other pages (client, 20.10.2026; was the shared 36). */}
+      <section className="section section--footer-tight">
         <div className="container">
           <AdSlot code="NEWS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
 
