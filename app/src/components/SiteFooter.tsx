@@ -8,6 +8,15 @@ import { SOCIAL_ICONS, Svg } from './icons'
 
 const telHref = (phone: string) => `tel:+${phone.replace(/\D/g, '')}`
 
+// Small stroke icons for the compact footer's contact lines.
+const stroke = (d: string) =>
+  `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`
+const CONTACT_ICONS = {
+  phone: stroke('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>'),
+  mail: stroke('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+  pin: stroke('<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>'),
+}
+
 // The prototype's footer (css: footer.css) on real settings: contacts and
 // socials from Site settings — an empty social shows "Coming soon" (spec §4) —
 // and link columns from the Footer global. The first column is the "Explore"
@@ -32,6 +41,72 @@ export async function SiteFooter() {
 
   return (
     <footer className="site-footer">
+      {/* Phones and tablets (below 1280): one short centred column (client, 19.10.2026 —
+          chose "everything centred, short"). The desktop footer below is untouched and
+          hidden there; styles in footer.css (.footer-compact). */}
+      <div className="container footer-compact">
+        <Logo href="/" variant="dark" />
+        <ul className="fc-social" aria-label="Follow us">
+          {socials.map((s) =>
+            s.url ? (
+              <li key={s.key}>
+                <a href={s.url} rel="noopener me" target="_blank" aria-label={s.name}>
+                  <Svg html={SOCIAL_ICONS[s.key]} />
+                </a>
+              </li>
+            ) : null,
+          )}
+        </ul>
+        <ul className="fc-contact">
+          {settings.phone ? (
+            <li>
+              <Svg html={CONTACT_ICONS.phone} />
+              <a href={telHref(settings.phone)}>{settings.phone}</a>
+            </li>
+          ) : null}
+          {settings.email ? (
+            <li>
+              <Svg html={CONTACT_ICONS.mail} />
+              <a href={`mailto:${settings.email}`}>{settings.email}</a>
+            </li>
+          ) : null}
+          {settings.address ? (
+            <li>
+              <Svg html={CONTACT_ICONS.pin} />
+              {settings.address}
+            </li>
+          ) : null}
+        </ul>
+        {sectionLinks.length ? (
+          <nav aria-label="Sections">
+            <ul className="fc-sections">
+              {sectionLinks.map((l) => (
+                <li key={l.url}>
+                  <Link href={l.url}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
+        <div className="fc-bottom">
+          <p>
+            &copy; {year} {footer.copyright || 'AllSeattle. All rights reserved.'}
+          </p>
+          <a href="https://wa.me/380958191272" target="_blank" rel="noopener" className="footer-credit">
+            Developed by&nbsp;<span className="footer-credit-name">Alexander</span>
+          </a>
+          {metaLinks.length ? (
+            <ul className="fc-meta">
+              {metaLinks.map((l) => (
+                <li key={l.url}>
+                  <Link href={l.url}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+
       <div className="container footer-inner">
         <div className="footer-col footer-brand">
           <Logo href="/" variant="dark" />

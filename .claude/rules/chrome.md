@@ -309,3 +309,10 @@ columns and one gap (24, 32 from 768) — equal-width columns made "News → Bus
 original tablet block (before the desktop blocks, which still override it — desktop measured
 identical at 1280/1440). Phones: the "Explore all sections" label is centred, the arrow at the
 right edge.
+**Same day, second pass ("on the phone it didn't change, on the tablet I still don't like it"):** the
+client chose "everything centred, short" from three variants. Below 1280 the footer is a separate
+block, `.footer-compact` (SiteFooter.tsx): logo / social icons (44px circles) / phone · email · city
+with small icons / the nine sections as one centred wrapping row (16px gaps, no dot separators — a
+dot started the wrapped line) / a hairline / copyright, credit, meta links. The desktop footer
+(`.footer-inner` + `.footer-meta-bar`) is hidden below 1280 and untouched (measured identical at
+1280/1440) — the older phone/tablet rules for `.footer-inner` above are therefore dormant.

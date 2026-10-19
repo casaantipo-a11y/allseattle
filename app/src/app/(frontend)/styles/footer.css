@@ -616,3 +616,147 @@
   position: absolute;
   right: var(--space-4);
 }
+
+/* ---------- Телефон и планшет (до 1280), 19.10.2026 ----------
+   Клиент выбрал «всё по центру, короткий» вместо растянутой раскладки:
+     логотип / иконки соцсетей / телефон · почта · город со значками /
+     разделы сайта строкой / черта / копирайт, подпись, служебные ссылки. Отдельная разметка .footer-compact (SiteFooter.tsx); подвал
+     компьютера (.footer-inner + .footer-meta-bar) до 1280 скрыт и не тронут. */
+.footer-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--gutter) var(--space-4);
+  text-align: center;
+}
+
+.site-footer > .footer-inner,
+.site-footer > .footer-meta-bar {
+  display: none;
+}
+
+.footer-compact .site-logo {
+  --logo-h: 40px;
+}
+
+.footer-compact ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fc-social {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.fc-social a {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+}
+
+.fc-social a:hover {
+  background: var(--color-accent);
+}
+
+.fc-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-6);
+  font-size: var(--text-xs);
+  color: #c9d3de;
+}
+
+.fc-contact li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 32px;
+}
+
+.fc-contact li > span {
+  display: flex;
+  color: #8695a6;
+}
+
+.fc-contact a {
+  color: inherit;
+}
+
+.fc-contact a:hover,
+.fc-sections a:hover,
+.fc-meta a:hover {
+  color: var(--color-accent);
+}
+
+/* Разделы — ровными промежутками, без точек: точка-разделитель оказывалась в
+   начале перенесённой строки («· Jobs»). */
+.fc-sections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 var(--space-4);
+  max-width: 34rem;
+}
+
+.fc-sections li {
+  display: inline-flex;
+  align-items: center;
+}
+
+.fc-sections a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.fc-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  width: 100%;
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: var(--text-xs);
+  color: #8695a6;
+}
+
+.fc-bottom p {
+  margin: 0;
+}
+
+.fc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 var(--space-4);
+}
+
+.fc-meta a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: #8695a6;
+}
+
+@media (min-width: 1280px) {
+  .footer-compact {
+    display: none;
+  }
+  .site-footer > .footer-inner {
+    display: grid;
+  }
+  .site-footer > .footer-meta-bar {
+    display: block;
+  }
+}
