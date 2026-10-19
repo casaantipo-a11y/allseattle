@@ -189,7 +189,8 @@
     justify-self: center;
     margin-top: 0;
     position: relative;
-    top: var(--space-2);
+    /* на 4px ниже прежних 8 (клиент, 19.10.2026) */
+    top: var(--space-3);
     /* +2px: надзаголовок сдвинут на 4px вправо (.section-head .eyebrow,
        left: --space-1) и торчит за свою колонку — видимый промежуток на 4px
        уже, его центр на 2px правее центра колонки. */

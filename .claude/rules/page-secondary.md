@@ -355,3 +355,6 @@ centred, 8 / 16 padding; in the head row from 1280). Jobs from 1024: the head 8p
 JOBS_TOP (banner → eyebrow line 10px, was 18), "Post a job" → Filters 24 (was 16) like every side
 column. Side columns site-wide: `main aside .widget { margin-bottom: 0 }` — one 24px gap between
 blocks (News left column, Cars Services and the job page had 40).
+Then: "Job board" another 4px lower (top 8 below 1024, 4 from 1024); the map legend from 1280 at
+`top: 12px` (was 8). Directory (directory.css): on phones the head is 8px further from the banner
+(banner → "BUSINESS DIRECTORY" line 14px, was 6); from 640 unchanged.
