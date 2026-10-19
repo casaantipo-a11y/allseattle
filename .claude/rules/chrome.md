@@ -316,3 +316,6 @@ with small icons / the nine sections as one centred wrapping row (16px gaps, no 
 dot started the wrapped line) / a hairline / copyright, credit, meta links. The desktop footer
 (`.footer-inner` + `.footer-meta-bar`) is hidden below 1280 and untouched (measured identical at
 1280/1440) — the older phone/tablet rules for `.footer-inner` above are therefore dormant.
+Then "the Instagram icon takes a whole row, less empty space": socials moved into the contact line
+(small icon + "Instagram", `.fc-contact-social`), the column 12px between blocks, 24 top / 8 bottom,
+rows 28–32px tall.

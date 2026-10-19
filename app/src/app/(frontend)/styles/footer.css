@@ -619,15 +619,17 @@
 
 /* ---------- Телефон и планшет (до 1280), 19.10.2026 ----------
    Клиент выбрал «всё по центру, короткий» вместо растянутой раскладки:
-     логотип / иконки соцсетей / телефон · почта · город со значками /
+     логотип / телефон · почта · город · Instagram со значками /
      разделы сайта строкой / черта / копирайт, подпись, служебные ссылки. Отдельная разметка .footer-compact (SiteFooter.tsx); подвал
      компьютера (.footer-inner + .footer-meta-bar) до 1280 скрыт и не тронут. */
+/* Плотнее (клиент, 19.10.2026, «подубирай пустое пространство»): 12 между блоками,
+   24 сверху, 8 снизу. */
 .footer-compact {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-8) var(--gutter) var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-6) var(--gutter) var(--space-2);
   text-align: center;
 }
 
@@ -646,25 +648,6 @@
   list-style: none;
 }
 
-.fc-social {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.fc-social a {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-white);
-}
-
-.fc-social a:hover {
-  background: var(--color-accent);
-}
-
 .fc-contact {
   display: flex;
   flex-wrap: wrap;
@@ -678,12 +661,18 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 32px;
+  min-height: 28px;
 }
 
 .fc-contact li > span {
   display: flex;
   color: #8695a6;
+}
+
+/* значок соцсети — того же размера, что телефон и почта */
+.fc-contact li > span svg {
+  width: 16px;
+  height: 16px;
 }
 
 .fc-contact a {
@@ -714,7 +703,7 @@
 .fc-sections a {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 32px;
   font-weight: 600;
   color: var(--color-white);
 }
@@ -723,9 +712,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-1);
+  gap: 0;
   width: 100%;
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   font-size: var(--text-xs);
   color: #8695a6;
@@ -745,7 +734,7 @@
 .fc-meta a {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 32px;
   color: #8695a6;
 }
 

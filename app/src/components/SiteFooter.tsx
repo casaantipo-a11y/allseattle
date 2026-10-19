@@ -46,17 +46,6 @@ export async function SiteFooter() {
           hidden there; styles in footer.css (.footer-compact). */}
       <div className="container footer-compact">
         <Logo href="/" variant="dark" />
-        <ul className="fc-social" aria-label="Follow us">
-          {socials.map((s) =>
-            s.url ? (
-              <li key={s.key}>
-                <a href={s.url} rel="noopener me" target="_blank" aria-label={s.name}>
-                  <Svg html={SOCIAL_ICONS[s.key]} />
-                </a>
-              </li>
-            ) : null,
-          )}
-        </ul>
         <ul className="fc-contact">
           {settings.phone ? (
             <li>
@@ -76,6 +65,18 @@ export async function SiteFooter() {
               {settings.address}
             </li>
           ) : null}
+          {/* Socials in the contact line, not a row of their own (client, 19.10.2026: one
+              big icon took a whole row). */}
+          {socials.map((s) =>
+            s.url ? (
+              <li key={s.key} className="fc-contact-social">
+                <Svg html={SOCIAL_ICONS[s.key]} />
+                <a href={s.url} rel="noopener me" target="_blank">
+                  {s.name}
+                </a>
+              </li>
+            ) : null,
+          )}
         </ul>
         {sectionLinks.length ? (
           <nav aria-label="Sections">
