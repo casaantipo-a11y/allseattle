@@ -14,6 +14,7 @@ import * as migration_20261014_050730_stage3_package_subscriptions from './20261
 import * as migration_20261014_052145_stage3_banner_places from './20261014_052145_stage3_banner_places';
 import * as migration_20261014_164109_site_notes from './20261014_164109_site_notes';
 import * as migration_20261014_174433_stage3_merge_client from './20261014_174433_stage3_merge_client';
+import * as migration_20261019_152002_site_socials_x from './20261019_152002_site_socials_x';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20261014_174433_stage3_merge_client.up,
     down: migration_20261014_174433_stage3_merge_client.down,
-    name: '20261014_174433_stage3_merge_client'
+    name: '20261014_174433_stage3_merge_client',
+  },
+  {
+    up: migration_20261019_152002_site_socials_x.up,
+    down: migration_20261019_152002_site_socials_x.down,
+    name: '20261019_152002_site_socials_x'
   },
 ];

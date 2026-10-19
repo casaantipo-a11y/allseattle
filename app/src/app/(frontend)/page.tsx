@@ -137,7 +137,7 @@ export default async function HomePage() {
             logo: absoluteUrl('/brand/logo.webp'),
             ...(settings.phone ? { telephone: settings.phone } : {}),
             ...(settings.email ? { email: settings.email } : {}),
-            sameAs: [settings.socials?.facebook, settings.socials?.instagram].filter(Boolean),
+            sameAs: [settings.socials?.facebook, settings.socials?.instagram, settings.socials?.x].filter(Boolean),
           },
           {
             '@context': 'https://schema.org',

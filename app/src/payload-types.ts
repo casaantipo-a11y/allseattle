@@ -2296,6 +2296,7 @@ export interface SiteSetting {
   socials?: {
     instagram?: string | null;
     facebook?: string | null;
+    x?: string | null;
   };
   /**
    * G-XXXXXXX. Loaded only after a visitor accepts cookies.
@@ -2414,6 +2415,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | {
         instagram?: T;
         facebook?: T;
+        x?: T;
       };
   ga4MeasurementId?: T;
   searchConsoleVerification?: T;

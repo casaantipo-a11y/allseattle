@@ -44,6 +44,7 @@ export const SiteSettings: GlobalConfig = {
               fields: [
                 { name: 'instagram', type: 'text' },
                 { name: 'facebook', type: 'text' },
+                { name: 'x', type: 'text', label: 'X (Twitter)' },
               ],
             },
           ],

@@ -27,6 +27,7 @@ export async function SiteFooter() {
   const socials = [
     { key: 'facebook' as const, name: 'Facebook', url: settings.socials?.facebook },
     { key: 'instagram' as const, name: 'Instagram', url: settings.socials?.instagram },
+    { key: 'x' as const, name: 'X', url: settings.socials?.x },
   ]
   const [explore, ...rest] = footer.columns ?? []
   // Explore splits in two (client, 04.10.2026): the site's sections — whatever the
@@ -65,19 +66,24 @@ export async function SiteFooter() {
               {settings.address}
             </li>
           ) : null}
-          {/* Socials in the contact line, not a row of their own (client, 19.10.2026: one
-              big icon took a whole row). */}
-          {socials.map((s) =>
-            s.url ? (
-              <li key={s.key} className="fc-contact-social">
-                <Svg html={SOCIAL_ICONS[s.key]} />
-                <a href={s.url} rel="noopener me" target="_blank">
-                  {s.name}
-                </a>
-              </li>
-            ) : null,
-          )}
         </ul>
+        {/* Socials as small links like the contacts, not big round icons (client, 19.10.2026:
+            one icon took a whole row). With three networks they are a row of their own under
+            the contacts — in the contact line X wrapped alone on tablets. */}
+        {socials.some((s) => s.url) ? (
+          <ul className="fc-contact fc-social">
+            {socials.map((s) =>
+              s.url ? (
+                <li key={s.key}>
+                  <Svg html={SOCIAL_ICONS[s.key]} />
+                  <a href={s.url} rel="noopener me" target="_blank">
+                    {s.name}
+                  </a>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        ) : null}
         {sectionLinks.length ? (
           <nav aria-label="Sections">
             <ul className="fc-sections">

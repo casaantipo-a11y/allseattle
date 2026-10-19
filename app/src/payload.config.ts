@@ -102,7 +102,9 @@ export default buildConfig({
     },
   },
   // The owner reads Russian, the sales team English: English by default, each
-  // user can switch to Russian in their account settings.
+  // user can switch to Russian in their account settings. The browser's language is
+  // ignored (src/proxy.ts drops Accept-Language on /admin), so a Russian browser
+  // still opens the login page in English (client, 19.10.2026).
   i18n: {
     supportedLanguages: { en, ru },
     fallbackLanguage: 'en',

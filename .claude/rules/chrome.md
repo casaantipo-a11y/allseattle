@@ -333,3 +333,10 @@ Footer on phones: contacts in a column, one per line.
 Header below 1024 (19.10.2026): logo `translate` −4px, utilities (ENG, account) +8px — the account
 icon has 12px of its own padding inside the 44px button and sat further from the edge than the
 logo. From 1024 no shift.
+**App footer, 19.10.2026 — three networks:** Site settings socials gained **X** (`socials.x`,
+migration `20261019_152002_site_socials_x`; icon `SOCIAL_ICONS.x`, drawn at 85% — the mark fills
+its box). Desktop "Follow us" lists Facebook / Instagram / X (3 rows, as tall as Explore; 201px at
+1440). Below 1280 the socials left the contact line for a row of their own under it
+(`.fc-social`, always one row, fits 320) — in the contact line X wrapped alone on tablets.
+**Header active underline (19.10.2026):** the client dislikes the red line; four variants were
+shown (thin text underline, soft pill, colour only, short centred dash) — waiting for the pick.

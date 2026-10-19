@@ -8,7 +8,19 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const RESERVED = new Set(['www', 'admin', 'api', 'app', 'mail'])
 
+// The admin opens in English for everyone (client, 19.10.2026: the login page came up
+// in Russian). Payload takes the language from its `payload-lng` cookie, then from the
+// browser's Accept-Language, then English — so the header is dropped on /admin and a
+// Russian browser lands on English. Choosing Russian in the account settings sets the
+// cookie, which still wins.
+function adminInEnglish(req: NextRequest) {
+  const headers = new Headers(req.headers)
+  headers.delete('accept-language')
+  return NextResponse.next({ request: { headers } })
+}
+
 export function proxy(req: NextRequest) {
+  if (req.nextUrl.pathname.startsWith('/admin')) return adminInEnglish(req)
   if (process.env.ENABLE_SUBDOMAINS !== 'true') return NextResponse.next()
   const root = process.env.ROOT_DOMAIN?.toLowerCase()
   if (!root) return NextResponse.next()
@@ -27,5 +39,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/'],
+  matcher: ['/', '/admin', '/admin/:path*'],
 }
