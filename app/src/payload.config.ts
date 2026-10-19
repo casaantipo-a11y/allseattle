@@ -108,14 +108,16 @@ export default buildConfig({
     fallbackLanguage: 'en',
     // Checkbox columns in list views print `general:true/false`, which Payload's
     // Russian translates as «Правда / Ложь» — read as "yes / no" instead
-    // (client, 06.10.2026). The two form warnings stay English in Russian too
-    // (client, 19.10.2026: «Пожалуйста, введите корректный адрес email» and «Это
-    // обязательное поле» on the login form).
+    // (client, 06.10.2026). Warnings and error messages stay English in Russian too
+    // (client, 19.10.2026: «Пожалуйста, введите корректный адрес email», «Это
+    // обязательное поле», «Пожалуйста, исправьте неправильные поля»…): the whole
+    // `validation` and `error` groups come from the English translation.
     translations: {
       en: { general: { true: 'Yes', false: 'No' } },
       ru: {
         general: { true: 'Да', false: 'Нет' },
-        validation: { emailAddress: 'Please enter a valid email address.', required: 'This field is required.' },
+        validation: en.translations.validation,
+        error: en.translations.error,
       },
     },
   },

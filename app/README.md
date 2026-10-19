@@ -276,7 +276,7 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
   **admin** everything, **editor** news/pages/header and news tips, **sales** businesses,
   categories, promotions, products, banners and business/ad inquiries. Only admins
   change package prices and limits.
-  The admin UI is English with Russian available per user (account settings → Language); in Russian the two form warnings (valid email, required field) stay English (client, 19.10.2026).
+  The admin UI is English with Russian available per user (account settings → Language); in Russian all warnings and error messages (the `validation` and `error` groups) stay English (client, 19.10.2026).
 - Public content has `slug`, `status` (draft/published), `isDemo`, an SEO tab, and a hidden
   `slugHistory`: renaming a slug keeps the old URL working as a permanent redirect.
 - `src/lib/queries.ts` — every public read, wrapped in `unstable_cache` with a tag. Payload
