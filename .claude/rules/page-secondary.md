@@ -367,3 +367,8 @@ soon" card) starts right there. Head cards on large tablets (1024–1279, News /
 Events) `translate: 0 −4px` — midway between the banner above and the block below (8 / 8). Cars
 Services from 1024: "All auto businesses" full `.btn` size (48px) and centred on the "Directory of
 enterprises" line (`--head-btn-dy: calc(var(--space-1) - 1px)`, ±0.5px).
+20.10.2026 (client): from 1024 Events has a **left column "Categories"** — an open `.cat-list`
+like the Directory's Headings (All events + the 20, counts for the chosen period), 260px, the grid
+or the "Coming soon" card to its right (event grid 2 columns at 1024, 3 from 1280). The "Category"
+button is hidden from 1024 (still the way to pick below 1024). From 1440 `.events-filters`
+margin-bottom 54 so the columns start 16px under the head band (the tabs sit in the band).

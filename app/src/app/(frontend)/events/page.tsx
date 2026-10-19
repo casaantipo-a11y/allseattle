@@ -54,6 +54,9 @@ export default async function EventsPage({ searchParams }: Props) {
   const [events, categories] = EVENTS_COMING_SOON ? [[], []] : await Promise.all([getAllUpcomingEvents(), getEventCategories()])
   const category = categories.find((c) => c.slug === sp.category)
   const list = events.filter((e) => inWindow(e, when) && (!category || categoryOf(e)?.id === category.id))
+  // Events in the chosen period per category, for the left column's counts.
+  const inPeriod = events.filter((e) => inWindow(e, when))
+  const countOf = (id: number) => inPeriod.filter((e) => categoryOf(e)?.id === id).length
   const href = (w: When, c?: string | null) => {
     const q = new URLSearchParams({ ...(w !== 'all' ? { when: w } : {}), ...(c ? { category: c } : {}) }).toString()
     return q ? `/events?${q}` : '/events'
@@ -123,18 +126,47 @@ export default async function EventsPage({ searchParams }: Props) {
               </div>
             </div>
 
-            <div className="events-layout">
-              {list.length ? (
-                <div className="grid event-grid">
-                  {list.map((e) => (
-                    <EventCard key={e.id} ev={e} />
-                  ))}
-                </div>
-              ) : (
-                // No events (or none for this choice): the same "Coming soon" card instead of a
-                // bare line (client, 18.10.2026); the filters above give its top gap.
-                <EventsSoon />
-              )}
+            <div className="events-layout events-layout--cats">
+              {/* From 1024 the categories are an open list in a left column, as in the other
+                  sections (client, 20.10.2026); below 1024 they stay the "Category" button. */}
+              <aside className="events-cats from-1024-block">
+                <nav className="widget" aria-label="Event categories">
+                  <div className="widget-head">Categories</div>
+                  <ul className="cat-list">
+                    <li>
+                      <Link href={href(when)} className={`cat-row${!category ? ' is-active' : ''}`} aria-current={!category ? 'page' : undefined}>
+                        <span>All events</span>
+                        <span className="cat-num">{inPeriod.length}</span>
+                      </Link>
+                    </li>
+                    {categories.map((c) => (
+                      <li key={c.id}>
+                        <Link
+                          href={href(when, c.slug)}
+                          className={`cat-row${category?.id === c.id ? ' is-active' : ''}`}
+                          aria-current={category?.id === c.id ? 'page' : undefined}
+                        >
+                          <span>{c.name}</span>
+                          <span className="cat-num">{countOf(c.id)}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </aside>
+              <div className="events-main">
+                {list.length ? (
+                  <div className="grid event-grid">
+                    {list.map((e) => (
+                      <EventCard key={e.id} ev={e} />
+                    ))}
+                  </div>
+                ) : (
+                  // No events (or none for this choice): the same "Coming soon" card instead of a
+                  // bare line (client, 18.10.2026); the filters above give its top gap.
+                  <EventsSoon />
+                )}
+              </div>
             </div>
             </>
           )}

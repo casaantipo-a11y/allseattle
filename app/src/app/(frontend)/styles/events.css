@@ -417,3 +417,35 @@
      «чуть поменьше» (04.10.2026). */
   font-size: var(--text-lg);
 }
+
+/* С 1024 рубрики — открытым списком в левой колонке, как в справочнике, Shopping и
+   Leisure (клиент, 20.10.2026); кнопка «Category» над сеткой — только до 1024. */
+@media (min-width: 1024px) {
+  [data-page="events"] .events-layout--cats {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: var(--grid-gap);
+    align-items: start;
+  }
+  [data-page="events"] .events-types {
+    display: none;
+  }
+  [data-page="events"] .events-layout .event-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-page="events"] .events-layout .event-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* С 1440 вкладки стоят в полосе шапки, а кнопки «Category» под ней больше нет —
+   колонки начинаются в 16px под шапкой (полоса 92px: блок фильтров кончается на
+   52-м её пикселе, 52 + 54 = 92 + 16). */
+@media (min-width: 1440px) {
+  [data-page="events"] .events-filters {
+    margin-bottom: calc(var(--space-12) + 6px);
+  }
+}
