@@ -111,6 +111,100 @@
   margin-bottom: var(--space-2);
 }
 
+/* До 1024 каждая группа свёрнута под заголовком-кнопкой (клиент, 19.10.2026:
+   «фильтры очень длинные и неудобные»): нажал — открылась одна группа. Число
+   рядом с заголовком — сколько в группе выбрано. Группы — плотный список строк
+   по 44px. С 1024 (колонка слева) всё раскрыто, как было, а заголовок — просто
+   подпись. */
+.filter-title-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.filter-title-btn::after {
+  content: "\25BE";
+  margin-left: auto;
+  color: var(--color-accent);
+}
+
+.filter-group--fold.is-open .filter-title-btn::after {
+  rotate: 180deg;
+}
+
+.filter-title-n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.filter-group--fold .filter-title {
+  margin-bottom: 0;
+}
+
+.filter-group--fold:not(.is-open) .filter-group-body {
+  display: none;
+}
+
+.filter-group--fold.is-open .filter-group-body {
+  margin-bottom: var(--space-3);
+}
+
+.filter-group + .filter-group--fold {
+  margin-top: var(--space-3);
+  padding-top: 0;
+}
+
+.filter-group--fold + .filter-group--fold {
+  margin-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .filter-title-btn {
+    min-height: 0;
+    cursor: default;
+    pointer-events: none;
+  }
+  .filter-title-btn::after {
+    content: none;
+  }
+  .filter-group--fold .filter-title {
+    margin-bottom: var(--space-2);
+  }
+  .filter-group--fold:not(.is-open) .filter-list {
+    display: block;
+  }
+  .filter-group--fold:not(.is-open) .filter-pair {
+    display: grid;
+  }
+  .filter-group--fold.is-open .filter-group-body {
+    margin-bottom: 0;
+  }
+  .filter-group + .filter-group--fold,
+  .filter-group--fold + .filter-group--fold {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+  }
+}
+
 .filter-list {
   list-style: none;
   margin: 0;

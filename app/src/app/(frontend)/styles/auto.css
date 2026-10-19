@@ -64,6 +64,22 @@
   margin-bottom: var(--space-2);
 }
 
+/* Планшет: «AllSeattle Auto / Cars for sale» на 4px ниже (клиент, 19.10.2026,
+   «чуть-чуть вниз»), поверх потока — карточка и поиск на месте. */
+@media (min-width: 640px) {
+  .auto-head .eyebrow,
+  .auto-head h1 {
+    translate: 0 var(--space-1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .auto-head .eyebrow,
+  .auto-head h1 {
+    translate: none;
+  }
+}
+
 /* Планшет (640–1023): карточка справа по середине надписи свисает на 8px ниже
    шапки и касалась блока под ней (клиент, 19.10.2026) — шапке 16px снизу, от
    карточки до блока 8. С 1024 — снова 8. */

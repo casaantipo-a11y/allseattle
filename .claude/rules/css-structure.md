@@ -379,3 +379,15 @@ wrapped in `.from-1024` (`display: none`, `contents` from 1024) and in the feed 
 1024. News: Category button above the stories, Top news after the 5th. Directory / Shopping /
 Leisure: Category button above the list, At a glance after the 4th row. Cars Services: Category
 button. Jobs: the Filters accordion (now until 1024, was 768) sits above the list. Ads did not move.
+Later the same day (client's tablet list): the side columns' **banners** below 1024 stand inside
+the lists too — under the list they ended up 2–3 in a row (News: NEWS_SIDEBAR_1/2 after story 3 /
+15; Directory: SIDEBAR_1/2 after the first and second third of the page's rows, 2 / 5 on a full page
+of 10 with B2 after 8; Shopping / Leisure the same thirds; Cars: CARS_SIDEBAR_1/2 after car 4 / 16;
+Cars Services: CARS_SIDEBAR_3/4 after company 3 / 6). Same placements, rendered twice (column copy
+`.from-1024`, list copy `.below-1024` with the 320x100 strip); a list shorter than the position
+gets the banner after it. No "At a glance" inside the directory list (client). Inside card grids
+`.ad-mobile-inline-slot` has no margin of its own (the grid gap spaces it: 16/24 like the cards,
+was 40/48). `.car-infeed-ad > *` is full width — the in-feed car banners were 0px wide on phones.
+Cars: the model catalog is a "Model: … ▾" button above the list below 1024 (the widget is
+`.from-1024-block`). Jobs filters: each group folds under its title below 1024 (`filter-group--fold`,
+count of picked options next to the title); from 1024 all open as before.

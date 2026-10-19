@@ -262,6 +262,9 @@
 .news-grid .ad-mobile-inline-slot,
 .car-grid .ad-mobile-inline-slot {
   grid-column: 1 / -1;
+  /* в сетке промежуток задаёт gap — свои 24px сверху и снизу давали 40–48px
+     вокруг баннера против 16–24 между карточками (клиент, 19.10.2026) */
+  margin: 0;
 }
 
 /* ---------- Section heading row ---------- */

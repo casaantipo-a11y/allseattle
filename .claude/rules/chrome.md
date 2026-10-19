@@ -301,3 +301,11 @@ column text → line 10px, line → link box 1px, link box → footer bottom 0.
 **App, 19.10.2026 — cookie banner:** while it is up, `CookieConsent` renders a spacer of the
 banner's height (ResizeObserver) after the footer, so the footer's bottom (meta links, copyright)
 can be scrolled above the fixed banner — it covered ~166px on phones, 91 on tablets.
+**App footer, 19.10.2026 (tablet 640–1279, "uneven gaps in Explore, too long"):** logo and the
+social icons share the first cell (icons `grid-area: logo`, at its right end), the contacts under
+them (no CONTACT heading, as on phones), Explore on the right across both rows with max-content
+columns and one gap (24, 32 from 768) — equal-width columns made "News → Business Directory" and
+"Business Directory → Cars" look uneven. Height 395 → 311px at 640/768. The grid lives in the
+original tablet block (before the desktop blocks, which still override it — desktop measured
+identical at 1280/1440). Phones: the "Explore all sections" label is centred, the arrow at the
+right edge.

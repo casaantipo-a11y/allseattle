@@ -119,6 +119,18 @@ const SORTS = [
 export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initialQuery?: string }) {
   const [s, setS] = useState<State>({ ...EMPTY, query: initialQuery })
   const [open, setOpen] = useState(false)
+  // Below 1024 every filter group folds under its title (client, 19.10.2026: the open
+  // column was very long); from 1024 the CSS shows them all, as before.
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
+  const groupClass = (key: string) => `filter-group filter-group--fold${openGroups[key] ? ' is-open' : ''}`
+  const groupHead = (key: string, title: string, picked: number) => (
+    <h3 className="filter-title">
+      <button type="button" className="filter-title-btn" aria-expanded={Boolean(openGroups[key])} onClick={() => setOpenGroups((p) => ({ ...p, [key]: !p[key] }))}>
+        <span>{title}</span>
+        {picked ? <span className="filter-title-n">{picked}</span> : null}
+      </button>
+    </h3>
+  )
   const set = (patch: Partial<State>) => setS((p) => ({ ...p, ...patch }))
   // How many cards are open, tied to the filters it was counted for: any change
   // of filter or sort starts again from the first PAGE without an effect.
@@ -190,10 +202,11 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
       }))
       .filter((r) => r.n > 0 || (group === 'posted' ? s.posted === r.value : s[group].includes(r.value)))
     if (!rows.length) return null
+    const picked = group === 'posted' ? (s.posted ? 1 : 0) : s[group].length
     return (
-      <div className="filter-group">
-        <h3 className="filter-title">{title}</h3>
-        <ul className="filter-list">
+      <div className={groupClass(group)}>
+        {groupHead(group, title, picked)}
+        <ul className="filter-list filter-group-body">
           {rows.map((r) => (
             <li key={r.value}>
               <label>
@@ -266,9 +279,9 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
                   </label>
                 </div>
 
-                <div className="filter-group">
-                  <h3 className="filter-title">Category</h3>
-                  <ul className="filter-list filter-list--cats">
+                <div className={groupClass('category')}>
+                  {groupHead('category', 'Category', s.category !== 'All' ? 1 : 0)}
+                  <ul className="filter-list filter-list--cats filter-group-body">
                     {['All', ...categories]
                       .map((c) => ({ c, n: c === 'All' ? jobs.filter((j) => matches(j, 'category')).length : count('category', (j) => j.category === c) }))
                       .filter(({ c, n }) => n > 0 || c === s.category)
@@ -286,9 +299,9 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
                 {checkGroup('Suits you', 'openTo', OPEN_TO)}
 
                 {salarySteps.length ? (
-                  <div className="filter-group">
-                    <h3 className="filter-title">Salary, $ per year</h3>
-                    <div className="filter-pair">
+                  <div className={groupClass('salary')}>
+                    {groupHead('salary', 'Salary, $ per year', s.salaryMin || s.salaryMax ? 1 : 0)}
+                    <div className="filter-pair filter-group-body">
                       <label>
                         <span className="sr-only">Minimum salary</span>
                         <select value={s.salaryMin ?? ''} onChange={(e) => set({ salaryMin: Number(e.target.value) || null })}>
