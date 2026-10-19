@@ -69,8 +69,14 @@ export function AdCheckoutForm({ slots, chosen, price, values = {} }: { slots: (
         <label className="flex items-start gap-3" style={{ display: 'flex', paddingLeft: 0, fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' }}>
           <input type="checkbox" name="consent" value="yes" className="mt-1 h-5 w-5 shrink-0" style={{ width: 20, minHeight: 0, padding: 0 }} />
           <span>
-            I agree that <strong>{price}</strong> is charged to my card <strong>every month</strong> for this place until I cancel. I can cancel any time in
-            “Manage billing”; the banner then stays until the end of the month already paid. No refunds for a part of a month.
+            {/* Sales tax and the Terms link since 18.10.2026: Stripe Tax adds the tax on top of the price. */}
+            I agree that <strong>{price}</strong> plus applicable sales tax is charged to my card <strong>every month</strong> for this place until I
+            cancel. I can cancel any time in “Manage billing”; the banner then stays until the end of the month already paid. No refunds for a part of
+            a month. See the{' '}
+            <a href="/terms" target="_blank" rel="noopener" className="underline">
+              Terms of Use
+            </a>
+            .
           </span>
         </label>
         <span className="field-error">{errors.consent}</span>

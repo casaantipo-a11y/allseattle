@@ -80,8 +80,14 @@ export function PackagePicker({ businessId, packages }: { businessId: number; pa
           <label className={`flex items-start gap-3 ${error ? 'text-[#c53030]' : ''}`}>
             <input type="checkbox" className="mt-1 h-5 w-5 shrink-0" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
             <span>
-              I agree that <strong>{pkg.price}</strong> is charged to my card <strong>every month</strong> for the {pkg.name} package until I cancel. I can
-              cancel any time in “Manage billing”; the package then stays until the end of the month already paid. No refunds for a part of a month.
+              {/* Sales tax and the Terms link since 18.10.2026: Stripe Tax adds the tax on top of the price. */}
+              I agree that <strong>{pkg.price}</strong> plus applicable sales tax is charged to my card <strong>every month</strong> for the {pkg.name}{' '}
+              package until I cancel. I can cancel any time in “Manage billing”; the package then stays until the end of the month already paid. No
+              refunds for a part of a month. See the{' '}
+              <a href="/terms" target="_blank" rel="noopener" className="underline">
+                Terms of Use
+              </a>
+              .
             </span>
           </label>
           {error ? (

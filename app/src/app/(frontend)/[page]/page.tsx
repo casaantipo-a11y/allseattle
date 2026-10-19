@@ -72,7 +72,8 @@ export default async function StaticPage({ params }: Props) {
             </div>
           </div>
           {page.intro ? <p className="mb-6 max-w-[72ch] text-lg text-brand-slate">{page.intro}</p> : null}
-          {slug === 'contact' ? <ContactEmail className="mb-6 text-lg" /> : null}
+          {/* Same size, gap and red link as the page text under it (18.10.2026). */}
+          {slug === 'contact' ? <ContactEmail className="rich-text mb-5 text-[17px] text-brand-navy" /> : null}
           <RichText data={page.content} />
           <Blocks blocks={page.blocks} />
         </div>
