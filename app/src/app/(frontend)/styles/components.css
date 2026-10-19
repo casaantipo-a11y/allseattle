@@ -2111,3 +2111,14 @@ body.modal-open {
 .feed-widget {
   grid-column: 1 / -1;
 }
+
+/* То же, когда прятать надо сам блок со своей рамкой (виджет каталога машин). */
+.from-1024-block {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .from-1024-block {
+    display: block;
+  }
+}

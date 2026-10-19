@@ -107,6 +107,16 @@ export async function BusinessSection({
   const rows = found.slice((page - 1) * perPage, page * perPage)
   const base = active ? `${meta.base}/${active.slug}` : meta.base
 
+  // The right column's banners inside the list below 1024px, after the first and the second
+  // third of the page's rows (the Directory's full page of 10: after 2 and 5, its B2 after 8) —
+  // so none lands next to another banner, including Shopping / Leisure's B2 under the list.
+  const n = rows.length
+  const [adA, adB] = section === 'directory' && n >= 8 ? [2, 5] : [Math.max(1, Math.round(n / 3)), Math.max(1, Math.round((2 * n) / 3))]
+  const feedAds = [
+    { code: `${meta.codePrefix}_SIDEBAR_1`, size: '300x250' as const, after: adA },
+    { code: `${meta.codePrefix}_SIDEBAR_2`, size: '300x600' as const, after: adB },
+  ]
+
   return (
     <main id="content" data-page="directory">
       {/* 16px from the last block (pagination, or Shopping / Leisure's B2 banner) to the
@@ -173,12 +183,14 @@ export async function BusinessSection({
                     {rows.map((b, i) => (
                       <Fragment key={b.id}>
                         <BizRow biz={b} sectionCategoryIds={sectionIds} />
-                        {/* Phones and tablets: "At a glance" inside the list, after the 4th row. */}
-                        {stats && i === 3 && rows.length > 4 ? (
-                          <div className="below-1024 feed-widget">
-                            <StatsWidget stats={stats} />
+                        {/* Below 1024 the right column's banners stand inside the list — under it they
+                            ended up back to back (client, 19.10.2026). Same places, other position.
+                            ("At a glance" is not repeated in the list: the client didn't want it there.) */}
+                        {feedAds.filter((a) => a.after === i + 1).map((a) => (
+                          <div key={a.code} className="below-1024">
+                            <AdSlot code={a.code} size={a.size} mobileSize="320x100" className="biz-infeed-ad" />
                           </div>
-                        ) : null}
+                        ))}
                         {/* Directory B2: the strip in the list after the 8th business (client's scheme, 12.10.2026). */}
                         {section === 'directory' && i === 7 && rows.length > 8 ? (
                           <AdSlot code="DIRECTORY_INFEED_1" size="728x90" mobileSize="320x100" className="biz-infeed-ad" />
@@ -189,6 +201,11 @@ export async function BusinessSection({
                 ) : (
                   <p className="muted">No businesses match that search yet.</p>
                 )}
+                {feedAds.filter((a) => a.after > rows.length).map((a) => (
+                  <div key={a.code} className="below-1024">
+                    <AdSlot code={a.code} size={a.size} mobileSize="320x100" className="biz-infeed-ad" />
+                  </div>
+                ))}
                 <Pagination
                   page={page}
                   totalPages={totalPages}
@@ -203,7 +220,9 @@ export async function BusinessSection({
             </div>
 
             <aside className="dir-rail dir-rail--right">
-              <AdSlot code={`${meta.codePrefix}_SIDEBAR_1`} size="300x250" mobileSize="320x100" />
+              <div className="from-1024">
+                <AdSlot code={`${meta.codePrefix}_SIDEBAR_1`} size="300x250" mobileSize="320x100" />
+              </div>
               {/* "AllSeattle at a glance" between C1 and C2, as in the prototype's directory
                   (client, 12.10.2026) — the same live counts as Home's widget. */}
               {stats ? (
@@ -211,7 +230,9 @@ export async function BusinessSection({
                   <StatsWidget stats={stats} />
                 </div>
               ) : null}
-              <AdSlot code={`${meta.codePrefix}_SIDEBAR_2`} size="300x600" mobileSize="320x100" />
+              <div className="from-1024">
+                <AdSlot code={`${meta.codePrefix}_SIDEBAR_2`} size="300x600" mobileSize="320x100" />
+              </div>
             </aside>
           </div>
         </div>

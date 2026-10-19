@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+
+import { DropPanel } from '@/components/DropPanel'
 import { Fragment, useMemo, useState, type ReactNode } from 'react'
 
 // The prototype's car catalog (auto/index.html + js/pages/auto-catalog.js,
@@ -89,11 +91,15 @@ export function CarsCatalog({
   cars,
   rightRail,
   feedAd,
+  feedAds = [],
 }: {
   cars: CarItem[]
   rightRail?: ReactNode
   /** B2 — the strip in the list after the 10th car (client's Cars scheme, 12.10.2026). */
   feedAd?: ReactNode
+  /** The right column's banners inside the list below 1024px (after car `after`; past the end of
+   *  a short list — after it). Under the list they stood back to back (client, 19.10.2026). */
+  feedAds?: { after: number; node: ReactNode }[]
 }) {
   const [s, setS] = useState<State>(EMPTY)
   const [adv, setAdv] = useState(false)
@@ -285,7 +291,7 @@ export function CarsCatalog({
 
       <div className="auto-layout">
         <aside className="auto-rail auto-rail--left">
-          <div className="widget">
+          <div className="widget from-1024-block">
             <div className="widget-head">Car catalog</div>
             <div className="widget-body">
               <ul className="auto-cats">
@@ -306,6 +312,26 @@ export function CarsCatalog({
         </aside>
 
         <div className="auto-results">
+          {/* Phones and tablets: the model catalog above the list (client, 19.10.2026) — the
+              left column dropped under all the cars there. */}
+          <DropPanel className="below-1024" label="Model" current={s.model ? modelLabel(s.make, s.model) : 'All models'}>
+            <ul className="auto-cats auto-cats--drop">
+              <li>
+                <button type="button" className={!s.model ? 'active' : undefined} onClick={() => set({ make: '', model: '' })}>
+                  <span>All models</span>
+                  <span className="auto-cats-num">{cars.length}</span>
+                </button>
+              </li>
+              {catalog.map((r) => (
+                <li key={`${r.make}-${r.model}`}>
+                  <button type="button" className={s.model === r.model ? 'active' : undefined} onClick={() => set({ make: r.make, model: r.model })}>
+                    <span>{modelLabel(r.make, r.model)}</span>
+                    <span className="auto-cats-num">{r.n}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </DropPanel>
           <div className="car-list">
             {found.length ? (
               found.map((c, i) => (
@@ -335,15 +361,23 @@ export function CarsCatalog({
                   </div>
                 </article>
                 {i === 9 && found.length > 10 && feedAd ? <div className="car-infeed-ad">{feedAd}</div> : null}
+                {feedAds.filter((a) => a.after === i + 1).map((a, k) => (
+                  <div key={k} className="below-1024 car-infeed-ad">{a.node}</div>
+                ))}
                 </Fragment>
               ))
             ) : (
               <p className="muted">No cars match those filters. Try widening your search.</p>
             )}
+            {feedAds.filter((a) => a.after > found.length).map((a, k) => (
+              <div key={k} className="below-1024 car-infeed-ad">{a.node}</div>
+            ))}
           </div>
         </div>
 
-        <aside className="auto-rail auto-rail--right">{rightRail}</aside>
+        <aside className="auto-rail auto-rail--right">
+          <div className="from-1024">{rightRail}</div>
+        </aside>
       </div>
     </>
   )

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
 import { DropPanel } from '@/components/DropPanel'
@@ -23,6 +24,12 @@ export const metadata: Metadata = {
 // link to the directory categories.
 
 const FIRMS_ORDER: Record<string, number> = { luxury: 0, premium: 1, standard: 2 }
+
+/** The side columns' banners inside the list below 1024px: after company 3 and 6. */
+const FEED_ADS = [
+  { code: 'CARS_SIDEBAR_3', size: '300x250' as const, after: 3 },
+  { code: 'CARS_SIDEBAR_4', size: '300x600' as const, after: 6 },
+]
 
 export default async function CarServicesPage() {
   const [categories, businesses] = await Promise.all([getBusinessCategories(), getAllBusinesses()])
@@ -102,7 +109,9 @@ export default async function CarServicesPage() {
                   </nav>
                 </div>
               ) : null}
-              <AdSlot code="CARS_SIDEBAR_3" size="300x250" mobileSize="320x100" />
+              <div className="from-1024">
+                <AdSlot code="CARS_SIDEBAR_3" size="300x250" mobileSize="320x100" />
+              </div>
             </aside>
             <div className="auto-results">
               {/* Phones and tablets: the categories above the list (client, 19.10.2026). */}
@@ -113,16 +122,32 @@ export default async function CarServicesPage() {
               ) : null}
               {firms.length ? (
                 <div className="biz-list" id="auto-firms">
-                  {firms.map((b) => (
-                    <BizRow key={b.id} biz={b} />
+                  {firms.map((b, i) => (
+                    <Fragment key={b.id}>
+                      <BizRow biz={b} />
+                      {/* Below 1024 the side columns' banners stand inside the list — under it they
+                          ended up three in a row with the B2 (client, 19.10.2026). Same places. */}
+                      {FEED_ADS.filter((a) => a.after === i + 1).map((a) => (
+                        <div key={a.code} className="below-1024">
+                          <AdSlot code={a.code} size={a.size} mobileSize="320x100" className="biz-infeed-ad" />
+                        </div>
+                      ))}
+                    </Fragment>
                   ))}
                 </div>
               ) : (
                 <p className="muted">No auto businesses listed yet.</p>
               )}
+              {FEED_ADS.filter((a) => a.after > firms.length).map((a) => (
+                <div key={a.code} className="below-1024">
+                  <AdSlot code={a.code} size={a.size} mobileSize="320x100" className="biz-infeed-ad" />
+                </div>
+              ))}
             </div>
             <aside className="auto-rail auto-rail--right">
-              <AdSlot code="CARS_SIDEBAR_4" size="300x600" mobileSize="320x100" />
+              <div className="from-1024">
+                <AdSlot code="CARS_SIDEBAR_4" size="300x600" mobileSize="320x100" />
+              </div>
             </aside>
           </div>
           {/* B2 under the main content ("other sections" scheme, 12.10.2026). */}

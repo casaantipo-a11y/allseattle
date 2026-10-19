@@ -38,11 +38,11 @@ export function DropPanel({ label, current, children, className = '' }: { label:
           <path d="m6 9 6 6 6-6" />
         </svg>
       </summary>
-      {/* A chosen link closes the panel (sub-category groups are <summary>, not links). */}
+      {/* A chosen link or button closes the panel (sub-category groups are <summary>). */}
       <div
         className="drop-panel"
         onClick={(e) => {
-          if ((e.target as HTMLElement).closest('a')) ref.current?.removeAttribute('open')
+          if ((e.target as HTMLElement).closest('a, button')) ref.current?.removeAttribute('open')
         }}
       >
         {children}

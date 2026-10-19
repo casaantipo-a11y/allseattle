@@ -15,6 +15,12 @@ import { getNewsCategories, getNewsCategoryCounts, getNewsMonths, getNewsPage, g
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 /** ?month=&year= from the News Archive; anything else is ignored. */
+/** The side columns' banners inside the list below 1024px: after story 3 and 15 (B2 is after 10). */
+const FEED_ADS = [
+  { code: 'NEWS_SIDEBAR_1', size: '300x250' as const, after: 3 },
+  { code: 'NEWS_SIDEBAR_2', size: '300x600' as const, after: 15 },
+]
+
 export function archiveParams(sp: { month?: string; year?: string }) {
   const month = Number(sp.month)
   const year = Number(sp.year)
@@ -82,7 +88,11 @@ export async function NewsSection({
             {/* Left column per the client's News scheme (12.10.2026): A1 on top, then
                 Categories and the prototype's Newsletter and News Archive, back. */}
             <aside className="news-rail news-rail--left">
-              <AdSlot code="NEWS_SIDEBAR_2" size="300x600" mobileSize="320x100" />
+              {/* Below 1024 the column's two banners stand inside the list (FEED_ADS) — under it
+                  they ended up back to back (client, 19.10.2026). Same places, other position. */}
+              <div className="from-1024">
+                <AdSlot code="NEWS_SIDEBAR_2" size="300x600" mobileSize="320x100" />
+              </div>
               {/* Below 1024 the list is the "Category" button above the stories instead. */}
               <div className="from-1024">
                 <CategoriesWidget categories={categories} activeSlug={category?.slug ?? undefined} counts={counts} />
@@ -117,6 +127,11 @@ export async function NewsSection({
                           <TopNewsWidget articles={top} />
                         </div>
                       ) : null}
+                      {FEED_ADS.filter((f) => f.after === i + 1).map((f) => (
+                        <div key={f.code} className="below-1024">
+                          <AdSlot code={f.code} size={f.size} mobileSize="320x100" className="news-infeed-ad" />
+                        </div>
+                      ))}
                       {/* B2 — the strip inside the list after the 10th story (client's scheme). */}
                       {i === 9 && feed.docs.length > 10 ? (
                         <AdSlot code="NEWS_INFEED_1" size="728x90" mobileSize="320x100" className="news-infeed-ad" />
@@ -127,11 +142,19 @@ export async function NewsSection({
               ) : (
                 <p className="muted">{archiveLabel ? `No stories from ${archiveLabel}.` : 'No stories in this section yet.'}</p>
               )}
+              {/* A short list: the column banners it had no room for, after it. */}
+              {FEED_ADS.filter((f) => f.after > feed.docs.length).map((f) => (
+                <div key={f.code} className="below-1024">
+                  <AdSlot code={f.code} size={f.size} mobileSize="320x100" className="news-infeed-ad" />
+                </div>
+              ))}
               <Pagination page={feed.page} totalPages={feed.totalPages} base={base} params={archive} />
             </div>
 
             <aside className="news-rail news-rail--right">
-              <AdSlot code="NEWS_SIDEBAR_1" size="300x250" mobileSize="320x100" />
+              <div className="from-1024">
+                <AdSlot code="NEWS_SIDEBAR_1" size="300x250" mobileSize="320x100" />
+              </div>
               <div className="from-1024">
                 <TopNewsWidget articles={top} />
               </div>
