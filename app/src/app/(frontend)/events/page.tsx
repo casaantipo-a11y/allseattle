@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
+import { ComingSoon } from '@/components/ComingSoon'
 import { EventCategoryMenu } from '@/components/EventCategoryMenu'
 import { EventCard } from '@/components/events'
 import { EVENTS_COMING_SOON, WHEN, type When, categoryOf, inWindow } from '@/lib/events'
@@ -36,25 +37,18 @@ function HostingLine() {
   )
 }
 
-/** The "Coming soon" card: the whole section while it's closed, and the empty state once it's open. */
-function EventsSoon({ className = '' }: { className?: string }) {
-  return (
-    <div className={`events-soon mx-auto max-w-[640px] ${className} rounded-xl border border-brand-line bg-white px-6 py-12 text-center`}>
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fdecec] text-brand-red" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="5" width="18" height="16" rx="2" />
-          <path d="M3 10h18M8 3v4M16 3v4" />
-        </svg>
-      </div>
-      <div className="eyebrow">Coming soon</div>
-      <div className="mt-2 font-display text-2xl font-bold text-brand-navy">Seattle events are on their way</div>
-      <div className="mx-auto mt-3 max-w-[48ch] text-brand-slate">
-        Concerts, food, community, family, art and sports events in one place — today, this weekend and this month.
-      </div>
-      <HostingLine />
-    </div>
-  )
-}
+/** The "Coming soon" card: the whole section while it's closed, and "All upcoming" with no events. */
+const EventsSoon = ({ className }: { className?: string }) => (
+  <ComingSoon
+    className={className}
+    icon="calendar"
+    title="Seattle events are on their way"
+    text="Concerts, food, community, family, art and sports events in one place — today, this weekend and this month."
+    lead="Hosting one?"
+    linkLabel="Tell us about it"
+    href="/advertise"
+  />
+)
 
 const WHEN_PHRASE: Record<When, string> = { all: 'coming up', today: 'today', weekend: 'this weekend', month: 'this month' }
 
@@ -130,7 +124,10 @@ export default async function EventsPage({ searchParams }: Props) {
           {EVENTS_COMING_SOON ? (
             // The section isn't open yet (client, 15.10.2026; switch in lib/events.ts). Heading,
             // "Submit an event" and both banner places stay.
-            <EventsSoon className="mt-10 mb-4" />
+            <>
+              <EventsSoon className="mt-10" />
+              <AdSlot code="EVENTS_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
+            </>
           ) : (
             <>
             <div className="events-layout events-layout--cats">
@@ -221,11 +218,13 @@ export default async function EventsPage({ searchParams }: Props) {
                   // filters above give its top gap.
                   <EventsSoon />
                 )}
+                {/* B2 in the main column, 16px under its last line (client, 20.10.2026: under the
+                    whole layout it dropped below the taller Categories column). */}
+                <AdSlot code="EVENTS_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
               </div>
             </div>
             </>
           )}
-          <AdSlot code="EVENTS_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-bottom" />
         </div>
       </section>
     </main>

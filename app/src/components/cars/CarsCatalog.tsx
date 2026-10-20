@@ -352,6 +352,8 @@ export function CarsCatalog({
             {feedAds.filter((a) => a.after > found.length).map((a, k) => (
               <div key={k} className="below-1024 car-infeed-ad">{a.node}</div>
             ))}
+            {/* B2 is after the 10th car; a shorter list gets it at the end (client, 20.10.2026). */}
+            {found.length <= 10 && feedAd ? <div className="car-infeed-ad">{feedAd}</div> : null}
           </div>
         </div>
 

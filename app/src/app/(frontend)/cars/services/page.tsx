@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
+import { ComingSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { BizRow } from '@/components/business'
 import { effectivePackage, withDescendants } from '@/lib/business'
@@ -136,13 +137,25 @@ export default async function CarServicesPage() {
                   ))}
                 </div>
               ) : (
-                <p className="muted">No auto businesses listed yet.</p>
+                // Nothing listed yet: the "Coming soon" card (client, 20.10.2026).
+                <ComingSoon
+                  icon="wrench"
+                  title="Auto businesses are on their way"
+                  text="Repair shops, dealers, detailing, tires and rentals around Seattle."
+                  lead="Run an auto business?"
+                  linkLabel="Add your business"
+                  href="/add-business"
+                />
               )}
               {FEED_ADS.filter((a) => a.after > firms.length).map((a) => (
                 <div key={a.code} className="below-1024">
                   <AdSlot code={a.code} size={a.size} mobileSize="320x100" className="biz-infeed-ad" />
                 </div>
               ))}
+              {/* B2 under the main content ("other sections" scheme, 12.10.2026) — in the list's
+                  column, 16px under its last line (client, 20.10.2026: under the whole layout it
+                  dropped below the taller side columns). */}
+              <AdSlot code="CARS_SERVICES_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
             </div>
             <aside className="auto-rail auto-rail--right">
               <div className="from-1024">
@@ -150,8 +163,6 @@ export default async function CarServicesPage() {
               </div>
             </aside>
           </div>
-          {/* B2 under the main content ("other sections" scheme, 12.10.2026). */}
-          <AdSlot code="CARS_SERVICES_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
     </main>

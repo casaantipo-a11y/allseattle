@@ -983,7 +983,14 @@
 .biz-infeed-ad {
   display: flex;
   justify-content: center;
-  margin: var(--space-2) 0;
+  /* Баннер всегда в 16px от того, что над ним (клиент, 20.10.2026: «реклама гуляет» —
+     было 8 после заглушки и между баннерами, 20 в списке). Вне списка — 16. */
+  margin: var(--space-4) 0;
+}
+
+/* В списке компаний (.biz-list — колонка с шагом 12) баннеру 4px сверх шага: 16. */
+.biz-list .biz-infeed-ad {
+  margin: var(--space-1) 0;
 }
 
 .biz-row {

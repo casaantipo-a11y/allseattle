@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { AdSlot, InlineMobileAd } from '@/components/AdSlot'
+import { NewsSoon } from '@/components/ComingSoon'
 import { JsonLd } from '@/components/JsonLd'
 import { FreshCars, JobsWidget, StatsWidget, UpcomingEvents } from '@/components/home'
 import { NewsListRow, NewsTile, TopNewsWidget } from '@/components/news'
@@ -86,7 +87,7 @@ export default async function HomePage() {
                 })}
               </div>
             ) : (
-              <p className="muted">No news published yet.</p>
+              <NewsSoon />
             )}
             <AdSlot code="HOME_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-bottom" />
           </div>

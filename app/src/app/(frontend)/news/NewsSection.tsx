@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import { notFound } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
+import { NewsSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { NewsArchiveWidget } from '@/components/NewsArchiveWidget'
 import { NewsletterWidget } from '@/components/NewsletterWidget'
@@ -140,7 +141,13 @@ export async function NewsSection({
                   ))}
                 </div>
               ) : (
-                <p className="muted">{archiveLabel ? `No stories from ${archiveLabel}.` : 'No stories in this section yet.'}</p>
+                // Nothing published at all: the "Coming soon" card (client, 20.10.2026); an empty
+                // category or archive month while other stories exist keeps the plain line.
+                !archiveLabel && !category ? (
+                  <NewsSoon />
+                ) : (
+                  <p className="muted">{archiveLabel ? `No stories from ${archiveLabel}.` : 'No stories in this section yet.'}</p>
+                )
               )}
               {/* A short list: the column banners it had no room for, after it. */}
               {FEED_ADS.filter((f) => f.after > feed.docs.length).map((f) => (
@@ -148,6 +155,9 @@ export async function NewsSection({
                   <AdSlot code={f.code} size={f.size} mobileSize="320x100" className="news-infeed-ad" />
                 </div>
               ))}
+              {/* B2 is after the 10th story; a shorter page gets it under the list (client,
+                  20.10.2026: with no stories it vanished). */}
+              {feed.docs.length <= 10 ? <AdSlot code="NEWS_INFEED_1" size="728x90" mobileSize="320x100" className="news-infeed-ad" /> : null}
               <Pagination page={feed.page} totalPages={feed.totalPages} base={base} params={archive} />
             </div>
 

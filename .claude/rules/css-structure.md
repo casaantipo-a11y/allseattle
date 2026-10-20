@@ -396,3 +396,19 @@ from-1024-block`), no "Model" button on Cars below 1024 (the search panel has Ma
 pagination is a `1fr auto 1fr` grid so "Page N of M" is centred with one or two buttons; Jobs —
 "Job board" 4px lower below 1024, the sort row 12px from Filters and 12 from the first job on
 tablets (toolbar margin-bottom 8 below 1024, 16 from 1024).
+
+**App, 20.10.2026 — empty sections and the banner rule.** The demo news and businesses were
+deleted on production. A section with nothing in it shows the shared **"Coming soon" card**
+(`src/components/ComingSoon.tsx`: icon, "Coming soon", headline, a line, and "Lead? Link." on its
+own line, link nowrap) — Home's Latest news and News (`NewsSoon`), Directory / Shopping / Leisure
+(`SOON` in BusinessSection, only when the section has no businesses at all; a search with no match
+keeps the grey line), Cars Services, Events (`EventsSoon`). An empty News category or archive month
+keeps its line. **Every banner after content is 16px from the line above it** (client: "make it a
+rule"): `.biz-infeed-ad` 16 outside a list, 4 inside `.biz-list` (gap 12 + 4); `.car-infeed-ad` 4
+inside `.car-list`; the bottom B2 of Events and Cars Services moved into the main column
+(`.ad-slot-under`) — under the whole layout it dropped below the taller side column; B2s that sit
+"after story 10 / business 8 / car 10" go under a shorter list instead of vanishing
+(NEWS_INFEED_1, DIRECTORY_INFEED_1, CARS_INFEED). Measured 16px for every in-content banner on
+Home, News, Directory, Shopping, Leisure, Cars, Cars Services, Events, Jobs at 375/768/1024/1440.
+Home's "City newsfeed" (with HOME_INFEED_2) shows only with more than 20 stories.
+

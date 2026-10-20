@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
+import { ComingSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { BizRow, CategoryTree, buildTree } from '@/components/business'
 import { Pagination } from '@/components/news'
@@ -41,6 +42,34 @@ export const SECTION_META: Record<
     eyebrow: 'Things to do',
     title: 'Leisure in Seattle',
     codePrefix: 'LEISURE',
+  },
+}
+
+// The "Coming soon" card per section, while it has no businesses yet.
+const SOON: Record<Section, Omit<Parameters<typeof ComingSoon>[0], 'className'>> = {
+  directory: {
+    icon: 'store',
+    title: 'Seattle businesses are on their way',
+    text: 'Restaurants, services, shops and more — local businesses with photos, hours, maps and contacts.',
+    lead: 'Own a business?',
+    linkLabel: 'Add your business',
+    href: '/add-business',
+  },
+  shopping: {
+    icon: 'tag',
+    title: 'Shopping deals are on their way',
+    text: 'Discounts and offers from Seattle stores, markets and boutiques in one place.',
+    lead: 'Run a store?',
+    linkLabel: 'Add your business',
+    href: '/add-business',
+  },
+  leisure: {
+    icon: 'ticket',
+    title: 'Places to go are on their way',
+    text: 'Restaurants, bars, venues and things to do around Seattle — with photos, hours and maps.',
+    lead: 'Own a venue?',
+    linkLabel: 'Add your business',
+    href: '/add-business',
   },
 }
 
@@ -199,14 +228,22 @@ export async function BusinessSection({
                       </Fragment>
                     ))}
                   </div>
-                ) : (
+                ) : inSection.length ? (
                   <p className="muted">No businesses match that search yet.</p>
+                ) : (
+                  // Nothing in the section at all: the "Coming soon" card (client, 20.10.2026).
+                  <ComingSoon {...SOON[section]} />
                 )}
                 {feedAds.filter((a) => a.after > rows.length).map((a) => (
                   <div key={a.code} className="below-1024">
                     <AdSlot code={a.code} size={a.size} mobileSize="320x100" className="biz-infeed-ad" />
                   </div>
                 ))}
+                {/* Directory B2 is after the 8th business; a shorter page gets it under the list
+                    (client, 20.10.2026: it vanished with fewer than nine). */}
+                {section === 'directory' && rows.length <= 8 ? (
+                  <AdSlot code="DIRECTORY_INFEED_1" size="728x90" mobileSize="320x100" className="biz-infeed-ad" />
+                ) : null}
                 <Pagination
                   page={page}
                   totalPages={totalPages}
