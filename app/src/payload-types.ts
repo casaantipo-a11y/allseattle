@@ -140,11 +140,13 @@ export interface Config {
     'site-settings': SiteSetting;
     header: Header;
     footer: Footer;
+    'seo-texts': SeoText;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'seo-texts': SeoTextsSelect<false> | SeoTextsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -2401,6 +2403,169 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-texts".
+ */
+export interface SeoText {
+  id: number;
+  home?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  news?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  directory?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  shopping?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  leisure?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  events?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  jobs?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  cars?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  carServices?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  weather?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  map?: {
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -2479,6 +2644,92 @@ export interface FooterSelect<T extends boolean = true> {
         id?: T;
       };
   copyright?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-texts_select".
+ */
+export interface SeoTextsSelect<T extends boolean = true> {
+  home?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  news?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  directory?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  shopping?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  leisure?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  events?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  jobs?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  cars?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  carServices?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  weather?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  map?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

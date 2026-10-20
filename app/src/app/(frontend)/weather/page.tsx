@@ -2,16 +2,20 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
+import { seoDescription } from '@/lib/seo-texts'
 import { WeatherBoard } from '@/components/weather/WeatherBoard'
 import { getForecast } from '@/lib/forecast'
 
 // Weather changes faster than content; the forecast itself is cached 30 min.
 export const revalidate = 1800
 
-export const metadata: Metadata = {
-  title: 'Seattle weather — today and 7-day forecast',
-  description: 'Seattle weather now, hour by hour for today and the 7-day forecast, with UV, wind, humidity, air quality and nearby towns.',
-  alternates: { canonical: '/weather' },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Seattle weather — today and 7-day forecast',
+    description: await seoDescription('weather', 'Seattle weather now, hour by hour for today and the 7-day forecast, with UV, wind, humidity, air quality and nearby towns.'),
+    alternates: { canonical: '/weather' },
+  }
 }
 
 export default async function WeatherPage() {
@@ -50,6 +54,7 @@ export default async function WeatherPage() {
           <AdSlot code="WEATHER_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
+      <SeoText section="weather" />
     </main>
   )
 }

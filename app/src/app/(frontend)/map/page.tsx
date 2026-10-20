@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 
 import { SECTIONS } from '@/collections/BusinessCategories'
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
+import { seoDescription } from '@/lib/seo-texts'
 import { type ExplorerCategory, type ExplorerPoint, MapExplorer } from '@/components/map/MapExplorer'
 import { bizPath, effectivePackage, viewFor, withDescendants } from '@/lib/business'
 import { dateParts } from '@/lib/events'
@@ -10,10 +12,12 @@ import { getEventCategories, getUpcomingEvents } from '@/lib/queries-phase3'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Seattle city map',
-  description: 'Seattle businesses, shops, places to go and upcoming events on one map, filtered by category.',
-  alternates: { canonical: '/map' },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Seattle city map',
+    description: await seoDescription('map', 'Seattle businesses, shops, places to go and upcoming events on one map, filtered by category.'),
+    alternates: { canonical: '/map' },
+  }
 }
 
 export default async function MapPage() {
@@ -113,6 +117,7 @@ export default async function MapPage() {
           <AdSlot code="MAP_INFEED_1" size="728x90" mobileSize="320x100" className="ad-slot-under" />
         </div>
       </section>
+      <SeoText section="map" />
     </main>
   )
 }

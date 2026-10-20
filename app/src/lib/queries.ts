@@ -13,6 +13,7 @@ import type {
   Page,
   Product,
   Promotion,
+  SeoText,
   SiteSetting,
 } from '@/payload-types'
 
@@ -53,6 +54,12 @@ export const getFooter = unstable_cache(
   async (): Promise<Footer> => (await payload()).findGlobal({ slug: 'footer', depth: 0 }),
   ['footer'],
   { tags: ['footer'], revalidate: HOUR },
+)
+
+export const getSeoTexts = unstable_cache(
+  async (): Promise<SeoText> => (await payload()).findGlobal({ slug: 'seo-texts', depth: 0 }),
+  ['seo-texts'],
+  { tags: ['seo-texts'], revalidate: HOUR },
 )
 
 export const getNewsCategories = unstable_cache(

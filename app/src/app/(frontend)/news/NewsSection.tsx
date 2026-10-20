@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import { notFound } from 'next/navigation'
 
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
 import { NewsSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { NewsArchiveWidget } from '@/components/NewsArchiveWidget'
@@ -172,6 +173,8 @@ export async function NewsSection({
           </div>
         </div>
       </section>
+      {/* The client's SEO text on the section's first page only. */}
+      {!category && !archiveLabel && feed.page === 1 ? <SeoText section="news" /> : null}
     </main>
   )
 }

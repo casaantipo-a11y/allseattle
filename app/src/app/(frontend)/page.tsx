@@ -1,11 +1,14 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot, InlineMobileAd } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
 import { NewsSoon } from '@/components/ComingSoon'
 import { JsonLd } from '@/components/JsonLd'
 import { FreshCars, JobsWidget, StatsWidget, UpcomingEvents } from '@/components/home'
 import { NewsListRow, NewsTile, TopNewsWidget } from '@/components/news'
 import { getNewsPage, getSiteSettings, getTopNews } from '@/lib/queries'
+import { seoDescription } from '@/lib/seo-texts'
 import { getCars, getJobs, getSiteStats, getUpcomingEvents } from '@/lib/queries-phase3'
 import { absoluteUrl } from '@/lib/site'
 
@@ -29,6 +32,14 @@ const INLINE_AFTER = new Map([
   [6, 'HOME_SIDEBAR_1'],
   [12, 'HOME_SIDEBAR_2'],
 ])
+
+// Google's description of the home page: the client's SEO text (Settings → SEO texts → Home),
+// else the site description from Site settings (the layout's default).
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  const description = await seoDescription('home', settings.description || '')
+  return description ? { description } : {}
+}
 
 export default async function HomePage() {
   const [settings, feed, top, stats, jobs, events, cars] = await Promise.all([
@@ -153,6 +164,7 @@ export default async function HomePage() {
           },
         ]}
       />
+      <SeoText section="home" />
     </main>
   )
 }

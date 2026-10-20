@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { seoDescription } from '@/lib/seo-texts'
+
 import { NewsSection, archiveParams } from './NewsSection'
 
 export const revalidate = 3600
@@ -12,7 +14,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const { month, year } = archiveParams(sp)
   return {
     title: page > 1 ? `Seattle news — page ${page}` : 'Seattle news',
-    description: 'The latest news from Seattle: city hall, transit, business, food, community and more.',
+    description: await seoDescription('news', 'The latest news from Seattle: city hall, transit, business, food, community and more.'),
     alternates: { canonical: page > 1 ? `/news?page=${page}` : '/news' },
     // Archive views are filters of this list, not pages of their own.
     ...(month || year ? { robots: { index: false, follow: true } } : {}),

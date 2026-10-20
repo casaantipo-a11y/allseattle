@@ -179,6 +179,16 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   Deletes the cars and jobs (with photos) and businesses that never went live (with their
   promotions and products); published businesses and banners stay with the owner cleared,
   for the team to decide. Signs out, emails a confirmation, notifies the team.
+- **SEO texts (20.10.2026).** Admin → Settings → SEO texts: a heading, a text (an empty line
+  = a new paragraph) and an optional Google description per section (Home, News, Directory,
+  Shopping, Leisure, Events, Jobs, Cars, Cars Services, Weather, City Map). The text shows at the
+  bottom of the section's first page, above the footer (`SeoText`, `.seo-text`; not on category
+  pages, page 2+, filters or searches); empty text = nothing shown. The page's Google description
+  is the typed one, else the text's first sentence, else the old fixed line (`seoDescription`).
+  Filled from the client's AllSeattle_SEO_Texts_English.txt for Home, News, Directory, Events,
+  Jobs, Cars (headings ours; the About text was already the About page). Migration
+  `20261020_162638_seo_texts` (the generator's R2-column drops removed by hand — see the trap in
+  CLAUDE.md).
 - **Documents in R2 (20.10.2026).** Price lists and certificates (`documents`) are stored in R2
   under `documents/`, like Media. Before, the storage plugin covered Media only, so on Vercel
   every document upload failed (500: the file went to the read-only disk). Migration

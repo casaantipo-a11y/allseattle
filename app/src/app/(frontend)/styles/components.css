@@ -2295,3 +2295,43 @@ main aside .widget {
     margin-bottom: 0;
   }
 }
+
+/* ---------- SEO-текст клиента внизу раздела (SeoText.tsx) ----------
+   Клиент, 20.10.2026: тексты из AllSeattle_SEO_Texts_English.txt — внизу страницы, перед
+   подвалом, «чтобы не ломать картинку в телефоне». Спокойно: тонкая черта сверху, мелкий
+   серый текст, заголовок на шаг крупнее; до подвала 16px, как у последнего блока везде
+   (минус 20 к общим 36 подвала — тот же приём, что у .section--footer-tight). */
+main > .seo-text-wrap {
+  margin-bottom: -20px;
+}
+
+/* После секций, подтянутых к подвалу на 20px (16 вместо 36), над чертой те же 32, что на
+   главной: внутренний отступ возвращает эти 20 (с внешними полями он не схлопывается). */
+main > :is(.section--footer-tight, .events-section, .cars-list-section, .news-list-section, .home-feed) + .seo-text-wrap {
+  padding-top: 20px;
+}
+
+.seo-text {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-slate-soft);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-slate);
+}
+
+.seo-text h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-base);
+  color: var(--color-navy);
+}
+
+.seo-text p {
+  max-width: 120ch;
+  margin: 0 0 var(--space-2);
+}
+
+.seo-text p:last-child {
+  margin-bottom: 0;
+}
+

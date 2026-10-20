@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
+import { seoDescription } from '@/lib/seo-texts'
 import { ComingSoon } from '@/components/ComingSoon'
 import { EventCategoryMenu } from '@/components/EventCategoryMenu'
 import { EventCard } from '@/components/events'
@@ -17,7 +19,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const filtered = Boolean(sp.when || sp.category)
   return {
     title: 'Events in Seattle',
-    description: 'What is on in Seattle: concerts, food, community, family, art and sports events — today, this weekend and this month.',
+    description: await seoDescription('events', 'What is on in Seattle: concerts, food, community, family, art and sports events — today, this weekend and this month.'),
     alternates: { canonical: '/events' },
     ...(filtered ? { robots: { index: false, follow: true } } : {}),
   }
@@ -227,6 +229,8 @@ export default async function EventsPage({ searchParams }: Props) {
           )}
         </div>
       </section>
+      {/* The client's SEO text, without filters only. */}
+      {when === 'all' && !category ? <SeoText section="events" /> : null}
     </main>
   )
 }

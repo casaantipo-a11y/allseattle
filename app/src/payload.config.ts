@@ -37,6 +37,7 @@ import { env, s3Enabled } from './env'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { SiteSettings } from './globals/SiteSettings'
+import { SeoTexts } from './globals/SeoTexts'
 import { search } from './search'
 
 const filename = fileURLToPath(import.meta.url)
@@ -161,7 +162,7 @@ export default buildConfig({
     Users,
     Customers,
   ],
-  globals: [SiteSettings, Header, Footer],
+  globals: [SiteSettings, Header, Footer, SeoTexts],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },

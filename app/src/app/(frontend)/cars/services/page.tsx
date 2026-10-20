@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
+import { seoDescription } from '@/lib/seo-texts'
 import { ComingSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { BizRow } from '@/components/business'
@@ -11,11 +13,12 @@ import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Auto services in Seattle',
-  description:
-    'Seattle car repair, washes, tires, parts, dealerships, rentals and driving schools — the auto businesses of the AllSeattle directory.',
-  alternates: { canonical: '/cars/services' },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Auto services in Seattle',
+    description: await seoDescription('carServices', 'Seattle car repair, washes, tires, parts, dealerships, rentals and driving schools — the auto businesses of the AllSeattle directory.'),
+    alternates: { canonical: '/cars/services' },
+  }
 }
 
 // Cars → Services: the Directory of enterprises, split off the Cars page into
@@ -165,6 +168,7 @@ export default async function CarServicesPage() {
           </div>
         </div>
       </section>
+      <SeoText section="carServices" />
     </main>
   )
 }

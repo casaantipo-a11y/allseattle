@@ -2,17 +2,20 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
+import { seoDescription } from '@/lib/seo-texts'
 import { CarsCatalog } from '@/components/cars/CarsCatalog'
 import { toCarItem } from '@/lib/cars'
 import { getCars } from '@/lib/queries-phase3'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Cars for sale in Seattle',
-  description:
-    'Used cars for sale in Seattle from local sellers and dealers: search by make, model, price and year.',
-  alternates: { canonical: '/cars' },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Cars for sale in Seattle',
+    description: await seoDescription('cars', 'Used cars for sale in Seattle from local sellers and dealers: search by make, model, price and year.'),
+    alternates: { canonical: '/cars' },
+  }
 }
 
 // Cars → For sale: the prototype's car catalog on real data — search bar,
@@ -65,6 +68,7 @@ export default async function CarsPage() {
           />
         </div>
       </section>
+      <SeoText section="cars" />
     </main>
   )
 }

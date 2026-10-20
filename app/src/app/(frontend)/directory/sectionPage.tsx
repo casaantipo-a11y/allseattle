@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { seoDescription } from '@/lib/seo-texts'
+
 import type { Section } from '@/collections/BusinessCategories'
 import { withDescendants } from '@/lib/business'
 import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
@@ -31,7 +33,7 @@ export async function sectionMetadata(section: Section, searchParams: SP, params
   const title = category ? `${category.name} in Seattle` : meta.title
   return {
     title: page > 1 ? `${title} — page ${page}` : title,
-    description: category?.description || DESCRIPTIONS[section],
+    description: category?.description || (await seoDescription(section, DESCRIPTIONS[section])),
     alternates: { canonical: page > 1 ? `${path}?page=${page}` : path },
     // Search results are not pages of their own.
     ...(sp.q ? { robots: { index: false, follow: true } } : {}),

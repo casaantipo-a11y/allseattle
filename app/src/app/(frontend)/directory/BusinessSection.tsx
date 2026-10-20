@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
+import { SeoText } from '@/components/SeoText'
 import { ComingSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { BizRow, CategoryTree, buildTree } from '@/components/business'
@@ -275,6 +276,8 @@ export async function BusinessSection({
           </div>
         </div>
       </section>
+      {/* The client's SEO text on the section's first page only. */}
+      {!active && page === 1 && !needle ? <SeoText section={section} /> : null}
     </main>
   )
 }
