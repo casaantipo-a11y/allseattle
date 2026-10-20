@@ -127,6 +127,12 @@
    чипы без рамки, выбранный navy. Вкладки и чипы по центру линии (клиент,
    тот же день). Подписи When / Category остаются для
    экранных читалок (aria-labelledby). */
+/* Между сеткой (или «Coming soon») и нижним баннером — 16px, столько же, сколько
+   от баннера до подвала (клиент, 20.10.2026: баннер стоял вплотную к карточкам). */
+.events-main {
+  margin-bottom: var(--space-4);
+}
+
 /* От нижнего баннера (EVENTS_INFEED_1) до подвала 16px, как на главной
    (клиент, 09.10.2026), а не общие 36: минус 20px на секции — тем же
    способом, что .home-feed и .news-list-section. */
@@ -337,75 +343,6 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
-
-  /* С 1440 вкладки и чипы стоят в строке заголовка, между ним и «Submit an
-     event» (клиент, 09.10.2026, после нескольких сдвигов за день). Блок
-     фильтров — сразу под баннером, без пустой полосы; надпись и карточка —
-     по середине блока фильтров. Шапка — полоса высотой с блок фильтров
-     (44 вкладки + 12 + 36 чипов = 92px) с align-content: center, блок
-     фильтров ложится на неё отрицательным отступом той же величины. Уже
-     1440 вкладки (≈525px по центру) подошли бы к заголовку ближе 16px —
-     там они под шапкой. Блок фильтров во всю ширину лежит поверх шапки,
-     поэтому сам он клики пропускает, а ловят их только ссылки. */
-  @media (min-width: 1440px) {
-    .events-head.section-head--snug {
-      /* 18.10.2026 клиент: «убрать пустое пространство под баннером» — вся
-         шапка (и всё под ней) на 16px выше: баннер → «Submit an event» 16px,
-         было 32 (margin-top 4px). Затем «ещё чуточку» — ещё 8: 8px. */
-      margin-top: calc(-1 * (var(--space-4) + var(--space-1)));
-      min-height: 92px;
-      align-content: center;
-      /* Надпись и «Submit an event» на 10px ниже середины полосы (клиент,
-         09.10.2026; убирали и вернули в тот же день). Сдвиг поверх потока:
-         фильтры и карточки на месте. */
-      translate: 0 10px;
-    }
-
-    .events-filters {
-      position: relative;
-      z-index: 1;
-      pointer-events: none;
-      gap: var(--space-3);
-      /* −92 ставило блок фильтров ровно на полосу шапки; затем «опусти
-         сортировку на 8px» — −84: фильтры и карточки под ними ниже на 8px,
-         надпись и «Submit an event» на месте. */
-      margin-top: calc(-92px + var(--space-2));
-    }
-
-    .events-filters a,
-    .events-cat {
-      pointer-events: auto;
-    }
-
-    /* Вкладки периода вровень с «What is on / Seattle events» (клиент,
-       18.10.2026): середина их букв — на середине надписи (от верха букв
-       eyebrow до строки h1) и «Submit an event»; стояли на 32px выше.
-       Затем «ещё чуть пониже» — +8, всего 40px; затем вместе с «Category»
-       ещё на 2px — 42.
-       Сдвиг поверх потока — рубрика и карточки на месте. */
-    .events-when {
-      translate: 0 calc(var(--space-8) + var(--space-2) + 2px);
-    }
-
-    /* Рубрика в середину полосы не входит (рядом с вкладками она наехала
-       бы на «Submit an event»): в полосе только вкладки периода, кнопка
-       «Category» — по центру под шапкой (клиент, 18.10.2026). Без сдвига она
-       начиналась бы в середине полосы; +52 ставили её на 16px ниже нижнего
-       края надписи и «Submit an event», затем «чуть меньше пустого над
-       Category» — +44: 8px под ними, 16 под чертой вкладок. */
-    /* Компьютер: над кнопкой 16 от черты вкладок — и под ней 16 (+2 — сама кнопка
-       сдвинута на 2px вниз). */
-    .events-filters {
-      margin-bottom: calc(var(--space-4) + 2px);
-    }
-
-    .events-types {
-      margin-top: calc(var(--space-8) + var(--space-3));
-      /* Вместе с вкладками на 2px ниже (клиент, 18.10.2026), поверх потока —
-         карточки на месте. */
-      translate: 0 2px;
-    }
-  }
 }
 
 /* ---------- Страница события: описание под фото ----------
@@ -422,11 +359,43 @@
 }
 
 /* С 1024 рубрики — открытым списком в левой колонке, как в справочнике, Shopping и
-   Leisure (клиент, 20.10.2026); кнопка «Category» над сеткой — только до 1024. */
+   Leisure (клиент, 20.10.2026); кнопка «Category» над сеткой — только до 1024.
+   Шапка — как у Jobs (клиент, 20.10.2026: «выглядит не очень, сделай как Jobs»):
+   «What is on / Seattle events» слева; вкладки периода — по центру над сеткой, в
+   строке заголовка (колонки подтянуты под шапку на высоту строки вкладок 44px + 16,
+   сами вкладки на 8px ниже — как сортировка Jobs); «Submit an event» — наверху левой
+   колонки над «Categories», 24px между ними, вровень с первой карточкой (колонка
+   опущена на ту же строку вкладок). До этого с 1440 вкладки лежали в полосе шапки
+   между заголовком и карточкой справа на сдвигах поверх потока — всё это снято. */
 @media (min-width: 1024px) {
+  [data-page="events"] .events-head {
+    grid-template-columns: 1fr;
+    margin-bottom: calc(var(--space-2) - 44px - var(--space-4));
+  }
+  /* Карточки в шапке с 1024 нет — шапка на 8px ближе к баннеру, как прочие
+     --snug (общее правило снимает подъём на 640–1439 у шапок с .post-card). */
+  [data-page="events"] .ad-slot-top + .events-head {
+    margin-top: calc(-1 * var(--space-2));
+  }
+  [data-page="events"] .events-head .events-post-head {
+    display: none;
+  }
+  [data-page="events"] .events-post-side {
+    margin-bottom: var(--space-6);
+  }
+  [data-page="events"] .events-cats {
+    padding-top: calc(44px + var(--space-4));
+  }
+  [data-page="events"] .events-filters {
+    position: relative;
+    top: var(--space-2);
+    margin: 0 0 var(--space-4);
+    /* второй ряд (кнопка «Category») скрыт — без промежутка под ним */
+    gap: 0;
+  }
   [data-page="events"] .events-layout--cats {
     display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-columns: 300px minmax(0, 1fr);
     gap: var(--grid-gap);
     align-items: start;
   }
@@ -441,14 +410,5 @@
 @media (min-width: 1280px) {
   [data-page="events"] .events-layout .event-grid {
     grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* С 1440 вкладки стоят в полосе шапки, а кнопки «Category» под ней больше нет —
-   колонки начинаются в 16px под шапкой (полоса 92px: блок фильтров кончается на
-   52-м её пикселе, 52 + 54 = 92 + 16). */
-@media (min-width: 1440px) {
-  [data-page="events"] .events-filters {
-    margin-bottom: calc(var(--space-12) + 6px);
   }
 }

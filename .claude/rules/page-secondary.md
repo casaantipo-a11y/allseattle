@@ -372,3 +372,18 @@ like the Directory's Headings (All events + the 20, counts for the chosen period
 or the "Coming soon" card to its right (event grid 2 columns at 1024, 3 from 1280). The "Category"
 button is hidden from 1024 (still the way to pick below 1024). From 1440 `.events-filters`
 margin-bottom 54 so the columns start 16px under the head band (the tabs sit in the band).
+20.10.2026 (client, "doesn't look good, make it like Jobs"): **Events from 1024 is laid out like
+Jobs** — "What is on / Seattle events" left; the WHEN tabs centred over the event grid, their rule
+level with the heading's baseline (columns pulled up under the head by 44 + 16, tabs `top: 8px`, as
+Jobs' sort row); "Submit an event" (`.events-post-side`, a `.post-card` in the aside) at the top of
+the left column, 24px above "Categories", level with the first card; the head's card is hidden from
+1024; column 300px (as Jobs). `.events-filters` now lives inside `.events-main` (same order below
+1024). Every 1440 lift/translate of the old head band was removed. Head 8px under the banner from 1024.
+`.events-main` margin-bottom 16 — the bottom banner (EVENTS_INFEED_1) sat flush on the cards; now
+16 above it and 16 under it. **Empty choice** (events exist, none for the period / category):
+`EventsNone` — "No events today / this weekend / this month", "No Movies & Cinema events coming up",
+a "See all upcoming events" button; "Coming soon" only when there are no events at all.
+"Hosting one? Tell us about it." is its own line in both cards (`HostingLine`, link nowrap).
+Event cards: category and time on two lines (long categories broke the row). Six sample events
+exist **locally only** (isDemo).
+

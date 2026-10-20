@@ -40,7 +40,9 @@ export function CookieConsent({ gaId }: { gaId?: string | null }) {
 
   // While the banner is up it covers the bottom of the page (on a phone ~166px — the
   // footer's links and copyright could not be scrolled into view; client, 19.10.2026).
-  // A spacer of the banner's height after the footer gives that room back.
+  // A spacer of the banner's height after the footer gives that room back (+16: since
+  // 20.10.2026 the banner is a floating card 16px above the bottom edge — the client
+  // chose it over the full-width white bar).
   const banner = useRef<HTMLDivElement>(null)
   const [bannerH, setBannerH] = useState(0)
   useEffect(() => {
@@ -73,16 +75,16 @@ gtag('js',new Date());gtag('config','${gaId}');`}
         </>
       ) : null}
 
-      {choice === null ? <div aria-hidden="true" style={{ height: bannerH }} /> : null}
+      {choice === null ? <div aria-hidden="true" style={{ height: bannerH ? bannerH + 16 : 0 }} /> : null}
       {choice === null ? (
         <div
           ref={banner}
           role="dialog"
           aria-live="polite"
           aria-label="Cookie consent"
-          className="fixed inset-x-0 bottom-0 z-50 border-t border-brand-line bg-white px-4 py-4 shadow-[0_-4px_24px_rgba(13,27,42,0.12)]"
+          className="fixed bottom-4 left-1/2 z-50 w-[min(1000px,calc(100%_-_32px))] -translate-x-1/2 rounded-2xl border border-brand-line bg-white px-6 py-4 shadow-[0_8px_32px_rgba(13,27,42,0.18)]"
         >
-          <div className="mx-auto flex max-w-[1376px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
+          <div className="mx-auto flex max-w-[1376px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <p className="cookie-text m-0 text-sm text-brand-slate">
               We use cookies to understand how the site is used. Analytics load only if you accept.{' '}
               <Link href="/privacy" className="text-brand-navy underline">

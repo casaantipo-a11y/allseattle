@@ -340,3 +340,8 @@ its box). Desktop "Follow us" lists Facebook / Instagram / X (3 rows, as tall as
 (`.fc-social`, always one row, fits 320) — in the contact line X wrapped alone on tablets.
 **Header active underline (19.10.2026):** the client dislikes the red line; four variants were
 shown (thin text underline, soft pill, colour only, short centred dash) — waiting for the pick.
+**Cookie banner, 20.10.2026 (client picked variant C of three):** a floating white card, 16px from
+the bottom and the sides, up to 1000px wide, centred, radius 16, soft shadow; text left and the
+buttons right in one row from 640 (text centred on the buttons — base.css paragraph margin removed
+via `.cookie-text`), stacked on phones. The spacer after the footer is the card's height + 16.
+
