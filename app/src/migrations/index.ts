@@ -15,6 +15,7 @@ import * as migration_20261014_052145_stage3_banner_places from './20261014_0521
 import * as migration_20261014_164109_site_notes from './20261014_164109_site_notes';
 import * as migration_20261014_174433_stage3_merge_client from './20261014_174433_stage3_merge_client';
 import * as migration_20261019_152002_site_socials_x from './20261019_152002_site_socials_x';
+import * as migration_20261020_120000_documents_r2 from './20261020_120000_documents_r2';
 
 export const migrations = [
   {
@@ -101,5 +102,10 @@ export const migrations = [
     up: migration_20261019_152002_site_socials_x.up,
     down: migration_20261019_152002_site_socials_x.down,
     name: '20261019_152002_site_socials_x'
+  },
+  {
+    up: migration_20261020_120000_documents_r2.up,
+    down: migration_20261020_120000_documents_r2.down,
+    name: '20261020_120000_documents_r2'
   },
 ];

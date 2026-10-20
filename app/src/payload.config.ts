@@ -70,6 +70,17 @@ if (s3Enabled) {
                 [env.S3_PUBLIC_URL, prefix, filename].filter(Boolean).join('/'),
             }
           : true,
+        // Price lists and certificates in the same bucket, under documents/ (client,
+        // 20.10.2026: without this every upload failed on Vercel's read-only disk).
+        documents: {
+          prefix: 'documents',
+          ...(env.S3_PUBLIC_URL
+            ? {
+                generateFileURL: ({ filename, prefix }: { filename: string; prefix?: string }) =>
+                  [env.S3_PUBLIC_URL, prefix, filename].filter(Boolean).join('/'),
+              }
+            : {}),
+        },
       },
       bucket: env.S3_BUCKET!,
       config: {
