@@ -412,3 +412,11 @@ inside `.car-list`; the bottom B2 of Events and Cars Services moved into the mai
 Home, News, Directory, Shopping, Leisure, Cars, Cars Services, Events, Jobs at 375/768/1024/1440.
 Home's "City newsfeed" (with HOME_INFEED_2) shows only with more than 20 stories.
 
+**App, 20.10.2026 — SEO text at the bottom of a section** (`SeoText`, `.seo-text` in
+components.css; texts in Admin → Settings → SEO texts): a hairline 32px under the last block,
+heading 16px under it (24 first; client: "a bit less"), 14px slate text, 16px to the footer
+(`main > .seo-text-wrap` margin-bottom −20; after a section already pulled 20px towards the footer
+— `.section--footer-tight`, `.events-section`, `.cars-list-section`, `.news-list-section`,
+`.home-feed` — the wrap gets padding-top 20 so the gap above stays 32). Only on a section's first
+page without filters. Measured on Home, News, Directory, Events, Jobs, Cars at 375/768/1440.
+
