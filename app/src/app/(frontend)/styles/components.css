@@ -2313,7 +2313,8 @@ main > :is(.section--footer-tight, .events-section, .cars-list-section, .news-li
 
 .seo-text {
   margin-top: var(--space-8);
-  padding-top: var(--space-6);
+  /* черта → заголовок 16 (клиент, 20.10.2026: было 24, «чуть меньше пространства») */
+  padding-top: var(--space-4);
   border-top: 1px solid var(--color-slate-soft);
   font-size: var(--text-xs);
   line-height: 1.6;
