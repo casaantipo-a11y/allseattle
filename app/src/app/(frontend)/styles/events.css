@@ -63,10 +63,13 @@
   padding: var(--card-pad);
 }
 
+/* Рубрика и время — двумя строками (20.10.2026): длинные рубрики («Concerts &
+   Live Music») в одной строке с «· Thu, 8:00 PM» ломались на две колонки с
+   висящей точкой, а заголовки соседних карточек вставали на разной высоте. */
 .event-meta {
   display: flex;
-  gap: var(--space-2);
-  align-items: center;
+  flex-direction: column;
+  gap: 0;
   font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 0.04em;

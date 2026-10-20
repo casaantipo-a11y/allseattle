@@ -23,7 +23,6 @@ export function EventCard({ ev }: { ev: Event }) {
       <div className="event-body">
         <div className="event-meta">
           {cat ? <span className="cat">{cat.name}</span> : null}
-          <span>&middot;</span>
           <span>
             {d.weekday}, {d.time}
           </span>
