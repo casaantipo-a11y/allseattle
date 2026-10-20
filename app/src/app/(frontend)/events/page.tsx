@@ -212,11 +212,12 @@ export default async function EventsPage({ searchParams }: Props) {
                       <EventCard key={e.id} ev={e} />
                     ))}
                   </div>
-                ) : events.length ? (
-                  // Events exist, none for this choice: "No events today" and a way back.
+                ) : events.length || when !== 'all' || category ? (
+                  // Nothing for the chosen period / category: "No events today", "No events this
+                  // weekend"… and a way back — even while no events exist at all (client, 20.10.2026).
                   <EventsNone when={when} category={category?.name} allHref={href('all')} />
                 ) : (
-                  // No events at all: the "Coming soon" card (client, 18.10.2026); the
+                  // "All upcoming" with no events at all: the "Coming soon" card (client, 18.10.2026); the
                   // filters above give its top gap.
                   <EventsSoon />
                 )}
