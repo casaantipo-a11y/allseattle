@@ -83,7 +83,7 @@ gtag('js',new Date());gtag('config','${gaId}');`}
           className="fixed inset-x-0 bottom-0 z-50 border-t border-brand-line bg-white px-4 py-4 shadow-[0_-4px_24px_rgba(13,27,42,0.12)]"
         >
           <div className="mx-auto flex max-w-[1376px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="m-0 text-sm text-brand-slate">
+            <p className="cookie-text m-0 text-sm text-brand-slate">
               We use cookies to understand how the site is used. Analytics load only if you accept.{' '}
               <Link href="/privacy" className="text-brand-navy underline">
                 Privacy Policy
