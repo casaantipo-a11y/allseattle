@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
 import { SeoText } from '@/components/SeoText'
-import { seoDescription } from '@/lib/seo-texts'
+import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { WeatherBoard } from '@/components/weather/WeatherBoard'
 import { getForecast } from '@/lib/forecast'
 
@@ -12,7 +12,7 @@ export const revalidate = 1800
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Seattle weather — today and 7-day forecast',
+    title: await seoTitle('weather', 'Seattle weather — today and 7-day forecast'),
     description: await seoDescription('weather', 'Seattle weather now, hour by hour for today and the 7-day forecast, with UV, wind, humidity, air quality and nearby towns.'),
     alternates: { canonical: '/weather' },
   }

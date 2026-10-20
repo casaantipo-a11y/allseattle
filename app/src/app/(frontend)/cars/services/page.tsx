@@ -4,7 +4,7 @@ import { Fragment } from 'react'
 
 import { AdSlot } from '@/components/AdSlot'
 import { SeoText } from '@/components/SeoText'
-import { seoDescription } from '@/lib/seo-texts'
+import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { ComingSoon } from '@/components/ComingSoon'
 import { DropPanel } from '@/components/DropPanel'
 import { BizRow } from '@/components/business'
@@ -15,7 +15,7 @@ export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Auto services in Seattle',
+    title: await seoTitle('carServices', 'Auto services in Seattle'),
     description: await seoDescription('carServices', 'Seattle car repair, washes, tires, parts, dealerships, rentals and driving schools — the auto businesses of the AllSeattle directory.'),
     alternates: { canonical: '/cars/services' },
   }

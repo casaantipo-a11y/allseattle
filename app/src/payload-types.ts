@@ -2409,6 +2409,10 @@ export interface SeoText {
   id: number;
   home?: {
     /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
     heading?: string | null;
@@ -2422,6 +2426,10 @@ export interface SeoText {
     metaDescription?: string | null;
   };
   news?: {
+    /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
     /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
@@ -2437,6 +2445,10 @@ export interface SeoText {
   };
   directory?: {
     /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
     heading?: string | null;
@@ -2450,6 +2462,10 @@ export interface SeoText {
     metaDescription?: string | null;
   };
   shopping?: {
+    /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
     /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
@@ -2465,6 +2481,10 @@ export interface SeoText {
   };
   leisure?: {
     /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
     heading?: string | null;
@@ -2478,6 +2498,10 @@ export interface SeoText {
     metaDescription?: string | null;
   };
   events?: {
+    /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
     /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
@@ -2493,6 +2517,10 @@ export interface SeoText {
   };
   jobs?: {
     /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
     heading?: string | null;
@@ -2506,6 +2534,10 @@ export interface SeoText {
     metaDescription?: string | null;
   };
   cars?: {
+    /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
     /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
@@ -2521,6 +2553,10 @@ export interface SeoText {
   };
   carServices?: {
     /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
     heading?: string | null;
@@ -2535,6 +2571,10 @@ export interface SeoText {
   };
   weather?: {
     /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
     heading?: string | null;
@@ -2548,6 +2588,28 @@ export interface SeoText {
     metaDescription?: string | null;
   };
   map?: {
+    /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
+    /**
+     * The text block’s heading, e.g. "Seattle local news on AllSeattle".
+     */
+    heading?: string | null;
+    /**
+     * Shown at the bottom of the section. An empty line starts a new paragraph. Leave empty to show nothing.
+     */
+    body?: string | null;
+    /**
+     * Optional: the line Google shows under the link (about 150 characters). Empty — the first sentence of the text.
+     */
+    metaDescription?: string | null;
+  };
+  advertise?: {
+    /**
+     * Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.
+     */
+    metaTitle?: string | null;
     /**
      * The text block’s heading, e.g. "Seattle local news on AllSeattle".
      */
@@ -2656,6 +2718,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   home?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2663,6 +2726,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   news?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2670,6 +2734,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   directory?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2677,6 +2742,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   shopping?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2684,6 +2750,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   leisure?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2691,6 +2758,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   events?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2698,6 +2766,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   jobs?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2705,6 +2774,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   cars?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2712,6 +2782,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   carServices?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2719,6 +2790,7 @@ export interface SeoTextsSelect<T extends boolean = true> {
   weather?:
     | T
     | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;
@@ -2726,6 +2798,15 @@ export interface SeoTextsSelect<T extends boolean = true> {
   map?:
     | T
     | {
+        metaTitle?: T;
+        heading?: T;
+        body?: T;
+        metaDescription?: T;
+      };
+  advertise?:
+    | T
+    | {
+        metaTitle?: T;
         heading?: T;
         body?: T;
         metaDescription?: T;

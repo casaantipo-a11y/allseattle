@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+
 import type { SeoSection } from '@/globals/SeoTexts'
 
 import { getSeoTexts } from './queries'
@@ -26,3 +28,11 @@ export async function seoDescription(section: SeoSection, fallback: string): Pro
   const first = (t?.body ?? '').trim().split(/(?<=[.!?])\s+/)[0]?.replace(/\s+/g, ' ').trim()
   return first || fallback
 }
+
+/** The page title: the client's SEO title as typed (without the site-name template — it carries
+ *  its own "| AllSeattle.org"), else the page's own `fallback`. */
+export async function seoTitle(section: SeoSection, fallback: Metadata['title']): Promise<Metadata['title']> {
+  const typed = (await getSeoTexts())[section]?.metaTitle?.trim()
+  return typed ? { absolute: typed } : fallback
+}
+

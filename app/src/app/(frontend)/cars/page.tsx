@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { AdSlot } from '@/components/AdSlot'
 import { SeoText } from '@/components/SeoText'
-import { seoDescription } from '@/lib/seo-texts'
+import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { CarsCatalog } from '@/components/cars/CarsCatalog'
 import { toCarItem } from '@/lib/cars'
 import { getCars } from '@/lib/queries-phase3'
@@ -12,7 +12,7 @@ export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Cars for sale in Seattle',
+    title: await seoTitle('cars', 'Cars for sale in Seattle'),
     description: await seoDescription('cars', 'Used cars for sale in Seattle from local sellers and dealers: search by make, model, price and year.'),
     alternates: { canonical: '/cars' },
   }

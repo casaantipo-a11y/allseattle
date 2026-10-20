@@ -3,12 +3,14 @@ import type { Metadata } from 'next'
 import { RichText } from '@/components/RichText'
 import { ContactEmail } from '@/components/ContactEmail'
 import { PlacementPrices } from '@/components/PlacementPrices'
+import { SeoText } from '@/components/SeoText'
 import { SubmissionForm } from '@/components/SubmissionForm'
 import { reservedSlotCodes } from '@/lib/ad-billing'
 import { getAdSlots, getBannerPool, isBooked } from '@/lib/banners'
 import { ANIMATED_BANNER_PRICE, ARTICLE_PRICES, BANNER_SIZES, TAX_NOTE } from '@/lib/ad-placements'
 import { badgeFor, priceText } from '@/lib/business'
 import { getPackages, getPage } from '@/lib/queries'
+import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { stripeEnabled } from '@/lib/stripe'
 import type { Package } from '@/payload-types'
 
@@ -39,11 +41,15 @@ const POSITION_LABEL: Record<string, string> = {
   'in-feed': 'In the feed',
 }
 
-export const metadata: Metadata = {
-  title: 'Advertise on AllSeattle',
-  description:
-    'Placement packages for Seattle businesses: directory listing, city map, promotions, products and a branded page.',
-  alternates: { canonical: '/advertise' },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: await seoTitle('advertise', 'Advertise on AllSeattle'),
+    description: await seoDescription(
+      'advertise',
+      'Placement packages for Seattle businesses: directory listing, city map, promotions, products and a branded page.',
+    ),
+    alternates: { canonical: '/advertise' },
+  }
 }
 
 const ROWS: { label: string; value: (p: Package) => boolean | number }[] = [
@@ -320,6 +326,7 @@ export default async function AdvertisePage({ searchParams }: Props) {
           </div>
         </div>
       </section>
+      <SeoText section="advertise" />
     </main>
   )
 }

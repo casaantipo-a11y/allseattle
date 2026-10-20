@@ -6,7 +6,9 @@ import { revalidateGlobal } from '../hooks/revalidate'
 // The client's SEO texts (AllSeattle_SEO_Texts_English.txt): one per section, shown at the
 // bottom of the section's first page, above the footer, in a quiet small type (client,
 // 20.10.2026: "at the bottom, so the phone picture isn't broken"). The first sentence of the
-// text is the section's Google description unless one is typed here.
+// text is the section's Google description unless one is typed here; an SEO title replaces the
+// page's own title (client, 20.10.2026: titles and H1s came with the second batch — the H1 is the
+// block's heading, the page's own big heading stays).
 export const SEO_SECTIONS = [
   { key: 'home', label: 'Home' },
   { key: 'news', label: 'News' },
@@ -19,11 +21,20 @@ export const SEO_SECTIONS = [
   { key: 'carServices', label: 'Cars — Services' },
   { key: 'weather', label: 'Weather' },
   { key: 'map', label: 'City Map' },
+  { key: 'advertise', label: 'Advertising' },
 ] as const
 
 export type SeoSection = (typeof SEO_SECTIONS)[number]['key']
 
 const sectionFields = (): Field[] => [
+  {
+    name: 'metaTitle',
+    type: 'text',
+    label: 'SEO title',
+    admin: {
+      description: 'Optional: the page title in Google and the browser tab, e.g. "Shopping in Seattle | Local Shops and Businesses". Empty — the site’s own title.',
+    },
+  },
   { name: 'heading', type: 'text', admin: { description: 'The text block’s heading, e.g. "Seattle local news on AllSeattle".' } },
   {
     name: 'body',

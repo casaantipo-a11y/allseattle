@@ -17,6 +17,7 @@ import * as migration_20261014_174433_stage3_merge_client from './20261014_17443
 import * as migration_20261019_152002_site_socials_x from './20261019_152002_site_socials_x';
 import * as migration_20261020_120000_documents_r2 from './20261020_120000_documents_r2';
 import * as migration_20261020_162638_seo_texts from './20261020_162638_seo_texts';
+import * as migration_20261020_170551_seo_titles_advertise from './20261020_170551_seo_titles_advertise';
 
 export const migrations = [
   {
@@ -112,6 +113,11 @@ export const migrations = [
   {
     up: migration_20261020_162638_seo_texts.up,
     down: migration_20261020_162638_seo_texts.down,
-    name: '20261020_162638_seo_texts'
+    name: '20261020_162638_seo_texts',
+  },
+  {
+    up: migration_20261020_170551_seo_titles_advertise.up,
+    down: migration_20261020_170551_seo_titles_advertise.down,
+    name: '20261020_170551_seo_titles_advertise'
   },
 ];

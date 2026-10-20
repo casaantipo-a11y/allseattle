@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { AdSlot } from '@/components/AdSlot'
 import { SeoText } from '@/components/SeoText'
-import { seoDescription } from '@/lib/seo-texts'
+import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { JobsBoard } from '@/components/jobs/JobsBoard'
 import { toJobItem } from '@/lib/jobs'
 import { getJobs } from '@/lib/queries-phase3'
@@ -11,7 +11,7 @@ export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Jobs in Seattle',
+    title: await seoTitle('jobs', 'Jobs in Seattle'),
     description: await seoDescription('jobs', 'Job openings from Seattle businesses: hospitality, tech, healthcare, retail, trades and more.'),
     alternates: { canonical: '/jobs' },
   }

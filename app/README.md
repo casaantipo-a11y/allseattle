@@ -189,6 +189,11 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   Jobs, Cars (headings ours; the About text was already the About page). Migration
   `20261020_162638_seo_texts` (the generator's R2-column drops removed by hand — see the trap in
   CLAUDE.md).
+  Second batch (same day): an optional **SEO title** per section (`metaTitle` → the page title,
+  `{ absolute }`, without the "| AllSeattle" template — the client's titles carry their own) and an
+  **Advertising** tab (block at the bottom of /advertise). Filled for Advertising, Shopping,
+  Leisure, Weather, City Map; the client's H1 is the block's heading, the pages' own headings stay.
+  Migration `20261020_170551_seo_titles_advertise`.
 - **Documents in R2 (20.10.2026).** Price lists and certificates (`documents`) are stored in R2
   under `documents/`, like Media. Before, the storage plugin covered Media only, so on Vercel
   every document upload failed (500: the file went to the read-only disk). Migration

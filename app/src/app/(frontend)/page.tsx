@@ -8,7 +8,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { FreshCars, JobsWidget, StatsWidget, UpcomingEvents } from '@/components/home'
 import { NewsListRow, NewsTile, TopNewsWidget } from '@/components/news'
 import { getNewsPage, getSiteSettings, getTopNews } from '@/lib/queries'
-import { seoDescription } from '@/lib/seo-texts'
+import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { getCars, getJobs, getSiteStats, getUpcomingEvents } from '@/lib/queries-phase3'
 import { absoluteUrl } from '@/lib/site'
 
@@ -38,7 +38,8 @@ const INLINE_AFTER = new Map([
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
   const description = await seoDescription('home', settings.description || '')
-  return description ? { description } : {}
+  const title = await seoTitle('home', undefined)
+  return { ...(description ? { description } : {}), ...(title ? { title } : {}) }
 }
 
 export default async function HomePage() {
