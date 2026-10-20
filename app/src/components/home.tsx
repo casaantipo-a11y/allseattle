@@ -24,9 +24,10 @@ export function StatsWidget({ stats }: { stats: { businesses: Stat; cars: Stat; 
       <div className="widget-body">
         <div className="stat-grid">
           {tiles.map(([label, s, href]) => {
-            // Events say "Soon" instead of a 0 — while the section is closed (lib/events.ts) or
-            // has no events yet (client, 18.10.2026); the tile keeps its place in the 2×2 grid.
-            const soon = href === '/events' && (EVENTS_COMING_SOON || !s.total)
+            // "Soon" instead of a 0 — Events while the section is closed (lib/events.ts) or empty
+            // (client, 18.10.2026), and since 20.10.2026 any tile with nothing in it yet (the demo
+            // businesses and jobs were deleted); the tile keeps its place in the 2×2 grid.
+            const soon = (href === '/events' && EVENTS_COMING_SOON) || !s.total
             return (
               <Link key={label} href={href} className="stat-tile no-underline">
                 <span className="num">{soon ? 'Soon' : s.total.toLocaleString('en-US')}</span>
@@ -49,6 +50,8 @@ export function JobsWidget({ jobs }: { jobs: Job[] }) {
     <div className="widget">
       <div className="widget-head">Job board</div>
       <div className="widget-body job-mini">
+        {/* No openings yet: one line instead of an empty list (client, 20.10.2026). */}
+        {latest.length ? null : <p className="muted">Job openings are coming soon.</p>}
         <ul className="job-mini-list">
           {latest.map((j) => (
             <li key={j.id}>
@@ -62,8 +65,8 @@ export function JobsWidget({ jobs }: { jobs: Job[] }) {
             </li>
           ))}
         </ul>
-        <Link href="/jobs" className="job-mini-all">
-          All jobs &rarr;
+        <Link href={latest.length ? '/jobs' : '/account/listings/new?type=job'} className="job-mini-all">
+          {latest.length ? 'All jobs' : 'Post a job'} &rarr;
         </Link>
       </div>
     </div>

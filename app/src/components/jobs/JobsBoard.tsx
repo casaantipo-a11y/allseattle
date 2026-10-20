@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { type ReactNode, useMemo, useState } from 'react'
+
+import { ComingSoon } from '@/components/ComingSoon'
 
 // The prototype's job board (jobs.html + js/pages/jobs.js, css: styles/jobs.css)
 // on real data: the work.ua-style filter column with counters, sort, and dense
@@ -116,7 +118,7 @@ const SORTS = [
   ['company', 'Company A–Z', 'A–Z'],
 ] as const
 
-export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initialQuery?: string }) {
+export function JobsBoard({ jobs, initialQuery = '', bottomAd }: { jobs: JobItem[]; initialQuery?: string; bottomAd?: ReactNode }) {
   const [s, setS] = useState<State>({ ...EMPTY, query: initialQuery })
   const [open, setOpen] = useState(false)
   // Below 1024 every filter group folds under its title (client, 19.10.2026: the open
@@ -419,8 +421,18 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
                   </div>
                 </article>
               ))
-            ) : (
+            ) : jobs.length ? (
               <p className="muted">No openings match those filters. Try widening your search.</p>
+            ) : (
+              // No openings at all: the "Coming soon" card like the other sections (client, 20.10.2026).
+              <ComingSoon
+                icon="briefcase"
+                title="Seattle jobs are on their way"
+                text="Openings from local businesses — full-time, part-time and gigs, with the pay shown up front."
+                lead="Hiring?"
+                linkLabel="Post a job"
+                href="/account/listings/new?type=job"
+              />
             )}
           </div>
           {found.length > shown ? (
@@ -430,6 +442,7 @@ export function JobsBoard({ jobs, initialQuery = '' }: { jobs: JobItem[]; initia
               </button>
             </div>
           ) : null}
+          {bottomAd}
         </div>
       </div>
     </>

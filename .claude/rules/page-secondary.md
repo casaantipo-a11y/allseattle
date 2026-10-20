@@ -386,4 +386,10 @@ a "See all upcoming events" button; "Coming soon" only when there are no events 
 "Hosting one? Tell us about it." is its own line in both cards (`HostingLine`, link nowrap).
 Event cards: category and time on two lines (long categories broke the row). Six sample events
 exist **locally only** (isDemo).
+20.10.2026: all jobs deleted (production: 14 demo). **Jobs** with no openings shows the shared
+"Coming soon" card ("Seattle jobs are on their way", Hiring? Post a job) centred on the card width
+like the sort row; JOBS_INFEED_1 moved into the jobs column (`bottomAd` prop of JobsBoard), 16px
+under the list / card and centred on the cards — under the whole layout it dropped below the taller
+Filters column. Home's Job board widget says "Job openings are coming soon." with "Post a job →";
+"At a glance" shows "Soon" for any tile with 0 (was Events only).
 
