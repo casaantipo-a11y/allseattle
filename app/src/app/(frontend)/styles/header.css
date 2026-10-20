@@ -87,7 +87,6 @@
   font-size: var(--text-xs);
   color: var(--color-navy);
   white-space: nowrap;
-  border-bottom: 3px solid transparent;
 }
 
 .nav-icon {
@@ -125,9 +124,25 @@
   color: var(--color-accent);
 }
 
-.nav-links li a.active,
-.nav-secondary li a.active {
-  border-bottom-color: var(--color-accent);
+/* Выбранный пункт — мягкая розовая плашка вместо красной черты под ним (клиент,
+   20.10.2026, вариант 2 из четырёх: черта «выглядит не очень»). Плашка — отдельный
+   слой позади ссылки (::before), а не поля самой ссылки: ширина ряда, центровка и
+   промежутки между пунктами не меняются. Высота 36 из 44 (по 4 сверху и снизу); за
+   края слова она выходит на 12px — между ссылками в одном ряду до 1024 их 28. */
+.nav-links li a,
+.nav-secondary li a {
+  position: relative;
+  isolation: isolate;
+}
+
+.nav-links li a.active::before,
+.nav-secondary li a.active::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: var(--space-1) calc(-1 * var(--space-3));
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
 }
 
 /* Подразделы пункта меню — «Cars  Services». 18.10.2026 клиент убрал
@@ -432,7 +447,17 @@
     padding: 0 var(--space-1);
     font-weight: 600;
     color: #a7b1bd;
-    border-bottom: none;
+  }
+
+  /* Второй ряд — мелкий серый: выбранный в нём только красный, без плашки. */
+  .nav-secondary li a.active::before {
+    content: none;
+  }
+
+  /* На 1024–1439 между пунктами верхнего ряда 12px, а шапке некуда расти (на 1024
+     логотип → меню и меню → кнопки по 25px): плашка выходит за слово на 6px. */
+  .nav-links li a.active::before {
+    inset: var(--space-1) calc(-1 * (var(--space-1) + 2px));
   }
 
   .nav-secondary li a:hover,
@@ -501,5 +526,24 @@
   .header-top .header-utils,
   .header-top .lang-switch {
     translate: none;
+  }
+}
+
+/* С 1440 места в шапке хватает (меню → кнопки ≈140px): пункты верхнего ряда
+   раздвинуты, как до 07.10.2026 (поля по 12, 28px между соседними), — плашка
+   выбранного выходит за слово на 12px, и до соседа остаётся 13 (клиент,
+   20.10.2026). Ряд шире второго; оба по центру. На 1280 так не входит: с
+   «Add your business» до кнопок оставалось 9px. */
+@media (min-width: 1440px) {
+  .nav-links li a {
+    margin: 0 var(--space-3);
+  }
+
+  .nav-links li a:has(> .nav-icon) {
+    margin-right: calc(var(--space-3) - 3px);
+  }
+
+  .nav-links li a.active::before {
+    inset: var(--space-1) calc(-1 * var(--space-3));
   }
 }

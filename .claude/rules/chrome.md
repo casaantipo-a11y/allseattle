@@ -338,8 +338,13 @@ migration `20261019_152002_site_socials_x`; icon `SOCIAL_ICONS.x`, drawn at 85% 
 its box). Desktop "Follow us" lists Facebook / Instagram / X (3 rows, as tall as Explore; 201px at
 1440). Below 1280 the socials left the contact line for a row of their own under it
 (`.fc-social`, always one row, fits 320) — in the contact line X wrapped alone on tablets.
-**Header active underline (19.10.2026):** the client dislikes the red line; four variants were
-shown (thin text underline, soft pill, colour only, short centred dash) — waiting for the pick.
+**Header active item (20.10.2026, client picked variant 2 of four):** no red underline any more —
+a soft pink pill (`::before` behind the link, `color-mix` 9% accent, radius full, 36 of 44px tall),
+so the row's width and centring don't change. It reaches 12px past the word below 1024 (scroller,
+28px between items) and from 1440, where the top row's items are spread to 12px margins (28px
+apart; the row is wider than the second, both centred); at 1024–1439 only 6px — the header has no
+room to grow there (1024: logo → menu and menu → buttons 25px each; at 1280 the spread row came 9px
+from "Add your business"). From 1024 the grey second row marks its active item by colour only.
 **Cookie banner, 20.10.2026 (client picked variant C of three):** a floating white card, 16px from
 the bottom and the sides, up to 1000px wide, centred, radius 16, soft shadow; text left and the
 buttons right in one row from 640 (text centred on the buttons — base.css paragraph margin removed
