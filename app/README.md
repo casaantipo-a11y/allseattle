@@ -179,6 +179,12 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   Deletes the cars and jobs (with photos) and businesses that never went live (with their
   promotions and products); published businesses and banners stay with the owner cleared,
   for the team to decide. Signs out, emails a confirmation, notifies the team.
+- **Documents in R2 (20.10.2026).** Price lists and certificates (`documents`) are stored in R2
+  under `documents/`, like Media. Before, the storage plugin covered Media only, so on Vercel
+  every document upload failed (500: the file went to the read-only disk). Migration
+  `20261020_120000_documents_r2` adds the plugin's `_objectkey` and `prefix` columns (written by
+  hand with IF NOT EXISTS — locally the plugin is off, so `migrate:create` never sees them).
+  Checked on production: JPG/PNG/PDF upload, the R2 link opens, delete.
 
 ## Local development
 
