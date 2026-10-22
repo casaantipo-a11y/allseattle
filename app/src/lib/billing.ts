@@ -54,7 +54,7 @@ export async function stripeCustomerFor(customer: Customer) {
   const c = await stripe<{ id: string }>(
     'POST',
     '/customers',
-    { email: customer.email, name: customer.name, phone: customer.phone ?? undefined, metadata: { customerId: customer.id } },
+    { email: customer.email, name: customer.name, phone: customer.phone ?? undefined, preferred_locales: ['en'], metadata: { customerId: customer.id } },
     `customer-${customer.id}`,
   )
   const payload = await payloadClient()
@@ -79,6 +79,8 @@ export async function startPackageCheckout(customer: Customer, bizId: number, pa
   try {
     const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
       mode: 'subscription',
+      // English like the site (client, 22.10.2026: a Russian browser got Stripe's page in Russian).
+      locale: 'en',
       ...managedPaymentsParams(),
       ...automaticTaxParams(),
       customer: await stripeCustomerFor(customer),
@@ -117,6 +119,7 @@ export async function openBillingPortal(customer: Customer, returnPath: string):
     const s = await stripe<{ url: string }>('POST', '/billing_portal/sessions', {
       customer: customer.stripeCustomerId,
       configuration: portalConfiguration(),
+      locale: 'en',
       return_url: absoluteUrl(returnPath),
     })
     return { ok: true, id: customer.id, message: 'Opening billing…', url: s.url }

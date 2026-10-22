@@ -86,6 +86,8 @@ export async function startAdCheckout(customer: Customer, fd: FormData): Promise
   try {
     const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
       mode: 'subscription',
+      // English like the site (client, 22.10.2026: a Russian browser got Stripe's page in Russian).
+      locale: 'en',
       ...managedPaymentsParams(),
       ...automaticTaxParams(),
       customer: await stripeCustomerFor(customer),
