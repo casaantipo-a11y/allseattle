@@ -2351,9 +2351,11 @@ main > :is(.section--footer-tight, .events-section, .cars-list-section, .news-li
 
 .media-frame img {
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   height: auto;
   max-height: min(520px, 70vh);
+  /* Ширина колонки, высота по пропорциям, но не выше 520: картинка вписывается целиком.
+     Маленькая (у клиента была 224×165) растягивается до рамки, а не остаётся марочкой. */
+  object-fit: contain;
 }
 
