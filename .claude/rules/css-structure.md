@@ -420,3 +420,9 @@ heading 16px under it (24 first; client: "a bit less"), 14px slate text, 16px to
 `.home-feed` — the wrap gets padding-top 20 so the gap above stays 32). Only on a section's first
 page without filters. Measured on Home, News, Directory, Events, Jobs, Cars at 375/768/1440.
 
+**App, 22.10.2026 — main photo of an event / news article (`.media-frame` in components.css):**
+a square poster filled the screen. Of four variants the client picked "compact, left-aligned, no
+frame", a bit larger: from 640 the photo is 380px tall, width by its ratio, never wider than the
+column (`object-fit: contain`, so a small upload — the client's was 224×165 — is scaled up, not left
+as a stamp); on phones full width, max 70vh. Never cropped (posters carry text).
+
