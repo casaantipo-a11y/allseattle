@@ -110,13 +110,14 @@ export default async function ArticlePage({ params }: Props) {
               {cover ? (
                 <figure className="mx-0 mb-6 mt-0">
                   {/* eslint-disable-next-line @next/next/no-img-element -- Payload already serves a 1600px WebP rendition */}
-                  <img
-                    src={cover}
-                    alt={mediaAlt(article.cover, article.title)}
-                    className="block h-auto w-full rounded-lg"
-                    width={typeof article.cover === 'object' ? (article.cover?.sizes?.hero?.width ?? undefined) : undefined}
-                    height={typeof article.cover === 'object' ? (article.cover?.sizes?.hero?.height ?? undefined) : undefined}
-                  />
+                  <div className="media-frame">
+                    <img
+                      src={cover}
+                      alt={mediaAlt(article.cover, article.title)}
+                      width={typeof article.cover === 'object' ? (article.cover?.sizes?.hero?.width ?? undefined) : undefined}
+                      height={typeof article.cover === 'object' ? (article.cover?.sizes?.hero?.height ?? undefined) : undefined}
+                    />
+                  </div>
                   {typeof article.cover === 'object' && article.cover?.credit ? (
                     <figcaption className="mt-2 text-xs text-brand-slate">{article.cover.credit}</figcaption>
                   ) : null}

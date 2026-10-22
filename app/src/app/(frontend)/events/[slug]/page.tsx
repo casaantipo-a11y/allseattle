@@ -66,7 +66,9 @@ export default async function EventPage({ params }: Props) {
             <article className="min-w-0">
               {img ? (
                 // eslint-disable-next-line @next/next/no-img-element -- Payload rendition
-                <img src={img} alt={mediaAlt(ev.image, ev.title)} className="mb-6 block h-auto w-full rounded-lg" />
+                <div className="media-frame mb-6">
+                  <img src={img} alt={mediaAlt(ev.image, ev.title)} />
+                </div>
               ) : null}
               {/* Full photo width and one step larger (client, 04.10.2026), see .event-desc. */}
               <div className="event-desc">{ev.description ? <RichText data={ev.description} /> : ev.summary ? <p>{ev.summary}</p> : null}</div>

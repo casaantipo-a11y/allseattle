@@ -2336,3 +2336,24 @@ main > :is(.section--footer-tight, .events-section, .cars-list-section, .news-li
   margin-bottom: 0;
 }
 
+/* ---------- Главное фото события и новости (.media-frame) ----------
+   Клиент, 22.10.2026: квадратная афиша шла на всю ширину колонки и занимала весь экран.
+   Фото не выше 520px и 70% высоты окна; горизонтальное фото как было — на всю ширину (оно и
+   так ниже); квадратное и вертикальное — целиком, без обрезки (на афише бывает текст), по
+   центру на мягком фоне рамки. */
+.media-frame {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-soft);
+}
+
+.media-frame img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(520px, 70vh);
+}
+
