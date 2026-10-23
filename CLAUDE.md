@@ -99,7 +99,7 @@ When a request carries no tag, work the scope out from the request itself, as be
 
 ## Environment & deploy
 
-The working copy lives at `D:\allseattle`. The repo is
+The working copy lives at `D:\Dashulya\allseattle`. The repo is
 **`github.com/casaantipo-a11y/allseattle`** (public), served by GitHub Pages from `main` at
 <https://casaantipo-a11y.github.io/allseattle/>.
 

@@ -60,6 +60,36 @@ config. Verify UI by running it (no test suite) — see `../.claude/rules/layout
   `start-server.js` keeps port 3000 after the parent stops), `git checkout --` both files, deploy,
   then restart dev. Never commit those local regenerations.
 - Neon schema changes go through migrations only (`push` runs against a local DB only).
+- After `vercel deploy` the CLI may print `Error: spawn EPERM` — that is its telemetry, not the
+  deploy. Confirm with `npx vercel inspect <deployment url>` → `Ready`.
+
+## Traps met in practice
+
+- **Page CSS beats components.css even where you don't expect it.** Page files wrap their rules
+  in `[data-page="…"] { … }` (one extra attribute of specificity) and load after
+  `components.css`, so a shared rule there loses to the page's own rule of the same shape (e.g.
+  `[data-page] .auto-rail { display: flex }`). Give the shared rule more weight (`main aside:is(…)`)
+  or change the page file. Inside one file a later base rule overrides an earlier `@media` block
+  of equal specificity — a phone-only base rule goes *before* the breakpoint blocks.
+- **Phones and tablets (below 1024) have their own arrangement of the side columns**:
+  navigation becomes a "Category: … ▾" button above the list (`DropPanel.tsx`), widgets and the
+  columns' banners are rendered a second time inside the feed. The column copy sits in
+  `.from-1024`, the feed copy in `.below-1024` (components.css); ad placements stay the same,
+  only their position differs. Details: `../.claude/rules/css-structure.md` (19.10.2026).
+- **The footer below 1280 is separate markup** — `.footer-compact` in `SiteFooter.tsx`; the
+  desktop `.footer-inner` / `.footer-meta-bar` are hidden there. Change both when footer content
+  changes.
+- **`pnpm dev` sometimes misses an edit to a plain constant** (e.g. `EVENTS_COMING_SOON` in
+  `lib/events.ts`) and keeps serving the old value — restart the dev server before concluding a
+  change "doesn't work".
+- **Content that is CMS data, not code**: the header menu (Header global, incl. `subLinks`),
+  site settings (contacts, socials), the About / Contact / Terms / Privacy pages, event and other
+  categories. Change them in the admin or through the REST API as an admin user, locally and on
+  production separately — the seed only fills a fresh database.
+- **Site accounts (`customers`) can't be created through REST, even as admin (403).** Sign up
+  through `/account/register` (Turnstile test keys locally); an admin may then set `_verified`.
+- Admin language: English by default, Russian per user; in Russian the `validation` and `error`
+  translation groups are taken from English (client's request, `payload.config.ts`).
 
 <!-- BEGIN:nextjs-agent-rules -->
 

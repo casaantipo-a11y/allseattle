@@ -2301,7 +2301,7 @@ export interface SiteSetting {
     x?: string | null;
   };
   /**
-   * G-XXXXXXX. Loaded only after a visitor accepts cookies.
+   * From Google Analytics: Admin → Data streams → your web stream → "Measurement ID" (starts with G-). Paste only the ID, not the whole code. Analytics loads only for visitors who accept cookies.
    */
   ga4MeasurementId?: string | null;
   /**
