@@ -65,8 +65,8 @@ export default async function EventPage({ params }: Props) {
           <div className="grid items-start gap-[var(--grid-gap)] lg:grid-cols-[minmax(0,1fr)_300px]">
             <article className="min-w-0">
               {img ? (
-                // eslint-disable-next-line @next/next/no-img-element -- Payload rendition
                 <div className="media-frame mb-6">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Payload rendition */}
                   <img src={img} alt={mediaAlt(ev.image, ev.title)} />
                 </div>
               ) : null}

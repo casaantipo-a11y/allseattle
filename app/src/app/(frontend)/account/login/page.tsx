@@ -30,6 +30,13 @@ export default async function LoginPage({ searchParams }: Props) {
         </>
       }
     >
+      {/* Sent here on the way back from Stripe (signed out meanwhile): say the payment went
+          through before asking to log in (client, 22.10.2026). */}
+      {/[?&]paid=1(&|$)/.test(next) ? (
+        <div className="success-panel mb-6" role="status">
+          <div>Payment received ✓ Thank you! Log in to see it in your account.</div>
+        </div>
+      ) : null}
       <AccountForm mode="login" next={next} />
     </AccountShell>
   )

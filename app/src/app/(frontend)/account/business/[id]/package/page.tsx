@@ -32,12 +32,15 @@ const STATUS: Record<string, string> = {
 export default async function BusinessPackagePage({ params, searchParams }: Props) {
   const { id } = await params
   if (!/^\d+$/.test(id)) notFound()
+  const paid = (await searchParams).paid === '1'
   const me = await getCustomer()
-  if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/business/${id}/package`)}`)
+  // Back from Stripe but signed out (e.g. an admin tab in the same browser took over the shared
+  // login cookie): keep ?paid=1, so the login page says the payment went through (client,
+  // 22.10.2026: "it threw me out, looks like a scam").
+  if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/business/${id}/package${paid ? '?paid=1' : ''}`)}`)
   const [mine, packages] = await Promise.all([myBusiness(me, Number(id)), getPackages()])
   if (!mine) notFound()
   const { biz } = mine
-  const paid = (await searchParams).paid === '1'
   const now = effectivePackage({ package: biz.package as Package | null, packageExpiresAt: biz.packageExpiresAt })
   const sub = biz.subscriptionStatus
   const subscribed = sub === 'active' || sub === 'canceling' || sub === 'past_due'
@@ -57,9 +60,13 @@ export default async function BusinessPackagePage({ params, searchParams }: Prop
         </>
       }
     >
-      {paid && !subscribed ? (
+      {paid ? (
         <div className="success-panel mb-6" role="status">
-          <div>Payment received — thank you! The package turns on within a minute; refresh this page to see it.</div>
+          <div>
+            {subscribed
+              ? 'Payment received — thank you! Your package is active.'
+              : 'Payment received — thank you! The package turns on within a minute; refresh this page to see it.'}
+          </div>
         </div>
       ) : null}
 

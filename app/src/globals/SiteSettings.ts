@@ -55,8 +55,11 @@ export const SiteSettings: GlobalConfig = {
             {
               name: 'ga4MeasurementId',
               type: 'text',
+              // A readable label (client, 23.10.2026: couldn't find where Google Analytics goes).
+              label: 'Google Analytics — Measurement ID',
               admin: {
-                description: 'G-XXXXXXX. Loaded only after a visitor accepts cookies.',
+                description:
+                  'From Google Analytics: Admin → Data streams → your web stream → "Measurement ID" (starts with G-). Paste only the ID, not the whole code. Analytics loads only for visitors who accept cookies.',
               },
             },
             {

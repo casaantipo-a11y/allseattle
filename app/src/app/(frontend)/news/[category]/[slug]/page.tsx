@@ -109,8 +109,8 @@ export default async function ArticlePage({ params }: Props) {
               </p>
               {cover ? (
                 <figure className="mx-0 mb-6 mt-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- Payload already serves a 1600px WebP rendition */}
                   <div className="media-frame">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- Payload already serves a 1600px WebP rendition */}
                     <img
                       src={cover}
                       alt={mediaAlt(article.cover, article.title)}

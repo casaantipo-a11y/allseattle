@@ -27,10 +27,11 @@ function stateOf(b: Banner, now = new Date()) {
 // "My ads" (stage 3, step 5): banner places the account bought online — status,
 // impressions and clicks, the picture upload and billing.
 export default async function MyAdsPage({ searchParams }: Props) {
-  const me = await getCustomer()
-  if (!me) redirect(`/account/login?next=${encodeURIComponent('/account/ads')}`)
-  const ads = await myAds(me.id)
   const paid = (await searchParams).paid === '1'
+  const me = await getCustomer()
+  // Keep ?paid=1 through the login page (see the package page).
+  if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/ads${paid ? '?paid=1' : ''}`)}`)
+  const ads = await myAds(me.id)
 
   return (
     <AccountShell
