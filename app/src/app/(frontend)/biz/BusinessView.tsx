@@ -139,7 +139,9 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
   ])
   const jobs = allJobs.filter((j) => (typeof j.business === 'object' ? j.business?.id : j.business) === biz.id)
 
-  const photos = (biz.gallery ?? []).filter(isObj<Media>)
+  // A free card (no package in force) shows one photo and the description; the rest of the
+  // gallery is what a package buys (client, 24.10.2026).
+  const photos = (biz.gallery ?? []).filter(isObj<Media>).slice(0, pkg ? undefined : 1)
   const priceLists = (biz.priceLists ?? []).filter(isObj<Document>)
   const certificates = (biz.certificates ?? []).filter(isObj<Document>)
   const categories = (biz.categories ?? []).filter((c) => typeof c === 'object')
