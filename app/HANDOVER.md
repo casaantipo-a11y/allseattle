@@ -141,9 +141,11 @@ cd app && npx vercel deploy --prod --yes          # нужен вход в Verce
 
 ## Что сейчас открыто
 
-- **Поддомены компаний** (`starbucks.allseattle.org`): код и Vercel готовы
-  (`ENABLE_SUBDOMAINS`, `*.allseattle.org`, все DNS-записи перенесены в зону Vercel). Ждём, пока
-  заказчик переключит nameservers в Namecheap на `ns1.vercel-dns.com` / `ns2.vercel-dns.com`.
+- **Поддомены компаний** (`имя.allseattle.org`) работают с 24.10.2026: DNS домена на Vercel
+  (заказчик переключил nameservers 23.10), сертификат `*.allseattle.org` выпущен,
+  `ENABLE_SUBDOMAINS` / `ROOT_DOMAIN` включены. Поддомен задаётся полем Subdomain у компании с
+  пакетом Luxury или Premium. DNS-записи почты (Resend: `send`, `resend._domainkey`, `_dmarc`)
+  и подтверждение Search Console живут теперь в DNS-зоне Vercel — не удалять.
 - **Google Analytics**: ждём от заказчика Measurement ID (`G-…`) → Settings → Site settings.
 - **Разовая оплата пакета на 1/3/6/12 месяцев** без автопродления — предложена заказчику как
   отдельная доработка, не начата.
