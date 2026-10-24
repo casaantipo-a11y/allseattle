@@ -1118,6 +1118,12 @@
   }
 }
 
+/* Бесплатная строка — только название и телефон, без картинки (клиент, 24.10.2026):
+   одна колонка на всех ширинах. Два класса — чтобы перебить правило 768 выше. */
+.biz-row.biz-row--free {
+  grid-template-columns: 1fr;
+}
+
 /* ---------- Modal (share-news, choose-package, contact-seller) ---------- */
 .modal-overlay {
   position: fixed;

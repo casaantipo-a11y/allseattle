@@ -127,8 +127,51 @@ function Widget({ title, children, center = false }: { title?: string; children:
 const catHref = (c: { section?: string | null; slug?: string | null }) =>
   `/${c.section === 'directory' || !c.section ? 'directory' : c.section}/${c.slug}`
 
+/** A free listing's page: the name and the phone only, no logo, photos, description or
+ *  links of the business (client, 24.10.2026). Kept out of search engines (page.tsx). */
+function FreeBusinessView({ biz }: { biz: BusinessFull }) {
+  return (
+    <main id="content" data-page="business">
+      <section className="section">
+        <div className="container">
+          <AdSlot code="BUSINESS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
+          <nav aria-label="Breadcrumb" className="mt-4 mb-3 text-sm text-brand-slate">
+            <Link href="/directory" className="text-brand-slate hover:text-brand-red">
+              Directory
+            </Link>
+          </nav>
+          <div className="grid max-w-[640px] gap-4">
+            <h1 className="m-0">{biz.name}</h1>
+            {biz.phone ? (
+              <a href={telHref(biz.phone)} className="btn self-start justify-self-start">
+                Call {biz.phone}
+              </a>
+            ) : null}
+            <Widget title="Is this your business?">
+              <div className="muted">Add your logo, photos, a description and your website with a package.</div>
+              <Link href="/advertise" className="btn btn-sm btn-block">
+                See packages
+              </Link>
+            </Widget>
+          </div>
+        </div>
+      </section>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'LocalBusiness',
+          name: biz.name,
+          url: absoluteUrl(bizPath(biz.slug)),
+          ...(biz.phone ? { telephone: biz.phone } : {}),
+        }}
+      />
+    </main>
+  )
+}
+
 export async function BusinessView({ biz }: { biz: BusinessFull }) {
   const pkg = effectivePackage(biz)
+  if (!pkg) return <FreeBusinessView biz={biz} />
   const view = viewFor(pkg)
   const badge = badgeFor(pkg)
   const [promotions, products, allJobs, all] = await Promise.all([
@@ -139,9 +182,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
   ])
   const jobs = allJobs.filter((j) => (typeof j.business === 'object' ? j.business?.id : j.business) === biz.id)
 
-  // A free card (no package in force) shows one photo and the description; the rest of the
-  // gallery is what a package buys (client, 24.10.2026).
-  const photos = (biz.gallery ?? []).filter(isObj<Media>).slice(0, pkg ? undefined : 1)
+  const photos = (biz.gallery ?? []).filter(isObj<Media>)
   const priceLists = (biz.priceLists ?? []).filter(isObj<Document>)
   const certificates = (biz.certificates ?? []).filter(isObj<Document>)
   const categories = (biz.categories ?? []).filter((c) => typeof c === 'object')

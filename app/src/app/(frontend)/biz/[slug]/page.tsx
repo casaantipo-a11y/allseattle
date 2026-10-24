@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 
-import { bizPath } from '@/lib/business'
+import { bizPath, effectivePackage } from '@/lib/business'
 import { mediaUrl } from '@/lib/media'
 import { findBusinessByOldSlug, getAllBusinesses, getBusiness } from '@/lib/queries'
 
@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     // Always the main-domain path, also when the page is served on a subdomain (spec §5).
     alternates: { canonical: bizPath(biz.slug) },
+    // A free listing's page is the name and the phone only: thin, so out of search engines.
+    ...(effectivePackage(biz) ? {} : { robots: { index: false, follow: true } }),
     openGraph: { type: 'website', title, description, url: bizPath(biz.slug), ...(custom ? { images: [{ url: custom }] } : {}) },
   }
 }

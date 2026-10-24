@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import { bizPath } from '@/lib/business'
+import { bizPath, effectivePackage } from '@/lib/business'
 import {
   getAllBusinesses,
   getBusinessCategories,
@@ -41,7 +41,8 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
         .filter((c) => c.slug)
         .map((c) => ({ loc: absoluteUrl(`/${c.section}/${c.slug}`), changefreq: 'daily', priority: 0.6 })),
       ...businesses
-        .filter((b) => b.slug)
+        // Free listings (name and phone only, noindex) stay out of the sitemap.
+        .filter((b) => b.slug && effectivePackage(b))
         .map((b) => ({ loc: absoluteUrl(bizPath(b.slug)), lastmod: new Date(b.updatedAt).toISOString(), priority: 0.7 })),
     ]
   }

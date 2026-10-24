@@ -26,6 +26,26 @@ export function BizRow({
   sectionCategoryIds?: Set<number>
 }) {
   const pkg = effectivePackage(biz)
+  // A free listing (no package in force) is the name and the phone only: no logo, photo,
+  // description or links, not even to its page (client, 24.10.2026). The upgrade link stays.
+  if (!pkg)
+    return (
+      <article className="biz-row biz-row--free">
+        <div className="biz-row-body">
+          <div className="biz-row-meta">
+            <Link className="biz-row-upsell" href="/advertise">
+              Upgrade your listing &rarr;
+            </Link>
+          </div>
+          <span className="biz-row-name">{biz.name}</span>
+          {biz.phone ? (
+            <div className="biz-row-contact">
+              <a href={telHref(biz.phone)}>{biz.phone}</a>
+            </div>
+          ) : null}
+        </div>
+      </article>
+    )
   const badge = badgeFor(pkg)
   const variant =
     badge?.cls === 'badge-premium' ? 'premium' : badge?.cls === 'badge-lux' ? 'lux' : 'standard'
