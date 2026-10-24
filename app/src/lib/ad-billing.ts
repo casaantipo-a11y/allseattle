@@ -8,7 +8,7 @@ import { LIVE, NOT_SET_UP, paidUntilOf, statusOf, stripeCustomerFor, type Sub } 
 import { CHECK, TOO_SOON_ERROR, fail, isOwner, tooSoon, mediaIds, notifyTeam, payloadClient, relId, saveFailed, settlePhotos, takePhotos, toFields, zodErrors, type CabinetResult, type PhotoChange } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
-import { automaticTaxParams, managedPaymentsParams, productTaxCode, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR } from './stripe'
+import { automaticTaxParams, managedPaymentsParams, productTaxCode, receiptLines, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR } from './stripe'
 
 // Stage 3, step 5: banner places bought online. A place is one AdSlot code with
 // a price in lib/ad-placements.ts; it is sold by the month through Stripe
@@ -163,6 +163,7 @@ export async function syncAdSubscription(sub: Sub, _opts: { welcome?: boolean } 
     heading: 'Your banner place is booked',
     paragraphs: [
       `Thank you! ${slot?.name ?? 'The place'} is yours. It renews every month until you cancel.`,
+      ...receiptLines(sub.latest_invoice),
       'Next step: upload the banner picture in your account. We check it, usually within a day, and it goes live.',
     ],
     button: { label: 'Upload the picture', href: absoluteUrl(`/account/ads/${banner.id}`) },

@@ -113,3 +113,31 @@ export function verifyWebhook(rawBody: string, header: string | null, secret: st
     return null
   }
 }
+
+/** The fields of an invoice the welcome emails read (subscription.latest_invoice, expanded). */
+export type InvoiceSummary = {
+  status?: string
+  amount_paid?: number
+  subtotal?: number
+  total_excluding_tax?: number | null
+  currency?: string
+  number?: string | null
+  hosted_invoice_url?: string | null
+}
+
+/**
+ * What was charged, for the "package is on" / "place booked" emails (client, 24.10.2026: the
+ * buyer should see in the email how much was paid). Amount, the price before tax and the sales
+ * tax, then Stripe's receipt page. Empty when the invoice isn't there or isn't paid.
+ */
+export function receiptLines(invoice: unknown): string[] {
+  if (!invoice || typeof invoice !== 'object') return []
+  const inv = invoice as InvoiceSummary
+  if (inv.status !== 'paid' || inv.amount_paid == null) return []
+  const money = (cents: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: (inv.currency ?? 'usd').toUpperCase() }).format(cents / 100)
+  const net = inv.total_excluding_tax ?? inv.subtotal ?? inv.amount_paid
+  const tax = inv.amount_paid - net
+  const lines = [tax > 0 ? `Paid: ${money(inv.amount_paid)} (${money(net)} + sales tax ${money(tax)}).` : `Paid: ${money(inv.amount_paid)}.`]
+  if (inv.hosted_invoice_url) lines.push(`Receipt${inv.number ? ` ${inv.number}` : ''}: ${inv.hosted_invoice_url}`)
+  return lines
+}

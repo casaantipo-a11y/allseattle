@@ -4,7 +4,7 @@ import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, type CabinetRes
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
 import { syncAdSubscription } from './ad-billing'
-import { automaticTaxParams, managedPaymentsParams, portalConfiguration, productTaxCode, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR, type StripeEvent } from './stripe'
+import { automaticTaxParams, managedPaymentsParams, portalConfiguration, productTaxCode, receiptLines, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR, type StripeEvent } from './stripe'
 
 // Stage 3, step 4: package subscriptions through Stripe (ad places, step 5, are in
 // lib/ad-billing.ts and share the webhook: their subscriptions carry kind=banner). The owner picks a
@@ -175,7 +175,8 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
         heading: `${pkg.name} package is on`,
         paragraphs: [
           `Thank you! “${biz.name}” now has the ${pkg.name} package. It renews every month until you cancel.`,
-          'Stripe emails the receipt. You can cancel or change the card any time from your account.',
+          ...receiptLines(sub.latest_invoice),
+          'You can cancel or change the card any time from your account.',
         ],
         button: { label: 'Open my business', href: absoluteUrl('/account/business') },
       })
