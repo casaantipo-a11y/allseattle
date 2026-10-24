@@ -54,7 +54,9 @@ export async function stripeCustomerFor(customer: Customer) {
   const c = await stripe<{ id: string }>(
     'POST',
     '/customers',
-    { email: customer.email, name: customer.name, phone: customer.phone ?? undefined, preferred_locales: ['en'], metadata: { customerId: customer.id } },
+    // No phone here: Stripe texts a verification code to the phone on the customer (Link),
+    // and the account's phone is the one the owner typed at sign-up, which may be someone else's.
+    { email: customer.email, name: customer.name, preferred_locales: ['en'], metadata: { customerId: customer.id } },
     `customer-${customer.id}`,
   )
   const payload = await payloadClient()
