@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   since 22–23.10.2026 (the client's account, City Space Media; a $1 test payment went through
   and was refunded). The portal is served at **allseattle.org** (DNS on Vercel since 23.10,
   wildcard certificate, business subdomains like `mvstar.allseattle.org` on). The open work and
-  the client's pending answers are in `tasks-2026-10-23.md`. Each step is a section of `app/README.md`; the owner's side is in
+  the client's pending answers are in `tasks-2026-10-23.md` (local only, gitignored). Each step is a section of `app/README.md`; the owner's side is in
   `app/ADMIN_GUIDE.md`. The account UI lives in `app/src/app/(frontend)/account/` and
   `src/components/account/`; write routes go through `src/lib/cabinet.ts` and friends.
 

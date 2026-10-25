@@ -8,3 +8,7 @@ desktop.ini
 
 # arena runs (Claude Code skill scratch)
 .arena/
+
+# Internal notes for the team: kept on this machine only — main is public on GitHub Pages
+tasks-*.md
+для-*.txt
