@@ -25,9 +25,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   (Neon + R2). **Stage 3** (site accounts, listings and businesses from accounts with
   moderation, contest voting by email, Stripe for packages and banner places, daily reminders)
   is live since 17.10.2026 (merged into `main`, deployed; email from noreply@allseattle.org
-  through the client's Resend, team notices to `NOTIFY_EMAIL`). Stripe is still off on
-  production — no live key yet, so packages and banner places say "contact us"; the sandbox
-  key stays in `app/.env.local` only. Each step is a section of `app/README.md`; the owner's side is in
+  through the client's Resend, team notices to `NOTIFY_EMAIL`). Stripe takes live payments
+  since 22–23.10.2026 (the client's account, City Space Media; a $1 test payment went through
+  and was refunded). The portal is served at **allseattle.org** (DNS on Vercel since 23.10,
+  wildcard certificate, business subdomains like `mvstar.allseattle.org` on). The open work and
+  the client's pending answers are in `tasks-2026-10-23.md`. Each step is a section of `app/README.md`; the owner's side is in
   `app/ADMIN_GUIDE.md`. The account UI lives in `app/src/app/(frontend)/account/` and
   `src/components/account/`; write routes go through `src/lib/cabinet.ts` and friends.
 
@@ -99,7 +101,7 @@ When a request carries no tag, work the scope out from the request itself, as be
 
 ## Environment & deploy
 
-The working copy lives at `D:\Dashulya\allseattle`. The repo is
+The working copy lives at `D:\ALLSANYA]\allseattle`. The repo is
 **`github.com/casaantipo-a11y/allseattle`** (public), served by GitHub Pages from `main` at
 <https://casaantipo-a11y.github.io/allseattle/>.
 
@@ -111,8 +113,10 @@ commit SHA rather than assuming a push is live immediately; a build takes roughl
 Pages serves assets with `Cache-Control: max-age=600`, so for ten minutes after a deploy a
 returning browser keeps drawing the old stylesheet — twice the user reported a change as "not
 applied" when the file on the server was already correct. The query string is what forces the
-refetch. Bump it in all 17 `<head>`s at once (a one-line `re.sub` over `*.html` and `auto/*.html`
-does it) in the same commit as the CSS change, or the fix ships invisible. **JS is not versioned**
+refetch. The project hook bumps it automatically on a CSS edit (see Commands below); if you ever
+change `css/` without the hook running, bump it in all 17 `<head>`s at once (a one-line `re.sub`
+over `*.html` and `auto/*.html` does it) in the same commit as the CSS change, or the fix ships
+invisible. **JS is not versioned**
 — module imports would each need the query too — so a page-module change can still take up to ten
 minutes or a Ctrl+F5 to show up.
 
@@ -125,10 +129,14 @@ survivable only because nothing here uses root-relative (`/css/...`) URLs and `p
 resolves `SITE_ROOT` from `import.meta.url` at runtime. Introducing a leading-slash asset path
 will work on `localhost:8000` and 404 on Pages — see "Path depth is the biggest trap here".
 
-A custom domain (`allseattle.org`) was purchased and briefly pointed at Pages via a `CNAME` file
-under the old repo, then explicitly reverted — there is **no `CNAME` file here**, and the site is
-not live at allseattle.org despite what README.md's "Real" section still says. Don't re-add
-`CNAME` or treat allseattle.org as live unless the user asks to redo that DNS work.
+`allseattle.org` belongs to the stage 2 portal on Vercel, not to this prototype: there is **no
+`CNAME` file here** and the demo stays on the Pages subpath. Don't add one — it would fight the
+portal for the domain.
+
+**Everything on `main` is public on Pages**, not just the demo: the repo is public and Pages
+serves the whole tree, so a note committed at the root (e.g. `tasks-2026-10-23.md`) is readable
+at `casaantipo-a11y.github.io/allseattle/<file>` once `main` is pushed — and the deploy routine
+moves `main` to `stage3`. Keep internal notes out of the repo or out of `main`.
 
 README.md is out of date in two other spots: it says asset paths are root-relative (`/css/...`) —
 they are plain relative (`css/...`, or `../css/...` under `auto/`) — and it points at a `CNAME`
@@ -137,6 +145,23 @@ that no longer exists.
 ## Commands
 
 No build step, no package.json, no test suite — verification is always manual.
+
+The project hook (`.claude/hooks/guard.mjs`, wired in `.claude/settings.json` for Edit, Write and
+MultiEdit) acts before and after edits:
+
+- **Before**: refuses files named `.env*` (except `.env.example`), `start.ps1`, `pnpm-lock.yaml`
+  and `DNS-SETUP-INSTRUCTIONS.md`. A refusal means ask the user to make that change themselves.
+- **After a `*.css` edit**: refuses a *new* `transition`, `@keyframes`, `scroll-behavior: smooth`
+  or `max-width` media query (counted against `HEAD`, so the existing app transitions don't trip
+  it). For the prototype's `css/` it also bumps the `?v=` cache-buster once per change set.
+
+Two more hooks, both for `app/`: `vercel-deploy-guard.mjs` (PreToolUse on Bash and PowerShell)
+refuses `vercel deploy` while `app/src/app/(payload)/admin/importMap.js` or
+`app/src/payload-types.ts` is modified; `eslint-app.mjs` (PostToolUse on edits) runs ESLint on an
+edited `app/src/**/*.ts(x)` and reports errors only. Project skills `/deploy-vercel` and
+`/new-migration` (user-only) and agents `security-reviewer` and `migration-reviewer` (read-only)
+live in `.claude/`. `.mcp.json` adds Context7 for current Next and Payload docs; Claude Code asks
+for approval on its first run.
 
 ```powershell
 # from inside this folder — relative asset paths and ES modules need real HTTP, not file://

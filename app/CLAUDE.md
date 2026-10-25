@@ -21,6 +21,13 @@ pnpm generate:types          # after schema changes (src/payload-types.ts)
 Before a commit: `pnpm typecheck` and `pnpm lint`; `pnpm build` for anything touching routing or
 config. Verify UI by running it (no test suite) — see `../.claude/rules/layout-check.md`.
 
+There is no test runner and no `test` script in `package.json`: the checks are `typecheck`,
+`lint`, `build` and running the site, nothing else.
+
+On Windows, `app/start-local.cmd` (double-click) opens `pnpm db` and `pnpm start` in two windows
+and then the browser at localhost:3000. It serves the production build, so run `pnpm build` first
+— `pnpm dev` is the one to use while developing.
+
 ## Where things are
 
 - `src/app/(frontend)/` — public routes; `styles/` holds the prototype's CSS, copied unchanged
@@ -51,8 +58,18 @@ config. Verify UI by running it (no test suite) — see `../.claude/rules/layout
 - Secrets live in `.env`, `.env.local`, `.env.neon.local`, `.env.r2.local`, `.env.vercel.local` —
   never print or copy them; never `source` them in a shell (the Neon URL contains `&`).
 - Deploy is `npx vercel deploy --prod` from this machine (the friend's repo can't be imported into
-  Vercel). It's outward-facing: only on the user's explicit request. In PowerShell the user runs
+  Vercel). It's outward-facing: only on the user's explicit request. `/deploy-vercel` runs the
+  steps below and the hook blocks a deploy with generated files modified. In PowerShell the user runs
   `npx.cmd` (script execution is disabled there, `npx.ps1` won't load).
+- Vercel access on this machine is the token in the Windows user env `VERCEL_TOKEN` (the
+  partner's account, `mijckela-4959`; `app/.vercel` links the project). A Bash tool started
+  before it was set doesn't see it — export it for the command. The CLI isn't installed:
+  `npx.cmd --yes vercel@65.2.0 …`, with `< /dev/null` so it never waits on a prompt. The routine:
+  `git fetch`, check `origin/main` is an ancestor of `stage3`, `git branch -f main stage3`,
+  push both, `vercel deploy --prod --yes`, then read `readyState: READY` and curl a few pages.
+- From the Bash tool `pnpm` is not on PATH: run checks as `npx.cmd tsc --noEmit` and
+  `npx.cmd eslint <files>`. Git has no identity configured here; commit with
+  `git -c user.name=casaantipo -c user.email=casaantipo@gmail.com commit …`.
 - **Before every deploy, `git status` must not show `src/app/(payload)/admin/importMap.js` or
   `src/payload-types.ts`.** A running `pnpm dev` regenerates both without R2 configured locally
   and drops the S3 upload handler; `vercel deploy` uploads the working tree, not the commit, so

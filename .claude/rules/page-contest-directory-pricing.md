@@ -239,3 +239,12 @@ h1 margin 0 (letters 14.5 / 19px), intro margin 0 (intro → cards 19px).
 **App business page, 17.10.2026:** the breadcrumb sat right on BUSINESS_TOP — now 16px under it
 (`mt-4` on the nav, only when the banner is there, i.e. not Premium), and the title block's bottom
 margin is 8 instead of 24, so the info table stays where it was (title → table 20px at 1440).
+
+**App, 24.10.2026 — a free listing (no package in force) is the name and the phone only**
+(client's final answer, after "one photo and the description" earlier the same day). Directory
+row: `BizRow` returns `.biz-row--free` (one column, no thumbnail, category, description, address
+or link to the page; "Upgrade your listing →" stays). Business page: `FreeBusinessView` in
+`BusinessView.tsx` — BUSINESS_TOP, breadcrumb, name, "Call …", "Is this your business?". Its
+page is `noindex, follow` (`biz/[slug]/page.tsx`) and left out of `sitemaps/businesses.xml`.
+Business subdomains: the root shows the business; any other path on a subdomain answers 308 to
+the same path on the main domain (`src/proxy.ts`, whose matcher now covers every page path).
