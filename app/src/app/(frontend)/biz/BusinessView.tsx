@@ -6,7 +6,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { RichText } from '@/components/RichText'
 import { BizGallery } from '@/components/BizGallery'
 import { MapClient } from '@/components/map/MapClient'
-import { badgeFor, bizPath, type BusinessFull, effectivePackage, telHref, viewFor } from '@/lib/business'
+import { badgeFor, bizUrl, type BusinessFull, effectivePackage, telHref, viewFor } from '@/lib/business'
 import { mediaAlt, mediaUrl } from '@/lib/media'
 import { salaryText, EMPLOYMENT_LABEL } from '@/lib/jobs'
 import { getActivePromotions, getAllBusinesses, getProducts } from '@/lib/queries'
@@ -161,7 +161,7 @@ function FreeBusinessView({ biz }: { biz: BusinessFull }) {
           '@context': 'https://schema.org',
           '@type': 'LocalBusiness',
           name: biz.name,
-          url: absoluteUrl(bizPath(biz.slug)),
+          url: absoluteUrl(bizUrl(biz)),
           ...(biz.phone ? { telephone: biz.phone } : {}),
         }}
       />
@@ -190,7 +190,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
   const headerImage = view === 'premium' ? mediaUrl(biz.branding?.headerImage ?? null, 'hero') : null
   const brand = view === 'premium' && biz.branding?.brandColor ? biz.branding.brandColor : null
   const hasMap = biz.lat != null && biz.lng != null && (pkg ? pkg.mapPlacement : true)
-  const path = bizPath(biz.slug)
+  const path = bizUrl(biz)
   const socials = Object.entries(biz.socials ?? {}).filter(([k, v]) => k !== 'id' && typeof v === 'string' && v) as [string, string][]
 
   // Similar places: other businesses sharing one of its categories, paid packages first.
@@ -425,7 +425,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
                     const img = mediaUrl(b.cover ?? b.logo, 'thumb')
                     const cat = (b.categories ?? [])[0]
                     return (
-                      <Link key={b.id} href={bizPath(b.slug)} className="flex items-center gap-3 no-underline">
+                      <Link key={b.id} href={bizUrl(b)} className="flex items-center gap-3 no-underline">
                         {img ? (
                           <img src={img} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" loading="lazy" />
                         ) : (

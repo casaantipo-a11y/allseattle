@@ -71,6 +71,17 @@ export function withDescendants(categories: BusinessCategory[], rootId: number):
 
 export const bizPath = (slug: string | null | undefined) => `/biz/${slug ?? ''}`
 
+/**
+ * Where a business's page lives: its own subdomain while the package in force includes
+ * one, otherwise /biz/{slug} (client, 25.10.2026: the paid subdomain is the address people
+ * should see, so links, canonical and sitemap use it and /biz/{slug} redirects there).
+ */
+export function bizUrl(biz: Pick<BusinessFull, 'slug' | 'subdomain' | 'package' | 'packageExpiresAt'>): string {
+  const root = process.env.ENABLE_SUBDOMAINS === 'true' ? process.env.ROOT_DOMAIN : ''
+  if (root && biz.subdomain && effectivePackage(biz)?.subdomain) return `https://${biz.subdomain}.${root}/`
+  return bizPath(biz.slug)
+}
+
 export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
 
 export function formatViews(n: number): string {

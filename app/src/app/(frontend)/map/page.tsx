@@ -5,7 +5,7 @@ import { AdSlot } from '@/components/AdSlot'
 import { SeoText } from '@/components/SeoText'
 import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { type ExplorerCategory, type ExplorerPoint, MapExplorer } from '@/components/map/MapExplorer'
-import { bizPath, effectivePackage, viewFor, withDescendants } from '@/lib/business'
+import { bizUrl, effectivePackage, viewFor, withDescendants } from '@/lib/business'
 import { dateParts } from '@/lib/events'
 import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
 import { getEventCategories, getUpcomingEvents } from '@/lib/queries-phase3'
@@ -41,7 +41,7 @@ export default async function MapPage() {
         lat: b.lat as number,
         lng: b.lng as number,
         title: b.name,
-        href: bizPath(b.slug),
+        href: bizUrl(b),
         subtitle: [cats.map((c) => c.name).join(', '), b.address].filter(Boolean).join(' — '),
         kind: viewFor(effectivePackage(b)),
         categoryIds: cats.map((c) => c.id),

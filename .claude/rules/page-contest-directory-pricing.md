@@ -248,3 +248,9 @@ or link to the page; "Upgrade your listing →" stays). Business page: `FreeBusi
 page is `noindex, follow` (`biz/[slug]/page.tsx`) and left out of `sitemaps/businesses.xml`.
 Business subdomains: the root shows the business; any other path on a subdomain answers 308 to
 the same path on the main domain (`src/proxy.ts`, whose matcher now covers every page path).
+A business whose package in force includes a subdomain is linked by its subdomain everywhere
+the site lists it (directory rows, map, Similar places, cabinet "View", canonical, OG, JSON-LD,
+`sitemaps/businesses.xml`) — `bizUrl()` in `lib/business.ts`; its `/biz/{slug}` answers 308 to
+the subdomain (client, 25.10.2026: "the domain opens but nobody sees it"). `getAllBusinesses`
+must select `subdomain` for that. Links still built as `/biz/…` (Cars dealer, jobs, search)
+reach it through that redirect.

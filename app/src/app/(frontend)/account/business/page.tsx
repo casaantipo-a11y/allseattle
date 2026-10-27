@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { AccountShell } from '@/components/account/AccountShell'
 import { ContactEmail } from '@/components/ContactEmail'
 import { getCustomer } from '@/lib/account'
-import { bizPath, effectivePackage } from '@/lib/business'
+import { bizUrl, effectivePackage } from '@/lib/business'
 import { MAX_BUSINESSES, myBusinesses } from '@/lib/business-cabinet'
 import { mediaUrl } from '@/lib/media'
 import { SITE_TZ } from '@/lib/site'
@@ -78,7 +78,7 @@ export default async function MyBusinessPage() {
                   {b.status === 'rejected' && b.moderationNote ? <div className="m-0 mt-1 text-sm">Reason: {b.moderationNote}</div> : null}
                   <div className="account-actions mt-3 flex flex-wrap items-center gap-2">
                     {b.status === 'published' ? (
-                      <Link href={bizPath(b.slug)} className="btn btn-sm">
+                      <Link href={bizUrl({ ...b, package: b.package as Package | null })} className="btn btn-sm">
                         View
                       </Link>
                     ) : null}

@@ -329,6 +329,7 @@ export const getAllBusinesses = unstable_cache(
           phone: true,
           package: true,
           packageExpiresAt: true,
+          subdomain: true,
           priority: true,
           viewsCount: true,
           updatedAt: true,

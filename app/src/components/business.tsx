@@ -3,7 +3,7 @@ import type React from 'react'
 
 import {
   badgeFor,
-  bizPath,
+  bizUrl,
   type BusinessFull,
   effectivePackage,
   formatViews,
@@ -53,7 +53,7 @@ export function BizRow({
   const cats = (biz.categories ?? []).filter(
     (c) => typeof c === 'object' && (!sectionCategoryIds || sectionCategoryIds.has(c.id)),
   )
-  const href = bizPath(biz.slug)
+  const href = bizUrl(biz)
   return (
     <article className={`biz-row biz-row--${variant}`}>
       {img ? (
