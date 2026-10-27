@@ -240,12 +240,18 @@ h1 margin 0 (letters 14.5 / 19px), intro margin 0 (intro → cards 19px).
 (`mt-4` on the nav, only when the banner is there, i.e. not Premium), and the title block's bottom
 margin is 8 instead of 24, so the info table stays where it was (title → table 20px at 1440).
 
-**App, 24.10.2026 — a free listing (no package in force) is the name and the phone only**
-(client's final answer, after "one photo and the description" earlier the same day). Directory
-row: `BizRow` returns `.biz-row--free` (one column, no thumbnail, category, description, address
-or link to the page; "Upgrade your listing →" stays). Business page: `FreeBusinessView` in
-`BusinessView.tsx` — BUSINESS_TOP, breadcrumb, name, "Call …", "Is this your business?". Its
-page is `noindex, follow` (`biz/[slug]/page.tsx`) and left out of `sitemaps/businesses.xml`.
+**App, 24–25.10.2026 — a free listing (no package in force) is the name, the address and the
+phone** (client; 24.10 it was name and phone only, 25.10 the address came back and the name
+became a link). Directory row: `BizRow` returns `.biz-row--free` (one column, no thumbnail,
+category or description; the name links to the page like a paid row). Business page:
+`FreeBusinessView` in `BusinessView.tsx` — BUSINESS_TOP, breadcrumb, name, address, "Call …",
+"Is this your business?". Its page is `noindex, follow` (`biz/[slug]/page.tsx`) and left out of
+`sitemaps/businesses.xml`. **No "Upgrade your listing →" on any row since 25.10** — visitors
+don't need it; the owner's cabinet sells packages. **Promotions and products need a paid
+package**: a free page shows neither, so the cabinet hides "Promotions & products" (its URL
+redirects to the Package page) and both collections refuse a save for a free business
+(`packageOfBusiness(…, { paidOnly: true })` — without it a free business got the cheapest
+package's limits, which allow promotions).
 Business subdomains: the root shows the business; any other path on a subdomain answers 308 to
 the same path on the main domain (`src/proxy.ts`, whose matcher now covers every page path).
 A business whose package in force includes a subdomain is linked by its subdomain everywhere

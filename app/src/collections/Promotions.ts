@@ -9,9 +9,11 @@ import { revalidateCollection } from '../hooks/revalidate'
 const revalidate = revalidateCollection(['promotions', 'businesses'])
 
 const packageAllowsPromotions: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
-  const pkg = await packageOfBusiness(req.payload, data.business ?? originalDoc?.business, req)
-  if (pkg && !pkg.promotions)
-    throw new ValidationError({ errors: [{ path: 'business', message: `${pkg.name} package doesn't include promotions` }] })
+  const pkg = await packageOfBusiness(req.payload, data.business ?? originalDoc?.business, req, { paidOnly: true })
+  if (!pkg?.promotions)
+    throw new ValidationError({
+      errors: [{ path: 'business', message: pkg ? `${pkg.name} package doesn't include promotions` : 'Promotions come with a paid package' }],
+    })
   const from = data.validFrom ?? originalDoc?.validFrom
   const until = data.validUntil ?? originalDoc?.validUntil
   if (from && until && new Date(until) < new Date(from))

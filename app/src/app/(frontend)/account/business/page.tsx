@@ -85,9 +85,11 @@ export default async function MyBusinessPage() {
                     <Link href={`/account/business/${b.id}`} className="btn btn-outline btn-sm">
                       Edit
                     </Link>
-                    <Link href={`/account/business/${b.id}/offers`} className="btn btn-outline btn-sm">
-                      Promotions &amp; products
-                    </Link>
+                    {pkg ? (
+                      <Link href={`/account/business/${b.id}/offers`} className="btn btn-outline btn-sm">
+                        Promotions &amp; products
+                      </Link>
+                    ) : null}
                     <Link href={`/account/business/${b.id}/package`} className="btn btn-outline btn-sm">
                       Package
                     </Link>

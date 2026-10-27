@@ -6,12 +6,13 @@ import { AccountShell } from '@/components/account/AccountShell'
 import { BusinessForm } from '@/components/account/BusinessForm'
 import type { Photo } from '@/components/account/photos'
 import { getCustomer } from '@/lib/account'
+import { effectivePackage } from '@/lib/business'
 import { categoryOptions, myBusiness } from '@/lib/business-cabinet'
 import { relId } from '@/lib/cabinet'
 import { lexicalText } from '@/lib/jobs'
 import { mediaUrl } from '@/lib/media'
 import { getBusinessCategories } from '@/lib/queries'
-import type { Media } from '@/payload-types'
+import type { Media, Package } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'Edit business' }
 
@@ -29,6 +30,8 @@ export default async function EditBusinessPage({ params }: Props) {
   const [mine, categories] = await Promise.all([myBusiness(me, Number(id)), getBusinessCategories()])
   if (!mine) notFound()
   const { biz, pkg } = mine
+  // Promotions and products show only on a paid business's page, so a free one has no link to them.
+  const paid = Boolean(effectivePackage({ package: biz.package as Package | null, packageExpiresAt: biz.packageExpiresAt }))
   const s = biz.socials ?? {}
   const values: Record<string, string> = {
     name: biz.name,
@@ -50,10 +53,14 @@ export default async function EditBusinessPage({ params }: Props) {
       wide
       intro={
         <>
-          <Link href={`/account/business/${biz.id}/offers`} className="text-brand-navy underline">
-            Promotions &amp; products
-          </Link>{' '}
-          ·{' '}
+          {paid ? (
+            <>
+              <Link href={`/account/business/${biz.id}/offers`} className="text-brand-navy underline">
+                Promotions &amp; products
+              </Link>{' '}
+              ·{' '}
+            </>
+          ) : null}
           <Link href="/account/business" className="text-brand-navy underline">
             Back to my business
           </Link>

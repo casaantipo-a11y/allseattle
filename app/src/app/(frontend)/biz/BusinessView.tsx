@@ -127,8 +127,8 @@ function Widget({ title, children, center = false }: { title?: string; children:
 const catHref = (c: { section?: string | null; slug?: string | null }) =>
   `/${c.section === 'directory' || !c.section ? 'directory' : c.section}/${c.slug}`
 
-/** A free listing's page: the name and the phone only, no logo, photos, description or
- *  links of the business (client, 24.10.2026). Kept out of search engines (page.tsx). */
+/** A free listing's page: the name, the address and the phone, no logo, photos, description
+ *  or links of the business (client, 24–25.10.2026). Kept out of search engines (page.tsx). */
 function FreeBusinessView({ biz }: { biz: BusinessFull }) {
   return (
     <main id="content" data-page="business">
@@ -142,6 +142,7 @@ function FreeBusinessView({ biz }: { biz: BusinessFull }) {
           </nav>
           <div className="grid max-w-[640px] gap-4">
             <h1 className="m-0">{biz.name}</h1>
+            {biz.address ? <div>{biz.address}</div> : null}
             {biz.phone ? (
               <a href={telHref(biz.phone)} className="btn self-start justify-self-start">
                 Call {biz.phone}
@@ -163,6 +164,7 @@ function FreeBusinessView({ biz }: { biz: BusinessFull }) {
           name: biz.name,
           url: absoluteUrl(bizUrl(biz)),
           ...(biz.phone ? { telephone: biz.phone } : {}),
+          ...(biz.address ? { address: biz.address } : {}),
         }}
       />
     </main>

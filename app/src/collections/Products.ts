@@ -1,4 +1,5 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
+import { ValidationError } from 'payload'
 
 import { canWrite } from '../access/roles'
 import { isDemoField } from '../fields'
@@ -9,8 +10,8 @@ const revalidate = revalidateCollection(['products', 'businesses'])
 
 const withinProductLimit: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
   const business = data.business ?? originalDoc?.business
-  const pkg = await packageOfBusiness(req.payload, business, req)
-  if (!pkg) return data
+  const pkg = await packageOfBusiness(req.payload, business, req, { paidOnly: true })
+  if (!pkg) throw new ValidationError({ errors: [{ path: 'business', message: 'Products come with a paid package' }] })
   await assertCountWithin(req.payload, {
     collection: 'products',
     business,

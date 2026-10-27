@@ -60,8 +60,13 @@ export async function assertBusinessWithinPackage(
     fail('subdomain', `${pkg.name} package doesn't include a subdomain`)
 }
 
-/** For child documents (products, promotions, later jobs and cars): the owning business's package. */
-export async function packageOfBusiness(payload: Payload, business: unknown, req?: PayloadRequest) {
+/**
+ * For child documents (products, promotions, later jobs and cars): the owning business's package.
+ * With `paidOnly`, a free listing (no package, or an expired one) gets null instead of the
+ * cheapest package: its page shows no promotions or products, so none may be added
+ * (client, 25.10.2026 — a free business's promotion was saved and never appeared).
+ */
+export async function packageOfBusiness(payload: Payload, business: unknown, req?: PayloadRequest, { paidOnly = false } = {}) {
   const id = relId(business)
   if (!id) return null
   const biz = await payload.findByID({ collection: 'businesses', id, depth: 0, req }).catch(() => null)
@@ -69,7 +74,9 @@ export async function packageOfBusiness(payload: Payload, business: unknown, req
   // An expired package no longer counts — the business is back on the cheapest one,
   // the same rule the site uses to show it (lib/business.ts effectivePackage).
   const expired = biz.packageExpiresAt && new Date(biz.packageExpiresAt).getTime() < Date.now()
-  return packageFor(payload, expired ? null : biz.package, req)
+  const own = expired ? null : biz.package
+  if (paidOnly && !own) return null
+  return packageFor(payload, own, req)
 }
 
 /**

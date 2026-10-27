@@ -13,8 +13,8 @@ import { mediaUrl } from '@/lib/media'
 import type { BusinessCategory } from '@/payload-types'
 
 // The prototype's directory row (css: components.css .biz-row) on real data,
-// now linking to the business page. Standard listings carry the "upgrade"
-// link the prototype had — it sells the next package.
+// now linking to the business page. The prototype's "Upgrade your listing" link
+// is gone: visitors don't need it, owners see packages in their cabinet (client, 25.10.2026).
 
 /* eslint-disable @next/next/no-img-element -- fixed-size thumbnails from Payload renditions */
 
@@ -26,21 +26,19 @@ export function BizRow({
   sectionCategoryIds?: Set<number>
 }) {
   const pkg = effectivePackage(biz)
-  // A free listing (no package in force) is the name and the phone only: no logo, photo,
-  // description or links, not even to its page (client, 24.10.2026). The upgrade link stays.
+  // A free listing (no package in force) is the name, the address and the phone, the name
+  // linking to its page like a paid row; no logo, photo or description (client, 25.10.2026).
   if (!pkg)
     return (
       <article className="biz-row biz-row--free">
         <div className="biz-row-body">
-          <div className="biz-row-meta">
-            <Link className="biz-row-upsell" href="/advertise">
-              Upgrade your listing &rarr;
-            </Link>
-          </div>
-          <span className="biz-row-name">{biz.name}</span>
-          {biz.phone ? (
+          <Link href={bizUrl(biz)} className="biz-row-name">
+            {biz.name}
+          </Link>
+          {biz.address || biz.phone ? (
             <div className="biz-row-contact">
-              <a href={telHref(biz.phone)}>{biz.phone}</a>
+              {biz.address ? <span>{biz.address}</span> : null}
+              {biz.phone ? <a href={telHref(biz.phone)}>{biz.phone}</a> : null}
             </div>
           ) : null}
         </div>
@@ -66,11 +64,6 @@ export function BizRow({
           {badge ? <span className={`badge ${badge.cls}`}>{badge.label}</span> : null}
           {biz.viewsCount ? (
             <span className="biz-row-views">{formatViews(biz.viewsCount)} views this month</span>
-          ) : null}
-          {variant === 'standard' ? (
-            <Link className="biz-row-upsell" href="/advertise">
-              Upgrade your listing &rarr;
-            </Link>
           ) : null}
         </div>
         <Link href={href} className="biz-row-name">
