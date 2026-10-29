@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
+import { importFields, importIndexes } from './ImportSources'
 
 // Every page that shows news reads it through unstable_cache tagged "news",
 // and Next.js drops a route's cached HTML together with the data tags it used
@@ -14,11 +15,12 @@ export const News: CollectionConfig = {
   labels: { singular: 'Article', plural: 'News' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'status', 'publishedAt', 'isTop'],
+    defaultColumns: ['title', 'category', 'status', 'publishedAt', 'isTop', 'origin'],
     group: 'News',
     listSearchableFields: ['title', 'excerpt'],
   },
   defaultSort: '-publishedAt',
+  indexes: importIndexes,
   access: {
     read: publishedOrLoggedIn,
     create: canWrite('editor'),
@@ -78,5 +80,6 @@ export const News: CollectionConfig = {
     { name: 'tags', type: 'text', hasMany: true, admin: { position: 'sidebar' } },
     isDemoField,
     slugHistoryField,
+    ...importFields,
   ],
 }

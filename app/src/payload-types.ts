@@ -81,6 +81,7 @@ export interface Config {
     'job-categories': JobCategory;
     events: Event;
     'event-categories': EventCategory;
+    'import-sources': ImportSource;
     contests: Contest;
     'contest-votes': ContestVote;
     'site-notes': SiteNote;
@@ -114,6 +115,7 @@ export interface Config {
     'job-categories': JobCategoriesSelect<false> | JobCategoriesSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     'event-categories': EventCategoriesSelect<false> | EventCategoriesSelect<true>;
+    'import-sources': ImportSourcesSelect<false> | ImportSourcesSelect<true>;
     contests: ContestsSelect<false> | ContestsSelect<true>;
     'contest-votes': ContestVotesSelect<false> | ContestVotesSelect<true>;
     'site-notes': SiteNotesSelect<false> | SiteNotesSelect<true>;
@@ -252,6 +254,15 @@ export interface News {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing — feeds carry no usable pictures.
+   */
+  origin?: ('manual' | 'import') | null;
+  importSource?: (number | null) | ImportSource;
+  /**
+   * The source’s own id; keeps an item from being imported twice.
+   */
+  externalId?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -369,6 +380,69 @@ export interface NewsCategory {
    */
   slug?: string | null;
   description?: string | null;
+  order?: number | null;
+  /**
+   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
+   */
+  isDemo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Where events and news drafts come from. Imported items always arrive as drafts — publish them in Events / News.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "import-sources".
+ */
+export interface ImportSource {
+  id: number;
+  name: string;
+  type: 'ticketmaster' | 'ics' | 'rss';
+  target: 'events' | 'news';
+  /**
+   * https:// address of the feed. Not used by Ticketmaster (its key is set on the server).
+   */
+  url?: string | null;
+  /**
+   * Used when the item has no category of its own, or the source’s one is unknown. Pick one of the kind chosen in Target.
+   */
+  defaultCategory:
+    | {
+        relationTo: 'event-categories';
+        value: number | EventCategory;
+      }
+    | {
+        relationTo: 'news-categories';
+        value: number | NewsCategory;
+      };
+  enabled?: boolean | null;
+  /**
+   * How many items a run reads from the source, soonest first. Ones already imported are skipped; raise it to bring in more.
+   */
+  maxItemsPerRun?: number | null;
+  lastRunAt?: string | null;
+  /**
+   * e.g. “12 new, 30 skipped”.
+   */
+  lastResult?: string | null;
+  /**
+   * Empty when the last run went fine.
+   */
+  lastError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-categories".
+ */
+export interface EventCategory {
+  id: number;
+  name: string;
+  /**
+   * Part of the page address. Leave empty to generate it from the title.
+   */
+  slug?: string | null;
   order?: number | null;
   /**
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
@@ -937,6 +1011,15 @@ export interface Event {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing — feeds carry no usable pictures.
+   */
+  origin?: ('manual' | 'import') | null;
+  importSource?: (number | null) | ImportSource;
+  /**
+   * The source’s own id; keeps an item from being imported twice.
+   */
+  externalId?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -945,25 +1028,6 @@ export interface Event {
      */
     image?: (number | null) | Media;
   };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "event-categories".
- */
-export interface EventCategory {
-  id: number;
-  name: string;
-  /**
-   * Part of the page address. Leave empty to generate it from the title.
-   */
-  slug?: string | null;
-  order?: number | null;
-  /**
-   * Demo content. Removed in one go by `pnpm purge-demo` before launch.
-   */
-  isDemo?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1449,6 +1513,10 @@ export interface PayloadLockedDocument {
         value: number | EventCategory;
       } | null)
     | ({
+        relationTo: 'import-sources';
+        value: number | ImportSource;
+      } | null)
+    | ({
         relationTo: 'contests';
         value: number | Contest;
       } | null)
@@ -1577,6 +1645,9 @@ export interface NewsSelect<T extends boolean = true> {
         slug?: T;
         id?: T;
       };
+  origin?: T;
+  importSource?: T;
+  externalId?: T;
   meta?:
     | T
     | {
@@ -1891,6 +1962,9 @@ export interface EventsSelect<T extends boolean = true> {
         slug?: T;
         id?: T;
       };
+  origin?: T;
+  importSource?: T;
+  externalId?: T;
   meta?:
     | T
     | {
@@ -1910,6 +1984,24 @@ export interface EventCategoriesSelect<T extends boolean = true> {
   slug?: T;
   order?: T;
   isDemo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "import-sources_select".
+ */
+export interface ImportSourcesSelect<T extends boolean = true> {
+  name?: T;
+  type?: T;
+  target?: T;
+  url?: T;
+  defaultCategory?: T;
+  enabled?: T;
+  maxItemsPerRun?: T;
+  lastRunAt?: T;
+  lastResult?: T;
+  lastError?: T;
   updatedAt?: T;
   createdAt?: T;
 }

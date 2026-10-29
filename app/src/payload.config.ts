@@ -16,6 +16,7 @@ import { CarMakes } from './collections/CarMakes'
 import { Contests } from './collections/Contests'
 import { Documents } from './collections/Documents'
 import { EventCategories, Events } from './collections/Events'
+import { ImportSources } from './collections/ImportSources'
 import { JobCategories, Jobs } from './collections/Jobs'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
@@ -149,6 +150,7 @@ export default buildConfig({
     JobCategories,
     Events,
     EventCategories,
+    ImportSources,
     Contests,
     ContestVotes,
     SiteNotes,

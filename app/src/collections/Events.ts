@@ -5,6 +5,7 @@ import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField, uniqueSlugField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
+import { importFields, importIndexes } from './ImportSources'
 
 const revalidate = revalidateCollection(['events'])
 
@@ -49,10 +50,11 @@ export const Events: CollectionConfig = {
   slug: 'events',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'startAt', 'category', 'venueName', 'status'],
+    defaultColumns: ['title', 'startAt', 'category', 'venueName', 'status', 'origin'],
     group: 'Events',
   },
   defaultSort: 'startAt',
+  indexes: importIndexes,
   access: {
     read: publishedOrLoggedIn,
     create: canWrite('editor'),
@@ -111,5 +113,6 @@ export const Events: CollectionConfig = {
     statusField,
     isDemoField,
     slugHistoryField,
+    ...importFields,
   ],
 }
