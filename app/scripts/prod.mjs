@@ -14,7 +14,7 @@ import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const script = process.argv[2]
-if (!['seed', 'purge-demo', 'update-content', 'import-setup', 'import-run', 'import-status'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content|import-setup|import-run|import-status')
+if (!['seed', 'purge-demo', 'update-content', 'import-setup', 'import-run', 'import-status', 'admin-password'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content|import-setup|import-run|import-status|admin-password')
 
 const read = (f) =>
   Object.fromEntries(
