@@ -249,7 +249,12 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     `https://feeds.feedburner.com/wsdotblog`. It needs the event category `IMPORT_EVENT_CATEGORY`
     (default `community`) to exist and never creates one; sources are matched by type and
     address, so a second run changes nothing. `pnpm import-run:prod` is the daily import once, on
-    demand, without the customer reminders. SPD Blotter (crime news) is excluded by the owner.
+    demand, without the customer reminders (up to five minutes; the cron has 50 s and continues the
+    rest the next day). `pnpm import-status:prod` is a read-only look: sources, last runs, drafts
+    waiting. Ticketmaster's genre → category table (`ticketmaster.ts`) uses the production slugs
+    (`concerts-live-music`, `sports-events`, …); `IMPORT_ENABLE_TICKETMASTER=1` with the setup
+    script switches that source on once the key is on the server. SPD Blotter (crime news) is
+    excluded by the owner.
   - **Not built / limits.** No Eventbrite, Meetup or HTML scraping; no images; RSS 1.0 dates
     (`dc:date`) and non-UTF-8 feeds are not read; two runs at once are safe (the unique index and
     a slug retry), but not meant to happen. There is no test runner: it was checked with throw-away

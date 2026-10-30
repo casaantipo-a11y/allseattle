@@ -43,15 +43,16 @@ type Page = { _embedded?: { events?: TmEvent[] }; page?: { totalPages?: number }
 // don't have (categories are edited in the admin) falls back to the source's default.
 // The genre wins over the segment: a "Family" show is a Miscellaneous or Arts one.
 const BY_GENRE: Record<string, string> = {
-  family: 'family',
-  "children's theatre": 'family',
-  'fairs & festivals': 'community',
+  family: 'family-kids',
+  "children's theatre": 'family-kids',
+  'fairs & festivals': 'festivals-city-events',
+  comedy: 'comedy-stand-up',
 }
 const BY_SEGMENT: Record<string, string> = {
-  music: 'music',
-  sports: 'sports',
-  'arts & theatre': 'art',
-  film: 'art',
+  music: 'concerts-live-music',
+  sports: 'sports-events',
+  'arts & theatre': 'theater-musicals',
+  film: 'movies-cinema',
 }
 
 function categorySlug(e: TmEvent): string | undefined {

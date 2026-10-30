@@ -10,7 +10,7 @@
 import { runDailyImport } from '../lib/import/run'
 
 try {
-  console.log('[import-run]', JSON.stringify(await runDailyImport(Date.now() + 50 * 1000)))
+  console.log('[import-run]', JSON.stringify(await runDailyImport(Date.now() + 5 * 60 * 1000)))
 } catch (e) {
   console.error('[import-run] failed:', e instanceof Error ? e.message : e)
   process.exit(1)

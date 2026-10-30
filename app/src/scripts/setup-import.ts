@@ -9,7 +9,9 @@
  *   - event category: slug IMPORT_EVENT_CATEGORY (default "community"), must exist —
  *     it is not created, so the event menu is never changed by accident
  *   - Ticketmaster is created switched off: it needs TICKETMASTER_API_KEY on the server,
- *     and an enabled source without it reports an error every run
+ *     and an enabled source without it reports an error every run. Once the key is there,
+ *     IMPORT_ENABLE_TICKETMASTER=1 switches it on (the only change this script makes to an
+ *     existing source)
  *
  * Production: pnpm import-setup:prod (scripts/prod.mjs). Nothing here imports anything;
  * the first run is `pnpm import-run`.
@@ -60,6 +62,11 @@ async function run() {
       })
     ).docs[0]
     if (found) {
+      if (s.type === 'ticketmaster' && process.env.IMPORT_ENABLE_TICKETMASTER === '1' && !found.enabled) {
+        await payload.update({ collection: 'import-sources', id: found.id, data: { enabled: true }, depth: 0 })
+        log(`${s.name}: switched on (the key must be set on the server)`)
+        continue
+      }
       log(`${s.name}: already there (id ${found.id}, ${found.enabled ? 'enabled' : 'disabled'}) — left as it is`)
       continue
     }
