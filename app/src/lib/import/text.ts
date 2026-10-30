@@ -20,12 +20,47 @@ function decodeEntities(s: string): string {
   })
 }
 
+// Feeds are not trusted, and these patterns run in one synchronous stretch the run's time
+// limit cannot interrupt. A `[^>]*` or a lazy `[\s\S]*?` that finds no end rescans the rest of
+// the text from every `<`, which is quadratic: 160 000 characters of `<br ` took 19 seconds.
+// So a tag never contains `<`, and spans with no closing mark are found once, not per opening.
+
+/** Cuts out every `<name …>…</name>` — script and style carry no text. An unclosed one stays as it is. */
+function dropElements(h: string, name: string): string {
+  const open = new RegExp(`<${name}(?![a-z0-9])[^<>]*>`, 'gi')
+  const close = new RegExp(`</${name}\\s*>`, 'gi')
+  let out = ''
+  let pos = 0
+  for (let m = open.exec(h); m; m = open.exec(h)) {
+    close.lastIndex = open.lastIndex
+    if (!close.exec(h)) break // nothing after this one can be closed either
+    out += `${h.slice(pos, m.index)} `
+    pos = close.lastIndex
+    open.lastIndex = pos
+  }
+  return out + h.slice(pos)
+}
+
+function dropComments(h: string): string {
+  let out = ''
+  let pos = 0
+  for (let s = h.indexOf('<!--'); s >= 0; s = h.indexOf('<!--', pos)) {
+    const e = h.indexOf('-->', s + 4)
+    if (e < 0) break
+    out += `${h.slice(pos, s)} `
+    pos = e + 3
+  }
+  return out + h.slice(pos)
+}
+
+// A tag starts with a letter, `/`, `!` or `?`: a bare "<" in the text ("under 5 < 6 and 7 > 3") stays.
 const stripTags = (h: string) =>
-  h
-    .replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, ' ')
-    .replace(/<!--[\s\S]*?-->/g, ' ')
-    .replace(/<(?:br|\/p|\/div|\/li|\/h[1-6]|\/tr|\/ul|\/ol)\b[^>]*>/gi, '\n')
-    .replace(/<[^>]*>/g, ' ')
+  dropComments(dropElements(dropElements(h, 'script'), 'style'))
+    .replace(/<(?:br|\/p|\/div|\/li|\/h[1-6]|\/tr|\/ul|\/ol)(?![a-z0-9])[^<>]*>/gi, '\n')
+    .replace(/<[a-z!/?][^<>]*>/gi, ' ')
+
+/** Longer input is cut: the importer keeps 60 lines of 4000 characters at most. */
+const MAX_INPUT = 250_000
 
 /**
  * Any HTML → plain text: tags dropped, block ends and <br> become line breaks,
@@ -34,8 +69,8 @@ const stripTags = (h: string) =>
  */
 export function htmlToText(html: string | null | undefined): string {
   if (!html) return ''
-  let t = decodeEntities(stripTags(html))
-  if (/<[a-z!/][^>]*>/i.test(t)) t = decodeEntities(stripTags(t))
+  let t = decodeEntities(stripTags(html.length > MAX_INPUT ? html.slice(0, MAX_INPUT) : html))
+  if (/<[a-z!/?][^<>]*>/i.test(t)) t = decodeEntities(stripTags(t))
   return t
     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '')
     .replace(/\r/g, '')

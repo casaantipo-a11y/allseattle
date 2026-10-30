@@ -115,9 +115,17 @@ export function parseIcs(text: string): IcsEvent[] {
 export function icsDateToUtc(d: IcsDate): Date | null {
   const m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/.exec(d.value)
   if (!m) return null
-  const [y, mo, day, h = 0, mi = 0, s = 0] = m.slice(1, 7).map(Number)
-  const date = m[7] ? new Date(Date.UTC(y, mo - 1, day, h, mi, s)) : zonedToUtc(y, mo, day, h, mi, s, d.tzid && isKnownZone(d.tzid) ? d.tzid : SEATTLE_TZ)
-  return Number.isNaN(date.getTime()) ? null : date
+  // A plain date has no time groups: they are undefined, and Number(undefined) is NaN, not 0.
+  const [y, mo, day, h, mi, s] = m.slice(1, 7).map((v) => (v === undefined ? 0 : Number(v)))
+  // Date.UTC rolls a month 13 or a Nov 31 over into another date instead of refusing it.
+  const probe = new Date(Date.UTC(y, mo - 1, day))
+  if (probe.getUTCMonth() !== mo - 1 || probe.getUTCDate() !== day || h > 23 || mi > 59 || s > 60) return null
+  try {
+    const date = m[7] ? new Date(Date.UTC(y, mo - 1, day, h, mi, s)) : zonedToUtc(y, mo, day, h, mi, s, d.tzid && isKnownZone(d.tzid) ? d.tzid : SEATTLE_TZ)
+    return Number.isNaN(date.getTime()) ? null : date
+  } catch {
+    return null // an impossible date (month 13, hour 25) is one bad event, not a failed source
+  }
 }
 
 /**

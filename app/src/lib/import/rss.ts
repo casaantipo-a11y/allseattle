@@ -17,9 +17,19 @@ export type FeedItem = {
 
 const unwrap = (raw: string) => /^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/.exec(raw)?.[1] ?? raw
 
+// A feed is not trusted and these patterns run in one stretch the run's time limit cannot
+// interrupt: a tag never contains `<`, and a missing close tag is looked for once. A single
+// regex `<name…>([\s\S]*?)</name>` rescans the whole item from every opening that has no end.
 function tag(block: string, name: string): string | null {
-  const m = new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`, 'i').exec(block)
-  return m ? unwrap(m[1]) : null
+  const open = new RegExp(`<${name}(?=[\\s>/])[^<>]*>`, 'gi')
+  for (let m = open.exec(block); m; m = open.exec(block)) {
+    if (m[0].endsWith('/>')) continue // <link href="…"/> has no body
+    const close = new RegExp(`</${name}\\s*>`, 'gi')
+    close.lastIndex = open.lastIndex
+    const end = close.exec(block)
+    return end ? unwrap(block.slice(open.lastIndex, end.index)) : null
+  }
+  return null
 }
 
 /**
@@ -38,7 +48,7 @@ function linkOf(block: string): string {
   // RSS: <link>url</link>. Atom: <link rel="alternate" href="url"/> (rel optional).
   const rss = tag(block, 'link')
   if (rss && /^\s*https?:/i.test(rss)) return plain(rss)
-  const links = [...block.matchAll(/<link\b([^>]*)>/gi)].map((m) => m[1])
+  const links = [...block.matchAll(/<link\b([^<>]*)>/gi)].map((m) => m[1])
   const alt = links.find((a) => !/\brel="(?!alternate")/i.test(a)) ?? links[0]
   return plain(/\bhref="([^"]+)"/i.exec(alt ?? '')?.[1] ?? '')
 }
@@ -48,21 +58,23 @@ function linkOf(block: string): string {
  * close tag from each opening one is quadratic on a feed full of unclosed tags.
  */
 function blocksOf(xml: string): string[] {
-  const lower = xml.toLowerCase()
   const open = /<(item|entry)\b/gi
+  // Searched with a pattern, not in a lowercased copy: toLowerCase can change the length of
+  // the text ("İ" becomes two characters), which would shift every position after it.
+  const closers: Record<string, RegExp> = { item: /<\/item>/gi, entry: /<\/entry>/gi }
   const blocks: string[] = []
   const noClose = new Set<string>()
   for (let m = open.exec(xml); m; m = open.exec(xml)) {
     const name = m[1].toLowerCase()
     if (noClose.has(name)) continue
-    const close = `</${name}>`
-    const end = lower.indexOf(close, open.lastIndex)
-    if (end < 0) {
+    const close = closers[name]
+    close.lastIndex = open.lastIndex
+    if (!close.exec(xml)) {
       noClose.add(name)
       continue
     }
-    blocks.push(xml.slice(m.index, end + close.length))
-    open.lastIndex = end + close.length
+    blocks.push(xml.slice(m.index, close.lastIndex))
+    open.lastIndex = close.lastIndex
   }
   return blocks
 }
