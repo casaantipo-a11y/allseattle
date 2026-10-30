@@ -46,8 +46,16 @@ export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 export const errorMessage = (e: unknown) => (e instanceof Error ? e.message : String(e)).slice(0, 500)
 
-/** Postgres refused a duplicate: the unique (importSource, externalId) pair, or a slug. */
+/**
+ * Postgres refused a duplicate: the unique (importSource, externalId) pair, or a slug.
+ * Payload hands that over either as the raw error or as a ValidationError whose
+ * `data.errors` say "Value must be unique".
+ */
 export const isUniqueViolation = (e: unknown) => {
-  const err = e as { cause?: { code?: string }; message?: string } | null
-  return err?.cause?.code === '23505' || /duplicate key|unique constraint/i.test(err?.message ?? '')
+  const err = e as { cause?: { code?: string }; message?: string; data?: { errors?: { message?: string }[] } } | null
+  return (
+    err?.cause?.code === '23505' ||
+    /duplicate key|unique constraint/i.test(err?.message ?? '') ||
+    !!err?.data?.errors?.some((x) => /must be unique/i.test(x.message ?? ''))
+  )
 }

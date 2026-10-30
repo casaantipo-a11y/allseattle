@@ -118,27 +118,38 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
         const taken = base ? (await payload.count({ collection: 'news', where: { slug: { equals: base } } })).totalDocs > 0 : true
         const suffixed = base ? `${base.slice(0, 89).replace(/-+$/, '')}-${shortId}` : shortId
 
-        await payload.create({
-          collection: 'news',
-          depth: 0,
-          // Drafts aren't on the public site, so there is nothing to revalidate.
-          context: { disableRevalidate: true },
-          data: {
-            title,
-            excerpt: summaryFrom(item.text, 280) || title,
-            ...(item.text ? { content: richTextFrom(item.text) } : {}),
-            source: link,
-            slug: taken ? suffixed : undefined,
-            category: fallbackId,
-            author: 'AllSeattle',
-            status: 'draft',
-            // Import time, as the field's own default would give; the editor sets it when publishing.
-            publishedAt: new Date().toISOString(),
-            origin: 'import',
-            importSource: source.id,
-            externalId: item.id,
-          },
-        })
+        const make = (slug?: string) =>
+          payload.create({
+            collection: 'news',
+            depth: 0,
+            // Drafts aren't on the public site, so there is nothing to revalidate.
+            context: { disableRevalidate: true },
+            data: {
+              title,
+              excerpt: summaryFrom(item.text, 280) || title,
+              ...(item.text ? { content: richTextFrom(item.text) } : {}),
+              source: link,
+              slug,
+              category: fallbackId,
+              author: 'AllSeattle',
+              status: 'draft',
+              // Import time, as the field's own default would give; the editor sets it when publishing.
+              publishedAt: new Date().toISOString(),
+              origin: 'import',
+              importSource: source.id,
+              externalId: item.id,
+            },
+          })
+        try {
+          await make(taken ? suffixed : undefined)
+        } catch (e) {
+          // The slug was free when we looked and gone when we saved (another run, or a story
+          // earlier in this feed): once more with the suffix. If this very story was saved by
+          // the other run, the (importSource, externalId) index answers and it counts as existing.
+          const slugTaken = (e as { data?: { errors?: { path?: string }[] } }).data?.errors?.some((x) => x.path === 'slug')
+          if (taken || !slugTaken) throw e
+          await make(suffixed)
+        }
         stats.created++
       } catch (e) {
         if (isUniqueViolation(e)) skip(stats, 'exists')
