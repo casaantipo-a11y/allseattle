@@ -91,6 +91,14 @@ export const ImportSources: CollectionConfig = {
       ],
     },
     {
+      // External ids of items an editor deleted, so the next run doesn't bring them back
+      // (lib/import/dismissed.ts). Written by the delete hook only, never from the admin.
+      name: 'dismissed',
+      type: 'json',
+      access: { create: () => false, update: () => false },
+      admin: { hidden: true },
+    },
+    {
       type: 'collapsible',
       label: 'Last run',
       admin: { initCollapsed: false },

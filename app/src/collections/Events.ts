@@ -5,6 +5,7 @@ import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField, uniqueSlugField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
+import { rememberDismissed } from '../lib/import/dismissed'
 import { importFields, importIndexes } from './ImportSources'
 
 const revalidate = revalidateCollection(['events'])
@@ -65,7 +66,7 @@ export const Events: CollectionConfig = {
     beforeValidate: [datesAndPrice],
     beforeChange: [rememberOldSlug, geocodeVenue],
     afterChange: [revalidate.afterChange],
-    afterDelete: [revalidate.afterDelete],
+    afterDelete: [revalidate.afterDelete, rememberDismissed],
   },
   fields: [
     { name: 'title', type: 'text', required: true },

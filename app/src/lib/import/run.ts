@@ -5,6 +5,7 @@ import type { ImportSource } from '@/payload-types'
 
 import { emailLayout, sendMail } from '../email'
 import { absoluteUrl } from '../site'
+import { pruneDismissed } from './dismissed'
 import { importEvents } from './events'
 import { importNews } from './news'
 import { errorMessage, type ImportStats } from './types'
@@ -19,6 +20,12 @@ const NEWS_DRAFT_DAYS = 14
 const DAY = 24 * 3600 * 1000
 /** An imported draft nobody opened: createdAt and updatedAt are within milliseconds, a save in the admin moves updatedAt away. */
 const UNTOUCHED_MS = 1000
+/**
+ * A source is not started with less than this left of the budget. One network wait is up to
+ * 20 s, and the cron function itself is cut off at 60: a source started at second 49 that
+ * hangs would take the run's result, the cleanup and the report down with it.
+ */
+const START_MARGIN_MS = 15 * 1000
 
 type Report = { name: string; target: string; stats: ImportStats; error: string; recovered: boolean }
 
@@ -45,7 +52,7 @@ async function cleanOldDrafts(payload: Payload, now: number) {
   })
   const newsIds = untouched(news.docs).map((d) => d.id)
   if (newsIds.length) {
-    deleted += (await payload.delete({ collection: 'news', where: { id: { in: newsIds } }, context: { disableRevalidate: true } })).docs.length
+    deleted += (await payload.delete({ collection: 'news', where: { id: { in: newsIds } }, context: { disableRevalidate: true, importCleanup: true } })).docs.length
   }
 
   const events = await payload.find({
@@ -57,7 +64,7 @@ async function cleanOldDrafts(payload: Payload, now: number) {
   })
   const eventIds = untouched(events.docs).map((d) => d.id)
   if (eventIds.length) {
-    deleted += (await payload.delete({ collection: 'events', where: { id: { in: eventIds } }, context: { disableRevalidate: true } })).docs.length
+    deleted += (await payload.delete({ collection: 'events', where: { id: { in: eventIds } }, context: { disableRevalidate: true, importCleanup: true } })).docs.length
   }
   return deleted
 }
@@ -102,7 +109,7 @@ export async function runDailyImport(deadline: number, now = Date.now()) {
   const reports: Report[] = []
   let notReached = 0
   for (const source of sources) {
-    if (Date.now() > deadline) {
+    if (Date.now() > deadline - START_MARGIN_MS) {
       notReached++
       continue
     }
@@ -134,6 +141,11 @@ export async function runDailyImport(deadline: number, now = Date.now()) {
     deleted = await cleanOldDrafts(payload, now)
   } catch (e) {
     console.error('[import] cleanup failed', e)
+  }
+  try {
+    await pruneDismissed(payload, now)
+  } catch (e) {
+    console.error('[import] could not prune the list of deleted items', e)
   }
   let mailed = false
   try {

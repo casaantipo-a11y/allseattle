@@ -19,6 +19,7 @@ import * as migration_20261020_120000_documents_r2 from './20261020_120000_docum
 import * as migration_20261020_162638_seo_texts from './20261020_162638_seo_texts';
 import * as migration_20261020_170551_seo_titles_advertise from './20261020_170551_seo_titles_advertise';
 import * as migration_20261029_171441_auto_import from './20261029_171441_auto_import';
+import * as migration_20261030_153107_import_dismissed from './20261030_153107_import_dismissed';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20261029_171441_auto_import.up,
     down: migration_20261029_171441_auto_import.down,
-    name: '20261029_171441_auto_import'
+    name: '20261029_171441_auto_import',
+  },
+  {
+    up: migration_20261030_153107_import_dismissed.up,
+    down: migration_20261030_153107_import_dismissed.down,
+    name: '20261030_153107_import_dismissed'
   },
 ];

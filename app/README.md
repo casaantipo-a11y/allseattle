@@ -234,6 +234,16 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     (`updatedAt` within a second of `createdAt`): news after 14 days; events once their date has
     passed (an upcoming one would simply be imported again). Published and manual items and
     anything an editor saved are never touched.
+  - **A deleted draft stays deleted** (30.10.2026, migration `20261030_153107_import_dismissed`,
+    one nullable `jsonb` column). The importer only knows what is in the database, so a draft an
+    editor deleted looked new again and came back every morning (events for the whole 60-day
+    window). `import-sources.dismissed` (hidden in the admin, written by the hook only) now holds
+    `{ externalId: time }`: the `afterDelete` hook on News and Events (`lib/import/dismissed.ts`)
+    adds the id of a deleted imported item with **one SQL statement** (`jsonb ||`), because
+    deleting twenty drafts in the admin runs the hooks side by side and read-then-save would drop
+    some. The importers skip those ids (`deleted by an editor` in the skip reasons). The importer's
+    own cleanup passes `context.importCleanup` and is not remembered; entries older than 70 days
+    are pruned at the end of each run (nothing can come back after the 60/3-day windows).
   - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`), only when there are new
     drafts, a source starts failing (reported once, again only if the text changes) or recovers.
     If Resend refuses, the error stays in the source's "Last run" block and is not repeated.
@@ -255,6 +265,14 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     (`concerts-live-music`, `sports-events`, …); `IMPORT_ENABLE_TICKETMASTER=1` with the setup
     script switches that source on once the key is on the server. SPD Blotter (crime news) is
     excluded by the owner.
+  - **Parsers and untrusted text** (30.10.2026). A feed is not trusted, and its text runs through
+    regexes in one synchronous stretch the run's time limit cannot interrupt, so `text.ts`,
+    `rss.ts` and `ics.ts` avoid patterns that rescan the rest of the text from every unclosed
+    opening (`[^>]*`, lazy `[\s\S]*?`): a tag never contains `<`, a missing close is looked for
+    once, input is cut at 250 000 characters. 160 000 characters of `<br ` used to take 19 s,
+    now milliseconds. A plain-date `DTSTART` (all-day event) no longer fails the whole calendar;
+    impossible dates are refused instead of rolling over; a bare `<` in text is kept. A source is
+    not started with less than 15 s of the budget left (`START_MARGIN_MS`).
   - **Not built / limits.** No Eventbrite, Meetup or HTML scraping; no images; RSS 1.0 dates
     (`dc:date`) and non-UTF-8 feeds are not read; two runs at once are safe (the unique index and
     a slug retry), but not meant to happen. There is no test runner: it was checked with throw-away

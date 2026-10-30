@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
+import { rememberDismissed } from '../lib/import/dismissed'
 import { importFields, importIndexes } from './ImportSources'
 
 // Every page that shows news reads it through unstable_cache tagged "news",
@@ -30,7 +31,7 @@ export const News: CollectionConfig = {
   hooks: {
     beforeChange: [rememberOldSlug],
     afterChange: [revalidate.afterChange],
-    afterDelete: [revalidate.afterDelete],
+    afterDelete: [revalidate.afterDelete, rememberDismissed],
   },
   fields: [
     { name: 'title', type: 'text', required: true },

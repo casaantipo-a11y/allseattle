@@ -420,6 +420,15 @@ export interface ImportSource {
    * How many items a run reads from the source, soonest first. Ones already imported are skipped; raise it to bring in more.
    */
   maxItemsPerRun?: number | null;
+  dismissed?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   lastRunAt?: string | null;
   /**
    * e.g. “12 new, 30 skipped”.
@@ -1999,6 +2008,7 @@ export interface ImportSourcesSelect<T extends boolean = true> {
   defaultCategory?: T;
   enabled?: T;
   maxItemsPerRun?: T;
+  dismissed?: T;
   lastRunAt?: T;
   lastResult?: T;
   lastError?: T;

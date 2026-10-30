@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 
 import type { ImportSource } from '@/payload-types'
 
+import { dismissedOf } from './dismissed'
 import { fetchText } from './http'
 import { icsCandidates } from './ics'
 import { htmlToText, richTextFrom, summaryFrom } from './text'
@@ -81,6 +82,7 @@ export async function importEvents(payload: Payload, source: ImportSource, deadl
       select: { externalId: true },
     })
     for (const r of rows.docs) if (r.externalId) existing.add(r.externalId)
+    const dismissed = dismissedOf(source)
 
     let geocodes = 0
     const geocodeFailed = new Set<string>()
@@ -98,6 +100,10 @@ export async function importEvents(payload: Payload, source: ImportSource, deadl
       }
       if (existing.has(c.externalId)) {
         skip(stats, 'exists')
+        continue
+      }
+      if (dismissed.has(c.externalId)) {
+        skip(stats, 'deleted by an editor')
         continue
       }
       existing.add(c.externalId)

@@ -5,6 +5,7 @@ import type { Payload } from 'payload'
 import type { ImportSource } from '@/payload-types'
 
 import { slugify } from '../../fields'
+import { dismissedOf } from './dismissed'
 import { fetchText } from './http'
 import { parseFeed } from './rss'
 import { oneLine, richTextFrom, safeLink, summaryFrom } from './text'
@@ -62,6 +63,7 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
       select: { externalId: true },
     })
     for (const r of rows.docs) if (r.externalId) existing.add(r.externalId)
+    const dismissed = dismissedOf(source)
 
     // Aggregators (news.seattle.gov) repeat stories other feeds carry, with the same link
     // to the original. A story whose link is already on a news item — from any source —
@@ -92,6 +94,10 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
       }
       if (existing.has(item.id)) {
         skip(stats, 'exists')
+        continue
+      }
+      if (dismissed.has(item.id)) {
+        skip(stats, 'deleted by an editor')
         continue
       }
       existing.add(item.id)
