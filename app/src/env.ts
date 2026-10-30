@@ -32,6 +32,7 @@ const schema = z.object({
   STRIPE_MANAGED_PAYMENTS: optional,
   STRIPE_TAX_CODE: optional,
   CRON_SECRET: optional,
+  TICKETMASTER_API_KEY: optional,
   SEED_ADMIN_EMAIL: optional,
   SEED_ADMIN_PASSWORD: optional,
 })

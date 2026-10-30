@@ -200,6 +200,60 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   `20261020_120000_documents_r2` adds the plugin's `_objectkey` and `prefix` columns (written by
   hand with IF NOT EXISTS — locally the plugin is off, so `migrate:create` never sees them).
   Checked on production: JPG/PNG/PDF upload, the R2 link opens, delete.
+- **Automatic import of events and news (29–30.10.2026, branch `feature/auto-import`).** Drafts
+  only: nothing imported is published or sent anywhere by itself, and no AI is involved (the
+  owner dropped the "rewrite with Claude" plan on 29.10 — cost and risk). Collection
+  `import-sources` (group "Import", admins write, staff read): name, type (`ticketmaster` /
+  `ics` / `rss`), target (`events` / `news`), url, default category (an event or a news
+  category, matching the target), enabled, `maxItemsPerRun`, and the read-only last run
+  (`lastRunAt`, `lastResult`, `lastError`). Events and News got `origin` (manual / import,
+  locked after creation), `importSource`, `externalId` and a unique `(importSource, externalId)`
+  index — migration `20261029_171441_auto_import`, applied on Neon by the next deploy (the
+  `vercel-build` script runs `pnpm migrate` first). Code in `src/lib/import/`: `http.ts` (every request goes through
+  `fetchText`: https only, private hosts and DNS checked, redirects re-checked, 20 s timeout,
+  5 MB cap), `text.ts` (all markup stripped to plain text, rich text built from it),
+  `ticketmaster.ts`, `ics.ts` + `time.ts`, `events.ts`, `rss.ts` (RSS 2.0 and Atom, no XML
+  library), `news.ts`, `run.ts`.
+  - **Run.** `/api/cron/daily` (the existing Vercel Cron, 16:00 UTC = 9:00 Seattle in summer,
+    8:00 in winter) sends the reminders, then `runDailyImport`: every enabled source, the ones
+    that waited longest first, 50 s in all (`maxDuration` 60). One source failing never stops the
+    others, and a failing half of the cron never stops the other half (the answer is then 500).
+    There is no "run now" button: a new or fixed source is picked up by the next morning's run.
+  - **Meaning of the limits.** `maxItemsPerRun` is how many items a run *reads* from the source
+    (newest / soonest first), not how many it creates, so a second run right after the first
+    creates nothing. News: only items from the last 3 days (`NEWS_WINDOW_DAYS`); events: up to 60
+    days ahead (`WINDOW_DAYS`). Items outside the window are not counted as skipped.
+  - **News drafts** carry the feed's own text, cleaned of HTML, an excerpt cut from it, the link
+    to the original in `source`, author "AllSeattle", the source's default category, no cover
+    (the feeds have no usable pictures; article pages are never fetched) and `publishedAt` =
+    import time. The text belongs to its source: an editor rewrites it and adds a cover before
+    publishing. A story whose original link is already on any news item is skipped
+    (`duplicate link`) — news.seattle.gov repeats stories of the departments' blogs. A slug that
+    is taken gets `-<6 hex of sha1(item id)>`, which keeps it stable between runs.
+  - **Cleanup** (end of every run) deletes only imported drafts nobody has saved since
+    (`updatedAt` within a second of `createdAt`): news after 14 days; events once their date has
+    passed (an upcoming one would simply be imported again). Published and manual items and
+    anything an editor saved are never touched.
+  - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`), only when there are new
+    drafts, a source starts failing (reported once, again only if the text changes) or recovers.
+    If Resend refuses, the error stays in the source's "Last run" block and is not repeated.
+  - **Env.** `CRON_SECRET` (existing), `NOTIFY_EMAIL` / `RESEND_*` (existing),
+    `TICKETMASTER_API_KEY` (new, optional — without it the Ticketmaster source reports that).
+  - **Sources on production** (the migration creates tables only): `pnpm import-setup:prod`
+    (`src/scripts/setup-import.ts`, through `scripts/prod.mjs`) creates the news category
+    "City Hall" (slug `IMPORT_NEWS_CATEGORY`, default `city-hall`) and the six sources: Ticketmaster
+    Seattle (created **disabled** until `TICKETMASTER_API_KEY` is on the server), the ICS calendars
+    `https://www.trumba.com/calendars/parks-recreation.ics` and
+    `https://www.trumba.com/calendars/seattlegov-city-wide.ics`, and the news feeds
+    `https://news.seattle.gov/feed/`, `https://sdotblog.seattle.gov/feed/`,
+    `https://feeds.feedburner.com/wsdotblog`. It needs the event category `IMPORT_EVENT_CATEGORY`
+    (default `community`) to exist and never creates one; sources are matched by type and
+    address, so a second run changes nothing. `pnpm import-run:prod` is the daily import once, on
+    demand, without the customer reminders. SPD Blotter (crime news) is excluded by the owner.
+  - **Not built / limits.** No Eventbrite, Meetup or HTML scraping; no images; RSS 1.0 dates
+    (`dc:date`) and non-UTF-8 feeds are not read; two runs at once are safe (the unique index and
+    a slug retry), but not meant to happen. There is no test runner: it was checked with throw-away
+    scripts against the local database (fixture feeds through a replaced `fetch`, mail off).
 
 ## Local development
 

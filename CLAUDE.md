@@ -31,7 +31,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   wildcard certificate, business subdomains like `mvstar.allseattle.org` on). The open work and
   the client's pending answers are in `tasks-2026-10-23.md` (local only, gitignored). Each step is a section of `app/README.md`; the owner's side is in
   `app/ADMIN_GUIDE.md`. The account UI lives in `app/src/app/(frontend)/account/` and
-  `src/components/account/`; write routes go through `src/lib/cabinet.ts` and friends.
+  `src/components/account/`; write routes go through `src/lib/cabinet.ts` and friends. The
+  **automatic import** of events and news as drafts (no AI; code in `src/lib/import/`, run from
+  `/api/cron/daily`; branch `feature/auto-import`) has its own section in `app/README.md` — every
+  outgoing request there goes through `fetchText`.
 
 ## What this is
 
