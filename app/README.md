@@ -214,11 +214,19 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   5 MB cap), `text.ts` (all markup stripped to plain text, rich text built from it),
   `ticketmaster.ts`, `ics.ts` + `time.ts`, `events.ts`, `rss.ts` (RSS 2.0 and Atom, no XML
   library), `news.ts`, `run.ts`.
-  - **Run.** `/api/cron/daily` (the existing Vercel Cron, 16:00 UTC = 9:00 Seattle in summer,
-    8:00 in winter) sends the reminders, then `runDailyImport`: every enabled source, the ones
-    that waited longest first, 50 s in all (`maxDuration` 60). One source failing never stops the
+  - **Run.** Two Vercel Crons (the project is on the Pro plan; Hobby allows only daily ones).
+    `/api/cron/daily` (16:00 UTC = 9:00 Seattle in summer, 8:00 in winter) sends the reminders,
+    then `runDailyImport`: every enabled source, the ones that waited longest first, 50 s in all
+    (`maxDuration` 60), the cleanup and the day's one report. One source failing never stops the
     others, and a failing half of the cron never stops the other half (the answer is then 500).
-    There is no "run now" button: a new or fixed source is picked up by the next morning's run.
+    **News through the day (31.10.2026, owner's request):** `/api/cron/import` (13, 19, 22, 1 and
+    4 UTC — with the 16:00 run, every 3 hours from 6:00 to 21:00 Seattle) calls
+    `runDailyImport(deadline, { digest: false })`: the news sources only, no cleanup, no report of
+    new drafts; only a source starting to fail or recovering is mailed. The hours skip 16 on
+    purpose so two imports never overlap (the unique `(importSource, externalId)` index would
+    save the data anyway). The morning report counts what the importers made in the last 24
+    hours, whichever run made it. Same `CRON_SECRET`. There is no "run now" button: a new or
+    fixed source is picked up by the next run of its kind.
   - **Meaning of the limits.** `maxItemsPerRun` is how many items a run *reads* from the source
     (newest / soonest first), not how many it creates, so a second run right after the first
     creates nothing. News: only items from the last 3 days (`NEWS_WINDOW_DAYS`); events: up to 60
@@ -226,7 +234,10 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   - **News drafts** carry the feed's own text, cleaned of HTML, an excerpt cut from it, the link
     to the original in `source`, author "AllSeattle", the source's default category, no cover
     (the feeds have no usable pictures; article pages are never fetched) and `publishedAt` =
-    import time. The text belongs to its source: an editor rewrites it and adds a cover before
+    the time the feed gives the story (capped at now; before 31.10.2026 it was the import time,
+    which put every morning's drafts at 9:00 AM). It is only the label and the sort key on the
+    site: the public queries filter on `status`, not on the date, so a future time does not hide
+    a published story. The text belongs to its source: an editor rewrites it and adds a cover before
     publishing. A story whose original link is already on any news item is skipped
     (`duplicate link`) — news.seattle.gov repeats stories of the departments' blogs. A slug that
     is taken gets `-<6 hex of sha1(item id)>`, which keeps it stable between runs.
@@ -244,8 +255,9 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     some. The importers skip those ids (`deleted by an editor` in the skip reasons). The importer's
     own cleanup passes `context.importCleanup` and is not remembered; entries older than 70 days
     are pruned at the end of each run (nothing can come back after the 60/3-day windows).
-  - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`), only when there are new
-    drafts, a source starts failing (reported once, again only if the text changes) or recovers.
+  - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`): the morning run, when
+    something was imported in the last 24 hours, a source starts failing (reported once, again
+    only if the text changes) or recovers; the news runs through the day mail only the last two.
     If Resend refuses, the error stays in the source's "Last run" block and is not repeated.
   - **Env.** `CRON_SECRET` (existing), `NOTIFY_EMAIL` / `RESEND_*` (existing),
     `TICKETMASTER_API_KEY` (new, optional — without it the Ticketmaster source reports that).

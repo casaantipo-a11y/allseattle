@@ -139,8 +139,9 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
               category: fallbackId,
               author: 'AllSeattle',
               status: 'draft',
-              // Import time, as the field's own default would give; the editor sets it when publishing.
-              publishedAt: new Date().toISOString(),
+              // The time the source gave the story (never later than now: the feed window allows an hour ahead).
+              // The editor can still change it when publishing.
+              publishedAt: new Date(Math.min(item.publishedAt!.getTime(), Date.now())).toISOString(),
               origin: 'import',
               importSource: source.id,
               externalId: item.id,

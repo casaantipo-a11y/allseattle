@@ -10,10 +10,13 @@ import { importEvents } from './events'
 import { importNews } from './news'
 import { errorMessage, type ImportStats } from './types'
 
-// The daily import (stage 4), run from /api/cron/daily after the reminders: every
-// enabled source once, an old untouched draft cleaned away, and one email to the team
-// when something new arrived or a source started failing. A source that fails never
-// stops the others; its error is kept on the source (lastError) for the admin.
+// The import (stage 4). Two kinds of run:
+//  - the morning run (/api/cron/daily, after the reminders; `digest`): every enabled source,
+//    an old untouched draft cleaned away, and the day's one email to the team (what is new in
+//    the last 24 hours, a source failing or recovering);
+//  - the news runs through the day (/api/cron/import, no digest): the news sources only, no
+//    cleanup; an email only when a source starts failing or recovers.
+// A source that fails never stops the others; its error is kept on the source (lastError).
 
 /** An unreviewed news draft is deleted after this long. */
 const NEWS_DRAFT_DAYS = 14
@@ -69,17 +72,29 @@ async function cleanOldDrafts(payload: Payload, now: number) {
   return deleted
 }
 
-async function mailTeam(payload: Payload, reports: Report[], deleted: number) {
-  const made = (target: string) => reports.filter((r) => r.target === target).reduce((n, r) => n + r.stats.created, 0)
-  const news = made('news')
-  const events = made('events')
+/**
+ * Imported items made in the last day, whichever run made them: the news runs through the
+ * day each make a few, and the morning report counts them all.
+ */
+async function madeSince(payload: Payload, collection: 'news' | 'events', since: number) {
+  const { totalDocs } = await payload.count({
+    collection,
+    where: { and: [{ origin: { equals: 'import' } }, { createdAt: { greater_than: new Date(since).toISOString() } }] },
+  })
+  return totalDocs
+}
+
+/** `digest` is the morning run: it alone reports the new drafts; the others mail only a source failing or recovering. */
+async function mailTeam(payload: Payload, reports: Report[], deleted: number, digest: boolean, now: number) {
+  const news = digest ? await madeSince(payload, 'news', now - DAY) : 0
+  const events = digest ? await madeSince(payload, 'events', now - DAY) : 0
   const failing = reports.filter((r) => r.error)
   const recovered = reports.filter((r) => r.recovered)
   if (!news && !events && !failing.length && !recovered.length) return false
 
   const paragraphs: string[] = []
   if (news || events) {
-    paragraphs.push([news ? `${news} news` : '', events ? `${events} event${events === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ') + ' waiting as drafts.')
+    paragraphs.push([news ? `${news} news` : '', events ? `${events} event${events === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ') + ' new in the last 24 hours.')
     if (news) paragraphs.push('Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing.')
   }
   for (const r of failing) paragraphs.push(`${r.name}: ${r.error}`)
@@ -99,9 +114,20 @@ async function mailTeam(payload: Payload, reports: Report[], deleted: number) {
   return true
 }
 
-export async function runDailyImport(deadline: number, now = Date.now()) {
+type RunOptions = {
+  now?: number
+  /** The morning run (default): every source, the cleanup, and the one report of the day. Off: a news-only run through the day. */
+  digest?: boolean
+}
+
+export async function runDailyImport(deadline: number, { now = Date.now(), digest = true }: RunOptions = {}) {
   const payload = await getPayload({ config })
-  const { docs } = await payload.find({ collection: 'import-sources', where: { enabled: { equals: true } }, pagination: false, depth: 0 })
+  const { docs } = await payload.find({
+    collection: 'import-sources',
+    where: { and: [{ enabled: { equals: true } }, ...(digest ? [] : [{ target: { equals: 'news' } }])] },
+    pagination: false,
+    depth: 0,
+  })
   // The sources that waited longest go first, so a run that ends on the time limit
   // doesn't starve the same ones every day.
   const sources = (docs as ImportSource[]).sort((a, b) => (a.lastRunAt ? Date.parse(a.lastRunAt) : 0) - (b.lastRunAt ? Date.parse(b.lastRunAt) : 0))
@@ -137,19 +163,21 @@ export async function runDailyImport(deadline: number, now = Date.now()) {
   }
 
   let deleted = 0
-  try {
-    deleted = await cleanOldDrafts(payload, now)
-  } catch (e) {
-    console.error('[import] cleanup failed', e)
-  }
-  try {
-    await pruneDismissed(payload, now)
-  } catch (e) {
-    console.error('[import] could not prune the list of deleted items', e)
+  if (digest) {
+    try {
+      deleted = await cleanOldDrafts(payload, now)
+    } catch (e) {
+      console.error('[import] cleanup failed', e)
+    }
+    try {
+      await pruneDismissed(payload, now)
+    } catch (e) {
+      console.error('[import] could not prune the list of deleted items', e)
+    }
   }
   let mailed = false
   try {
-    mailed = await mailTeam(payload, reports, deleted)
+    mailed = await mailTeam(payload, reports, deleted, digest, now)
   } catch (e) {
     console.error('[import] report email failed', e)
   }
