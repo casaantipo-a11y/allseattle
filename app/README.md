@@ -255,6 +255,11 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     some. The importers skip those ids (`deleted by an editor` in the skip reasons). The importer's
     own cleanup passes `context.importCleanup` and is not remembered; entries older than 70 days
     are pruned at the end of each run (nothing can come back after the 60/3-day windows).
+  - **Overlapping calendars** (1.11.2026). The two Trumba calendars (parks, city-wide) carry the
+    same event under the same UID, and "already imported" was kept per source, so each made its
+    own draft (the editor saw every event twice). An ICS source now also counts what any other
+    ICS source imported or had deleted (`importEvents`). Events from different kinds of source
+    (Ticketmaster vs a calendar) are still not compared, unlike news, which is matched by link.
   - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`): the morning run, when
     something was imported in the last 24 hours, a source starts failing (reported once, again
     only if the text changes) or recovers; the news runs through the day mail only the last two.

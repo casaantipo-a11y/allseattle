@@ -73,16 +73,23 @@ export async function importEvents(payload: Payload, source: ImportSource, deadl
     for (const c of (await payload.find({ collection: 'event-categories', pagination: false, depth: 0, select: { slug: true } })).docs) {
       if (c.slug) categories.set(c.slug, c.id)
     }
+    // Calendars overlap: the city-wide Trumba calendar carries the parks' events under the same
+    // UID, so two ICS sources would each make their own draft of one event. An ICS source
+    // therefore counts what any ICS source has already imported or had deleted.
+    const related =
+      source.type === 'ics'
+        ? ((await payload.find({ collection: 'import-sources', where: { type: { equals: 'ics' } }, pagination: false, depth: 0 })).docs as ImportSource[])
+        : [source]
     const existing = new Set<string>()
     const rows = await payload.find({
       collection: 'events',
-      where: { importSource: { equals: source.id } },
+      where: { importSource: { in: related.map((s) => s.id) } },
       pagination: false,
       depth: 0,
       select: { externalId: true },
     })
     for (const r of rows.docs) if (r.externalId) existing.add(r.externalId)
-    const dismissed = dismissedOf(source)
+    const dismissed = new Set(related.flatMap((s) => [...dismissedOf(s)]))
 
     let geocodes = 0
     const geocodeFailed = new Set<string>()
