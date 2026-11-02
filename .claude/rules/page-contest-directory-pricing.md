@@ -260,3 +260,15 @@ the site lists it (directory rows, map, Similar places, cabinet "View", canonica
 the subdomain (client, 25.10.2026: "the domain opens but nobody sees it"). `getAllBusinesses`
 must select `subdomain` for that. Links still built as `/biz/…` (Cars dealer, jobs, search)
 reach it through that redirect.
+**The header on a subdomain (02.11.2026, client: "Directory → package → the header says Home,
+and Home does not open").** The business page is drawn at `/`, so `usePathname()` marked Home as
+current, and Home / the logo (`href="/"`) led to the very page you were on — the proxy rewrites
+`/` to the business on that host. Now `NavLinks` marks nothing as current there, and
+`SubdomainHome` (mounted in `SiteHeader`) sends a click on any link to `/` to the main domain
+(capture phase on the document, ahead of `next/link`; `#anchors` such as "Show on map" are left
+alone). Both use `useOnBusinessSubdomain(root)` — browser only, false on the server, so the cached
+HTML does not change — with `ROOT_DOMAIN` passed down from `SiteHeader`. The host rule is shared
+with the proxy in `lib/subdomain.ts`. Links to other paths need nothing: the proxy's 308 handles
+them. To try it locally: `ENABLE_SUBDOMAINS=true ROOT_DOMAIN=localhost`, then
+`http://emeraldcoffee.localhost:3000/` (Chrome and Edge resolve `*.localhost` themselves; the seed
+gives that business a Premium package).

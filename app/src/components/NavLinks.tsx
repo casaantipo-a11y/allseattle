@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { NAV_ICONS, Svg } from './icons'
+import { useOnBusinessSubdomain } from './SubdomainHome'
 
 export type NavItem = {
   label: string
@@ -33,8 +34,11 @@ function isSubActive(pathname: string, url: string, siblings: { url: string }[])
   return !siblings.some((s) => s.url !== url && s.url.length > url.length && isActive(pathname, s.url))
 }
 
-export function NavLinks({ items }: { items: NavItem[] }) {
-  const pathname = usePathname() || '/'
+export function NavLinks({ items, subdomainRoot }: { items: NavItem[]; subdomainRoot?: string }) {
+  // A business subdomain's page is drawn at "/" but is not Home: nothing is current there.
+  const onSubdomain = useOnBusinessSubdomain(subdomainRoot)
+  const current = usePathname() || '/'
+  const pathname = onSubdomain ? '' : current
   const primary = items.filter((i) => i.row === 'primary')
   const secondary = items.filter((i) => i.row === 'secondary')
   return (

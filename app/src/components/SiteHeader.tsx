@@ -5,6 +5,7 @@ import { getHeader } from '@/lib/queries'
 import { Logo } from './Logo'
 import { NavLinks, type NavItem } from './NavLinks'
 import { Svg, UI_ICONS } from './icons'
+import { SubdomainHome } from './SubdomainHome'
 
 // The prototype's header, same classes and structure (css: header.css): logo,
 // two rows of menu centred between the logo and the utilities, sticky on
@@ -19,11 +20,16 @@ export async function SiteHeader() {
     subLinks: (m.subLinks ?? []).map((l) => ({ label: l.label, url: l.url })),
   }))
 
+  // Set while business subdomains are on (src/proxy.ts): there "/" is a business page, so
+  // the nav must not mark Home as current and Home / the logo must reach the main site.
+  const subdomainRoot = process.env.ENABLE_SUBDOMAINS === 'true' ? process.env.ROOT_DOMAIN?.toLowerCase() || undefined : undefined
+
   return (
     <header className="site-header" id="site-header-functional">
+      <SubdomainHome root={subdomainRoot} />
       <div className="container header-top">
         <Logo href="/" />
-        <NavLinks items={items} />
+        <NavLinks items={items} subdomainRoot={subdomainRoot} />
         <div className="header-utils">
           <span className="lang-switch" title="English" aria-label="Language: English">
             ENG
