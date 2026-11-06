@@ -32,7 +32,7 @@ const START_MARGIN_MS = 15 * 1000
 
 type Report = { name: string; target: string; stats: ImportStats; error: string; recovered: boolean }
 
-const resultText = (s: ImportStats) => `${s.created} new, ${s.skipped} skipped${s.failed ? `, ${s.failed} failed` : ''}`
+const resultText = (s: ImportStats) => `${s.created} new, ${s.skipped} skipped${s.filtered ? `, ${s.filtered} filtered` : ''}${s.failed ? `, ${s.failed} failed` : ''}`
 const errorText = (s: ImportStats) => s.error ?? (s.failed ? `${s.failed} failed — ${s.firstFailure ?? 'see the server log'}` : '')
 
 /**
@@ -143,7 +143,7 @@ export async function runDailyImport(deadline: number, { now = Date.now(), diges
     try {
       stats = source.target === 'news' ? await importNews(payload, source, deadline) : await importEvents(payload, source, deadline)
     } catch (e) {
-      stats = { created: 0, skipped: 0, failed: 0, reasons: {}, error: errorMessage(e) }
+      stats = { created: 0, skipped: 0, filtered: 0, failed: 0, reasons: {}, error: errorMessage(e) }
     }
     const error = errorText(stats)
     const before = source.lastError ?? ''

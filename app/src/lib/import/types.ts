@@ -4,8 +4,10 @@
 export type ImportStats = {
   created: number
   skipped: number
+  /** Items the source's own rules left out (not about the region, no article page) — never candidates, so not "skipped". */
+  filtered: number
   failed: number
-  /** Why items were skipped, e.g. { exists: 30, 'no location': 2 }. */
+  /** Why items were skipped or filtered, e.g. { exists: 30, 'not about the Seattle area': 12 }. */
   reasons: Record<string, number>
   /** The first message of a failed item, for the admin. */
   firstFailure?: string
@@ -13,10 +15,15 @@ export type ImportStats = {
   error?: string
 }
 
-export const newStats = (): ImportStats => ({ created: 0, skipped: 0, failed: 0, reasons: {} })
+export const newStats = (): ImportStats => ({ created: 0, skipped: 0, filtered: 0, failed: 0, reasons: {} })
 
 export function skip(stats: ImportStats, reason: string) {
   stats.skipped++
+  stats.reasons[reason] = (stats.reasons[reason] ?? 0) + 1
+}
+
+export function filtered(stats: ImportStats, reason: string) {
+  stats.filtered++
   stats.reasons[reason] = (stats.reasons[reason] ?? 0) + 1
 }
 

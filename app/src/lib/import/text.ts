@@ -97,6 +97,33 @@ export function summaryFrom(text: string, max = 280): string {
   return `${(space > max * 0.6 ? cut.slice(0, space) : cut).trim()}…`
 }
 
+/**
+ * Feed text of a news story, tidied: WordPress feeds end an excerpt with "[…]" and a
+ * "The post X appeared first on Y ." line, and some cut mid-word with "...". Neither is part of
+ * the story; a cut ends in a single "…" instead. Line by line, so no pattern can run away on a
+ * long text.
+ */
+export function cleanFeedText(text: string): string {
+  const lines = text.split('\n')
+  while (lines.length && (!lines[lines.length - 1].trim() || /^The post .* appeared first on\b/i.test(lines[lines.length - 1].trim()))) lines.pop()
+  if (!lines.length) return ''
+  lines[lines.length - 1] = lines[lines.length - 1].replace(/\s*(?:\[\s*(?:…|\.{3})\s*\]|\.{3}|…)\s*$/, '…').replace(/[,;:–—-]+…$/, '…')
+  return lines.join('\n').trim()
+}
+
+/**
+ * A story's link as it is stored: http(s) only (safeLink), without the tracking parameters
+ * and the #fragment that make one page look like many.
+ */
+export function cleanLink(raw: string | null | undefined): string | undefined {
+  const href = safeLink(raw)
+  if (!href) return undefined
+  const u = new URL(href)
+  for (const k of [...u.searchParams.keys()]) if (/^(utm_|mc_|mkt_)/i.test(k) || /^(fbclid|gclid|dclid|msclkid|igshid|yclid|_hsenc|_hsmi|ref_src)$/i.test(k)) u.searchParams.delete(k)
+  u.hash = ''
+  return u.href
+}
+
 /** Plain text → Lexical: one paragraph per non-empty line, through the seed helper. */
 export function richTextFrom(text: string) {
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean).slice(0, 60)

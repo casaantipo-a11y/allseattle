@@ -290,6 +290,21 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     now milliseconds. A plain-date `DTSTART` (all-day event) no longer fails the whole calendar;
     impossible dates are refused instead of rolling over; a bare `<` in text is kept. A source is
     not started with less than 15 s of the budget left (`START_MARGIN_MS`).
+  - **News filters and cleaning** (7.11.2026, after the owner deleted ~25 of ~28 drafts a day,
+    mostly Fox 13 stories about other states). Checked against what production held: 117 of 163
+    imported drafts were deleted, 73 of 100 Fox 13 ones. `region.ts`: a feed whose host is in
+    `REGIONAL_ONLY_HOSTS` (now `fox13seattle.com`; no migration, no source ids in code) keeps a
+    story only when its title, text or address words name the Seattle area (cities, counties,
+    "WA", "Washington" but not "Washington, D.C."). City blogs have no filter. Any feed drops
+    `/video/` and `/live-blog/` pages (no article). Both run before the `maxItemsPerRun` cut, so
+    the newest N that pass are read. Counted as `filtered`, not `skipped`: the source's "Last
+    run" reads "8 new, 0 skipped, 17 filtered". Known miss: a local story with no place word in
+    it (e.g. "AG Brown…") is filtered. `text.ts`: `cleanFeedText` removes WordPress's "The post …
+    appeared first on …" line and ends a cut text with one "…" (it was `[…]` / `...` on 29 of 30
+    stories); `cleanLink` stores the story link without `utm_*`, `fbclid` etc. and `#fragment`.
+    No HTTP check of the links: every one of the 186 on file answered 200, and 20 requests per
+    source would eat the cron's 60 s. Duplicate stories across sources (about six pairs) are not
+    caught.
   - **Not built / limits.** No Eventbrite, Meetup or HTML scraping; no images; RSS 1.0 dates
     (`dc:date`) and non-UTF-8 feeds are not read; two runs at once are safe (the unique index and
     a slug retry), but not meant to happen. There is no test runner: it was checked with throw-away
@@ -333,7 +348,9 @@ Useful scripts:
 |---|---|
 | `pnpm db` | local PostgreSQL (embedded, no install) |
 | `pnpm seed` | admin user, demo news with photos (`isDemo`), settings, header, footer, placeholder pages. Safe to re-run |
-| `pnpm purge-demo` | deletes everything marked `isDemo` after typing `DELETE` (`PURGE_DEMO_YES=1` skips the question) |
+| `pnpm purge-demo` | deletes everything marked `isDemo` after typing `DELETE` (`PURGE_DEMO_YES=1` skips the question). **Not on production as it stands (03.11.2026):** 9 of 10 news categories, 127 of 132 business categories, all 9 job categories and 318 pictures there are marked `isDemo` too, and the live news and businesses use them |
+| `pnpm hide-demo` | takes the demo filler off a live site without deleting it: `isDemo` banners that link to a `*.vercel.app` address (a 404) and `isDemo` car listings become Draft; `isDemo` banners that lead to a real website lose the mark. Looks first; `HIDE_DEMO_YES=1` saves. `:prod` variant |
+| `pnpm clean-invisible` | removes invisible characters (U+2060, U+FFFC, U+200B, U+FEFF — what an AI chat adds after a link) from the news title, excerpt, source and text. Looks first; `CLEAN_INVISIBLE_YES=1` saves. `:prod` variant. The News collection strips them on every save anyway (`hooks/stripInvisible.ts`) |
 
 `seed` and `purge-demo` run outside Next.js, so at the end they call `POST /api/revalidate` on
 `NEXT_PUBLIC_SITE_URL` (guarded by `PAYLOAD_SECRET`) to drop the site's cached data; if the site

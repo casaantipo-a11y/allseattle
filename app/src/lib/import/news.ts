@@ -7,9 +7,10 @@ import type { ImportSource } from '@/payload-types'
 import { slugify } from '../../fields'
 import { dismissedOf } from './dismissed'
 import { fetchText } from './http'
+import { isAboutRegion, isRegionalOnlyFeed } from './region'
 import { parseFeed } from './rss'
-import { oneLine, richTextFrom, safeLink, summaryFrom } from './text'
-import { errorMessage, isUniqueViolation, newStats, skip, type ImportStats } from './types'
+import { cleanFeedText, cleanLink, oneLine, richTextFrom, summaryFrom } from './text'
+import { errorMessage, filtered, isUniqueViolation, newStats, skip, type ImportStats } from './types'
 
 // News from RSS / Atom feeds, saved as drafts (status draft, origin import). No AI is
 // involved: the draft carries the feed's own text, cleaned of markup, and the link to
@@ -22,6 +23,15 @@ import { errorMessage, isUniqueViolation, newStats, skip, type ImportStats } fro
 /** Only fresh stories are imported; older ones in the feed are not candidates. */
 const NEWS_WINDOW_DAYS = 3
 const DAY = 24 * 60 * 60 * 1000
+
+/** A video clip or a live blog: the page has no article, and the feed carries a line about it. */
+const noArticle = (link: string) => {
+  try {
+    return /^\/(?:video|live-blog)\//i.test(new URL(link).pathname)
+  } catch {
+    return false
+  }
+}
 
 export async function importNews(payload: Payload, source: ImportSource, deadline: number): Promise<ImportStats> {
   const stats = newStats()
@@ -50,9 +60,24 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
     }
 
     const now = Date.now()
-    const items = parseFeed(xml)
+    const fresh = parseFeed(xml)
       .filter((i) => i.publishedAt && i.publishedAt.getTime() >= now - NEWS_WINDOW_DAYS * DAY && i.publishedAt.getTime() <= now + 60 * 60 * 1000)
       .sort((a, b) => b.publishedAt!.getTime() - a.publishedAt!.getTime())
+
+    // The source's own rules come before the limit below: a run reads the newest `max` items
+    // that pass, not the newest `max` of a feed that is mostly other states.
+    const regionalOnly = isRegionalOnlyFeed(source.url)
+    const items = fresh.filter((i) => {
+      if (noArticle(i.link)) {
+        filtered(stats, 'video or live blog')
+        return false
+      }
+      if (regionalOnly && !isAboutRegion(i)) {
+        filtered(stats, 'not about the Seattle area')
+        return false
+      }
+      return true
+    })
 
     const existing = new Set<string>()
     const rows = await payload.find({
@@ -69,7 +94,7 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
     // to the original. A story whose link is already on a news item — from any source —
     // is not imported again.
     const seenLinks = new Set<string>()
-    const links = items.slice(0, max).flatMap((i) => safeLink(i.link) ?? [])
+    const links = items.slice(0, max).flatMap((i) => cleanLink(i.link) ?? [])
     if (links.length) {
       const dupes = await payload.find({
         collection: 'news',
@@ -103,7 +128,8 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
       existing.add(item.id)
 
       const title = oneLine(item.title, 200)
-      const link = safeLink(item.link)
+      const link = cleanLink(item.link)
+      const text = cleanFeedText(item.text)
       if (!title || !link) {
         skip(stats, 'no title or link')
         continue
@@ -132,8 +158,8 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
             context: { disableRevalidate: true },
             data: {
               title,
-              excerpt: summaryFrom(item.text, 280) || title,
-              ...(item.text ? { content: richTextFrom(item.text) } : {}),
+              excerpt: summaryFrom(text, 280) || title,
+              ...(text ? { content: richTextFrom(text) } : {}),
               source: link,
               slug,
               category: fallbackId,
