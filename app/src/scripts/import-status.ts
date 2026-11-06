@@ -12,7 +12,7 @@ const payload = await getPayload({ config })
 
 const sources = (await payload.find({ collection: 'import-sources', pagination: false, depth: 0, sort: 'id' })).docs
 for (const s of sources) {
-  console.log(`[import-status] #${s.id} ${s.name} | ${s.type} → ${s.target} | ${s.enabled ? 'enabled' : 'DISABLED'} | last run: ${s.lastRunAt ?? 'never'} | ${s.lastResult ?? '-'} | error: ${s.lastError || 'none'}`)
+  console.log(`[import-status] #${s.id} ${s.name} | ${s.type} → ${s.target} | ${s.enabled ? 'enabled' : 'DISABLED'} | last run: ${s.lastRunAt ?? 'never'} | ${s.lastResult ?? '-'} | error: ${s.lastError || 'none'} | url: ${s.url ?? '-'}`)
 }
 
 const draftsOf = async (collection: 'news' | 'events') =>

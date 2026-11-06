@@ -5,6 +5,8 @@
 //   pnpm update-content:prod → pnpm update-content (client-agreed prices, limits, names)
 //   pnpm import-setup:prod → pnpm import-setup (news category + import sources, nothing imported)
 //   pnpm import-run:prod   → pnpm import-run (the daily import once, no customer reminders)
+//   pnpm hide-demo:prod    → pnpm hide-demo (demo banners and cars off the live site, nothing deleted; HIDE_DEMO_YES=1 to save)
+//   pnpm clean-invisible:prod → pnpm clean-invisible (invisible characters out of news; CLEAN_INVISIBLE_YES=1 to save)
 //
 // Settings come from the local, gitignored files .env.neon.local, .env.r2.local
 // and .env.vercel.local. They are read here in Node, not sourced by the shell:
@@ -14,7 +16,7 @@ import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const script = process.argv[2]
-if (!['seed', 'purge-demo', 'update-content', 'import-setup', 'import-run', 'import-status', 'admin-password'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content|import-setup|import-run|import-status|admin-password')
+if (!['seed', 'purge-demo', 'update-content', 'import-setup', 'import-run', 'import-status', 'admin-password', 'hide-demo', 'clean-invisible'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content|import-setup|import-run|import-status|admin-password|hide-demo|clean-invisible')
 
 const read = (f) =>
   Object.fromEntries(

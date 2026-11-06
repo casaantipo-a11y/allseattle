@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
+import { stripInvisibleFrom } from '../hooks/stripInvisible'
 import { rememberDismissed } from '../lib/import/dismissed'
 import { importFields, importIndexes } from './ImportSources'
 
@@ -29,6 +30,8 @@ export const News: CollectionConfig = {
     delete: canWrite('editor'),
   },
   hooks: {
+    // A link pasted from an AI chat carries invisible characters that break it (lib/invisible.ts).
+    beforeValidate: [stripInvisibleFrom('title', 'excerpt', 'source', 'content')],
     beforeChange: [rememberOldSlug],
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete, rememberDismissed],
