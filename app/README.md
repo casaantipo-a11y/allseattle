@@ -209,6 +209,14 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   and R2 would need a long allow-list and a strict one breaks something quietly. `geocodeNote`
   (the internal "address not found" note on businesses and events) is readable by staff only
   (`staffOnlyField`), so `/api/businesses` and `/api/events` no longer show it; no migration.
+  **The old address `allseattle.vercel.app`** answered with a full copy of the site (Google saw
+  two identical sites). `src/proxy.ts` now sends its *pages* to `NEXT_PUBLIC_SITE_URL` with a 308,
+  same path and query, only for that exact host (the `allseattle-xxxx-all-seattle.vercel.app`
+  build addresses are left alone). `/api/*`, `/_next` and files with an extension stay outside the
+  proxy's matcher on purpose: Vercel Cron calls `https://*.vercel.app/api/cron/…` and, like Stripe,
+  does not follow a redirect, so a domain-wide redirect (Vercel → Domains → Redirect to) could
+  silently stop the imports and the webhook. If the webhook is still registered on the old
+  address it keeps working; moving it to allseattle.org is still worth doing.
 - **Automatic import of events and news (29–30.10.2026, branch `feature/auto-import`).** Drafts
   only: nothing imported is published or sent anywhere by itself, and no AI is involved (the
   owner dropped the "rewrite with Claude" plan on 29.10 — cost and risk). Collection
@@ -401,7 +409,8 @@ JSON-LD) is built from `NEXT_PUBLIC_SITE_URL`.
 **Current setup (01.10.2026).** The repository belongs to a friend's account, so Vercel can't
 import it from GitHub. Deploys go from this machine instead: `npx vercel deploy --prod` in `app/`
 (the project is `allseattle` under the `mijckela-4959` Vercel account, live at
-https://allseattle.vercel.app, region `pdx1` from `vercel.json`, next to the Neon database in
+https://allseattle.org — the first address, allseattle.vercel.app, now redirects its pages there —
+region `pdx1` from `vercel.json`, next to the Neon database in
 AWS us-west-2). `.vercelignore` keeps local env files, the local database and local uploads out
 of the upload. Schema push (dev mode) only runs against a local database (`push` in
 `payload.config.ts`), so Neon changes through migrations alone.

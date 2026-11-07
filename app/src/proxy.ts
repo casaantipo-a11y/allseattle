@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
+import { siteUrl } from '@/lib/site'
 import { businessSubdomainOf } from '@/lib/subdomain'
 
 // Business subdomains (spec §5): {subdomain}.{ROOT_DOMAIN}/ shows that
@@ -33,7 +34,31 @@ function businessSubdomain(req: NextRequest): { sub: string; root: string } | nu
   return sub ? { sub, root } : null
 }
 
+// The address the site had before allseattle.org was connected still answers with a full copy
+// of it, and Google saw two identical sites. Its pages go to the real domain with a 308, the
+// same path and query. Only the exact host: the build addresses (allseattle-xxxx-all-seattle
+// .vercel.app) are left alone. The matcher below keeps /api, /_next and files out of the
+// proxy, so the Stripe webhook and the crons — which Vercel and Stripe call and which do not
+// follow a redirect — are not touched.
+const LEGACY_HOSTS = new Set(['allseattle.vercel.app'])
+
+function legacyHostRedirect(req: NextRequest): NextResponse | null {
+  // A trailing dot (`allseattle.vercel.app.`) is the same host written as a full DNS name.
+  const host = (req.headers.get('host') || '').toLowerCase().split(':')[0].replace(/\.$/, '')
+  if (!LEGACY_HOSTS.has(host)) return null
+  const target = new URL(siteUrl())
+  if (target.hostname === host) return null // the site address is the old one: no loop
+  // Set the parts one by one: `new URL('//evil.com', base)` would leave the site (an open redirect).
+  const url = new URL(target.origin)
+  url.pathname = req.nextUrl.pathname
+  url.search = req.nextUrl.search
+  url.searchParams.delete('_rsc')
+  return NextResponse.redirect(url, 308)
+}
+
 export function proxy(req: NextRequest) {
+  const legacy = legacyHostRedirect(req)
+  if (legacy) return legacy
   const found = businessSubdomain(req)
   if (found) {
     if (req.nextUrl.pathname === '/') {
