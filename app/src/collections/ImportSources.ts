@@ -103,6 +103,17 @@ export const ImportSources: CollectionConfig = {
       },
     },
     {
+      // Off by default. Only the news importer reads it (lib/import/images.ts); events never take pictures.
+      name: 'importImages',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Import pictures',
+      admin: {
+        condition: (d) => d?.target === 'news',
+        description: 'Take each story’s picture from the feed, store a resized copy in Media with “Photo: <source name>” as the credit, and set it as the draft’s cover. Turn it on only for sources whose pictures you may use (city and agency blogs), not for commercial news sites. A picture that cannot be fetched or is too small is skipped; the draft is made anyway.',
+      },
+    },
+    {
       // External ids of items an editor deleted, so the next run doesn't bring them back
       // (lib/import/dismissed.ts). Written by the delete hook only, never from the admin.
       name: 'dismissed',
@@ -138,7 +149,7 @@ export const importFields: Field[] = [
       { label: 'Import', value: 'import' },
     ],
     access: { update: () => false },
-    admin: { position: 'sidebar', readOnly: true, description: 'Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing — feeds carry no usable pictures.' },
+    admin: { position: 'sidebar', readOnly: true, description: 'Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and check the cover before publishing — it is the source’s picture where the source has “Import pictures” on, otherwise there is none.' },
   },
   {
     name: 'importSource',

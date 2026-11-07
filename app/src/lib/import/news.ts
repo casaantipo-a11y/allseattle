@@ -7,6 +7,7 @@ import type { ImportSource } from '@/payload-types'
 import { slugify } from '../../fields'
 import { dismissedOf } from './dismissed'
 import { fetchText } from './http'
+import { storePicture } from './images'
 import { isAboutRegion, isRegionalOnlyFeed } from './region'
 import { parseFeed } from './rss'
 import { cleanFeedText, cleanLink, oneLine, richTextFrom, summaryFrom } from './text'
@@ -18,11 +19,22 @@ import { errorMessage, filtered, isUniqueViolation, newStats, skip, type ImportS
 // words before publishing — nothing goes live by itself. An item already imported from
 // the same source — same externalId — is left alone, so a second run right after the
 // first creates nothing; the unique (importSource, externalId) index is the backstop.
-// Article pages are never fetched and images are not imported.
+// Article pages are never fetched. A picture is taken only from the feed itself and only for
+// a source with "Import pictures" on (images.ts); without it there is no cover.
 
 /** Only fresh stories are imported; older ones in the feed are not candidates. */
 const NEWS_WINDOW_DAYS = 3
 const DAY = 24 * 60 * 60 * 1000
+/**
+ * Pictures a run asks for per source: this many stories are tried, and after this many in a
+ * row that gave nothing (a feed of pictures too small, a host that is down) the rest are not.
+ * Then the time left of the run's budget below which it stops asking.
+ */
+const MAX_PICTURE_TRIES = 8
+const MAX_PICTURE_MISSES = 3
+const PICTURE_MARGIN_MS = 15 * 1000
+/** All the tries for one story's picture together. */
+const PICTURE_BUDGET_MS = 12 * 1000
 
 /** A video clip or a live blog: the page has no article, and the feed carries a line about it. */
 const noArticle = (link: string) => {
@@ -36,6 +48,7 @@ const noArticle = (link: string) => {
 export async function importNews(payload: Payload, source: ImportSource, deadline: number): Promise<ImportStats> {
   const stats = newStats()
   const max = source.maxItemsPerRun ?? 20
+  const withPictures = source.importImages === true
 
   const fallback = source.defaultCategory
   const fallbackId = fallback?.relationTo === 'news-categories' ? (typeof fallback.value === 'object' ? fallback.value.id : fallback.value) : null
@@ -110,6 +123,9 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
     // new ones it makes. Run twice in a row it reads the same ones, so the second run
     // creates nothing; a larger limit brings in more of the feed.
     let read = 0
+    let pictureTries = 0
+    let pictureMisses = 0
+    const failedPictures = new Set<string>()
     for (const item of items) {
       if (read >= max) break
       read++
@@ -140,6 +156,27 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
       }
       seenLinks.add(link)
 
+      // Only now — the story is new, so a picture is fetched once, never for a skipped one.
+      // Whatever goes wrong with it, the draft is made anyway.
+      let cover: number | undefined
+      if (withPictures && item.images.length && pictureTries < MAX_PICTURE_TRIES && pictureMisses < MAX_PICTURE_MISSES && Date.now() < deadline - PICTURE_MARGIN_MS) {
+        pictureTries++
+        const id = await storePicture(payload, {
+          candidates: item.images,
+          alt: title,
+          credit: `Photo: ${source.name}`,
+          until: Math.min(deadline - 5000, Date.now() + PICTURE_BUDGET_MS),
+          failed: failedPictures,
+        })
+        if (id) {
+          cover = id
+          pictureMisses = 0
+        } else {
+          pictureMisses++
+        }
+      }
+
+      let saved = false
       try {
         // The slug field makes a slug from the title and adds no suffix, so a second
         // story with the same title would hit the unique index. The suffix comes from
@@ -160,6 +197,7 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
               title,
               excerpt: summaryFrom(text, 280) || title,
               ...(text ? { content: richTextFrom(text) } : {}),
+              ...(cover ? { cover } : {}),
               source: link,
               slug,
               category: fallbackId,
@@ -183,13 +221,19 @@ export async function importNews(payload: Payload, source: ImportSource, deadlin
           if (taken || !slugTaken) throw e
           await make(suffixed)
         }
+        saved = true
         stats.created++
+        if (cover) stats.images = (stats.images ?? 0) + 1
       } catch (e) {
         if (isUniqueViolation(e)) skip(stats, 'exists')
         else {
           stats.failed++
           stats.firstFailure ??= `${title.slice(0, 60)}: ${errorMessage(e)}`
         }
+      }
+      // The picture was stored before the draft; a draft that did not get made must not leave it behind.
+      if (cover && !saved) {
+        await payload.delete({ collection: 'media', id: cover, overrideAccess: true }).catch((e) => console.error('[import] could not delete an unused picture', e))
       }
     }
   } catch (e) {

@@ -21,6 +21,7 @@ import * as migration_20261020_170551_seo_titles_advertise from './20261020_1705
 import * as migration_20261029_171441_auto_import from './20261029_171441_auto_import';
 import * as migration_20261030_153107_import_dismissed from './20261030_153107_import_dismissed';
 import * as migration_20261107_000506_publish_immediately from './20261107_000506_publish_immediately';
+import * as migration_20261107_002759_import_images from './20261107_002759_import_images';
 
 export const migrations = [
   {
@@ -136,6 +137,11 @@ export const migrations = [
   {
     up: migration_20261107_000506_publish_immediately.up,
     down: migration_20261107_000506_publish_immediately.down,
-    name: '20261107_000506_publish_immediately'
+    name: '20261107_000506_publish_immediately',
+  },
+  {
+    up: migration_20261107_002759_import_images.up,
+    down: migration_20261107_002759_import_images.down,
+    name: '20261107_002759_import_images'
   },
 ];

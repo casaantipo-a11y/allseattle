@@ -250,13 +250,13 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     creates nothing. News: only items from the last 3 days (`NEWS_WINDOW_DAYS`); events: up to 60
     days ahead (`WINDOW_DAYS`). Items outside the window are not counted as skipped.
   - **News drafts** carry the feed's own text, cleaned of HTML, an excerpt cut from it, the link
-    to the original in `source`, author "AllSeattle", the source's default category, no cover
-    (the feeds have no usable pictures; article pages are never fetched) and `publishedAt` =
+    to the original in `source`, author "AllSeattle", the source's default category, a cover only
+    from a source with "Import pictures" on (below; article pages are never fetched) and `publishedAt` =
     the time the feed gives the story (capped at now; before 31.10.2026 it was the import time,
     which put every morning's drafts at 9:00 AM). It is only the label and the sort key on the
     site: the public queries filter on `status`, not on the date, so a future time does not hide
-    a published story. The text belongs to its source: an editor rewrites it and adds a cover before
-    publishing. A story whose original link is already on any news item is skipped
+    a published story. The text belongs to its source: an editor rewrites it, and adds a cover
+    where there is none, before publishing. A story whose original link is already on any news item is skipped
     (`duplicate link`) — news.seattle.gov repeats stories of the departments' blogs. A slug that
     is taken gets `-<6 hex of sha1(item id)>`, which keeps it stable between runs.
   - **Cleanup** (end of every run) deletes only imported drafts nobody has saved since
@@ -341,7 +341,56 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     No HTTP check of the links: every one of the 186 on file answered 200, and 20 requests per
     source would eat the cron's 60 s. Duplicate stories across sources (about six pairs) are not
     caught.
-  - **Not built / limits.** No Eventbrite, Meetup or HTML scraping; no images; RSS 1.0 dates
+  - **Import pictures** (7.11.2026, migration `20261107_002759_import_images`: one
+    `boolean DEFAULT false` column on `import_sources`). Per news source (the admin shows it when
+    Target is News; events never read it). Off everywhere, Fox 13 included: a commercial
+    broadcaster's photos are not ours to copy; it is meant for city and agency feeds, and the
+    owner ticks it source by source (no script, nothing is switched on by the deploy). The
+    picture comes **from the feed only** (`rss.ts` `imagesOf`, best first: `media:content`,
+    `enclosure`, the first three `<img>` in `content:encoded`/`description`, `media:thumbnail`;
+    de-duplicated, at most 4; a tag whose own `width`/`height` says under 100 px — 300 for a
+    thumbnail — is left out, which drops counters and icons, and the real size is checked after
+    the download). A WordPress feed carries a
+    `-150x150` cut; the original (suffix stripped) is tried first and the cut after it, and the
+    cut is refused anyway as too small — a 150 px cover is worse than none. `images.ts`
+    `storePicture` tries up to 4 candidates, `http.ts` `fetchImage` fetches each (https, public
+    hosts, redirects re-checked, 4 MB, 8 s, JPEG/PNG/WebP by the declared type **and** by the
+    file's own first bytes — an SVG or an HTML page sent as `image/jpeg` is refused), sharp
+    decodes it (`limitInputPixels` 50 M against decompression bombs), refuses under 640×300,
+    scales to at most 1600 px wide and saves a WebP into **Media** (so the card/thumb sizes and
+    R2 work as for any upload), `alt` = the title, `credit` = "Photo: <source name>" (the article
+    page already shows it as the caption). The draft's `cover` is that Media item. **A picture
+    never blocks a story:** any failure is logged (host and reason, not the address) and the
+    draft is made without a cover. Budgets: pictures are tried for at most 8 stories per source per
+    run, and after 3 stories in a row that gave none (pictures too small, a host that is down)
+    the source gets no more that run; an address that failed is not asked again in the run; 12 s
+    per story; none started in the last 15 s of the run. One timer covers a request **and** all
+    its redirects and the body (the first version restarted it on every hop, so four slow hops
+    could outlast the cron's 60 s; `fetchText` had the same flaw). The pictures are fetched only
+    for a story that is about to be created, so a second run fetches nothing. A picture is stored
+    before its draft: a draft that fails to save deletes it again. "Last run" reads "12 new (3 with a
+    picture), …". Checked locally: fixture feeds through a replaced `fetch` (12 stories on an
+    "on" source: 3 covers from `media:content`, `enclosure` and a WordPress original, with the
+    150 px cut never requested; a plain-http address, a redirect to `127.0.0.1`, an HTML page, an
+    SVG sent as a JPEG, a 5 MB file, a 404, a 1 px pixel and a 400 px picture each rejected for
+    their reason; the "off" source made no image request; a second run made none), and the real
+    feeds: SDOT 2 of 2 stories got a cover (1600 px, ~340 KB), WSDOT 1 of 1 (640×480), news.seattle.gov
+    1 of 12 (the rest have no picture in the feed). **Deleting a story takes its picture along**
+    (`dropImportedCover`, afterDelete of News, so an editor's "Delete" and the 14-day cleanup
+    alike): only the importer's own copy — file `import-…`, credit "Photo: …" — and only when no
+    other news item has it as its cover. A Media item an editor reused elsewhere (a business
+    image, say) is not looked for. `security-reviewer` also found that `isPrivateIp` let through
+    IPv6 forms that carry a private IPv4 (NAT64 `64:ff9b::`, 6to4 `2002::/16`, `::7f00:1`,
+    site-local) and `192.0.0.0/24`, `198.18.0.0/15`: IPv6 is now allowed only inside 2000::/3
+    minus 6to4, Teredo and the documentation range. Checked with a throw-away script (sixteen
+    refused forms, three public ones allowed; four slow redirect hops cut at 3.0 s by a 3 s
+    limit; 6 stories with small pictures → 3 requests; one dead address in 5 stories → 1 request;
+    a draft that failed to save left no picture; a deleted draft's picture went, one still used
+    by another story stayed). Blogger (WSDOT) pictures are often under 640 px and are then
+    skipped. Whether the sources' pictures may be used with a credit is the
+    client's question to Andrey; until it is answered no source has the box ticked.
+  - **Not built / limits.** No Eventbrite, Meetup or HTML scraping; no images for events and none
+    from article pages; RSS 1.0 dates
     (`dc:date`) and non-UTF-8 feeds are not read; two runs at once are safe (the unique index and
     a slug retry), but not meant to happen. There is no test runner: it was checked with throw-away
     scripts against the local database (fixture feeds through a replaced `fetch`, mail off).

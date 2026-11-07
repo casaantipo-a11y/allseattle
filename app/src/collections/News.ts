@@ -5,6 +5,7 @@ import { isDemoField, slugField, slugHistoryField, statusField } from '../fields
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { stripInvisibleFrom } from '../hooks/stripInvisible'
 import { rememberDismissed } from '../lib/import/dismissed'
+import { dropImportedCover } from '../lib/import/images'
 import { importFields, importIndexes } from './ImportSources'
 
 // Every page that shows news reads it through unstable_cache tagged "news",
@@ -34,7 +35,7 @@ export const News: CollectionConfig = {
     beforeValidate: [stripInvisibleFrom('title', 'excerpt', 'source', 'content')],
     beforeChange: [rememberOldSlug],
     afterChange: [revalidate.afterChange],
-    afterDelete: [revalidate.afterDelete, rememberDismissed],
+    afterDelete: [revalidate.afterDelete, rememberDismissed, dropImportedCover],
   },
   fields: [
     { name: 'title', type: 'text', required: true },

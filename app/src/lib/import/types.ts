@@ -5,6 +5,8 @@ export type ImportStats = {
   created: number
   /** Of `created`, the events saved as published because the source has "Publish immediately" on. */
   published?: number
+  /** Of `created`, the news drafts that got a cover from the source's picture ("Import pictures"). */
+  images?: number
   skipped: number
   /** Items the source's own rules left out (not about the region, no article page) — never candidates, so not "skipped". */
   filtered: number

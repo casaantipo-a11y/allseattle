@@ -255,7 +255,7 @@ export interface News {
       }[]
     | null;
   /**
-   * Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing — feeds carry no usable pictures.
+   * Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and check the cover before publishing — it is the source’s picture where the source has “Import pictures” on, otherwise there is none.
    */
   origin?: ('manual' | 'import') | null;
   importSource?: (number | null) | ImportSource;
@@ -424,6 +424,10 @@ export interface ImportSource {
    * Events from this source go live on the site at once instead of waiting as drafts. Turn it on for sources you trust; you can still unpublish or delete any event, and a deleted one does not come back.
    */
   publishImmediately?: boolean | null;
+  /**
+   * Take each story’s picture from the feed, store a resized copy in Media with “Photo: <source name>” as the credit, and set it as the draft’s cover. Turn it on only for sources whose pictures you may use (city and agency blogs), not for commercial news sites. A picture that cannot be fetched or is too small is skipped; the draft is made anyway.
+   */
+  importImages?: boolean | null;
   dismissed?:
     | {
         [k: string]: unknown;
@@ -1025,7 +1029,7 @@ export interface Event {
       }[]
     | null;
   /**
-   * Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing — feeds carry no usable pictures.
+   * Imported items arrive as drafts. Imported news carries the source’s own text: rewrite it in your own words and check the cover before publishing — it is the source’s picture where the source has “Import pictures” on, otherwise there is none.
    */
   origin?: ('manual' | 'import') | null;
   importSource?: (number | null) | ImportSource;
@@ -2013,6 +2017,7 @@ export interface ImportSourcesSelect<T extends boolean = true> {
   enabled?: T;
   maxItemsPerRun?: T;
   publishImmediately?: T;
+  importImages?: T;
   dismissed?: T;
   lastRunAt?: T;
   lastResult?: T;

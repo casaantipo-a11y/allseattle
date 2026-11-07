@@ -33,7 +33,7 @@ const START_MARGIN_MS = 15 * 1000
 
 type Report = { name: string; target: string; stats: ImportStats; error: string; recovered: boolean }
 
-const resultText = (s: ImportStats) => `${s.created} new${s.published ? ` (${s.published} published)` : ''}, ${s.skipped} skipped${s.filtered ? `, ${s.filtered} filtered` : ''}${s.failed ? `, ${s.failed} failed` : ''}`
+const resultText = (s: ImportStats) => `${s.created} new${s.published ? ` (${s.published} published)` : ''}${s.images ? ` (${s.images} with a picture)` : ''}, ${s.skipped} skipped${s.filtered ? `, ${s.filtered} filtered` : ''}${s.failed ? `, ${s.failed} failed` : ''}`
 const errorText = (s: ImportStats) => s.error ?? (s.failed ? `${s.failed} failed — ${s.firstFailure ?? 'see the server log'}` : '')
 
 /**
