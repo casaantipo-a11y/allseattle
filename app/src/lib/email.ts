@@ -48,8 +48,15 @@ export const resendAdapter: EmailAdapter = () => ({
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
 
-/** A plain branded email: heading, paragraphs, one button. */
-export function emailLayout({ heading, paragraphs, button }: { heading: string; paragraphs: string[]; button?: { label: string; href: string } }) {
+type EmailButton = { label: string; href: string }
+
+/**
+ * A plain branded email: heading, paragraphs, one button. `buttons` is for a message with
+ * several places to go (the import report): each is a button, and the plain-text version lists
+ * the addresses. `paragraphs` at the end (`after`) are small grey print under the buttons.
+ */
+export function emailLayout({ heading, paragraphs, button, buttons, after }: { heading: string; paragraphs: string[]; button?: EmailButton; buttons?: EmailButton[]; after?: string[] }) {
+  const many = buttons ?? []
   const html = `<!doctype html><html><body style="margin:0;background:#f5f7fa;font-family:Arial,Helvetica,sans-serif;color:#0d1b2a">
 <div style="max-width:520px;margin:0 auto;padding:32px 24px">
 <p style="font-size:20px;font-weight:700;margin:0 0 24px"><span style="color:#e53935">All</span>Seattle</p>
@@ -57,9 +64,11 @@ export function emailLayout({ heading, paragraphs, button }: { heading: string; 
 <h1 style="font-size:20px;margin:0 0 16px">${esc(heading)}</h1>
 ${paragraphs.map((p) => `<p style="font-size:15px;line-height:1.5;margin:0 0 12px">${esc(p)}</p>`).join('')}
 ${button ? `<p style="margin:24px 0 8px"><a href="${esc(button.href)}" style="display:inline-block;background:#e53935;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:999px">${esc(button.label)}</a></p><p style="font-size:12px;color:#5b6b7b;word-break:break-all">${esc(button.href)}</p>` : ''}
+${many.map((b) => `<p style="margin:12px 0 0"><a href="${esc(b.href)}" style="display:inline-block;background:#e53935;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:999px">${esc(b.label)}</a></p>`).join('')}
+${(after ?? []).map((p) => `<p style="font-size:13px;line-height:1.5;color:#5b6b7b;margin:24px 0 0">${esc(p)}</p>`).join('')}
 </div>
 <p style="font-size:12px;color:#5b6b7b;margin:16px 0 0">AllSeattle — Seattle City Website · ${esc(absoluteUrl('/'))}</p>
 </div></body></html>`
-  const text = [heading, ...paragraphs, button ? `${button.label}: ${button.href}` : ''].filter(Boolean).join('\n\n')
+  const text = [heading, ...paragraphs, button ? `${button.label}: ${button.href}` : '', ...many.map((b) => `${b.label}: ${b.href}`), ...(after ?? [])].filter(Boolean).join('\n\n')
   return { html, text }
 }

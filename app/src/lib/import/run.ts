@@ -73,41 +73,113 @@ async function cleanOldDrafts(payload: Payload, now: number) {
   return deleted
 }
 
-/**
- * Imported items made in the last day, whichever run made them: the news runs through the
- * day each make a few, and the morning report counts them all.
- */
-async function madeSince(payload: Payload, collection: 'news' | 'events', since: number) {
-  const { totalDocs } = await payload.count({
-    collection,
-    where: { and: [{ origin: { equals: 'import' } }, { createdAt: { greater_than: new Date(since).toISOString() } }] },
-  })
-  return totalDocs
+type Arrival = { drafts: number; published: number; pictures: number }
+type Kind = 'news' | 'events'
+
+const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
+const total = (a: Arrival) => a.drafts + a.published
+
+/** One source's share of the report: "4 (1 with a picture)", "9 (9 published)", "3". */
+function describe(a: Arrival) {
+  const bits = [a.published ? `${a.published} published` : '', a.drafts && a.published ? `${a.drafts} to review` : '', a.pictures ? `${a.pictures} with a picture` : ''].filter(Boolean)
+  return `${total(a)}${bits.length ? ` (${bits.join(', ')})` : ''}`
 }
 
-/** `digest` is the morning run: it alone reports the new drafts; the others mail only a source failing or recovering. */
+/**
+ * Imported items made in the last day, whichever run made them (the news runs through the day
+ * each make a few, and the morning report counts them all), counted per source.
+ */
+async function arrivalsSince(payload: Payload, collection: Kind, since: number, names: Map<number, string>) {
+  const { docs } = await payload.find({
+    collection,
+    where: { and: [{ origin: { equals: 'import' } }, { createdAt: { greater_than: new Date(since).toISOString() } }] },
+    pagination: false,
+    depth: 0,
+    select: collection === 'news' ? { importSource: true, status: true, cover: true } : { importSource: true, status: true },
+  })
+  const bySource = new Map<string, Arrival>()
+  const sum: Arrival = { drafts: 0, published: 0, pictures: 0 }
+  for (const d of docs) {
+    const id = typeof d.importSource === 'object' ? d.importSource?.id : d.importSource
+    const name = (id != null && names.get(id)) || 'Unknown source'
+    const a = bySource.get(name) ?? { drafts: 0, published: 0, pictures: 0 }
+    const key = d.status === 'published' ? 'published' : 'drafts'
+    a[key]++
+    sum[key]++
+    if ('cover' in d && d.cover) {
+      a.pictures++
+      sum.pictures++
+    }
+    bySource.set(name, a)
+  }
+  return { sum, bySource }
+}
+
+/** Imported drafts waiting for a decision, new and old alike: what the buttons in the report open. */
+const waiting = async (payload: Payload, collection: Kind) =>
+  (await payload.count({ collection, where: { and: [{ origin: { equals: 'import' } }, { status: { equals: 'draft' } }] } })).totalDocs
+
+/** An admin list already filtered to the imported items of one status, newest first. */
+const adminList = (collection: Kind, status: 'draft' | 'published') =>
+  absoluteUrl(
+    `/admin/collections/${collection}?` +
+      new URLSearchParams([
+        ['where[and][0][origin][equals]', 'import'],
+        ['where[and][1][status][equals]', status],
+        ['sort', '-createdAt'],
+      ]).toString(),
+  )
+
+const sourceLine = (label: string, by: Map<string, Arrival>) =>
+  `${label}: ${[...by].sort((x, y) => total(y[1]) - total(x[1]) || x[0].localeCompare(y[0])).map(([name, a]) => `${name} ${describe(a)}`).join(', ')}.`
+
+const oneLine = (s: string, max = 140) => (s.length > max ? `${s.slice(0, max - 1)}…` : s)
+
+/**
+ * The report to the team. The morning run (`digest`) says what came in over the last 24 hours,
+ * per type and per source, with a button for each list that needs a look; the news runs through
+ * the day mail only a source starting to fail or recovering. Nothing came and nothing is wrong:
+ * no email. What went wrong is one line at the bottom.
+ */
 async function mailTeam(payload: Payload, reports: Report[], deleted: number, digest: boolean, now: number) {
-  const news = digest ? await madeSince(payload, 'news', now - DAY) : 0
-  const events = digest ? await madeSince(payload, 'events', now - DAY) : 0
   const failing = reports.filter((r) => r.error)
   const recovered = reports.filter((r) => r.recovered)
-  if (!news && !events && !failing.length && !recovered.length) return false
+
+  let news: Awaited<ReturnType<typeof arrivalsSince>> | null = null
+  let events: Awaited<ReturnType<typeof arrivalsSince>> | null = null
+  if (digest) {
+    const names = new Map((await payload.find({ collection: 'import-sources', pagination: false, depth: 0, select: { name: true } })).docs.map((s) => [s.id, s.name]))
+    news = await arrivalsSince(payload, 'news', now - DAY, names)
+    events = await arrivalsSince(payload, 'events', now - DAY, names)
+  }
+  const newsCount = news ? total(news.sum) : 0
+  const eventsCount = events ? total(events.sum) : 0
+  if (!newsCount && !eventsCount && !failing.length && !recovered.length) return false
 
   const paragraphs: string[] = []
-  if (news || events) {
-    paragraphs.push([news ? `${news} news` : '', events ? `${events} event${events === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ') + ' new in the last 24 hours.')
-    if (news) paragraphs.push('Imported news carries the source’s own text: rewrite it in your own words and add a cover before publishing.')
-  }
-  for (const r of failing) paragraphs.push(`${r.name}: ${r.error}`)
-  if (recovered.length) paragraphs.push(`Working again: ${recovered.map((r) => r.name).join(', ')}.`)
-  if (deleted) paragraphs.push(`${deleted} old draft${deleted === 1 ? '' : 's'} nobody opened ${deleted === 1 ? 'was' : 'were'} removed.`)
+  const buttons: { label: string; href: string }[] = []
+  if (news && events && (newsCount || eventsCount)) {
+    paragraphs.push(`New in the last 24 hours: ${[newsCount ? `${newsCount} news` : '', eventsCount ? plural(eventsCount, 'event') : ''].filter(Boolean).join(' and ')}.`)
+    if (newsCount) paragraphs.push(sourceLine('News', news.bySource))
+    if (eventsCount) paragraphs.push(sourceLine('Events', events.bySource))
 
-  const subject = [news + events ? `${news + events} new draft${news + events === 1 ? '' : 's'}` : '', failing.length ? `${failing.length} source${failing.length === 1 ? '' : 's'} failing` : ''].filter(Boolean).join(', ')
-  const mail = emailLayout({
-    heading: 'Import report',
-    paragraphs,
-    button: { label: news || !events ? 'Open News' : 'Open Events', href: absoluteUrl(news || !events ? '/admin/collections/news' : '/admin/collections/events') },
-  })
+    const [newsWaiting, eventsWaiting] = await Promise.all([waiting(payload, 'news'), waiting(payload, 'events')])
+    const pending = [newsWaiting ? plural(newsWaiting, 'news draft') : '', eventsWaiting ? plural(eventsWaiting, 'event draft') : ''].filter(Boolean)
+    if (pending.length) paragraphs.push(`Waiting for your review, new and older: ${pending.join(', ')}.`)
+    if (newsCount) paragraphs.push('Imported news carries the source’s own text: rewrite it in your own words before publishing, and add a cover where there is none.')
+
+    if (newsWaiting) buttons.push({ label: 'Review news drafts', href: adminList('news', 'draft') })
+    if (eventsWaiting) buttons.push({ label: 'Review event drafts', href: adminList('events', 'draft') })
+    if (events.sum.published) buttons.push({ label: 'See the published events', href: adminList('events', 'published') })
+  }
+  if (recovered.length) paragraphs.push(`Working again: ${recovered.map((r) => r.name).join(', ')}.`)
+  if (deleted) paragraphs.push(`${plural(deleted, 'old draft')} nobody opened ${deleted === 1 ? 'was' : 'were'} removed.`)
+
+  // What went wrong goes last, in one line.
+  const after = failing.length ? [`Problems: ${failing.map((r) => `${r.name} — ${oneLine(r.error)}`).join(' · ')}`] : []
+
+  const subject = [newsCount ? `${newsCount} news` : '', eventsCount ? plural(eventsCount, 'event') : '', failing.length ? plural(failing.length, 'source') + ' failing' : ''].filter(Boolean).join(', ')
+  const mail = emailLayout({ heading: digest ? 'Morning import' : 'Import: a source needs attention', paragraphs, buttons, after })
   const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
   const to = settings.notifyEmail || process.env.NOTIFY_EMAIL
   if (!to) return false

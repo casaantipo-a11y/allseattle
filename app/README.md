@@ -290,16 +290,35 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     status); the cleanup deletes only drafts, so published imported events stay (they leave the
     public lists a day after they start). Off everywhere by default; which sources get it is the
     owner's decision (tick it in the admin, no script). Events still import without pictures.
-    The morning email still says "new drafts" and counts published ones too — the report is
-    reworked separately. Checked locally (production build, two fixture ICS calendars, the real
+    The morning email reports them as published (see **Email** below). Checked locally (production build, two fixture ICS calendars, the real
     `runDailyImport` inside the server): the "on" source made 3 published events, "off" made 2
     drafts; `/events` listed the 3 at once (cache primed before), the events sitemap went 14 → 17
     URLs with the published ones only, the event page answered 200 with `Event` JSON-LD, a draft's
     page 404; a deleted published event was not brought back (`0 new, 3 skipped`).
-  - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`): the morning run, when
-    something was imported in the last 24 hours, a source starts failing (reported once, again
-    only if the text changes) or recovers; the news runs through the day mail only the last two.
-    If Resend refuses, the error stays in the source's "Last run" block and is not repeated.
+  - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`), English, written in
+    `run.ts` `mailTeam` (7.11.2026, plan item A3). **Morning run:** "New in the last 24 hours: 30 news
+    and 23 events", then one line per type with the count per source ("News: SDOT Blog 2 (1 with a
+    picture), …", "Events: Ticketmaster 9 (9 published), Seattle Parks 3"; the numbers are what the
+    importers made in the last 24 hours, whichever run made them, read from the database, not from the
+    run's own stats), the number of imported drafts waiting for review in all (new and older), the
+    reminder to rewrite news text, and the line about old drafts removed. One button per list that
+    needs a look: **Review news drafts**, **Review event drafts**, **See the published events** —
+    each an admin list already filtered by `origin = import` and `status`, newest first
+    (`/admin/collections/news?where[and][0][origin][equals]=import&where[and][1][status][equals]=draft&sort=-createdAt`,
+    brackets percent-encoded in the mail; `emailLayout` got an optional `buttons` list, `button`
+    is unchanged). What went wrong is one line at the very bottom: "Problems: <source> — <error> ·
+    …". **No email when nothing came in and no source is failing or has just recovered.** A source
+    is reported when it starts failing (once, again only if the text changes) or recovers ("Working
+    again: …"); the news runs through the day (`digest: false`) mail only those two, as a short
+    "Problems:" message. If Resend refuses, the error stays in the source's "Last run" block and is
+    not repeated. Checked locally with the real `runDailyImport` and fixture feeds, no
+    `RESEND_API_KEY` (the mail text is printed): five runs — arrivals with pictures, published and
+    draft events and a broken source (all three kinds of line); the same again the next morning (the
+    error not repeated); a recovery in a window with no arrivals ("Working again" only); nothing
+    arrived and nothing failed (no email, `mailed: false`); a through-the-day run with a failing
+    source. The three buttons' links were opened in a headless browser against a production build
+    with an admin session: the draft link showed 24 news (the database's 24), the published link 1,
+    the unfiltered list 53; events 9 / 1 / 30 — each row of a filtered list has the expected status.
   - **Env.** `CRON_SECRET` (existing), `NOTIFY_EMAIL` / `RESEND_*` (existing),
     `TICKETMASTER_API_KEY` (new, optional — without it the Ticketmaster source reports that).
   - **Sources on production** (the migration creates tables only): `pnpm import-setup:prod`
