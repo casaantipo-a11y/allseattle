@@ -91,6 +91,18 @@ export const ImportSources: CollectionConfig = {
       ],
     },
     {
+      // Off by default. Only the events importer reads it; news always arrive as drafts
+      // (imported news carries the source's own text and needs rewriting first).
+      name: 'publishImmediately',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Publish immediately',
+      admin: {
+        condition: (d) => d?.target === 'events',
+        description: 'Events from this source go live on the site at once instead of waiting as drafts. Turn it on for sources you trust; you can still unpublish or delete any event, and a deleted one does not come back.',
+      },
+    },
+    {
       // External ids of items an editor deleted, so the next run doesn't bring them back
       // (lib/import/dismissed.ts). Written by the delete hook only, never from the admin.
       name: 'dismissed',

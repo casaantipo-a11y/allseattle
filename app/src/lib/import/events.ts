@@ -10,7 +10,8 @@ import { ticketmasterCandidates } from './ticketmaster'
 import { errorMessage, isUniqueViolation, newStats, skip, type EventCandidate, type ImportStats } from './types'
 
 // Events from Ticketmaster and ICS feeds, saved as drafts (status draft, origin
-// import) for an editor to publish. An item already imported from the same source —
+// import) for an editor to publish — or, for a source with "Publish immediately" on, saved
+// as published (origin import all the same). An item already imported from the same source —
 // same externalId — is left alone, so a second run right after the first creates
 // nothing; the unique (importSource, externalId) index is the backstop if two runs
 // ever overlap. Images are not imported.
@@ -60,6 +61,7 @@ async function* candidatesOf(source: ImportSource, stats: ImportStats, deadline:
 export async function importEvents(payload: Payload, source: ImportSource, deadline: number): Promise<ImportStats> {
   const stats = newStats()
   const max = source.maxItemsPerRun ?? 20
+  const publish = source.publishImmediately === true
 
   const fallback = source.defaultCategory
   const fallbackId = fallback?.relationTo === 'event-categories' ? (typeof fallback.value === 'object' ? fallback.value.id : fallback.value) : null
@@ -130,7 +132,8 @@ export async function importEvents(payload: Payload, source: ImportSource, deadl
         const doc = await payload.create({
           collection: 'events',
           depth: 0,
-          // Drafts aren't on the public site, so there is nothing to revalidate.
+          // A draft isn't on the public site. A published event is expired once at the end of the
+          // run (run.ts), not once per event.
           context: { disableRevalidate: true, skipGeocode },
           data: {
             title: c.title,
@@ -145,13 +148,14 @@ export async function importEvents(payload: Payload, source: ImportSource, deadl
             ticketUrl: c.ticketUrl,
             summary: description ? summaryFrom(description, 280) : undefined,
             ...(description ? { description: richTextFrom(description) } : {}),
-            status: 'draft',
+            status: publish ? 'published' : 'draft',
             origin: 'import',
             importSource: source.id,
             externalId: c.externalId,
           },
         })
         stats.created++
+        if (publish) stats.published = (stats.published ?? 0) + 1
         if (!skipGeocode && doc.lat == null) geocodeFailed.add(venueKey(c))
       } catch (e) {
         if (isUniqueViolation(e)) skip(stats, 'exists')

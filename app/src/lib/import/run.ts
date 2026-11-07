@@ -3,6 +3,7 @@ import { getPayload, type Payload, type Where } from 'payload'
 
 import type { ImportSource } from '@/payload-types'
 
+import { expire } from '../../hooks/revalidate'
 import { emailLayout, sendMail } from '../email'
 import { absoluteUrl } from '../site'
 import { pruneDismissed } from './dismissed'
@@ -32,7 +33,7 @@ const START_MARGIN_MS = 15 * 1000
 
 type Report = { name: string; target: string; stats: ImportStats; error: string; recovered: boolean }
 
-const resultText = (s: ImportStats) => `${s.created} new, ${s.skipped} skipped${s.filtered ? `, ${s.filtered} filtered` : ''}${s.failed ? `, ${s.failed} failed` : ''}`
+const resultText = (s: ImportStats) => `${s.created} new${s.published ? ` (${s.published} published)` : ''}, ${s.skipped} skipped${s.filtered ? `, ${s.filtered} filtered` : ''}${s.failed ? `, ${s.failed} failed` : ''}`
 const errorText = (s: ImportStats) => s.error ?? (s.failed ? `${s.failed} failed — ${s.firstFailure ?? 'see the server log'}` : '')
 
 /**
@@ -161,6 +162,11 @@ export async function runDailyImport(deadline: number, { now = Date.now(), diges
     // would otherwise be in the inbox every morning.
     reports.push({ name: source.name, target: source.target, stats, error: error && error !== before ? error : '', recovered: !error && !!before })
   }
+
+  // Events saved as published ("Publish immediately") must show at once. The importer saves
+  // without per-item revalidation, so the tag is expired once here. Outside Next (the
+  // import-run script) there is no cache to expire and the call is ignored.
+  if (reports.some((r) => r.stats.published)) expire(['events'])
 
   let deleted = 0
   if (digest) {

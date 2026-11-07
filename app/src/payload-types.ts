@@ -420,6 +420,10 @@ export interface ImportSource {
    * How many items a run reads from the source, soonest first. Ones already imported are skipped; raise it to bring in more.
    */
   maxItemsPerRun?: number | null;
+  /**
+   * Events from this source go live on the site at once instead of waiting as drafts. Turn it on for sources you trust; you can still unpublish or delete any event, and a deleted one does not come back.
+   */
+  publishImmediately?: boolean | null;
   dismissed?:
     | {
         [k: string]: unknown;
@@ -2008,6 +2012,7 @@ export interface ImportSourcesSelect<T extends boolean = true> {
   defaultCategory?: T;
   enabled?: T;
   maxItemsPerRun?: T;
+  publishImmediately?: T;
   dismissed?: T;
   lastRunAt?: T;
   lastResult?: T;

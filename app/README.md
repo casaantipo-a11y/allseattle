@@ -218,7 +218,8 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   silently stop the imports and the webhook. If the webhook is still registered on the old
   address it keeps working; moving it to allseattle.org is still worth doing.
 - **Automatic import of events and news (29–30.10.2026, branch `feature/auto-import`).** Drafts
-  only: nothing imported is published or sent anywhere by itself, and no AI is involved (the
+  only (one opt-in exception for events, see "Publish immediately" below): nothing imported is
+  published or sent anywhere by itself, and no AI is involved (the
   owner dropped the "rewrite with Claude" plan on 29.10 — cost and risk). Collection
   `import-sources` (group "Import", admins write, staff read): name, type (`ticketmaster` /
   `ics` / `rss`), target (`events` / `news`), url, default category (an event or a news
@@ -277,6 +278,24 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     own draft (the editor saw every event twice). An ICS source now also counts what any other
     ICS source imported or had deleted (`importEvents`). Events from different kinds of source
     (Ticketmaster vs a calendar) are still not compared, unlike news, which is matched by link.
+  - **Publish immediately** (7.11.2026, migration `20261107_000506_publish_immediately`: one
+    `boolean DEFAULT false` column on `import_sources`). Per source, events only (the admin shows
+    it when Target is Events; the news importer never reads it, so news stay drafts). A source
+    with it on saves its new events as `published` (`origin` is still `import`). Items are saved
+    with `disableRevalidate`; `runDailyImport` expires the `events` tag once at the end of a run
+    that published anything (`hooks/revalidate.ts` `expire`, ignored outside Next), and the "Last
+    run" text reads "3 new (3 published), 0 skipped". Everything else is unchanged: duplicates,
+    the shared ICS "already imported" list and the unique index still apply; an editor deleting a
+    published imported event is remembered in `dismissed` like a draft (the hook never looked at
+    status); the cleanup deletes only drafts, so published imported events stay (they leave the
+    public lists a day after they start). Off everywhere by default; which sources get it is the
+    owner's decision (tick it in the admin, no script). Events still import without pictures.
+    The morning email still says "new drafts" and counts published ones too — the report is
+    reworked separately. Checked locally (production build, two fixture ICS calendars, the real
+    `runDailyImport` inside the server): the "on" source made 3 published events, "off" made 2
+    drafts; `/events` listed the 3 at once (cache primed before), the events sitemap went 14 → 17
+    URLs with the published ones only, the event page answered 200 with `Event` JSON-LD, a draft's
+    page 404; a deleted published event was not brought back (`0 new, 3 skipped`).
   - **Email** to the site-settings notify address (else `NOTIFY_EMAIL`): the morning run, when
     something was imported in the last 24 hours, a source starts failing (reported once, again
     only if the text changes) or recovers; the news runs through the day mail only the last two.

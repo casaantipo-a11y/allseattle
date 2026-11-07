@@ -15,7 +15,7 @@ import type {
 // `payload run`) there is no incremental cache to talk to and the calls throw;
 // that is expected and ignored. Scripts also pass `context.disableRevalidate`.
 
-const expire = (tags: string[], paths: string[] = []) => {
+export const expire = (tags: string[], paths: string[] = []) => {
   try {
     for (const tag of tags) revalidateTag(tag, { expire: 0 })
     for (const path of paths) revalidatePath(path)
