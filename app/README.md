@@ -200,6 +200,15 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   `20261020_120000_documents_r2` adds the plugin's `_objectkey` and `prefix` columns (written by
   hand with IF NOT EXISTS — locally the plugin is off, so `migrate:create` never sees them).
   Checked on production: JPG/PNG/PDF upload, the R2 link opens, delete.
+- **Small audit fixes (7.11.2026).** `src/app/favicon.ico` (16/32/48 px, made from
+  `public/brand/favicon.svg`; before, `/favicon.ico` was a 404 — Google and old browsers ask for
+  that path). `next.config.ts` sends four headers on every response: `X-Content-Type-Options:
+  nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`,
+  `Permissions-Policy: camera=(), microphone=(), geolocation=()` (the map does not locate the
+  visitor). No Content-Security-Policy on purpose: Stripe, Turnstile, Google Analytics, OSM tiles
+  and R2 would need a long allow-list and a strict one breaks something quietly. `geocodeNote`
+  (the internal "address not found" note on businesses and events) is readable by staff only
+  (`staffOnlyField`), so `/api/businesses` and `/api/events` no longer show it; no migration.
 - **Automatic import of events and news (29–30.10.2026, branch `feature/auto-import`).** Drafts
   only: nothing imported is published or sent anywhere by itself, and no AI is involved (the
   owner dropped the "rewrite with Claude" plan on 29.10 — cost and risk). Collection

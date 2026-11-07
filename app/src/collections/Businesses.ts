@@ -112,6 +112,7 @@ export const Businesses: CollectionConfig = {
               name: 'geocodeNote',
               type: 'text',
               label: 'Map lookup',
+              access: { read: staffOnlyField }, // an internal note — not for the public REST (/api/businesses)
               admin: {
                 readOnly: true,
                 condition: (data) => Boolean(data?.geocodeNote),

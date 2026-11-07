@@ -1,7 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 import { ValidationError } from 'payload'
 
-import { canWrite, publishedOrLoggedIn } from '../access/roles'
+import { canWrite, publishedOrLoggedIn, staffOnlyField } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField, uniqueSlugField } from '../fields'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
@@ -98,7 +98,13 @@ export const Events: CollectionConfig = {
         { name: 'lng', type: 'number', label: 'Longitude' },
       ],
     },
-    { name: 'geocodeNote', type: 'text', label: 'Map lookup', admin: { readOnly: true, condition: (d) => Boolean(d?.geocodeNote) } },
+    {
+      name: 'geocodeNote',
+      type: 'text',
+      label: 'Map lookup',
+      access: { read: staffOnlyField }, // an internal note — not for the public REST (/api/events)
+      admin: { readOnly: true, condition: (d) => Boolean(d?.geocodeNote) },
+    },
     {
       type: 'row',
       fields: [
