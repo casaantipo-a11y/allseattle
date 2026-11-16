@@ -15,6 +15,9 @@ const revalidate = revalidateCollection(['businesses'])
 // Limits of the business's package, checked against the document as it will
 // be after this save (a partial update is merged with what's stored).
 const enforcePackage: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
+  // The Stripe webhook saves a package that is already paid for: failing here would leave the
+  // client charged and the package off (and Stripe retrying). The team is told instead (lib/billing.ts).
+  if (req.context?.skipPackageLimits) return data
   await assertBusinessWithinPackage({ ...(originalDoc ?? {}), ...data }, req.payload, req)
   return data
 }
@@ -221,8 +224,11 @@ export const Businesses: CollectionConfig = {
                 { name: 'paymentLinkPackage', type: 'relationship', relationTo: 'packages', access: serverWrites, admin: { readOnly: true } },
                 { name: 'paymentLinkSentTo', type: 'email', access: serverWrites, admin: { readOnly: true } },
                 { name: 'paymentLinkSentAt', type: 'date', access: serverWrites, admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
+                { name: 'paymentLinkPrice', type: 'number', access: serverWrites, admin: { readOnly: true, description: 'Monthly price the client was shown. If the package price changes later, the link stops working.' } },
               ],
             },
+            // The subscription whose welcome email went out: a repeated Stripe event must not send it again.
+            { name: 'welcomeSentFor', type: 'text', access: serverWrites, admin: { hidden: true } },
             {
               name: 'paymentLink',
               type: 'ui',

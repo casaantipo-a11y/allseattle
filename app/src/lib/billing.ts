@@ -3,6 +3,7 @@ import type { Business, Customer, Package } from '@/payload-types'
 import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, teamReplyTo, type CabinetResult } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
+import { assertBusinessWithinPackage } from '../hooks/packageLimits'
 import { syncAdSubscription } from './ad-billing'
 import { automaticTaxParams, managedPaymentsParams, portalConfiguration, productTaxCode, receiptLines, stripe, stripeEnabled, StripeError, TAX_BEHAVIOR, type StripeEvent } from './stripe'
 
@@ -182,9 +183,23 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
   // period that is paid. A period whose invoice isn't paid yet (or failed: past due) keeps
   // the date it had — Stripe retries, and invoice.paid moves it on.
   if (status === 'active' || status === 'canceling') Object.assign(data, { package: packageId, ...(paidUntil ? { packageExpiresAt: paidUntil } : {}) })
-  await payload.update({ collection: 'businesses', id: bizId, data, overrideAccess: true, context: { skipGeocode: true } })
+  // A payment link is used up once its subscription has ended: a new one has to be sent.
+  if (status === 'canceled' && sub.metadata?.via === 'link' && biz.stripeSubscriptionId === sub.id) Object.assign(data, { paymentLinkToken: null })
+  // The package is paid for, so the save must not be stopped by its limits (a business with more
+  // categories than the new package allows). The team is told to fix the card instead.
+  let overLimit: string | null = null
+  if (opts.welcome && data.package) {
+    try {
+      await assertBusinessWithinPackage({ ...biz, package: packageId }, payload)
+    } catch (e) {
+      overLimit = (e as { data?: { errors?: { message?: string }[] } })?.data?.errors?.[0]?.message ?? 'over the limits'
+    }
+  }
+  await payload.update({ collection: 'businesses', id: bizId, data, overrideAccess: true, context: { skipGeocode: true, skipPackageLimits: true } })
+  if (overLimit) await notifyTeam(payload, `Check ${biz.name}: paid for a package its card does not fit (${overLimit})`, `/admin/collections/businesses/${biz.id}`, { name: biz.name, email: opts.buyerEmail ?? (await buyerEmailOf(sub)) ?? 'unknown' })
 
-  if (opts.welcome && status === 'active') {
+  // A repeated checkout.session.completed (Stripe retries, replays) must not mail the buyer twice.
+  if (opts.welcome && status === 'active' && biz.welcomeSentFor !== sub.id) {
     const [owner, pkg] = await Promise.all([
       biz.owner ? payload.findByID({ collection: 'customers', id: relId(biz.owner)!, depth: 0, overrideAccess: true, disableErrors: true }) : null,
       payload.findByID({ collection: 'packages', id: packageId, depth: 0, disableErrors: true }),
@@ -203,6 +218,7 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
         button: owner ? { label: 'Open my business', href: absoluteUrl('/account/business') } : undefined,
       })
       await sendMail({ to, subject: `${pkg.name} package for ${biz.name}`, ...mail, replyTo: owner ? undefined : await teamReplyTo(payload) })
+      await payload.update({ collection: 'businesses', id: bizId, data: { welcomeSentFor: sub.id }, overrideAccess: true, context: { skipGeocode: true, skipPackageLimits: true } })
       const title = sub.metadata?.via === 'link' ? `Package bought via payment link: ${pkg.name} for ${biz.name}` : `Package bought online: ${pkg.name} for ${biz.name}`
       await notifyTeam(payload, title, `/admin/collections/businesses/${biz.id}`, owner ?? { name: biz.name, email: to })
     }

@@ -113,7 +113,7 @@ export function PaymentLink() {
         />
       </label>
       <div>
-        <button type="button" className="btn btn--style-primary btn--size-small" style={{ margin: 0 }} disabled={busy || !chosen || !to.trim()} onClick={send}>
+        <button type="button" className="btn btn--style-primary btn--size-small" style={{ margin: 0, minHeight: 44, paddingInline: 24 }} disabled={busy || !chosen || !to.trim()} onClick={send}>
           {busy ? 'Sending…' : 'Send payment link'}
         </button>
       </div>

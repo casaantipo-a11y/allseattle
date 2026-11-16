@@ -4,22 +4,25 @@ import { getPayload, type PayloadRequest } from 'payload'
 import { hasRole } from '@/access/roles'
 import { sendPaymentLink } from '@/lib/payment-link'
 
+const sameHost = (origin: string, host: string | null) => {
+  try {
+    return new URL(origin).host === host
+  } catch {
+    return false // "null" and other junk
+  }
+}
+
 // POST /api/admin/payment-link { businessId, packageId, email } — the "Send payment link"
 // button of a business in the admin (lib/payment-link.ts). Admin and sales only, checked
 // against the admin session cookie; a site account (customers) is refused.
 
 export async function POST(req: Request) {
-  // The session is a cookie: only our own admin page (JSON, same host) may use it.
-  if (!req.headers.get('content-type')?.includes('application/json')) return Response.json({ error: 'Send JSON.' }, { status: 415 })
+  // The session is a cookie, so only our own admin page may use it: JSON, from this very host.
+  // A browser always sends Origin on such a POST (and Sec-Fetch-Site); anything without either is not the admin page.
+  if (!req.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return Response.json({ error: 'Send JSON.' }, { status: 415 })
   const origin = req.headers.get('origin')
-  const sameHost = (o: string) => {
-    try {
-      return new URL(o).host === req.headers.get('host')
-    } catch {
-      return false // "null" and other junk
-    }
-  }
-  if (origin && !sameHost(origin)) return Response.json({ error: 'Forbidden' }, { status: 403 })
+  const sameOrigin = origin ? sameHost(origin, req.headers.get('host')) : req.headers.get('sec-fetch-site') === 'same-origin'
+  if (!sameOrigin) return Response.json({ error: 'Forbidden' }, { status: 403 })
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: req.headers })
   if (!user) return Response.json({ error: 'Sign in to the admin first.' }, { status: 401 })

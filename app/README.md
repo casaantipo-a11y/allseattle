@@ -419,38 +419,59 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   (`components/admin/PaymentLink.tsx`): a package (only those with a monthly price; the business's
   current one by default), the client's email (the business's own by default) and a button.
   `POST /api/admin/payment-link` (admin and sales only; 401 without a session, 403 for anyone else,
-  site accounts included) runs `sendPaymentLink` in `lib/payment-link.ts`: the same checks as the
-  account's checkout (Stripe on, business exists and not rejected, no live subscription, package
-  priced), then saves `paymentLinkToken` (24 random bytes, base64url, made once and reused),
-  `paymentLinkPackage`, `paymentLinkSentTo`, `paymentLinkSentAt` and mails the client from
-  noreply@allseattle.org in the site's mail layout, with a "Pay securely" button to `/pay/<token>`
-  and `Reply-To` = the team's address (Site Settings → notify email, else `NOTIFY_EMAIL`). If the
-  mail fails the four fields go back to what they were. These fields are staff-only on read and
-  **write-protected for REST** (`create`/`update` access false; the server writes them with
-  `overrideAccess`) — otherwise a stale admin form would send the old, empty token back on save.
+  site accounts included; JSON from this very host only — a browser's `Origin` or
+  `Sec-Fetch-Site: same-origin` is required, so a script without them gets 403) runs `sendPaymentLink`
+  in `lib/payment-link.ts`: the same checks as the account's checkout (Stripe on, business exists and
+  not rejected, no live subscription, package priced), then **a new token** (24 random bytes,
+  base64url — the link of the previous mail stops working), `paymentLinkPackage`, `paymentLinkPrice`
+  (what the mail says), `paymentLinkSentTo`, `paymentLinkSentAt`, and mails the client from
+  noreply@allseattle.org in the site's mail layout, with a "Pay securely" button to `/pay/<token>` and
+  `Reply-To` = the team's address (Site Settings → notify email, else `NOTIFY_EMAIL`). Limits: one
+  link per business per minute, 30 links an hour for all businesses together (429); control characters
+  are stripped from the subject. If Resend answers with an error the fields go back to what they
+  were; if it does not answer at all (a timeout can come after delivery) the link is kept and the admin
+  is told to check with the client. These fields are staff-only on read and **write-protected for REST**
+  (`create`/`update` access false; the server writes them with `overrideAccess`) — otherwise a stale
+  admin form would send the old, empty token back on save.
   `GET /pay/<token>` (`app/(frontend)/pay/[token]/route.ts`) finds the business by token and opens
   a **new** Checkout Session on every visit (a Stripe session lives 24 h, the link in the mail must
   not expire): same session as the account's — `packageSessionParams` in `lib/billing.ts` is
   shared — but with `customer_email` instead of a customer (so no `customer_update`), metadata
   `{ businessId, packageId, via: 'link' }`, `success_url` `/pay/thanks`, cancel → home. Answers 303
-  to Stripe; a business already subscribed → 303 to `/pay/thanks`; unknown token → 404 "This
-  payment link is no longer valid". The webhook is unchanged in kind: `syncSubscription` now copes
-  with no owner — the welcome email goes to the buyer's email from Stripe (`customer_details` of
-  the session, else the Stripe customer), with "Manage or cancel your subscription: …" when
-  `STRIPE_PORTAL_LOGIN_URL` is set (Stripe's no-code customer-portal login link) and otherwise "To
-  cancel, just reply to this email"; the team is told "Package bought via payment link: …"
-  (`notifyTeam` takes `{ name, email, phone? }` instead of a Customer), and a second subscription
-  for the same business is reported the same way. Migration `payment_link` (four columns, one FK,
-  two indexes; nothing existing changes). **Tested (local DB, Stripe test key, mail captured):**
-  401/403/400 paths, the mail's text and link, the Session ($99.00, `customer_email`, metadata,
-  urls) read back from Stripe, a paid subscription with the link's metadata run through
-  `handleStripeEvent` (package, expiry, `active`; welcome mail with `Reply-To`; team notice),
-  repeat visit → thanks, second subscription notice, a stale-form PATCH leaves the token.
-  Not done through Stripe's own Checkout page with a card (no Stripe CLI here; the page can be
-  opened from a link and paid with 4242 4242 4242 4242 — see the owner's guide).
-  **To switch it on:** nothing new on Vercel except the optional `STRIPE_PORTAL_LOGIN_URL`;
-  Stripe → Settings → Public details / Branding should say AllSeattle with its logo, since that is
-  what the client sees on the payment page; apply the migration with the deploy.
+  to Stripe; a business already subscribed → 303 to `/pay/thanks`; otherwise 404 "This payment link
+  is no longer valid" for an unknown token, a link older than 30 days, a package whose price is no
+  longer the one in the mail, or a link whose subscription has ended (the token is cleared when the
+  webhook sees that subscription cancelled — send a new link to sell again). HEAD never opens a
+  session (mail scanners); GET is limited to 20 per 10 minutes per address (429), counted in the
+  memory of one server instance, so it only stops a loop — a Vercel Firewall rate-limit rule on
+  `/pay/*` is the real limit and is the owner's to set. The webhook is unchanged in kind:
+  `syncSubscription` now copes with no owner — the welcome email goes to the buyer's email from Stripe
+  (`customer_details` of the session, else the Stripe customer), with "Manage or cancel your
+  subscription: …" when `STRIPE_PORTAL_LOGIN_URL` is set (Stripe's no-code customer-portal login link)
+  and otherwise "To cancel, just reply to this email"; the team is told "Package bought via payment
+  link: …" (`notifyTeam` takes `{ name, email, phone? }` instead of a Customer), and a second
+  subscription for the same business is reported the same way. Two changes to the shared webhook code
+  (they apply to purchases from the account too): the package is saved with
+  `context.skipPackageLimits` (`enforcePackage` in `Businesses.ts` steps aside), so a business with
+  more categories than the paid package allows is still activated and the team gets "Check …: paid for
+  a package its card does not fit" instead of Stripe seeing a 500 for a charged client; and
+  `welcomeSentFor` (the subscription whose welcome mail went out) stops a repeated
+  `checkout.session.completed` from mailing the buyer twice. A subscription bought through a link is
+  not tied to a site account or to the Stripe customer saved on one, so the owner's "Manage billing"
+  does not open it. Migrations `payment_link` (four columns, one FK, two indexes) and
+  `payment_link_hardening` (`payment_link_price`, `welcome_sent_for`); nothing existing changes.
+  **Tested (local DB, Stripe test key, mail captured):** 401/403/400/415/429 paths, Origin variants,
+  the mail text, `$49.50` and `$99` price lines, the Session ($99.00, `customer_email`, metadata, urls)
+  read back from Stripe, a paid subscription with the link's metadata through the signed
+  `/api/stripe/webhook` and through `handleStripeEvent` (package, expiry, `active`; welcome mail with
+  `Reply-To`; team notice), a repeated event (no second mail), cancel at period end → `canceling`, an
+  ended subscription clears the link, an over-limit business paying Standard, a failed card (test
+  clock) → `past_due` with the date kept, a renewal (+31 days), a purchase from the account, a banner
+  subscription. Not done through Stripe's own Checkout page with a card (no Stripe CLI here; the page
+  can be opened from a link and paid with 4242 4242 4242 4242 — see the owner's guide).
+  **To switch it on:** optional `STRIPE_PORTAL_LOGIN_URL` on Vercel; a Firewall rate-limit rule on
+  `/pay/*`; Stripe → Settings → Public details / Branding should say AllSeattle with its logo, since
+  that is what the client sees on the payment page; the migrations run with the deploy.
 
 ## Local development
 

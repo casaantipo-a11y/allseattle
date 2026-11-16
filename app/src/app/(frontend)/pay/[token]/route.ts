@@ -1,3 +1,4 @@
+import { clientIp } from '@/lib/forms'
 import { checkoutForLink } from '@/lib/payment-link'
 import { absoluteUrl } from '@/lib/site'
 
@@ -15,7 +16,28 @@ const page = (status: number, title: string, text: string) =>
     { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } },
   )
 
-export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
+// Each valid visit opens a Stripe session, so one connection may not do it endlessly. The count lives in
+// this server instance's memory (it resets on a cold start and is not shared between instances), so it
+// only stops a loop; a firewall rule on /pay/* (Vercel) is the real limit.
+const WINDOW_MS = 10 * 60 * 1000
+const MAX_VISITS = 20
+const visits = new Map<string, number[]>()
+function tooMany(ip: string) {
+  const now = Date.now()
+  const recent = (visits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
+  recent.push(now)
+  visits.set(ip, recent)
+  if (visits.size > 5000) for (const [k, v] of visits) if (!v.some((t) => now - t < WINDOW_MS)) visits.delete(k)
+  return recent.length > MAX_VISITS
+}
+
+// A mail scanner or a link preview asking "is it alive?" must not open a payment session.
+export function HEAD() {
+  return new Response(null, { status: 200, headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } })
+}
+
+export async function GET(req: Request, { params }: { params: Promise<{ token: string }> }) {
+  if (tooMany(clientIp(req))) return page(429, 'Too many tries', 'Please wait a few minutes and open the link again.')
   const result = await checkoutForLink((await params).token)
   if (result.kind === 'ok') return Response.redirect(result.url, 303)
   if (result.kind === 'paid') return Response.redirect(absoluteUrl('/pay/thanks'), 303)

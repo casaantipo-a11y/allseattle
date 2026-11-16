@@ -562,6 +562,11 @@ export interface Business {
   paymentLinkSentTo?: string | null;
   paymentLinkSentAt?: string | null;
   /**
+   * Monthly price the client was shown. If the package price changes later, the link stops working.
+   */
+  paymentLinkPrice?: number | null;
+  welcomeSentFor?: string | null;
+  /**
    * yourname → yourname.<site domain>. Luxury and Premium only.
    */
   subdomain?: string | null;
@@ -1737,6 +1742,8 @@ export interface BusinessesSelect<T extends boolean = true> {
   paymentLinkPackage?: T;
   paymentLinkSentTo?: T;
   paymentLinkSentAt?: T;
+  paymentLinkPrice?: T;
+  welcomeSentFor?: T;
   subdomain?: T;
   branding?:
     | T
