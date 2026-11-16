@@ -87,20 +87,35 @@ export function saveFailed(e: unknown, where: string): CabinetResult {
   return fail(500, 'Something went wrong on our side. Please try again in a minute.')
 }
 
+/** Where the team's notices go: Site Settings, else NOTIFY_EMAIL. */
+export const teamEmail = (settings: { notifyEmail?: string | null }) => settings.notifyEmail || process.env.NOTIFY_EMAIL || null
+
+/** The team's address for a client's "reply" (payment-link mails): the one notices go to. */
+export async function teamReplyTo(payload: Payload): Promise<string | undefined> {
+  try {
+    return teamEmail(await payload.findGlobal({ slug: 'site-settings', depth: 0 })) ?? undefined
+  } catch {
+    return process.env.NOTIFY_EMAIL || undefined
+  }
+}
+
+/** Who a notice is from: a site account, or just a name and an email (a payment-link buyer has no account). */
+export type NoticeFrom = { name: string; email: string; phone?: string | null }
+
 /** A notice to the team (Telegram and email, when set in Site Settings) with the admin link. */
-export async function notifyTeam(payload: Payload, title: string, adminPath: string, customer: Customer) {
+export async function notifyTeam(payload: Payload, title: string, adminPath: string, from: NoticeFrom) {
   try {
     const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
     const notice = {
       title,
       lines: [
-        ['From', `${customer.name} <${customer.email}>`],
-        ['Phone', customer.phone],
+        ['From', `${from.name} <${from.email}>`],
+        ['Phone', from.phone],
       ] as [string, string | null | undefined][],
       adminUrl: absoluteUrl(adminPath),
       photo: null,
     }
-    await Promise.all([notifyTelegram(settings.telegramChatId, notice), notifyEmail(settings.notifyEmail || process.env.NOTIFY_EMAIL, notice)])
+    await Promise.all([notifyTelegram(settings.telegramChatId, notice), notifyEmail(teamEmail(settings), notice)])
   } catch (e) {
     console.error('[cabinet] could not notify the team', e)
   }

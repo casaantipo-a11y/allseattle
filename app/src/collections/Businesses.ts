@@ -7,6 +7,9 @@ import { assertBusinessWithinPackage } from '../hooks/packageLimits'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
 
+// Payment-link fields: staff read them, only the server (overrideAccess) writes them.
+const serverWrites = { read: staffOnlyField, create: () => false, update: () => false }
+
 const revalidate = revalidateCollection(['businesses'])
 
 // Limits of the business's package, checked against the document as it will
@@ -208,6 +211,22 @@ export const Businesses: CollectionConfig = {
                 },
                 { name: 'stripeSubscriptionId', type: 'text', index: true, access: { read: staffOnlyField }, admin: { readOnly: true } },
               ],
+            },
+            {
+              // "Send payment link" (lib/payment-link.ts): the team mails a client a Checkout link
+              // for a package, no account needed. The token is the secret in /pay/<token>.
+              type: 'row',
+              fields: [
+                { name: 'paymentLinkToken', type: 'text', index: true, access: serverWrites, admin: { hidden: true } },
+                { name: 'paymentLinkPackage', type: 'relationship', relationTo: 'packages', access: serverWrites, admin: { readOnly: true } },
+                { name: 'paymentLinkSentTo', type: 'email', access: serverWrites, admin: { readOnly: true } },
+                { name: 'paymentLinkSentAt', type: 'date', access: serverWrites, admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
+              ],
+            },
+            {
+              name: 'paymentLink',
+              type: 'ui',
+              admin: { components: { Field: '/components/admin/PaymentLink#PaymentLink' } },
             },
             {
               name: 'subdomain',

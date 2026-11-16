@@ -16,7 +16,7 @@ const addr = (a: SendEmailOptions['to']): string[] => {
   return list.map((x) => (typeof x === 'string' ? x : `${x.name ? `${x.name} ` : ''}<${x.address}>`))
 }
 
-export async function sendMail(msg: { to: string | string[]; subject: string; html: string; text?: string }) {
+export async function sendMail(msg: { to: string | string[]; subject: string; html: string; text?: string; replyTo?: string }) {
   const key = process.env.RESEND_API_KEY
   const to = Array.isArray(msg.to) ? msg.to : [msg.to]
   if (!key) {
@@ -26,7 +26,7 @@ export async function sendMail(msg: { to: string | string[]; subject: string; ht
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM(), to, subject: msg.subject, html: msg.html, text: msg.text }),
+    body: JSON.stringify({ from: FROM(), to, subject: msg.subject, html: msg.html, text: msg.text, ...(msg.replyTo ? { reply_to: msg.replyTo } : {}) }),
     signal: AbortSignal.timeout(15000),
   })
   if (!res.ok) throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0, 300)}`)

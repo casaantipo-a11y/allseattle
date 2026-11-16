@@ -557,6 +557,10 @@ export interface Business {
    */
   subscriptionStatus?: ('active' | 'canceling' | 'past_due' | 'canceled') | null;
   stripeSubscriptionId?: string | null;
+  paymentLinkToken?: string | null;
+  paymentLinkPackage?: (number | null) | Package;
+  paymentLinkSentTo?: string | null;
+  paymentLinkSentAt?: string | null;
   /**
    * yourname → yourname.<site domain>. Luxury and Premium only.
    */
@@ -1729,6 +1733,10 @@ export interface BusinessesSelect<T extends boolean = true> {
   priority?: T;
   subscriptionStatus?: T;
   stripeSubscriptionId?: T;
+  paymentLinkToken?: T;
+  paymentLinkPackage?: T;
+  paymentLinkSentTo?: T;
+  paymentLinkSentAt?: T;
   subdomain?: T;
   branding?:
     | T

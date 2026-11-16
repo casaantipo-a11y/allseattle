@@ -1,6 +1,6 @@
 import type { Business, Customer, Package } from '@/payload-types'
 
-import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, type CabinetResult } from './cabinet'
+import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, teamReplyTo, type CabinetResult } from './cabinet'
 import { emailLayout, sendMail } from './email'
 import { absoluteUrl } from './site'
 import { syncAdSubscription } from './ad-billing'
@@ -47,7 +47,7 @@ export function paidUntilOf(sub: Sub): string | null {
   return paid && periodEnd ? new Date(periodEnd * 1000 + GRACE_MS).toISOString() : null
 }
 
-const hasLiveSubscription = (biz: Business) => Boolean(biz.subscriptionStatus && (LIVE as readonly string[]).includes(biz.subscriptionStatus))
+export const hasLiveSubscription = (biz: Business) => Boolean(biz.subscriptionStatus && (LIVE as readonly string[]).includes(biz.subscriptionStatus))
 
 export async function stripeCustomerFor(customer: Customer) {
   if (customer.stripeCustomerId) return customer.stripeCustomerId
@@ -64,6 +64,43 @@ export async function stripeCustomerFor(customer: Customer) {
   return c.id
 }
 
+/**
+ * The Checkout Session of a package subscription — the same for an owner paying from the account
+ * (`buyer` = their Stripe customer) and for a client paying from a payment link (`buyer` = just
+ * an email: Stripe makes the customer, and `customer_update` is only allowed with an existing one).
+ */
+export function packageSessionParams(biz: Business, pkg: Package, buyer: { customer: string } | { customer_email: string }, meta: Record<string, string | number>, paths: { success: string; cancel: string }) {
+  const tax = automaticTaxParams()
+  if (!('customer' in buyer)) delete tax.customer_update
+  return {
+    mode: 'subscription',
+    // English like the site (client, 22.10.2026: a Russian browser got Stripe's page in Russian).
+    locale: 'en',
+    ...managedPaymentsParams(),
+    ...tax,
+    ...buyer,
+    client_reference_id: biz.id,
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: (pkg.currency ?? 'USD').toLowerCase(),
+          unit_amount: Math.round(pkg.priceMonthly * 100),
+          recurring: { interval: 'month' },
+          tax_behavior: TAX_BEHAVIOR,
+          product_data: { name: `AllSeattle ${pkg.name} package`, tax_code: productTaxCode(), metadata: { packageId: pkg.id } },
+        },
+      },
+    ],
+    subscription_data: { description: `${pkg.name} package for ${biz.name}`, metadata: meta },
+    metadata: meta,
+    // No custom_text: Stripe's Managed Payments (on by default for new accounts) rejects it.
+    // The monthly-charge consent is the checkbox on our page before this step.
+    success_url: absoluteUrl(paths.success),
+    cancel_url: absoluteUrl(paths.cancel),
+  }
+}
+
 /** Stripe Checkout for a package of one of the account's businesses. */
 export async function startPackageCheckout(customer: Customer, bizId: number, packageId: number, consent: boolean): Promise<CabinetResult & { url?: string }> {
   if (!stripeEnabled()) return fail(503, NOT_SET_UP)
@@ -77,35 +114,15 @@ export async function startPackageCheckout(customer: Customer, bizId: number, pa
   if (!(pkg.priceMonthly > 0)) return fail(400, `The ${pkg.name} package is arranged with our team — please contact us.`)
   if (!consent) return fail(400, CHECK, { consent: 'Please confirm the monthly payment' })
 
-  const meta = { businessId: biz.id, packageId: pkg.id, customerId: customer.id }
   try {
-    const session = await stripe<{ url: string }>('POST', '/checkout/sessions', {
-      mode: 'subscription',
-      // English like the site (client, 22.10.2026: a Russian browser got Stripe's page in Russian).
-      locale: 'en',
-      ...managedPaymentsParams(),
-      ...automaticTaxParams(),
-      customer: await stripeCustomerFor(customer),
-      client_reference_id: biz.id,
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: (pkg.currency ?? 'USD').toLowerCase(),
-            unit_amount: Math.round(pkg.priceMonthly * 100),
-            recurring: { interval: 'month' },
-            tax_behavior: TAX_BEHAVIOR,
-            product_data: { name: `AllSeattle ${pkg.name} package`, tax_code: productTaxCode(), metadata: { packageId: pkg.id } },
-          },
-        },
-      ],
-      subscription_data: { description: `${pkg.name} package for ${biz.name}`, metadata: meta },
-      metadata: meta,
-      // No custom_text: Stripe's Managed Payments (on by default for new accounts) rejects it.
-      // The monthly-charge consent is the checkbox on our page before this step.
-      success_url: absoluteUrl(`/account/business/${biz.id}/package?paid=1`),
-      cancel_url: absoluteUrl(`/account/business/${biz.id}/package`),
-    })
+    const session = await stripe<{ url: string }>(
+      'POST',
+      '/checkout/sessions',
+      packageSessionParams(biz, pkg, { customer: await stripeCustomerFor(customer) }, { businessId: biz.id, packageId: pkg.id, customerId: customer.id }, {
+        success: `/account/business/${biz.id}/package?paid=1`,
+        cancel: `/account/business/${biz.id}/package`,
+      }),
+    )
     return { ok: true, id: biz.id, message: 'Redirecting to payment…', url: session.url }
   } catch (e) {
     console.error('[billing] checkout failed', e)
@@ -139,7 +156,7 @@ export const statusOf = (s: Sub): Business['subscriptionStatus'] | null => {
 }
 
 /** Brings a business (or, for kind=banner, a banner) in line with its Stripe subscription. Safe to run any number of times. */
-export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: boolean } = {}) {
+export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: boolean; buyerEmail?: string } = {}) {
   const sub = await freshSubscription(typeof subOrId === 'string' ? subOrId : subOrId.id)
   if (sub.metadata?.kind === 'banner') return syncAdSubscription(sub, opts)
   const bizId = Number(sub.metadata?.businessId)
@@ -153,8 +170,10 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
   if (biz.stripeSubscriptionId && biz.stripeSubscriptionId !== sub.id && hasLiveSubscription(biz) && status === 'canceled') return
   // Two checkouts paid for one business (two tabs): both subscriptions charge. Tell the team to refund one.
   if (opts.welcome && biz.stripeSubscriptionId && biz.stripeSubscriptionId !== sub.id && hasLiveSubscription(biz)) {
-    const owner = await payload.findByID({ collection: 'customers', id: Number(sub.metadata?.customerId), depth: 0, overrideAccess: true, disableErrors: true })
-    if (owner) await notifyTeam(payload, `Check Stripe: a second package subscription for ${biz.name} (${biz.stripeSubscriptionId} and ${sub.id})`, `/admin/collections/businesses/${biz.id}`, owner)
+    const customerId = Number(sub.metadata?.customerId) // a payment-link subscription has none
+    const owner = customerId ? await payload.findByID({ collection: 'customers', id: customerId, depth: 0, overrideAccess: true, disableErrors: true }) : null
+    const from = owner ?? { name: biz.name, email: opts.buyerEmail ?? (await buyerEmailOf(sub)) ?? 'unknown' }
+    await notifyTeam(payload, `Check Stripe: a second package subscription for ${biz.name} (${biz.stripeSubscriptionId} and ${sub.id})`, `/admin/collections/businesses/${biz.id}`, from)
   }
 
   const paidUntil = paidUntilOf(sub)
@@ -170,19 +189,34 @@ export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: 
       biz.owner ? payload.findByID({ collection: 'customers', id: relId(biz.owner)!, depth: 0, overrideAccess: true, disableErrors: true }) : null,
       payload.findByID({ collection: 'packages', id: packageId, depth: 0, disableErrors: true }),
     ])
-    if (owner?.email && pkg) {
+    // No account behind the business (a payment link): the mail goes to whoever paid.
+    const to = owner?.email ?? opts.buyerEmail ?? (await buyerEmailOf(sub))
+    if (to && pkg) {
+      const portal = process.env.STRIPE_PORTAL_LOGIN_URL?.trim()
       const mail = emailLayout({
         heading: `${pkg.name} package is on`,
         paragraphs: [
           `Thank you! “${biz.name}” now has the ${pkg.name} package. It renews every month until you cancel.`,
           ...receiptLines(sub.latest_invoice),
-          'You can cancel or change the card any time from your account.',
+          owner ? 'You can cancel or change the card any time from your account.' : portal ? `Manage or cancel your subscription: ${portal}` : 'To cancel, just reply to this email.',
         ],
-        button: { label: 'Open my business', href: absoluteUrl('/account/business') },
+        button: owner ? { label: 'Open my business', href: absoluteUrl('/account/business') } : undefined,
       })
-      await sendMail({ to: owner.email, subject: `${pkg.name} package for ${biz.name}`, ...mail })
-      await notifyTeam(payload, `Package bought online: ${pkg.name} for ${biz.name}`, `/admin/collections/businesses/${biz.id}`, owner)
+      await sendMail({ to, subject: `${pkg.name} package for ${biz.name}`, ...mail, replyTo: owner ? undefined : await teamReplyTo(payload) })
+      const title = sub.metadata?.via === 'link' ? `Package bought via payment link: ${pkg.name} for ${biz.name}` : `Package bought online: ${pkg.name} for ${biz.name}`
+      await notifyTeam(payload, title, `/admin/collections/businesses/${biz.id}`, owner ?? { name: biz.name, email: to })
     }
+  }
+}
+
+/** The email Stripe has for the buyer of a subscription (a checkout without an account has no other). */
+async function buyerEmailOf(sub: Sub): Promise<string | null> {
+  if (!sub.customer) return null
+  try {
+    return (await stripe<{ email?: string | null }>('GET', `/customers/${sub.customer}`)).email ?? null
+  } catch (e) {
+    console.error('[billing] could not read the buyer', sub.id, e)
+    return null
   }
 }
 
@@ -200,7 +234,8 @@ export async function handleStripeEvent(event: StripeEvent) {
     case 'checkout.session.completed': {
       if (o.mode !== 'subscription' || o.payment_status === 'unpaid') return
       const id = subIdOf(o)
-      if (id) await syncSubscription(id, { welcome: true })
+      const email = (o.customer_details as { email?: string | null } | undefined)?.email ?? undefined
+      if (id) await syncSubscription(id, { welcome: true, buyerEmail: email })
       return
     }
     case 'invoice.paid':

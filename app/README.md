@@ -414,6 +414,44 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     a slug retry), but not meant to happen. There is no test runner: it was checked with throw-away
     scripts against the local database (fixture feeds through a replaced `fetch`, mail off).
 
+- **Payment link (16.11.2026, branch `feature/payment-link`).** A business without a site account
+  can pay for a package. Admin → Businesses → the **Package** tab has a "Send payment link" block
+  (`components/admin/PaymentLink.tsx`): a package (only those with a monthly price; the business's
+  current one by default), the client's email (the business's own by default) and a button.
+  `POST /api/admin/payment-link` (admin and sales only; 401 without a session, 403 for anyone else,
+  site accounts included) runs `sendPaymentLink` in `lib/payment-link.ts`: the same checks as the
+  account's checkout (Stripe on, business exists and not rejected, no live subscription, package
+  priced), then saves `paymentLinkToken` (24 random bytes, base64url, made once and reused),
+  `paymentLinkPackage`, `paymentLinkSentTo`, `paymentLinkSentAt` and mails the client from
+  noreply@allseattle.org in the site's mail layout, with a "Pay securely" button to `/pay/<token>`
+  and `Reply-To` = the team's address (Site Settings → notify email, else `NOTIFY_EMAIL`). If the
+  mail fails the four fields go back to what they were. These fields are staff-only on read and
+  **write-protected for REST** (`create`/`update` access false; the server writes them with
+  `overrideAccess`) — otherwise a stale admin form would send the old, empty token back on save.
+  `GET /pay/<token>` (`app/(frontend)/pay/[token]/route.ts`) finds the business by token and opens
+  a **new** Checkout Session on every visit (a Stripe session lives 24 h, the link in the mail must
+  not expire): same session as the account's — `packageSessionParams` in `lib/billing.ts` is
+  shared — but with `customer_email` instead of a customer (so no `customer_update`), metadata
+  `{ businessId, packageId, via: 'link' }`, `success_url` `/pay/thanks`, cancel → home. Answers 303
+  to Stripe; a business already subscribed → 303 to `/pay/thanks`; unknown token → 404 "This
+  payment link is no longer valid". The webhook is unchanged in kind: `syncSubscription` now copes
+  with no owner — the welcome email goes to the buyer's email from Stripe (`customer_details` of
+  the session, else the Stripe customer), with "Manage or cancel your subscription: …" when
+  `STRIPE_PORTAL_LOGIN_URL` is set (Stripe's no-code customer-portal login link) and otherwise "To
+  cancel, just reply to this email"; the team is told "Package bought via payment link: …"
+  (`notifyTeam` takes `{ name, email, phone? }` instead of a Customer), and a second subscription
+  for the same business is reported the same way. Migration `payment_link` (four columns, one FK,
+  two indexes; nothing existing changes). **Tested (local DB, Stripe test key, mail captured):**
+  401/403/400 paths, the mail's text and link, the Session ($99.00, `customer_email`, metadata,
+  urls) read back from Stripe, a paid subscription with the link's metadata run through
+  `handleStripeEvent` (package, expiry, `active`; welcome mail with `Reply-To`; team notice),
+  repeat visit → thanks, second subscription notice, a stale-form PATCH leaves the token.
+  Not done through Stripe's own Checkout page with a card (no Stripe CLI here; the page can be
+  opened from a link and paid with 4242 4242 4242 4242 — see the owner's guide).
+  **To switch it on:** nothing new on Vercel except the optional `STRIPE_PORTAL_LOGIN_URL`;
+  Stripe → Settings → Public details / Branding should say AllSeattle with its logo, since that is
+  what the client sees on the payment page; apply the migration with the deploy.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.
