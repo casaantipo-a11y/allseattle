@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 import { RichText } from '@/components/RichText'
 import { ContactEmail } from '@/components/ContactEmail'
@@ -214,6 +215,13 @@ export default async function AdvertisePage({ searchParams }: Props) {
           <p className="muted">
             Every position is shown on 100% of the page&rsquo;s views. Prices are per month. Booked
             means a banner is running there right now; ask us for the next free dates.
+          </p>
+          <p className="muted">
+            Want to see what a place is worth?{' '}
+            <Link href="/advertise/stats" className="text-brand-navy underline">
+              See the numbers behind the site
+            </Link>
+            .
           </p>
           <PlacementPrices booked={booked} online={stripeEnabled()} />
           {/* The client's wording (price sheet, 15.10.2026). */}

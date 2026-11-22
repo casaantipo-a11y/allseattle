@@ -105,3 +105,46 @@ export const publicRequests = (map: Record<number, number>, id: number): number 
 }
 
 export const requestsText = (n: number) => `${n.toLocaleString('en-US')} price ${n === 1 ? 'request' : 'requests'} in 30 days`
+
+export type AdvertiserStats = {
+  /** First day with a counted view (YYYY-MM-DD), or null before the first one. */
+  since: string | null
+  last30: { siteViews: number; businessViews: number; requests: number; impressions: number; clicks: number }
+  total: { siteViews: number; businessViews: number; requests: number; impressions: number; clicks: number }
+}
+
+/**
+ * Aggregates for /advertise/stats — numbers only, nothing about a person or a named business.
+ * Views from view-stats, price requests from submissions (rejected ones left out), banner
+ * impressions and clicks from banner-stats (every banner, demo fillers included). One hour cache.
+ */
+export const getAdvertiserStats = unstable_cache(
+  async (): Promise<AdvertiserStats> => {
+    const d = await db()
+    const since = windowStart()
+    const [views, first, requests, banners] = await Promise.all([
+      d.drizzle.execute(sql`
+        SELECT "kind", SUM("views") AS "total", COALESCE(SUM("views") FILTER (WHERE "date" >= ${since}), 0) AS "last30"
+        FROM "view_stats" WHERE "kind" IN ('site', 'business') GROUP BY "kind"`),
+      d.drizzle.execute(sql`SELECT MIN("date") AS "first" FROM "view_stats"`),
+      d.drizzle.execute(sql`
+        SELECT COUNT(*) AS "total", COUNT(*) FILTER (WHERE "created_at" >= now() - interval '30 days') AS "last30"
+        FROM "submissions" WHERE "type" = 'price_request' AND "status" <> 'rejected'`),
+      d.drizzle.execute(sql`
+        SELECT COALESCE(SUM("impressions"), 0) AS "impressions", COALESCE(SUM("clicks"), 0) AS "clicks",
+          COALESCE(SUM("impressions") FILTER (WHERE "date" >= ${since}), 0) AS "impressions30",
+          COALESCE(SUM("clicks") FILTER (WHERE "date" >= ${since}), 0) AS "clicks30"
+        FROM "banner_stats"`),
+    ])
+    const v = (kind: string, col: 'total' | 'last30') => Number(views.rows.find((r) => r.kind === kind)?.[col] ?? 0)
+    const r = requests.rows[0] ?? {}
+    const b = banners.rows[0] ?? {}
+    return {
+      since: (first.rows[0]?.first as string | null) ?? null,
+      last30: { siteViews: v('site', 'last30'), businessViews: v('business', 'last30'), requests: Number(r.last30 ?? 0), impressions: Number(b.impressions30 ?? 0), clicks: Number(b.clicks30 ?? 0) },
+      total: { siteViews: v('site', 'total'), businessViews: v('business', 'total'), requests: Number(r.total ?? 0), impressions: Number(b.impressions ?? 0), clicks: Number(b.clicks ?? 0) },
+    }
+  },
+  ['advertiser-stats'],
+  { tags: ['view-stats', 'banners'], revalidate: 3600 },
+)
