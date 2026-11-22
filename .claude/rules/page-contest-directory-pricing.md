@@ -272,3 +272,16 @@ with the proxy in `lib/subdomain.ts`. Links to other paths need nothing: the pro
 them. To try it locally: `ENABLE_SUBDOMAINS=true ROOT_DOMAIN=localhost`, then
 `http://emeraldcoffee.localhost:3000/` (Chrome and Edge resolve `*.localhost` themselves; the seed
 gives that business a Premium package).
+
+**App, 22.11.2026 — counters on the business page, directory rows and /advertise.** The title
+block shows the digit boxes with **"views in 30 days"** (the last 30 days from `view-stats`, only from
+10 views; it used to print the lifetime `viewsCount` as "views this month"), and `BizRow` shows the
+same text in `.biz-row-views`. Both come from `getViews30("business")` (cached an hour) through
+`publicViews`; the thresholds `VIEWS_SHOW_MIN` / `REQUESTS_SHOW_MIN` live only in `lib/stats.ts`.
+`BusinessView` mounts `ViewBeacon kind="business"` (it renders both `/biz/[slug]` and the subdomain
+page, free listing included). **"Request a price"** (`components/PriceRequest.tsx`, a plain `.btn`
+opening the contest modal) sits right under `.biz-info`, in the main column, so phones see it near the
+top; paid pages only — the free page has none. Beside it "N price requests in 30 days" from 3, never
+names or contacts. `/advertise` links to `/advertise/stats` (a `.section-head` with an eyebrow and h1,
+three `.widget`s of `.stat-grid` tiles, a `lg:grid-cols-3` wrapper; no page CSS, `data-page="advertise-stats"`).
+Details and thresholds: `app/README.md`, "Counters and stats".

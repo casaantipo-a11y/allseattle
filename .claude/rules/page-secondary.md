@@ -393,3 +393,7 @@ under the list / card and centred on the cards — under the whole layout it dro
 Filters column. Home's Job board widget says "Job openings are coming soon." with "Post a job →";
 "At a glance" shows "Soon" for any tile with 0 (was Events only).
 
+
+**App Jobs, 22.11.2026:** a job card shows "N views in 30 days" as a second `.job-card-posted` line in
+the side column, only from 10 views (`JobItem.views`, `toJobItem(j, views)` from `getViews30("job")`).
+No new CSS; the owner sees the exact number in My listings.

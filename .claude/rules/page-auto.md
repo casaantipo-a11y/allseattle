@@ -249,3 +249,7 @@ are `<input>`s with a `<datalist>` of round prices (`PRICE_HINTS`), any number c
 placeholder in navy like the selects, `line-height: 1.25` so they stand 0.5px (1px on phones)
 off the 49px selects rather than 2px. Measured: no overflow at 375/768/1024/1440. The listing
 form's model is typed with suggestions — see app/README "Cars for dealers".
+
+**App Cars, 22.11.2026:** a car row carries a second `.car-row-ref` line, "N views in 30 days", under
+the ref number — only from 10 views (`CarItem.views`, set by `toCarItem(c, views)` from
+`getViews30("car")`, cached an hour). No new CSS. The owner sees the exact number in My listings.

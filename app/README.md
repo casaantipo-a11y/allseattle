@@ -487,6 +487,70 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   sidebar 1/2" (they are the right column of `/cars/services`, and "sidebar 3/4" read as
   duplicates of the `/cars` ones in the banner picker). Cars has 8 places in all: 4 on `/cars`
   (B1, B2, C1, C2) and 4 on `/cars/services`.
+- **Counters and stats (22.11.2026, branch `feature/stats`).** Our own counters for what the site
+  can show an advertiser; GA4 is not used (it loads only after "Accept").
+  - **What is counted and where.** `view-stats` (new collection, group Advertising, read-only):
+    one row per `(kind, docId, date)` with `views`, unique index on the three; `kind` is plain text
+    — `business`, `car`, `job`, or `site` (docId 0, every public page); `date` is Seattle time like
+    `banner-stats`. Written only by `POST /api/views` through `lib/stats.ts`: `recordView` is **one
+    SQL statement** (a data-modifying CTE) that bumps the lifetime `viewsCount` of a *published*
+    business / car / job and upserts today's row, so the two never drift and nothing runs through
+    `payload.update` (no hooks, no page rebuild). `recordSiteView` upserts the `site` row. Bots
+    (`isBot`) are dropped. `ViewBeacon` (one per browser session) is on the car, job and **business**
+    page — `BusinessView` renders both `/biz/[slug]` and the `{sub}.allseattle.org` page, so one
+    beacon covers both, and `/api` passes the proxy on a subdomain. `SiteViewBeacon` (in the frontend
+    layout) counts a page view per shown page, also after a client-side navigation; not `/admin`,
+    `/account`, `/pay`, `/api`. No per-section split: one site series. Numbers are **page views**, not
+    visitors; a visitor who disables JS or blocks `sendBeacon`/fetch is not counted; anyone can POST
+    the endpoint (as before for cars and jobs), so a number can be inflated on purpose.
+  - **Thresholds (one place, `lib/stats.ts`).** `VIEWS_SHOW_MIN = 10`, `REQUESTS_SHOW_MIN = 3`:
+    below them the public pages show nothing. Public numbers come from `getViews30(kind)` /
+    `getRequests30()` — `unstable_cache`, `revalidate: 3600`, tag `view-stats` (also expired by
+    `/api/revalidate`) — so a card is up to an hour behind and a view never rebuilds a page.
+    `publicViews` / `publicRequests` apply the threshold on the server; the client components just
+    draw what they are given. Shown as "N views in 30 days" on: car rows (`CarsCatalog`), job cards
+    (`JobsBoard`), directory rows (`BizRow`, also `/cars/services`) and the business page (the digit
+    boxes). **This replaces the business "views this month"**, which printed the lifetime
+    `viewsCount` — the seed gave the demo businesses made-up numbers (882, 1420…), so those fields
+    are fake on any database that was seeded; the page no longer reads them.
+  - **The owner sees exact numbers, no threshold:** `/account/listings` ("N views in 30 days · M in
+    all") and `/account/business` ("page views in 30 days · in all · price requests in 30 days"),
+    from `viewsByDoc(kind, ids)` / `requestsByBusiness(ids)` (uncached).
+  - **"Request a price".** Button under the contacts table of a **paid** business page (a free
+    listing has none; client's answers 22.11.2026), in the main column so a phone sees it near the
+    top. `components/PriceRequest.tsx` opens the site's modal with `SubmissionForm`
+    (`form="price-request"`, a hidden `businessId`; `SubmissionForm` now takes `type: 'hidden'`).
+    `lib/forms.ts` → `FORMS['price-request']` goes through `handleForm` unchanged (honeypot → zod →
+    Turnstile → 5 per IP per hour → save → notify): name, email **or** phone, message 5–1000
+    characters; the business must exist, be published and have a package in force, else 400. Saved as
+    a Submission of the new type `price_request` with `business` (relationship, indexed) and
+    `businessName`. The team's notice is the usual one (Telegram / `NOTIFY_EMAIL`), with a line "Sent to
+    the business: <email> or no email on file". The business gets `lib/price-request.ts`
+    `sendPriceRequestMail` (Resend, `emailLayout` escapes every visitor string, subject cut to one
+    line, `replyTo` = the visitor's email; phone-only requests say so). No email on the business →
+    the team only. A mail failure is logged and never fails the form. Sales (and admin) see
+    `price_request` in Inbox → Submissions; a **Rejected** one stops counting.
+    Public: "N price requests in 30 days" from 3, never a name, phone, email or text.
+  - **`/advertise/stats`** (linked from `/advertise`; the header menu is CMS data and was not touched):
+    last 30 days and since counting began — site page views, business page views, price requests,
+    banner impressions / clicks / click rate (`getAdvertiserStats`, sums of `view-stats`, `submissions`
+    and `banner-stats`; **demo filler banners are included** — the spec said "the sum of BannerStats")
+    — plus live businesses, cars and jobs (`getSiteStats`). "Counting since <first day in
+    `view-stats`>". Aggregates only. `unstable_cache` and `revalidate` 3600. The look is the site's
+    `.section-head`, `.widget` and `.stat-grid`, no new CSS.
+  - **Migrations:** `view_stats` (table, indexes, the admin's locked-documents column) and
+    `price_requests` (`ADD VALUE 'price_request'` to `enum_submissions_type`, `submissions.business_id`,
+    FK set null, index). Both are additive; an enum value is added inside the migration's
+    transaction like `newsletter_submission_type` did.
+  - **Tested** on the local database (Turnstile test keys, a live Resend key sending to Resend's test
+    inbox): two hits on one business the same day → one row with `views` 2 and `viewsCount` +2; a
+    bot, an unknown id, a draft and a bad body change nothing; the cards show nothing at 2 and 9
+    views and the number at 10; a view older than 30 days does not count; the form's 400 / honeypot /
+    bad business / Turnstile with and without a token / 429 on the sixth from one IP; the owner's page
+    shows the same numbers as the table; `/advertise/stats` equals the SQL sums. The modal itself was
+    not opened in a browser (the form is the same `SubmissionForm` as `/advertise`, and the modal is
+    the contest's); a Turnstile key limited to `allseattle.org` should also cover the subdomains, which
+    was not checked.
 
 ## Local development
 
