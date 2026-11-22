@@ -9,6 +9,7 @@ import { HeroBanner } from '@/components/HeroBanner'
 import { HiddenOn } from '@/components/HiddenOn'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { SiteViewBeacon } from '@/components/ViewBeacon'
 import { getSiteSettings } from '@/lib/queries'
 import { siteUrl } from '@/lib/site'
 
@@ -94,6 +95,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
         <SiteFooter />
         <AdminNotes />
         <CookieConsent gaId={settings.ga4MeasurementId} />
+        <SiteViewBeacon />
       </body>
     </html>
   )

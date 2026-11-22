@@ -6,7 +6,6 @@ import {
   bizUrl,
   type BusinessFull,
   effectivePackage,
-  formatViews,
   telHref,
 } from '@/lib/business'
 import { mediaUrl } from '@/lib/media'
@@ -21,9 +20,12 @@ import type { BusinessCategory } from '@/payload-types'
 export function BizRow({
   biz,
   sectionCategoryIds,
+  views,
 }: {
   biz: BusinessFull
   sectionCategoryIds?: Set<number>
+  /** Views in the last 30 days — set only from VIEWS_SHOW_MIN up (lib/stats.ts). */
+  views?: number
 }) {
   const pkg = effectivePackage(biz)
   // A free listing (no package in force) is the name, the address and the phone, the name
@@ -62,9 +64,7 @@ export function BizRow({
       <div className="biz-row-body">
         <div className="biz-row-meta">
           {badge ? <span className={`badge ${badge.cls}`}>{badge.label}</span> : null}
-          {biz.viewsCount ? (
-            <span className="biz-row-views">{formatViews(biz.viewsCount)} views this month</span>
-          ) : null}
+          {views ? <span className="biz-row-views">{views.toLocaleString('en-US')} views in 30 days</span> : null}
         </div>
         <Link href={href} className="biz-row-name">
           {biz.name}

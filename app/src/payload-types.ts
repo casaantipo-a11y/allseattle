@@ -89,6 +89,7 @@ export interface Config {
     'ad-slots': AdSlot;
     banners: Banner;
     'banner-stats': BannerStat;
+    'view-stats': ViewStat;
     pages: Page;
     media: Media;
     documents: Document;
@@ -123,6 +124,7 @@ export interface Config {
     'ad-slots': AdSlotsSelect<false> | AdSlotsSelect<true>;
     banners: BannersSelect<false> | BannersSelect<true>;
     'banner-stats': BannerStatsSelect<false> | BannerStatsSelect<true>;
+    'view-stats': ViewStatsSelect<false> | ViewStatsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -1340,6 +1342,27 @@ export interface BannerStat {
   createdAt: string;
 }
 /**
+ * Daily page views, written by the site. Read-only. kind: site (all pages, docId 0), business, car, job.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "view-stats".
+ */
+export interface ViewStat {
+  id: number;
+  kind: string;
+  /**
+   * Id of the business / car / job; 0 for the whole site.
+   */
+  docId: number;
+  /**
+   * YYYY-MM-DD, Seattle time
+   */
+  date: string;
+  views: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -1569,6 +1592,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'banner-stats';
         value: number | BannerStat;
+      } | null)
+    | ({
+        relationTo: 'view-stats';
+        value: number | ViewStat;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2170,6 +2197,18 @@ export interface BannerStatsSelect<T extends boolean = true> {
   date?: T;
   impressions?: T;
   clicks?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "view-stats_select".
+ */
+export interface ViewStatsSelect<T extends boolean = true> {
+  kind?: T;
+  docId?: T;
+  date?: T;
+  views?: T;
   updatedAt?: T;
   createdAt?: T;
 }

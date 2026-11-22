@@ -28,6 +28,8 @@ export type CarItem = {
   postedAt: string
   ref: string
   featured: boolean
+  /** Views in the last 30 days — set only from VIEWS_SHOW_MIN up (lib/stats.ts). */
+  views?: number
 }
 
 const fmtPrice = (n: number) => `$${n.toLocaleString('en-US')}`
@@ -369,6 +371,7 @@ export function CarsCatalog({
                       {relative(c.postedAt)}
                     </div>
                     <div className="car-row-ref">{c.ref}</div>
+                    {c.views ? <div className="car-row-ref">{`${c.views.toLocaleString('en-US')} views in 30 days`}</div> : null}
                   </div>
                 </article>
                 {i === 9 && found.length > 10 && feedAd ? <div className="car-infeed-ad">{feedAd}</div> : null}

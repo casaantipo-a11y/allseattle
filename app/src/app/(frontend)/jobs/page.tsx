@@ -6,6 +6,7 @@ import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { JobsBoard } from '@/components/jobs/JobsBoard'
 import { toJobItem } from '@/lib/jobs'
 import { getJobs } from '@/lib/queries-phase3'
+import { getViews30, publicViews } from '@/lib/stats'
 
 export const revalidate = 3600
 
@@ -21,7 +22,8 @@ type Props = { searchParams: Promise<{ q?: string }> }
 
 export default async function JobsPage({ searchParams }: Props) {
   const q = ((await searchParams).q ?? '').slice(0, 100)
-  const jobs = (await getJobs()).map(toJobItem)
+  const [allJobs, views] = await Promise.all([getJobs(), getViews30('job')])
+  const jobs = allJobs.map((j) => toJobItem(j, publicViews(views, j.id)))
   return (
     <main id="content" data-page="jobs">
       <section className="section section--footer-tight">

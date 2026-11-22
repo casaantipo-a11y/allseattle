@@ -6,6 +6,7 @@ import { AccountShell } from '@/components/account/AccountShell'
 import { ListingActions } from '@/components/account/ListingActions'
 import { getCustomer } from '@/lib/account'
 import { ACTIVE_LIMIT, myListings } from '@/lib/listings'
+import { viewsByDoc } from '@/lib/stats'
 import { mediaUrl } from '@/lib/media'
 import { SITE_TZ } from '@/lib/site'
 import type { CarListing, Job, Media } from '@/payload-types'
@@ -48,6 +49,8 @@ export default async function MyListingsPage() {
   const me = await getCustomer()
   if (!me) redirect(`/account/login?next=${encodeURIComponent('/account/listings')}`)
   const { cars, jobs } = await myListings(me.id)
+  // The owner sees the exact 30-day numbers, without the public threshold.
+  const [carViews, jobViews] = await Promise.all([viewsByDoc('car', cars.map((c) => c.id)), viewsByDoc('job', jobs.map((j) => j.id))])
   const rows: Row[] = [...cars.map((doc) => ({ kind: 'car' as const, doc })), ...jobs.map((doc) => ({ kind: 'job' as const, doc }))].sort((a, b) =>
     b.doc.updatedAt.localeCompare(a.doc.updatedAt),
   )
@@ -127,7 +130,7 @@ export default async function MyListingsPage() {
                       <span className={`listing-status ${s.tone}`}>{s.label}</span>
                       <span>
                         {kind === 'car' ? 'Car' : 'Job'}
-                        {doc.status === 'published' && doc.expiresAt ? ` · ${live ? 'until' : 'ended'} ${day(doc.expiresAt)}` : ''} · {doc.viewsCount ?? 0} views
+                        {doc.status === 'published' && doc.expiresAt ? ` · ${live ? 'until' : 'ended'} ${day(doc.expiresAt)}` : ''} · {((kind === 'car' ? carViews : jobViews)[doc.id] ?? 0).toLocaleString('en-US')} views in 30 days · {(doc.viewsCount ?? 0).toLocaleString('en-US')} in all
                       </span>
                     </div>
                     {doc.status === 'rejected' && doc.moderationNote ? <div className="listing-row-note">Reason: {doc.moderationNote}</div> : null}

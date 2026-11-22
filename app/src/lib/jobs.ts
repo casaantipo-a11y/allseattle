@@ -35,7 +35,7 @@ export const companyOf = (j: Job) => {
   return { name: biz?.name ?? j.companyName ?? 'Company', href: biz?.slug ? `/biz/${biz.slug}` : null, biz }
 }
 
-export function toJobItem(j: Job): JobItem {
+export function toJobItem(j: Job, views?: number): JobItem {
   const c = companyOf(j)
   return {
     id: j.id,
@@ -56,6 +56,7 @@ export function toJobItem(j: Job): JobItem {
     featured: Boolean(j.isFeatured),
     postedAt: j.createdAt,
     summary: j.summary,
+    views,
   }
 }
 

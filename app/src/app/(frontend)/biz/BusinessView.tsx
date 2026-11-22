@@ -5,17 +5,19 @@ import { AdSlot } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
 import { RichText } from '@/components/RichText'
 import { BizGallery } from '@/components/BizGallery'
+import { ViewBeacon } from '@/components/ViewBeacon'
 import { MapClient } from '@/components/map/MapClient'
 import { badgeFor, bizUrl, type BusinessFull, effectivePackage, telHref, viewFor } from '@/lib/business'
 import { mediaAlt, mediaUrl } from '@/lib/media'
 import { salaryText, EMPLOYMENT_LABEL } from '@/lib/jobs'
 import { getActivePromotions, getAllBusinesses, getProducts } from '@/lib/queries'
 import { getJobs } from '@/lib/queries-phase3'
+import { getViews30, publicViews } from '@/lib/stats'
 import { absoluteUrl } from '@/lib/site'
 import type { Document, Media, Product } from '@/payload-types'
 
 // The business page, laid out after the client's example (Commercial.pdf p. 3, the
-// "Lux" listing, 15.10.2026): name with the month's views, a data table with icons,
+// "Lux" listing, 15.10.2026): name with the views of the last 30 days, a data table with icons,
 // a wide map, promotions, a photo gallery with thumbnails, "About", products, jobs,
 // files and related categories; on the right the logo card with the website button,
 // similar places, contacts and socials. Package differences (spec §5):
@@ -132,6 +134,7 @@ const catHref = (c: { section?: string | null; slug?: string | null }) =>
 function FreeBusinessView({ biz }: { biz: BusinessFull }) {
   return (
     <main id="content" data-page="business">
+      <ViewBeacon kind="business" id={biz.id} />
       <section className="section">
         <div className="container">
           <AdSlot code="BUSINESS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" />
@@ -176,12 +179,14 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
   if (!pkg) return <FreeBusinessView biz={biz} />
   const view = viewFor(pkg)
   const badge = badgeFor(pkg)
-  const [promotions, products, allJobs, all] = await Promise.all([
+  const [promotions, products, allJobs, all, viewMap] = await Promise.all([
     getActivePromotions(biz.id),
     pkg && pkg.maxProducts > 0 ? getProducts(biz.id) : Promise.resolve([] as Product[]),
     getJobs(),
     getAllBusinesses(),
+    getViews30('business'),
   ])
+  const views30 = publicViews(viewMap, biz.id)
   const jobs = allJobs.filter((j) => (typeof j.business === 'object' ? j.business?.id : j.business) === biz.id)
 
   const photos = (biz.gallery ?? []).filter(isObj<Media>)
@@ -202,7 +207,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
     .sort((a, b) => (effectivePackage(b)?.order ?? 0) - (effectivePackage(a)?.order ?? 0) || (b.priority ?? 0) - (a.priority ?? 0))
     .slice(0, 3)
 
-  const views = String(Math.max(0, biz.viewsCount ?? 0)).padStart(4, '0')
+  const viewDigits = String(views30 ?? 0).padStart(4, '0')
 
   const titleBlock = (
     <div className="flex flex-wrap items-end justify-between gap-4">
@@ -218,16 +223,16 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
         </div>
         <h1 className="m-0">{biz.name}</h1>
       </div>
-      {biz.viewsCount ? (
+      {views30 ? (
         <div className="flex items-center gap-3">
-          <div className="biz-views" role="img" aria-label={`${biz.viewsCount} views this month`}>
-            {views.split('').map((d, i) => (
+          <div className="biz-views" role="img" aria-label={`${views30} views in 30 days`}>
+            {viewDigits.split('').map((d, i) => (
               <span key={i} className="biz-views-digit">
                 {d}
               </span>
             ))}
           </div>
-          <div className={`max-w-[90px] text-xs leading-tight ${headerImage ? 'text-white' : 'text-brand-slate'}`}>views this month</div>
+          <div className={`max-w-[90px] text-xs leading-tight ${headerImage ? 'text-white' : 'text-brand-slate'}`}>views in 30 days</div>
         </div>
       ) : null}
     </div>
@@ -241,6 +246,7 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
 
   return (
     <main id="content" data-page="business" style={brand ? ({ '--brand': brand } as CSSProperties) : undefined}>
+      <ViewBeacon kind="business" id={biz.id} />
       <section className="section">
         <div className="container">
           {view !== 'premium' ? <AdSlot code="BUSINESS_TOP" size="728x90" mobileSize="320x100" className="ad-slot-top" /> : null}

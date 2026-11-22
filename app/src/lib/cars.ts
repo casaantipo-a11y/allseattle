@@ -4,7 +4,7 @@ import type { CarListing, CarMake, Media } from '@/payload-types'
 import { mediaUrl } from './media'
 
 // Turns a Payload car listing into the plain object the catalog renders.
-export function toCarItem(c: CarListing): CarItem {
+export function toCarItem(c: CarListing, views?: number): CarItem {
   const make = typeof c.make === 'object' ? (c.make as CarMake).name : ''
   const cover = (c.photos ?? []).find((p): p is Media => typeof p === 'object' && p !== null)
   return {
@@ -26,6 +26,7 @@ export function toCarItem(c: CarListing): CarItem {
     postedAt: c.bumpedAt || c.createdAt,
     ref: `A-${String(c.id).padStart(4, '0')}`,
     featured: Boolean(c.isFeatured),
+    views,
   }
 }
 

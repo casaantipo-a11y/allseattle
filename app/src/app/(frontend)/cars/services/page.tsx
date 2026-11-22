@@ -10,6 +10,7 @@ import { DropPanel } from '@/components/DropPanel'
 import { BizRow } from '@/components/business'
 import { effectivePackage, withDescendants } from '@/lib/business'
 import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
+import { getViews30, publicViews } from '@/lib/stats'
 
 export const revalidate = 3600
 
@@ -36,7 +37,7 @@ const FEED_ADS = [
 ]
 
 export default async function CarServicesPage() {
-  const [categories, businesses] = await Promise.all([getBusinessCategories(), getAllBusinesses()])
+  const [categories, businesses, views] = await Promise.all([getBusinessCategories(), getAllBusinesses(), getViews30('business')])
   // The directory's Automotive section (13-section tree, 12.10.2026; was "Auto Services").
   // Before the seed has run on a database the section is still the old "Auto Services".
   const auto = categories.find((c) => c.slug === 'automotive') ?? categories.find((c) => c.slug === 'auto-services')
@@ -128,7 +129,7 @@ export default async function CarServicesPage() {
                 <div className="biz-list" id="auto-firms">
                   {firms.map((b, i) => (
                     <Fragment key={b.id}>
-                      <BizRow biz={b} />
+                      <BizRow biz={b} views={publicViews(views, b.id)} />
                       {/* Below 1024 the side columns' banners stand inside the list — under it they
                           ended up three in a row with the B2 (client, 19.10.2026). Same places. */}
                       {FEED_ADS.filter((a) => a.after === i + 1).map((a) => (

@@ -1,0 +1,79 @@
+import config from '@payload-config'
+import { sql } from '@payloadcms/db-postgres'
+import { unstable_cache } from 'next/cache'
+import { getPayload } from 'payload'
+
+import { seattleDate } from './banners'
+
+// Counters (22.11.2026). Views are counted in `view-stats` (daily rows) and, for a
+// business, car or job, also in the document's lifetime `viewsCount`. Everything here
+// reads or writes with plain SQL — a view must never go through payload.update, which
+// would run the collection hooks and rebuild the cached pages.
+
+/** A public number below this is not shown: "3 views" on a young site does harm. */
+export const VIEWS_SHOW_MIN = 10
+/** Same for "N price requests in 30 days" on a business page. */
+export const REQUESTS_SHOW_MIN = 3
+export const STATS_DAYS = 30
+
+export type ViewKind = 'car' | 'job' | 'business'
+type Db = { drizzle: { execute: (q: unknown) => Promise<{ rows: Record<string, unknown>[] }> } }
+const db = async () => (await getPayload({ config })).db as unknown as Db
+
+/** The first day of the 30-day window (today counts), Seattle time. */
+export const windowStart = (now = Date.now()) => seattleDate(new Date(now - (STATS_DAYS - 1) * 86400000))
+
+// Whitelisted: the table name goes into the SQL text, never a request value.
+const TABLE: Record<ViewKind, string> = { car: 'car_listings', job: 'jobs', business: 'businesses' }
+
+/**
+ * One view of a car, job or business: the lifetime counter and today's row move together
+ * in a single statement (a data-modifying CTE), so they cannot drift apart. Only a
+ * published document counts; for any other id the statement does nothing.
+ */
+export async function recordView(kind: ViewKind, id: number) {
+  await (await db()).drizzle.execute(sql`
+    WITH hit AS (
+      UPDATE ${sql.raw(`"${TABLE[kind]}"`)} SET "views_count" = COALESCE("views_count", 0) + 1
+      WHERE "id" = ${id} AND "status" = 'published'
+      RETURNING "id"
+    )
+    INSERT INTO "view_stats" ("kind", "doc_id", "date", "views", "updated_at", "created_at")
+    SELECT ${kind}::text, "id", ${seattleDate()}::text, 1, now(), now() FROM hit
+    ON CONFLICT ("kind", "doc_id", "date") DO UPDATE SET
+      "views" = "view_stats"."views" + 1, "updated_at" = now()`)
+}
+
+/** One page view of the site (docId 0). */
+export async function recordSiteView() {
+  await (await db()).drizzle.execute(sql`
+    INSERT INTO "view_stats" ("kind", "doc_id", "date", "views", "updated_at", "created_at")
+    VALUES ('site', 0, ${seattleDate()}, 1, now(), now())
+    ON CONFLICT ("kind", "doc_id", "date") DO UPDATE SET
+      "views" = "view_stats"."views" + 1, "updated_at" = now()`)
+}
+
+/** Views per document over the last 30 days, all documents or just `ids`. Exact; uncached. */
+export async function viewsByDoc(kind: ViewKind, ids?: number[]): Promise<Record<number, number>> {
+  if (ids && !ids.length) return {}
+  const only = ids ? sql`AND "doc_id" IN (${sql.join(ids.map((i) => sql`${i}`), sql`, `)})` : sql``
+  const res = await (await db()).drizzle.execute(sql`
+    SELECT "doc_id", SUM("views") AS "n" FROM "view_stats"
+    WHERE "kind" = ${kind} AND "date" >= ${windowStart()} ${only}
+    GROUP BY "doc_id"`)
+  return Object.fromEntries(res.rows.map((r) => [Number(r.doc_id), Number(r.n)]))
+}
+
+/** The same for the public pages: cached for an hour, like the pages that show it. */
+export const getViews30 = unstable_cache(async (kind: ViewKind) => viewsByDoc(kind), ['views-30d'], {
+  tags: ['view-stats'],
+  revalidate: 3600,
+})
+
+/** A number for the public pages: only from VIEWS_SHOW_MIN up, else undefined. */
+export const publicViews = (map: Record<number, number>, id: number): number | undefined => {
+  const n = map[id] ?? 0
+  return n >= VIEWS_SHOW_MIN ? n : undefined
+}
+
+export const viewsText = (n: number) => `${n.toLocaleString('en-US')} ${n === 1 ? 'view' : 'views'} in 30 days`

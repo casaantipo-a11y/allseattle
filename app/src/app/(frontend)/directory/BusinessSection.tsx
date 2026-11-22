@@ -14,6 +14,7 @@ import { LiveBizSearch } from '@/components/LiveBizSearch'
 import type { Section } from '@/collections/BusinessCategories'
 import { compareBusinesses, withDescendants } from '@/lib/business'
 import { getAllBusinesses, getBusinessCategories } from '@/lib/queries'
+import { getViews30, publicViews } from '@/lib/stats'
 import { getSiteStats } from '@/lib/queries-phase3'
 
 // One storefront, three sections (spec §5): the Business Directory, Shopping
@@ -90,9 +91,10 @@ export async function BusinessSection({
   page?: number
 }) {
   const meta = SECTION_META[section]
-  const [allCategories, allBusinesses, stats] = await Promise.all([
+  const [allCategories, allBusinesses, views, stats] = await Promise.all([
     getBusinessCategories(),
     getAllBusinesses(),
+    getViews30('business'),
     section === 'directory' ? getSiteStats() : null,
   ])
   const categories = allCategories.filter((c) => c.section === section)
@@ -199,7 +201,7 @@ export async function BusinessSection({
                 items={scoped.map((b) => ({
                   id: b.id,
                   text: searchText(b),
-                  node: <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} />,
+                  node: <BizRow key={b.id} biz={b} sectionCategoryIds={sectionIds} views={publicViews(views, b.id)} />,
                 }))}
               >
                 {/* Phones and tablets: the categories above the list (client, 19.10.2026) — the
@@ -213,7 +215,7 @@ export async function BusinessSection({
                   <div className="biz-list">
                     {rows.map((b, i) => (
                       <Fragment key={b.id}>
-                        <BizRow biz={b} sectionCategoryIds={sectionIds} />
+                        <BizRow biz={b} sectionCategoryIds={sectionIds} views={publicViews(views, b.id)} />
                         {/* Below 1024 the right column's banners stand inside the list — under it they
                             ended up back to back (client, 19.10.2026). Same places, other position.
                             ("At a glance" is not repeated in the list: the client didn't want it there.) */}

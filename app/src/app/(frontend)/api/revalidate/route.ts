@@ -24,6 +24,7 @@ const ALL_TAGS = [
   'weather',
   'ad-slots',
   'banners',
+  'view-stats',
 ]
 
 export async function POST(req: Request) {

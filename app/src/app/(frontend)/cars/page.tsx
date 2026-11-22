@@ -7,6 +7,7 @@ import { seoDescription, seoTitle } from '@/lib/seo-texts'
 import { CarsCatalog } from '@/components/cars/CarsCatalog'
 import { toCarItem } from '@/lib/cars'
 import { getCars } from '@/lib/queries-phase3'
+import { getViews30, publicViews } from '@/lib/stats'
 
 export const revalidate = 3600
 
@@ -22,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // model catalog, listings. The auto businesses (Directory of enterprises)
 // have their own page, /cars/services (client's request, 02.10.2026).
 export default async function CarsPage() {
-  const cars = await getCars()
+  const [cars, views] = await Promise.all([getCars(), getViews30('car')])
 
   return (
     <main id="content" data-page="cars">
@@ -53,7 +54,7 @@ export default async function CarsPage() {
           </div>
 
           <CarsCatalog
-            cars={cars.map(toCarItem)}
+            cars={cars.map((c) => toCarItem(c, publicViews(views, c.id)))}
             feedAd={<AdSlot code="CARS_INFEED_1" size="728x90" mobileSize="320x100" />}
             feedAds={[
               { after: 4, node: <AdSlot code="CARS_SIDEBAR_1" size="300x250" mobileSize="320x100" /> },

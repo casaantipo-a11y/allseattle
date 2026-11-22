@@ -84,11 +84,6 @@ export function bizUrl(biz: Pick<BusinessFull, 'slug' | 'subdomain' | 'package' 
 
 export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
 
-export function formatViews(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k`
-  return String(n)
-}
-
 export const priceText = (amount: number, currency = 'USD') =>
   amount > 0
     ? new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount)

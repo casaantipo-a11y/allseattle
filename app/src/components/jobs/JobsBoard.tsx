@@ -31,6 +31,8 @@ export type JobItem = {
   featured: boolean
   postedAt: string
   summary?: string | null
+  /** Views in the last 30 days — set only from VIEWS_SHOW_MIN up (lib/stats.ts). */
+  views?: number
 }
 
 const OPEN_TO: [string, string][] = [
@@ -415,6 +417,7 @@ export function JobsBoard({ jobs, initialQuery = '', bottomAd }: { jobs: JobItem
                     <span className="job-card-posted" suppressHydrationWarning>
                       {relative(j.postedAt)}
                     </span>
+                    {j.views ? <span className="job-card-posted">{`${j.views.toLocaleString('en-US')} views in 30 days`}</span> : null}
                     <Link className="job-card-save" href={`/jobs/${j.slug}`}>
                       View &amp; apply
                     </Link>
