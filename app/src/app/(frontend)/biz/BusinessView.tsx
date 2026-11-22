@@ -5,6 +5,7 @@ import { AdSlot } from '@/components/AdSlot'
 import { JsonLd } from '@/components/JsonLd'
 import { RichText } from '@/components/RichText'
 import { BizGallery } from '@/components/BizGallery'
+import { PriceRequest } from '@/components/PriceRequest'
 import { ViewBeacon } from '@/components/ViewBeacon'
 import { MapClient } from '@/components/map/MapClient'
 import { badgeFor, bizUrl, type BusinessFull, effectivePackage, telHref, viewFor } from '@/lib/business'
@@ -12,7 +13,7 @@ import { mediaAlt, mediaUrl } from '@/lib/media'
 import { salaryText, EMPLOYMENT_LABEL } from '@/lib/jobs'
 import { getActivePromotions, getAllBusinesses, getProducts } from '@/lib/queries'
 import { getJobs } from '@/lib/queries-phase3'
-import { getViews30, publicViews } from '@/lib/stats'
+import { getRequests30, getViews30, publicRequests, publicViews, requestsText } from '@/lib/stats'
 import { absoluteUrl } from '@/lib/site'
 import type { Document, Media, Product } from '@/payload-types'
 
@@ -179,14 +180,16 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
   if (!pkg) return <FreeBusinessView biz={biz} />
   const view = viewFor(pkg)
   const badge = badgeFor(pkg)
-  const [promotions, products, allJobs, all, viewMap] = await Promise.all([
+  const [promotions, products, allJobs, all, viewMap, requestMap] = await Promise.all([
     getActivePromotions(biz.id),
     pkg && pkg.maxProducts > 0 ? getProducts(biz.id) : Promise.resolve([] as Product[]),
     getJobs(),
     getAllBusinesses(),
     getViews30('business'),
+    getRequests30(),
   ])
   const views30 = publicViews(viewMap, biz.id)
+  const requests30 = publicRequests(requestMap, biz.id)
   const jobs = allJobs.filter((j) => (typeof j.business === 'object' ? j.business?.id : j.business) === biz.id)
 
   const photos = (biz.gallery ?? []).filter(isObj<Media>)
@@ -325,6 +328,13 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
                     {categories.map((c) => c.name).join(', ')}
                   </InfoRow>
                 ) : null}
+              </div>
+
+              {/* Under the contacts table, in the main column, so a phone sees it near the top
+                  (client's answer, 22.11.2026); paid pages only. Only the count is public. */}
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <PriceRequest businessId={biz.id} businessName={biz.name} turnstileSiteKey={process.env.TURNSTILE_SITE_KEY} />
+                {requests30 ? <span className="text-sm text-brand-slate">{requestsText(requests30)}</span> : null}
               </div>
 
               {hasMap ? (

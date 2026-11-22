@@ -15,7 +15,7 @@ import { shrink } from './account/photos'
 export type FieldSpec = {
   name: string
   label: string
-  type?: 'text' | 'email' | 'tel' | 'textarea' | 'select' | 'photos'
+  type?: 'text' | 'email' | 'tel' | 'textarea' | 'select' | 'photos' | 'hidden'
   required?: boolean
   placeholder?: string
   autoComplete?: string
@@ -171,6 +171,7 @@ export function SubmissionForm({
       ) : null}
 
       {fields.map((f) => {
+        if (f.type === 'hidden') return <input key={f.name} type="hidden" name={f.name} defaultValue={f.defaultValue} />
         const id = `f-${form}-${f.name}`
         const err = errors[f.name]
         const common = {

@@ -2,7 +2,10 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { z } from 'zod'
 
+import { effectivePackage } from './business'
 import { type NoticePhoto, notifyEmail, notifyTelegram } from './notify'
+import { sendPriceRequestMail } from './price-request'
+import type { Business } from '../payload-types'
 import { absoluteUrl } from './site'
 
 // Server side of the public forms (spec §8). Each form is a zod schema plus a
@@ -70,6 +73,21 @@ export const FORMS = {
       .refine(needContact, { message: 'Leave an email or a phone number', path: ['email'] }),
     thanks: 'Thanks! We received your news tip and will review it shortly.',
     title: 'New news tip',
+  },
+  // "Request a price" on a paid business page (counters block, 22.11.2026). The visitor writes to
+  // the business: the email goes to the business's address (reply-to is the visitor), the team gets
+  // the usual notice. Needs the business id and a way to answer.
+  'price-request': {
+    type: 'price_request' as const,
+    schema: z
+      .object({
+        businessId: z.string().regex(/^\d+$/, 'Missing business').transform(Number),
+        ...contact,
+        message: z.string().trim().min(5, 'Tell the business what you need').max(1000, 'Please keep it under 1000 characters'),
+      })
+      .refine(needContact, { message: 'Leave an email or a phone number', path: ['email'] }),
+    thanks: 'Thanks! Your request was sent to the business — they will get back to you.',
+    title: 'New price request',
   },
   // News sidebar newsletter (client, 12.10.2026). Just an address and the
   // button pressed; no Turnstile (the widget is wider than the 300px column —
@@ -187,6 +205,17 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
   }
 
   const d = parsed.data as Record<string, unknown>
+  // A price request goes to a live business with a package in force (free listings take none).
+  let business: Business | null = null
+  if (key === 'price-request') {
+    business = await payload
+      .findByID({ collection: 'businesses', id: d.businessId as number, depth: 1, overrideAccess: true })
+      .catch(() => null)
+    if (!business || business.status !== 'published' || !effectivePackage(business as never)) {
+      return json({ error: 'This business is not taking requests right now.' }, 400)
+    }
+    d.businessName = business.name
+  }
   if (key === 'newsletter') d.name = `Newsletter: ${d.action}`
   // Ids come from the visitor's browser: keep them only if they exist.
   const exists = async (collection: 'business-categories' | 'packages', id: unknown) =>
@@ -232,6 +261,7 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
         phone: (d.phone as string) || undefined,
         message: (d.message as string) || undefined,
         businessName: (d.businessName as string) || undefined,
+        business: business?.id,
         category: (d.category as number) || undefined,
         desiredPackage: (d.desiredPackage as number) || undefined,
         desiredSlot: (d.desiredSlot as string) || undefined,
@@ -267,6 +297,7 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
         ['Email', doc.email],
         ['Phone', doc.phone],
         ['Business', doc.businessName],
+        ...(business ? ([['Sent to the business', business.email || 'no email on file — only the team has it']] as [string, string][]) : []),
         ['Category', cat],
         ['Package', pkg],
         ['Placement', doc.desiredSlot],
@@ -283,6 +314,16 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
     ])
   } catch (e) {
     console.error('[forms] notification step failed', e)
+  }
+
+  // The visitor's words go to the business too. A failure here is logged, never shown: the request is saved
+  // and the team has it.
+  if (business?.email) {
+    try {
+      await sendPriceRequestMail({ to: business.email, businessName: business.name, name: String(d.name), email: doc.email, phone: doc.phone, message: String(d.message) })
+    } catch (e) {
+      console.error('[forms] price request email failed', e)
+    }
   }
 
   return json({ ok: true, message: form.thanks })

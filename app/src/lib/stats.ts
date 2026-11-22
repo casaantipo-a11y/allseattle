@@ -77,3 +77,31 @@ export const publicViews = (map: Record<number, number>, id: number): number | u
 }
 
 export const viewsText = (n: number) => `${n.toLocaleString('en-US')} ${n === 1 ? 'view' : 'views'} in 30 days`
+
+/**
+ * "Request a price" submissions per business over the last 30 days, all businesses or just `ids`.
+ * Rejected ones (spam the team threw out) don't count. Exact; uncached.
+ */
+export async function requestsByBusiness(ids?: number[]): Promise<Record<number, number>> {
+  if (ids && !ids.length) return {}
+  const only = ids ? sql`AND "business_id" IN (${sql.join(ids.map((i) => sql`${i}`), sql`, `)})` : sql``
+  const res = await (await db()).drizzle.execute(sql`
+    SELECT "business_id", COUNT(*) AS "n" FROM "submissions"
+    WHERE "type" = 'price_request' AND "business_id" IS NOT NULL AND "status" <> 'rejected'
+      AND "created_at" >= now() - interval '30 days' ${only}
+    GROUP BY "business_id"`)
+  return Object.fromEntries(res.rows.map((r) => [Number(r.business_id), Number(r.n)]))
+}
+
+/** The public copy: cached for an hour. Shown only from REQUESTS_SHOW_MIN up, and only as a number. */
+export const getRequests30 = unstable_cache(async () => requestsByBusiness(), ['requests-30d'], {
+  tags: ['view-stats'],
+  revalidate: 3600,
+})
+
+export const publicRequests = (map: Record<number, number>, id: number): number | undefined => {
+  const n = map[id] ?? 0
+  return n >= REQUESTS_SHOW_MIN ? n : undefined
+}
+
+export const requestsText = (n: number) => `${n.toLocaleString('en-US')} price ${n === 1 ? 'request' : 'requests'} in 30 days`

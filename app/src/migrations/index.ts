@@ -26,6 +26,7 @@ import * as migration_20261116_172646_payment_link from './20261116_172646_payme
 import * as migration_20261116_182123_payment_link_hardening from './20261116_182123_payment_link_hardening';
 import * as migration_20261122_120000_car_makes_and_slot_names from './20261122_120000_car_makes_and_slot_names';
 import * as migration_20261122_161254_view_stats from './20261122_161254_view_stats';
+import * as migration_20261122_164535_price_requests from './20261122_164535_price_requests';
 
 export const migrations = [
   {
@@ -166,6 +167,11 @@ export const migrations = [
   {
     up: migration_20261122_161254_view_stats.up,
     down: migration_20261122_161254_view_stats.down,
-    name: '20261122_161254_view_stats'
+    name: '20261122_161254_view_stats',
+  },
+  {
+    up: migration_20261122_164535_price_requests.up,
+    down: migration_20261122_164535_price_requests.down,
+    name: '20261122_164535_price_requests'
   },
 ];

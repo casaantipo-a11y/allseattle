@@ -15,13 +15,16 @@ const TYPES = [
   // The News sidebar's Subscribe / Unsubscribe (client, 12.10.2026): the email,
   // and the action in `name` so the list reads "Newsletter: subscribe".
   { label: 'Newsletter', value: 'newsletter' },
+  // "Request a price" on a business page (counters block, 22.11.2026): goes to the business by
+  // email and to the team; the business is in `business`.
+  { label: 'Price request', value: 'price_request' },
 ] as const
 
 const byRole: Access = ({ req }) => {
   if (hasRole(req, 'admin')) return true
   const types: string[] = []
   if (hasRole(req, 'editor')) types.push('news_tip', 'newsletter')
-  if (hasRole(req, 'sales')) types.push('business_registration', 'ad_inquiry')
+  if (hasRole(req, 'sales')) types.push('business_registration', 'ad_inquiry', 'price_request')
   if (!types.length) return false
   return { type: { in: types } } as Where
 }
@@ -76,6 +79,13 @@ export const Submissions: CollectionConfig = {
       admin: { condition: (d) => d?.type !== 'news_tip' && d?.type !== 'newsletter' },
       fields: [
         { name: 'businessName', type: 'text', admin: { readOnly: true } },
+        {
+          name: 'business',
+          type: 'relationship',
+          relationTo: 'businesses',
+          index: true,
+          admin: { readOnly: true, condition: (d) => d?.type === 'price_request', description: 'The business the price request is for. Counted on its page and in its account.' },
+        },
         { name: 'category', type: 'relationship', relationTo: 'business-categories', admin: { readOnly: true } },
         { name: 'desiredPackage', type: 'relationship', relationTo: 'packages', admin: { readOnly: true } },
         { name: 'desiredSlot', type: 'text', admin: { readOnly: true, description: 'Ad placement the visitor asked about' } },

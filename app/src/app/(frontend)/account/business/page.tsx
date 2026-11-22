@@ -7,7 +7,7 @@ import { ContactEmail } from '@/components/ContactEmail'
 import { getCustomer } from '@/lib/account'
 import { bizUrl, effectivePackage } from '@/lib/business'
 import { MAX_BUSINESSES, myBusinesses } from '@/lib/business-cabinet'
-import { viewsByDoc } from '@/lib/stats'
+import { requestsByBusiness, viewsByDoc } from '@/lib/stats'
 import { mediaUrl } from '@/lib/media'
 import { SITE_TZ } from '@/lib/site'
 import type { Media, Package } from '@/payload-types'
@@ -29,7 +29,8 @@ export default async function MyBusinessPage() {
   const me = await getCustomer()
   if (!me) redirect(`/account/login?next=${encodeURIComponent('/account/business')}`)
   const businesses = await myBusinesses(me.id)
-  const views = await viewsByDoc('business', businesses.map((b) => b.id))
+  const ids = businesses.map((b) => b.id)
+  const [views, requests] = await Promise.all([viewsByDoc('business', ids), requestsByBusiness(ids)])
   const canAdd = businesses.filter((b) => b.status !== 'rejected').length < MAX_BUSINESSES
 
   return (
@@ -79,7 +80,7 @@ export default async function MyBusinessPage() {
                   </div>
                   {b.status === 'published' ? (
                     <div className="m-0 mt-1 text-sm text-brand-slate">
-                      {(views[b.id] ?? 0).toLocaleString('en-US')} page views in 30 days · {(b.viewsCount ?? 0).toLocaleString('en-US')} in all
+                      {(views[b.id] ?? 0).toLocaleString('en-US')} page views in 30 days · {(b.viewsCount ?? 0).toLocaleString('en-US')} in all · {(requests[b.id] ?? 0).toLocaleString('en-US')} price requests in 30 days
                     </div>
                   ) : null}
                   {b.status === 'rejected' && b.moderationNote ? <div className="m-0 mt-1 text-sm">Reason: {b.moderationNote}</div> : null}

@@ -1201,13 +1201,17 @@ export interface User {
  */
 export interface Submission {
   id: number;
-  type: 'news_tip' | 'business_registration' | 'ad_inquiry' | 'newsletter';
+  type: 'news_tip' | 'business_registration' | 'ad_inquiry' | 'newsletter' | 'price_request';
   status: 'new' | 'in_progress' | 'done' | 'rejected';
   name?: string | null;
   email?: string | null;
   phone?: string | null;
   message?: string | null;
   businessName?: string | null;
+  /**
+   * The business the price request is for. Counted on its page and in its account.
+   */
+  business?: (number | null) | Business;
   category?: (number | null) | BusinessCategory;
   desiredPackage?: (number | null) | Package;
   /**
@@ -2139,6 +2143,7 @@ export interface SubmissionsSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   businessName?: T;
+  business?: T;
   category?: T;
   desiredPackage?: T;
   desiredSlot?: T;
