@@ -1,27 +1,24 @@
 import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import { ValidationError } from 'payload'
 
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, moderatedStatusField, slugHistoryField, submissionFields, uniqueSlug, uniqueSlugField } from '../fields'
 import { withinListingLimit } from '../hooks/listingLimit'
 import { notifyAuthorOfReview } from '../hooks/moderation'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
+import { canonicalModel } from '../lib/car-models'
 
 const revalidate = revalidateCollection(['cars'])
 
-// Title from year + make + model when left empty (still editable), and the
-// model must be one of the make's models when that make has a list.
+// Title from year + make + model when left empty (still editable). A model is
+// spelled as on the make's list when it matches one; any other model is kept
+// (22.11.2026 — the list was a gate and blocked real cars).
 const titleAndModel: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
   if (!data) return data
   const makeId = data.make ?? originalDoc?.make
   const id = typeof makeId === 'object' && makeId ? makeId.id : makeId
   const make = id ? await req.payload.findByID({ collection: 'car-makes', id, depth: 0, req }).catch(() => null) : null
+  if (make && typeof data.model === 'string') data.model = canonicalModel(make.models, data.model)
   const model = data.model ?? originalDoc?.model
-  if (make && model && make.models?.length && !make.models.includes(model)) {
-    throw new ValidationError({
-      errors: [{ path: 'model', message: `${model} is not in the ${make.name} model list — add it under Car makes first` }],
-    })
-  }
   const title = data.title ?? originalDoc?.title
   if (!title && make && model) {
     const year = data.year ?? originalDoc?.year

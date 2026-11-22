@@ -472,6 +472,21 @@ ported here unchanged (`src/app/(frontend)/styles/`).
   **To switch it on:** optional `STRIPE_PORTAL_LOGIN_URL` on Vercel; a Firewall rate-limit rule on
   `/pay/*`; Stripe → Settings → Public details / Branding should say AllSeattle with its logo, since
   that is what the client sees on the payment page; the migrations run with the deploy.
+- **Cars for dealers (22.11.2026).** Before the client's round of car dealers: the left "Car
+  catalog" on `/cars` lists **makes** with counts (one column); a chosen make shows its models
+  and "← All makes" (a bare "A5" did not say Audi). The Model select reads "Audi A5" while no
+  make is chosen. Price from / to are **typed fields** with round suggestions (`PRICE_HINTS`,
+  2,000…100,000) instead of 5,000 steps over the listings' own range. In the listing form the
+  model is **typed, with the make's models as suggestions**: `canonicalModel`
+  (`lib/car-models.ts`) spells a match as on the list ("a5 " → "A5") and keeps any other model as
+  typed — in `lib/listings.ts` and in the admin hook of `CarListings` (both used to refuse a model
+  that was not on the list; a 2018 Audi A5 could not be listed). Migration
+  `20261122_120000_car_makes_and_slot_names` (data only, runs with the deploy): adds Land Rover,
+  Porsche, Mini, Mitsubishi, Infiniti, Genesis, Lincoln, Jaguar and other makes plus missing
+  models (Audi A5…), never removes; renames `CARS_SIDEBAR_3/4` to "Cars — auto services,
+  sidebar 1/2" (they are the right column of `/cars/services`, and "sidebar 3/4" read as
+  duplicates of the `/cars` ones in the banner picker). Cars has 8 places in all: 4 on `/cars`
+  (B1, B2, C1, C2) and 4 on `/cars/services`.
 
 ## Local development
 

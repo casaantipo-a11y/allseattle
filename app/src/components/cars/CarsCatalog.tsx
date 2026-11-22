@@ -85,6 +85,12 @@ const uniq = (xs: string[]) => [...new Set(xs.filter(Boolean))].sort()
 // those carry the make: "Mazda 3", "BMW 3 Series". The filter value stays the model.
 const modelLabel = (make: string, model: string) => (/^\d/.test(model) ? `${make} ${model}` : model)
 
+// Round price suggestions for the "from / to" fields — the fields also take any
+// number typed by hand (client, 22.11.2026: steps of 5,000 from the listings'
+// own range were too coarse — two cars gave just 10,000 / 15,000 / 20,000).
+const PRICE_HINTS = [2000, 3000, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 25000, 30000, 35000, 40000, 50000, 60000, 75000, 100000]
+const digits = (v: string) => Number(v.replace(/\D/g, '')) || null
+
 export function CarsCatalog({
   cars,
   rightRail,
@@ -104,16 +110,11 @@ export function CarsCatalog({
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }))
 
   const makes = uniq(cars.map((c) => c.make))
+  const makeOf = (model: string) => cars.find((c) => c.model === model)?.make ?? ''
   const models = uniq((s.make ? cars.filter((c) => c.make === s.make) : cars).map((c) => c.model))
-  const priceSteps = useMemo(() => {
-    if (!cars.length) return []
-    const prices = cars.map((c) => c.price)
-    const lo = Math.floor(Math.min(...prices) / 5000) * 5000
-    const hi = Math.ceil(Math.max(...prices) / 5000) * 5000
-    const out: number[] = []
-    for (let p = lo; p <= hi; p += 5000) out.push(p)
-    return out
-  }, [cars])
+  // With no make chosen the options read "Audi A5", so they go in that order.
+  if (!s.make) models.sort((a, b) => `${makeOf(a)} ${a}`.localeCompare(`${makeOf(b)} ${b}`))
+  const [priceText, setPriceText] = useState({ min: '', max: '' })
   const years = [...new Set(cars.map((c) => c.year))].sort((a, b) => a - b)
 
   const found = useMemo(() => {
@@ -141,15 +142,17 @@ export function CarsCatalog({
     return [...list].sort(by ?? (() => 0))
   }, [cars, s])
 
+  // The left catalog: makes with their counts; a chosen make lists its models
+  // (client, 22.11.2026: a bare "A5" did not say it was an Audi, and the makes
+  // themselves were nowhere).
   const catalog = useMemo(() => {
-    const rows: { make: string; model: string; n: number }[] = []
-    for (const c of cars) {
-      const r = rows.find((x) => x.make === c.make && x.model === c.model)
-      if (r) r.n += 1
-      else rows.push({ make: c.make, model: c.model, n: 1 })
+    const count = (key: (c: CarItem) => string, list: CarItem[]) => {
+      const n = new Map<string, number>()
+      for (const c of list) n.set(key(c), (n.get(key(c)) ?? 0) + 1)
+      return [...n].map(([name, num]) => ({ name, num })).sort((a, b) => a.name.localeCompare(b.name))
     }
-    return rows.sort((a, b) => a.model.localeCompare(b.model))
-  }, [cars])
+    return s.make ? count((c) => c.model, cars.filter((c) => c.make === s.make)) : count((c) => c.make, cars)
+  }, [cars, s.make])
 
   const num = (v: string) => Number(v) || null
 
@@ -172,7 +175,7 @@ export function CarsCatalog({
               <option value="">All models</option>
               {models.map((m) => (
                 <option key={m} value={m}>
-                  {modelLabel(cars.find((c) => c.model === m)?.make ?? '', m).trim()}
+                  {s.make ? modelLabel(s.make, m) : `${makeOf(m)} ${m}`.trim()}
                 </option>
               ))}
             </select>
@@ -180,23 +183,38 @@ export function CarsCatalog({
           <div className="field auto-field-pair">
             <label htmlFor="f-price-min">Price, $</label>
             <div>
-              <select id="f-price-min" aria-label="Minimum price" value={s.priceMin ?? ''} onChange={(e) => set({ priceMin: num(e.target.value) })}>
-                <option value="">from</option>
-                {priceSteps.map((p) => (
-                  <option key={p} value={p}>
-                    {p.toLocaleString('en-US')}
-                  </option>
-                ))}
-              </select>
+              <input
+                id="f-price-min"
+                aria-label="Minimum price"
+                inputMode="numeric"
+                autoComplete="off"
+                list="f-price-hints"
+                placeholder="from"
+                value={priceText.min}
+                onChange={(e) => {
+                  setPriceText((p) => ({ ...p, min: e.target.value }))
+                  set({ priceMin: digits(e.target.value) })
+                }}
+              />
               <span aria-hidden="true">&ndash;</span>
-              <select id="f-price-max" aria-label="Maximum price" value={s.priceMax ?? ''} onChange={(e) => set({ priceMax: num(e.target.value) })}>
-                <option value="">to</option>
-                {priceSteps.map((p) => (
-                  <option key={p} value={p}>
-                    {p.toLocaleString('en-US')}
-                  </option>
+              <input
+                id="f-price-max"
+                aria-label="Maximum price"
+                inputMode="numeric"
+                autoComplete="off"
+                list="f-price-hints"
+                placeholder="to"
+                value={priceText.max}
+                onChange={(e) => {
+                  setPriceText((p) => ({ ...p, max: e.target.value }))
+                  set({ priceMax: digits(e.target.value) })
+                }}
+              />
+              <datalist id="f-price-hints">
+                {PRICE_HINTS.map((p) => (
+                  <option key={p} value={p.toLocaleString('en-US')} />
                 ))}
-              </select>
+              </datalist>
             </div>
           </div>
           <div className="field auto-field-pair">
@@ -281,7 +299,10 @@ export function CarsCatalog({
               <option value="mileage-asc">Mileage: Lowest first</option>
             </select>
           </div>
-          <button className="btn btn-outline btn-sm auto-search-reset" type="button" onClick={() => setS(EMPTY)}>
+          <button className="btn btn-outline btn-sm auto-search-reset" type="button" onClick={() => {
+              setS(EMPTY)
+              setPriceText({ min: '', max: '' })
+            }}>
             Reset filters
           </button>
         </div>
@@ -292,19 +313,29 @@ export function CarsCatalog({
           <div className="widget from-1024-block">
             <div className="widget-head">Car catalog</div>
             <div className="widget-body">
+              {s.make ? <div className="auto-cats-make">{s.make}</div> : null}
               <ul className="auto-cats">
-                {catalog.map((r) => (
-                  <li key={`${r.make}-${r.model}`}>
-                    <button type="button" className={s.model === r.model ? 'active' : undefined} onClick={() => set({ make: r.make, model: r.model })}>
-                      <span>{modelLabel(r.make, r.model)}</span>
-                      <span className="auto-cats-num">{r.n}</span>
-                    </button>
-                  </li>
-                ))}
+                {catalog.map((r) => {
+                  const active = s.make ? s.model === r.name : false
+                  return (
+                    <li key={r.name}>
+                      <button
+                        type="button"
+                        className={active ? 'active' : undefined}
+                        onClick={() => (s.make ? set({ model: active ? '' : r.name }) : set({ make: r.name, model: '' }))}
+                      >
+                        <span>{s.make ? modelLabel(s.make, r.name) : r.name}</span>
+                        <span className="auto-cats-num">{r.num}</span>
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
-              <button type="button" className="auto-cats-all" onClick={() => set({ make: '', model: '' })}>
-                All models &rarr;
-              </button>
+              {s.make ? (
+                <button type="button" className="auto-cats-all" onClick={() => set({ make: '', model: '' })}>
+                  &larr; All makes
+                </button>
+              ) : null}
             </div>
           </div>
         </aside>

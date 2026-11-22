@@ -24,6 +24,7 @@ import {
   type CabinetResult,
   type PhotoChange,
 } from './cabinet'
+import { canonicalModel } from './car-models'
 
 // Stage 3, step 2: cars and jobs posted by site customers. Everything a customer
 // may do goes through here (api/account/listings/*), with the local API and the
@@ -159,9 +160,7 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
   if (kind === 'car') {
     const make = await payload.findByID({ collection: 'car-makes', id: d.make as number, depth: 0, disableErrors: true })
     if (!make) return fail(400, CHECK, { make: 'Choose a make' })
-    if (make.models?.length && !make.models.includes(d.model as string)) {
-      return fail(400, CHECK, { model: 'Choose a model from the list' })
-    }
+    d.model = canonicalModel(make.models, d.model as string)
     carTitle = `${d.year} ${make.name} ${d.model}`
   } else {
     const cat = await payload.findByID({ collection: 'job-categories', id: d.category as number, depth: 0, disableErrors: true })

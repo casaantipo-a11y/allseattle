@@ -232,8 +232,26 @@
    (поле слева 8px вместо 16; просьба клиента 05.10.2026: «чуть влево»,
    потом «ещё на 4 пикселя»). Только в этой панели: формы на других
    страницах не трогаем. */
-.auto-search .field select {
+.auto-search .field select,
+.auto-search .field input {
   padding-left: var(--space-2);
+}
+
+/* Цена «от — до» — поля ввода с подсказками (клиент, 22.11.2026: вводить
+   вручную). У input есть собственная минимальная ширина, без min-width: 0
+   он распирает колонку 1fr. */
+.auto-field-pair input {
+  min-width: 0;
+  /* С line-height: normal поле выходило на 2px ниже селектов рядом; так
+     разница 0.5px на десктопе и 1px на телефоне (селект свой line-height
+     не слушает). */
+  line-height: 1.25;
+}
+
+/* «from / to» тем же цветом, что в селектах рядом, а не серой подсказкой. */
+.auto-field-pair input::placeholder {
+  color: var(--color-navy);
+  opacity: 1;
 }
 
 /* Пара «от — до» в одной ячейке: два селекта и тире между ними. */
@@ -463,13 +481,22 @@
   }
 }
 
-/* ---------- Каталог моделей ---------- */
+/* ---------- Каталог: марки, у выбранной марки — её модели ---------- */
+.auto-cats-make {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
 .auto-cats {
   list-style: none;
   margin: 0 0 var(--space-3);
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* Одна колонка (22.11.2026): в две по ~90px «Land Rover», «Mercedes-Benz»,
+     «Range Rover Sport» ломались на 2–3 строки. */
+  grid-template-columns: 1fr;
   gap: 0 var(--space-3);
 }
 

@@ -63,7 +63,7 @@ export function ListingForm({
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [makeId, setMakeId] = useState(values.make ?? '')
   const photos = usePhotos('photos', initialPhotos, MAX_PHOTOS)
-  const models = makes.find((m) => String(m.id) === makeId)?.models ?? []
+  const models = [...(makes.find((m) => String(m.id) === makeId)?.models ?? [])].sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }))
 
   const { input: inputProps, select } = formInputs('lf', values, errors)
 
@@ -138,19 +138,27 @@ export function ListingForm({
             )}
           </Field>
           <Field name="model" label="Model" required error={errors.model}>
+            {/* Typed by hand, with the make's models as suggestions: a model missing from
+                the list no longer blocks a listing (client, 22.11.2026). Keyed by make, so
+                switching the make clears it. */}
+            <input
+              key={makeId}
+              {...inputProps('model', {
+                maxLength: 60,
+                disabled: !makeId,
+                autoComplete: 'off',
+                list: models.length ? 'lf-model-list' : undefined,
+                placeholder: makeId ? (models.length ? 'Type it or pick from the list' : 'Type the model') : 'Choose a make first',
+                defaultValue: makeId === values.make ? values.model : '',
+              })}
+            />
             {models.length ? (
-              // keyed by make, so switching the make resets the choice
-              <select key={makeId} {...inputProps('model', { defaultValue: makeId === values.make ? values.model : '' })}>
-                <option value="">Choose a model</option>
+              <datalist id="lf-model-list">
                 {models.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
+                  <option key={m} value={m} />
                 ))}
-              </select>
-            ) : (
-              <input key={makeId} {...inputProps('model', { maxLength: 60, disabled: !makeId, placeholder: makeId ? '' : 'Choose a make first' })} />
-            )}
+              </datalist>
+            ) : null}
           </Field>
           <Field name="year" label="Year" required error={errors.year}>
             <input {...inputProps('year', { inputMode: 'numeric', maxLength: 4 })} />

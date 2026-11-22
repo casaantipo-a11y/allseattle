@@ -240,3 +240,12 @@ padding (16 / 16 at 375/1024/1440).
 **App Cars, 17.10.2026:** search panel → catalog 12px (`.auto-search` margin-bottom, was 24). Car
 photo frames (`.car-card-photo`: home Fresh cars, "Similar cars") are 60% slate-soft on white (#EDF1F6) instead of
 the near-white bg-soft around upright photos; the catalog rows crop to fill and are unaffected.
+
+**App Cars, 22.11.2026 (before the client's round of car dealers):** the left "Car catalog" lists
+**makes**, one column (two columns of ~90px broke "Land Rover", "Range Rover Sport" over 2–3
+lines); a chosen make shows `.auto-cats-make` (its name) over its models, and "← All makes" under
+them. The Model select reads "Audi A5" while no make is chosen, sorted that way. Price from / to
+are `<input>`s with a `<datalist>` of round prices (`PRICE_HINTS`), any number can be typed;
+placeholder in navy like the selects, `line-height: 1.25` so they stand 0.5px (1px on phones)
+off the 49px selects rather than 2px. Measured: no overflow at 375/768/1024/1440. The listing
+form's model is typed with suggestions — see app/README "Cars for dealers".

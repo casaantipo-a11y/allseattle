@@ -89,8 +89,10 @@ export const SLOTS: Slot[] = [
   { ...top('CARS_SERVICES_TOP', 'cars', 'Cars', 110), name: 'Cars — auto services, top banner' },
   side('CARS_SIDEBAR_1', 'cars', 'Cars', 1, '300x250', 90),
   side('CARS_SIDEBAR_2', 'cars', 'Cars', 2, '300x600', 120),
-  side('CARS_SIDEBAR_3', 'cars', 'Cars', 3, '300x250', 90),
-  side('CARS_SIDEBAR_4', 'cars', 'Cars', 4, '300x600', 120),
+  // On /cars/services (22.11.2026: "sidebar 3/4" read as duplicates of the /cars sidebars).
+  { ...side('CARS_SIDEBAR_3', 'cars', 'Cars', 3, '300x250', 90), name: 'Cars — auto services, sidebar 1 (300x250)' },
+  // On /cars/services (22.11.2026: "sidebar 3/4" read as duplicates of the /cars sidebars).
+  { ...side('CARS_SIDEBAR_4', 'cars', 'Cars', 4, '300x600', 120), name: 'Cars — auto services, sidebar 2 (300x600)' },
   top('JOBS_TOP', 'jobs', 'Jobs', 120),
   side('JOBS_SIDEBAR_1', 'jobs', 'Jobs', 1, '300x250', 90),
   top('EVENTS_TOP', 'events', 'Events', 130),
