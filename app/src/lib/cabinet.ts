@@ -51,7 +51,6 @@ export async function overDailyLimit(payload: Payload, customerId: number) {
   const owns = await payload.count({
     collection: 'businesses',
     where: { and: [{ owner: { equals: customerId } }, { status: { equals: 'published' } }] },
-    limit: 1,
     overrideAccess: true,
   })
   const limit = owns.totalDocs > 0 ? DAILY_SENDS_BUSINESS : DAILY_SENDS
