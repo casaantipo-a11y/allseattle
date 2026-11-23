@@ -39,15 +39,17 @@ export function badgeFor(pkg: Package | null): { label: string; cls: string } | 
 }
 
 /**
- * Directory order (spec §5): packages with priority placement first, the more
- * expensive (higher `order`) ahead; then the manual `priority`, higher first;
- * then by name.
+ * Directory order (spec §5): every package in force ranks above the free listings
+ * (client, 23.11.2026: a Standard business sat among the free ones), packages with
+ * priority placement above those without, the more expensive (higher `order`)
+ * ahead within each; then the manual `priority`, higher first; then by name.
  */
 export function compareBusinesses(a: BusinessFull, b: BusinessFull, now = new Date()): number {
-  // Package `order` is 1, 2, 3…; anything without priority placement ranks 0.
+  // Package `order` is 1, 2, 3…; no package (or an expired one) ranks 0.
   const rank = (x: BusinessFull) => {
     const p = effectivePackage(x, now)
-    return p?.priorityPlacement ? Math.max(1, p.order) : 0
+    if (!p) return 0
+    return (p.priorityPlacement ? 1000 : 0) + Math.max(1, p.order)
   }
   return rank(b) - rank(a) || (b.priority ?? 0) - (a.priority ?? 0) || a.name.localeCompare(b.name)
 }

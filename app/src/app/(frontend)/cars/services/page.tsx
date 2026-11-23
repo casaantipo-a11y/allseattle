@@ -25,10 +25,11 @@ export async function generateMetadata(): Promise<Metadata> {
 // Cars → Services: the Directory of enterprises, split off the Cars page into
 // its own sub-section (client's request, 02.10.2026); the header shows
 // "Cars  Services / For sale". Auto businesses from the directory, paid
-// packages first (Luxury, Premium, then Standard); the headings on the left
-// link to the directory categories.
+// packages first (Luxury, Premium, then Standard), then the free listings
+// (client, 23.11.2026: Standard had been mixed in with them); the headings on
+// the left link to the directory categories.
 
-const FIRMS_ORDER: Record<string, number> = { luxury: 0, premium: 1, standard: 2 }
+const FIRMS_ORDER: Record<string, number> = { luxury: 0, premium: 1, standard: 2, free: 3 }
 
 /** The side columns' banners inside the list below 1024px: after company 3 and 6. */
 const FEED_ADS = [
@@ -51,7 +52,7 @@ export default async function CarServicesPage() {
     .sort((a, b) => {
       const k = (x: typeof a) => {
         const p = effectivePackage(x)
-        return FIRMS_ORDER[p?.brandedPage ? 'premium' : p?.priorityPlacement ? 'luxury' : 'standard']
+        return FIRMS_ORDER[!p ? 'free' : p.brandedPage ? 'premium' : p.priorityPlacement ? 'luxury' : 'standard']
       }
       return k(a) - k(b) || a.name.localeCompare(b.name)
     })
