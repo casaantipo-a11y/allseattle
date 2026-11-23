@@ -598,7 +598,8 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
 - `src/scripts` — `seed.ts` / `seed-businesses.ts` read the prototype's `js/mock-data/*.js` and
   `img/` directly. Demo businesses get coordinates from neighbourhood centres, not geocoding.
 - Directory order (`src/lib/business.ts`): packages with priority placement first, higher package
-  `order` ahead (Premium, then Luxury), then the manual `priority` (higher first), then name. The
+  `order` ahead (Premium, then Luxury), then the other paid packages (Standard), then the free
+  listings (client, 23.11.2026); within each, the manual `priority` (higher first), then name. The
   package in force is decided at render time, so an expired one drops without anyone touching it.
 - Forms: `src/lib/forms.ts` + `POST /api/forms/{business-registration|ad-inquiry}`; the REST API
   itself refuses to create submissions. Notifications (`src/lib/notify.ts`) never block saving.
