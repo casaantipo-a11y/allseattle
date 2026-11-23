@@ -22,6 +22,7 @@
     "admin-password:prod": "node scripts/prod.mjs admin-password",
     "hide-demo:prod": "node scripts/prod.mjs hide-demo",
     "clean-invisible:prod": "node scripts/prod.mjs clean-invisible",
+    "normalize-titles:prod": "node scripts/prod.mjs normalize-titles",
     "seed":"cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/seed.ts",
     "purge-demo": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/purge-demo.ts",
     "update-content": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/update-content.ts",
@@ -31,6 +32,7 @@
     "admin-password": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/admin-password.ts",
     "hide-demo": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/hide-demo.ts",
     "clean-invisible": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/clean-invisible.ts",
+    "normalize-titles": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/normalize-car-titles.ts --",
     "migrate":"cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "vercel-build": "pnpm migrate && pnpm build"

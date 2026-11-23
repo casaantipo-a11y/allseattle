@@ -7,6 +7,7 @@
 //   pnpm import-run:prod   → pnpm import-run (the daily import once, no customer reminders)
 //   pnpm hide-demo:prod    → pnpm hide-demo (demo banners and cars off the live site, nothing deleted; HIDE_DEMO_YES=1 to save)
 //   pnpm clean-invisible:prod → pnpm clean-invisible (invisible characters out of news; CLEAN_INVISIBLE_YES=1 to save)
+//   pnpm normalize-titles:prod → pnpm normalize-titles (car titles in one look; looks only — add `--apply` to save)
 //
 // Settings come from the local, gitignored files .env.neon.local, .env.r2.local
 // and .env.vercel.local. They are read here in Node, not sourced by the shell:
@@ -16,7 +17,7 @@ import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const script = process.argv[2]
-if (!['seed', 'purge-demo', 'update-content', 'import-setup', 'import-run', 'import-status', 'admin-password', 'hide-demo', 'clean-invisible'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content|import-setup|import-run|import-status|admin-password|hide-demo|clean-invisible')
+if (!['seed', 'purge-demo', 'update-content', 'import-setup', 'import-run', 'import-status', 'admin-password', 'hide-demo', 'clean-invisible', 'normalize-titles'].includes(script)) throw new Error('usage: node scripts/prod.mjs seed|purge-demo|update-content|import-setup|import-run|import-status|admin-password|hide-demo|clean-invisible|normalize-titles')
 
 const read = (f) =>
   Object.fromEntries(
@@ -31,5 +32,6 @@ if (!/neon\.tech/.test(env.DATABASE_URL)) throw new Error('DATABASE_URL is not N
 for (const k of ['PAYLOAD_SECRET', 'S3_BUCKET', 'NEXT_PUBLIC_SITE_URL']) if (!env[k]) throw new Error(`${k} missing`)
 
 console.log(`pnpm ${script} → production (${new URL(env.DATABASE_URL).hostname.replace(/^ep-[^.]+/, 'ep-…')})`)
-const r = spawnSync(`pnpm ${script}`, { shell: true, env, stdio: 'inherit' })
+// Anything after the script name (`--apply`) goes on to the script.
+const r = spawnSync(`pnpm ${[script, ...process.argv.slice(3)].join(' ')}`, { shell: true, env, stdio: 'inherit' })
 process.exit(r.status ?? 1)

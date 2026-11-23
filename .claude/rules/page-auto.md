@@ -263,3 +263,5 @@ photo block red and says "Please fix: Photos, Price." (`focusFirstError`/`fixMes
 `components/account/fields.tsx`, `.field` scroll-margin in business.css).
 Seller field (an account that owns a business sells as it or as a private seller; the package limit comes back on that
 field) — app/README "Car form for dealers".
+Titles are always year + make + model with the model in one look (`normalizeModel`, beforeChange hook of car-listings; the
+script `pnpm normalize-titles` fixes old ones) — app/README "Car form for dealers".

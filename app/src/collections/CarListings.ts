@@ -1,11 +1,11 @@
-import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
 import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, moderatedStatusField, slugHistoryField, submissionFields, uniqueSlug, uniqueSlugField } from '../fields'
 import { withinListingLimit } from '../hooks/listingLimit'
 import { notifyAuthorOfReview } from '../hooks/moderation'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
-import { canonicalModel } from '../lib/car-models'
+import { canonicalModel, normalizeModel } from '../lib/car-models'
 
 const revalidate = revalidateCollection(['cars'])
 
@@ -30,6 +30,23 @@ const titleAndModel: CollectionBeforeValidateHook = async ({ data, originalDoc, 
   return data
 }
 
+// The title is always year + make + model, with the model in one look (lib/car-models.ts
+// normalizeModel), whoever saves it: the account's form or the admin. A title typed by hand in
+// the admin is replaced ("2015 NISSAN ROGUE" → "2015 Nissan Rogue"). The slug is not touched:
+// slugs are lower case anyway, and a slug that does change keeps its old one (rememberOldSlug).
+const normalizeTitle: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
+  const makeId = data.make ?? originalDoc?.make
+  const id = typeof makeId === 'object' && makeId ? makeId.id : makeId
+  const make = id ? await req.payload.findByID({ collection: 'car-makes', id, depth: 0, req }).catch(() => null) : null
+  const typed = data.model ?? originalDoc?.model
+  if (!make || typeof typed !== 'string' || !typed.trim()) return data
+  const model = normalizeModel(make.models, typed)
+  data.model = model
+  const year = data.year ?? originalDoc?.year
+  data.title = [year, make.name, model].filter(Boolean).join(' ')
+  return data
+}
+
 const opts = (values: string[]) => values.map((v) => ({ label: v, value: v }))
 
 export const CarListings: CollectionConfig = {
@@ -51,7 +68,7 @@ export const CarListings: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [titleAndModel],
-    beforeChange: [rememberOldSlug, withinListingLimit('dealer')],
+    beforeChange: [normalizeTitle, rememberOldSlug, withinListingLimit('dealer')],
     afterChange: [revalidate.afterChange, notifyAuthorOfReview('car')],
     afterDelete: [revalidate.afterDelete],
   },
@@ -59,7 +76,7 @@ export const CarListings: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
-      admin: { description: 'Leave empty: it is built from year, make and model.' },
+      admin: { description: 'Built from year, make and model on every save (a title typed here is replaced).' },
     },
     {
       type: 'row',

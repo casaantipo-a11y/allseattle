@@ -613,6 +613,26 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     documents changed, so the business itself and every edited listing count once. Checked locally with
     two accounts: 9 / 10 documents without a business (allowed / limited), 10, 48 + the business, 50 with a
     published business (allowed, allowed, limited), and a pending business (limited at 50).
+  - **One look for car titles (23.11.2026).** A title is always `year make model` and the model is put in one
+    look, whoever saves it — `normalizeModel` (`lib/car-models.ts`) in the account's save and in the
+    `normalizeTitle` beforeChange hook of `car-listings` (so the admin too; a title typed by hand there is
+    replaced). A model on the make's list is spelled as on the list ("cr-v" → "CR-V"); any other: a word
+    with a digit in capitals ("a5" → "A5", "2d" → "2D"), the abbreviations `AWD FWD RWD 4WD 4X4 2D 4D V6 V8
+    SE LE XLE LX EX EX-L GT GTI GTS SRT RS AMG TRD SR SR5 SXT SL SLT LT LTZ XL XLT ST SS RT R/T SV HD LTD TDI EV
+    PHEV` in capitals, the rest a capital first letter and small ("ROGUE" → "Rogue"); the parts of
+    "f-150" and "r/t" one by one. "a5 sport" → "A5 Sport", "challenger r/t plus shaker coupe 2d" →
+    "Challenger R/T Plus Shaker Coupe 2D", "f-150 xlt" → "F-150 XLT". The slug is not changed by this (slugs
+    are lower case already); a slug that does change keeps its old one in `slugHistory` and the old URL
+    answers 308 (checked: an admin slug change → `/cars/<old>` → 308 to the new one). The makes themselves are
+    not touched: in the local database only BMW and GMC are in capitals; production is not checked (read-only:
+    `SELECT name FROM car_makes WHERE name = upper(name)` in Neon's SQL editor).
+    **`pnpm normalize-titles`** (`src/scripts/normalize-car-titles.ts`) fixes the listings that exist: it only
+    looks and prints "was → will be" until `--apply` is added (`pnpm normalize-titles --apply`; production:
+    `pnpm normalize-titles:prod`, `… --apply`; the package script ends with `--` so `payload run` hands the flag
+    on, and `scripts/prod.mjs` passes the rest of the command line along). It writes with SQL — no hooks, no
+    mail, `updatedAt` stays, so the owners' daily count is not touched — and then asks the site to drop its
+    caches. Checked locally: dry run (11 of 32 to change, nothing saved), `--apply` (11 saved, `updatedAt`
+    unchanged), a second run 0 to change.
 
 ## Local development
 
