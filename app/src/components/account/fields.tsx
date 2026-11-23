@@ -60,6 +60,31 @@ export function formInputs(prefix: string, values: Record<string, string>, error
   return { input, select }
 }
 
+/** "Please fix: Photos, Price." — the fields with an error by their labels, in the order of
+ *  `labels` (the order they stand in the form). Null when none of them is in `labels`. */
+export function fixMessage(errors: Record<string, string>, labels: Record<string, string>): string | null {
+  const names = Object.keys(labels)
+    .filter((k) => errors[k])
+    .map((k) => labels[k])
+  return names.length ? `Please fix: ${names.join(', ')}.` : null
+}
+
+/**
+ * After a failed send: jumps (instantly, no animation) to the first field with an error and
+ * puts the focus there; the field's `scroll-margin-top` (business.css) keeps it clear of the
+ * sticky header. With no such field (a limit, a lost connection) it shows the message instead.
+ */
+export function focusFirstError(form: HTMLElement | null) {
+  if (!form) return
+  const field = form.querySelector<HTMLElement>('.field.invalid')
+  if (!field) {
+    form.querySelector<HTMLElement>('[role="alert"]')?.scrollIntoView({ block: 'center', behavior: 'auto' })
+    return
+  }
+  field.scrollIntoView({ block: 'start', behavior: 'auto' })
+  field.querySelector<HTMLElement>('input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), .photo-picker-box')?.focus({ preventScroll: true })
+}
+
 export function FormMessage({ message }: { message: string | null }) {
   return message ? (
     <div role="alert" className="mb-4 rounded-lg border border-[#c53030] bg-[#fdecec] px-4 py-3 text-sm text-[#c53030]">

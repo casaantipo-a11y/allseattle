@@ -258,3 +258,6 @@ the ref number — only from 10 views (`CarItem.views`, set by `toCarItem(c, vie
 (`POST /api/account/photos`, a thumbnail state Uploading / ready / error + Retry; the save button is off
 until the last one is done) and the form sends only their ids — ten phone photos no longer meet
 Vercel's 4.5 MB. Details: app/README "Car form for dealers".
+The same day the form scrolls (instantly) to the first field with an error, focuses it, frames an invalid
+photo block red and says "Please fix: Photos, Price." (`focusFirstError`/`fixMessage` in
+`components/account/fields.tsx`, `.field` scroll-margin in business.css).

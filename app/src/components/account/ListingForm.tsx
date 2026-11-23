@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 
-import { Field as BaseField, FormMessage, formInputs, type Option } from './fields'
+import { Field as BaseField, FormMessage, focusFirstError, fixMessage, formInputs, type Option } from './fields'
 import { PhotoPicker, usePhotos, type Photo } from './photos'
 
 // The "new / edit listing" form of the account (stage 3, step 2), in the site's
@@ -41,6 +41,40 @@ const PERIODS: Option[] = [
   { value: 'year', label: 'per year' },
 ]
 
+// Field names with their labels, in the order they stand in the form: the "Please fix: …" line.
+const CAR_LABELS: Record<string, string> = {
+  make: 'Make',
+  model: 'Model',
+  year: 'Year',
+  price: 'Price',
+  mileage: 'Mileage',
+  bodyType: 'Body type',
+  transmission: 'Transmission',
+  fuelType: 'Fuel',
+  drivetrain: 'Drivetrain',
+  engine: 'Engine',
+  exteriorColor: 'Exterior color',
+  vin: 'VIN',
+  description: 'Description',
+  photos: 'Photos',
+  sellerName: 'Your name',
+  sellerPhone: 'Phone',
+}
+const JOB_LABELS: Record<string, string> = {
+  title: 'Job title',
+  companyName: 'Company',
+  category: 'Category',
+  employmentType: 'Type',
+  workMode: 'Work mode',
+  salaryMin: 'Pay from',
+  salaryMax: 'Pay to',
+  salaryPeriod: 'Pay period',
+  location: 'Location',
+  summary: 'Short summary',
+  description: 'Description',
+  howToApply: 'How to apply',
+}
+
 const Field = (props: Omit<Parameters<typeof BaseField>[0], 'id'> & { name: string }) => <BaseField id={`lf-${props.name}`} {...props} />
 
 export function ListingForm({
@@ -64,6 +98,13 @@ export function ListingForm({
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [makeId, setMakeId] = useState(values.make ?? '')
   const photos = usePhotos('photos', initialPhotos, MAX_PHOTOS, { upload: true })
+  const formRef = useRef<HTMLFormElement>(null)
+  // Counts failed sends; each one scrolls to the first error once the errors are on screen.
+  const [failures, setFailures] = useState(0)
+  useEffect(() => {
+    if (failures) focusFirstError(formRef.current)
+  }, [failures])
+  const labels = kind === 'car' ? CAR_LABELS : JOB_LABELS
   const models = [...(makes.find((m) => String(m.id) === makeId)?.models ?? [])].sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }))
 
   const { input: inputProps, select } = formInputs('lf', values, errors)
@@ -84,7 +125,8 @@ export function ListingForm({
     if (kind === 'car' && photos.failed) missing.photos = 'Retry or remove the photos that did not upload'
     setErrors(missing)
     if (Object.keys(missing).length) {
-      setMessage('Please check the highlighted fields.')
+      setMessage(fixMessage(missing, labels) ?? 'Please check the highlighted fields.')
+      setFailures((n) => n + 1)
       return
     }
     setState('sending')
@@ -94,8 +136,9 @@ export function ListingForm({
       const body = (await res.json().catch(() => ({}))) as { message?: string; error?: string; fieldErrors?: Record<string, string> }
       if (!res.ok) {
         setErrors(body.fieldErrors ?? {})
-        setMessage(body.error ?? 'Something went wrong. Please try again.')
+        setMessage(fixMessage(body.fieldErrors ?? {}, labels) ?? body.error ?? 'Something went wrong. Please try again.')
         setState('idle')
+        setFailures((n) => n + 1)
         return
       }
       setMessage(body.message ?? 'Sent for review.')
@@ -104,6 +147,7 @@ export function ListingForm({
     } catch {
       setMessage('Could not reach the server. Please try again.')
       setState('idle')
+      setFailures((n) => n + 1)
     }
   }
 
@@ -125,7 +169,7 @@ export function ListingForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form ref={formRef} onSubmit={onSubmit} noValidate>
       <FormMessage message={message} />
       <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
         <label htmlFor="lf-hp">Fax</label>

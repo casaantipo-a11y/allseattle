@@ -576,6 +576,19 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     ten requests of ~0.9 MB, saved with all ten in the chosen order; another account's ids, an unknown
     id, none, eleven and a photo already on a listing refused; the cleanup removed an old staged photo
     and kept a fresh one, an old plain upload and an old one held by a listing.
+  - **Errors are shown, not just flagged (23.11.2026).** After a failed check (the browser's or the
+    server's `fieldErrors`) the form jumps **instantly** (`behavior: 'auto'`) to the first field with an
+    error and focuses it (`focusFirstError`, `components/account/fields.tsx`); `.field` has
+    `scroll-margin-top: var(--header-height) + 16px` (`business.css`), so it stops under the sticky
+    header (measured 16px under it at 375 and 1440). The photo block of an invalid field is framed red like
+    the inputs (`.field.invalid button.photo-picker-box`). The message at the top names the fields:
+    "Please fix: Photos, Price." (`fixMessage`, in the order of the form's own `CAR_LABELS` /
+    `JOB_LABELS`); an error with no field (a limit, a lost connection) scrolls to the message instead.
+    The scroll margin applies to every `.field` on the site (harmless where nothing scrolls to it), the
+    red frame only to the account forms' button picker; only the car and job form call `focusFirstError`.
+    Checked in a browser at 375 and 1440: an empty form (focus on Make), only photos missing (focus on
+    the picker, red frame), a server-side error (a year of 1900 → focus on Year), a failed upload
+    (error line, Retry, then ready).
 
 ## Local development
 
