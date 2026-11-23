@@ -9,7 +9,8 @@ import { packageOfBusiness, plural } from './packageLimits'
 export const withinListingLimit =
   (businessField: 'dealer' | 'business'): CollectionBeforeChangeHook =>
   async ({ data, originalDoc, req, collection: self }) => {
-    const business = data[businessField] ?? originalDoc?.[businessField]
+    // `null` in the data is a real change (back to a private seller), not "not sent".
+    const business = businessField in data ? data[businessField] : originalDoc?.[businessField]
     const id = typeof business === 'object' && business ? (business as { id: number }).id : business
     if (!id) return data
     const pkg = await packageOfBusiness(req.payload, id, req)

@@ -13,6 +13,7 @@ import {
   notifyTeam,
   overDailyLimit,
   payloadClient,
+  relId,
   richFromText,
   saveFailed,
   tooSoon,
@@ -97,6 +98,39 @@ export const jobSchema = z.object({
 
 export type ListingResult = CabinetResult
 
+/** The businesses an account may sell cars as: its own (Owner), waiting for review or live. */
+export async function dealerChoices(payload: Payload, customerId: number): Promise<{ id: number; name: string }[]> {
+  const { docs } = await payload.find({
+    collection: 'businesses',
+    where: { and: [{ owner: { equals: customerId } }, { status: { in: ['pending', 'published'] } }] },
+    sort: 'name',
+    limit: 50,
+    depth: 0,
+    overrideAccess: true,
+  })
+  return docs.map((b) => ({ id: b.id, name: b.name }))
+}
+
+/**
+ * The form's `dealer` field: `private` → no dealer, a business id → that business, which must be the
+ * account's own (or the one already on the listing, e.g. set by the team). Absent (an account with no
+ * business has no such field) → `undefined`: leave the listing's dealer as it is.
+ */
+async function parseDealer(payload: Payload, customer: Customer, sent: FormDataEntryValue | null, current: number | null): Promise<{ ok: true; dealer: number | null | undefined } | { ok: false; error: string }> {
+  if (typeof sent !== 'string') return { ok: true, dealer: undefined }
+  if (sent === 'private' || sent === '') return { ok: true, dealer: null }
+  if (!/^\d+$/.test(sent)) return { ok: false, error: 'Choose who is selling' }
+  const id = Number(sent)
+  if (id !== current) {
+    const own = await dealerChoices(payload, customer.id)
+    if (!own.some((b) => b.id === id)) return { ok: false, error: 'Choose one of your businesses' }
+  }
+  return { ok: true, dealer: id }
+}
+
+/** The package limit's own text is for the team's admin; here it says what to do. */
+const DEALER_LIMIT_HELP = '. Hide or delete one of them, or write to us about a bigger package.'
+
 /** Pending and live (not expired) listings of an account, cars and jobs together. */
 export async function activeCount(payload: Payload, customerId: number, excludeId?: { kind: Kind; id: number }) {
   const now = new Date().toISOString()
@@ -157,7 +191,11 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
   const d = parsed.data as Record<string, unknown>
 
   let carTitle = ''
+  let dealer: number | null | undefined
   if (kind === 'car') {
+    const d2 = await parseDealer(payload, customer, fd.get('dealer'), relId((existing as CarListing | null)?.dealer))
+    if (!d2.ok) return fail(400, CHECK, { dealer: d2.error })
+    dealer = d2.dealer
     const make = await payload.findByID({ collection: 'car-makes', id: d.make as number, depth: 0, disableErrors: true })
     if (!make) return fail(400, CHECK, { make: 'Choose a make' })
     d.model = canonicalModel(make.models, d.model as string)
@@ -205,6 +243,7 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
           description: (d.description as string) || null,
           sellerName: d.sellerName as string,
           sellerPhone: d.sellerPhone as string,
+          ...(dealer !== undefined ? { dealer } : {}),
           photos: photoChange?.ids,
           ...(existing ? {} : { expiresAt }),
         }
@@ -235,7 +274,10 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
       : await payload.create({ collection, data: data as never, overrideAccess: true, depth: 0 })) as CarListing | Job
   } catch (e) {
     if (photoChange) await settlePhotos(payload, customer, [photoChange], false)
-    return saveFailed(e, 'listings')
+    const failed = saveFailed(e, 'listings')
+    // The package limit of the business (hooks/listingLimit.ts) comes back on the Seller field.
+    if (!failed.ok && failed.fieldErrors?.dealer) failed.fieldErrors.dealer += DEALER_LIMIT_HELP
+    return failed
   }
   if (photoChange) await settlePhotos(payload, customer, [photoChange], true)
   await notifyListing(payload, kind, saved.title ?? '', saved.id, customer, Boolean(existing))

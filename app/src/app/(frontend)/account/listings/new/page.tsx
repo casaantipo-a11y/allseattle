@@ -6,7 +6,7 @@ import { AccountShell } from '@/components/account/AccountShell'
 import { ListingForm } from '@/components/account/ListingForm'
 import { getCustomer } from '@/lib/account'
 import { payloadClient } from '@/lib/cabinet'
-import { ACTIVE_LIMIT, activeCount } from '@/lib/listings'
+import { ACTIVE_LIMIT, activeCount, dealerChoices } from '@/lib/listings'
 import { getCarMakes, getJobCategories } from '@/lib/queries-phase3'
 
 export const metadata: Metadata = { title: 'New listing' }
@@ -35,6 +35,8 @@ export default async function NewListingPage({ searchParams }: Props) {
     )
   }
   const [makes, categories] = kind === 'car' ? [await getCarMakes(), []] : [[], await getJobCategories()]
+  // An account that owns a business sells as that business by default (it can pick Private seller).
+  const dealers = kind === 'car' ? await dealerChoices(await payloadClient(), me.id) : []
   return (
     <AccountShell
       eyebrow="My listings"
@@ -52,7 +54,9 @@ export default async function NewListingPage({ searchParams }: Props) {
     >
       <ListingForm
         kind={kind}
-        values={kind === 'car' ? { sellerName: me.name ?? '', sellerPhone: me.phone ?? '' } : {}}
+        values={kind === 'car' ? { sellerName: dealers[0]?.name ?? me.name ?? '', sellerPhone: me.phone ?? '', dealer: dealers.length ? String(dealers[0].id) : 'private' } : {}}
+        dealers={dealers.map((d) => ({ value: String(d.id), label: d.name }))}
+        ownName={me.name ?? ''}
         makes={makes.map((m) => ({ id: m.id, name: m.name, models: m.models ?? [] }))}
         categories={categories.map((c) => ({ value: String(c.id), label: c.name }))}
       />

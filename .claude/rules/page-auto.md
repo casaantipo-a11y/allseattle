@@ -261,3 +261,5 @@ Vercel's 4.5 MB. Details: app/README "Car form for dealers".
 The same day the form scrolls (instantly) to the first field with an error, focuses it, frames an invalid
 photo block red and says "Please fix: Photos, Price." (`focusFirstError`/`fixMessage` in
 `components/account/fields.tsx`, `.field` scroll-margin in business.css).
+Seller field (an account that owns a business sells as it or as a private seller; the package limit comes back on that
+field) — app/README "Car form for dealers".

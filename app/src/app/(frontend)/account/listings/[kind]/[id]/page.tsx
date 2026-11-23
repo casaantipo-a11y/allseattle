@@ -8,7 +8,7 @@ import { getCustomer } from '@/lib/account'
 import { mediaUrl } from '@/lib/media'
 import { lexicalText } from '@/lib/jobs'
 import { payloadClient } from '@/lib/cabinet'
-import { COLLECTION } from '@/lib/listings'
+import { COLLECTION, dealerChoices } from '@/lib/listings'
 import { getCarMakes, getJobCategories } from '@/lib/queries-phase3'
 import type { CarListing, Job } from '@/payload-types'
 
@@ -48,10 +48,16 @@ export default async function EditListingPage({ params }: Props) {
       values[k] = str(car[k])
     }
     values.make = relId(car.make)
+    // Seller: the saved choice. A dealer the team set that is not the account's own stays selectable,
+    // so saving does not quietly turn the car private.
+    const dealers = (await dealerChoices(payload, me.id)).map((d) => ({ value: String(d.id), label: d.name }))
+    const saved = car.dealer && typeof car.dealer === 'object' ? car.dealer : null
+    if (saved && !dealers.some((d) => d.value === String(saved.id))) dealers.push({ value: String(saved.id), label: saved.name })
+    values.dealer = saved ? String(saved.id) : typeof car.dealer === 'number' ? String(car.dealer) : 'private'
     const photos = (car.photos ?? []).flatMap((m) => (typeof m === 'object' && m ? [{ id: m.id, url: mediaUrl(m, 'thumb') ?? '' }] : []))
     return (
       <AccountShell eyebrow="My listings" title={`Edit: ${car.title}`} wide intro={intro}>
-        <ListingForm kind="car" id={car.id} values={values} photos={photos} makes={makes.map((m) => ({ id: m.id, name: m.name, models: m.models ?? [] }))} />
+        <ListingForm kind="car" id={car.id} values={values} photos={photos} makes={makes.map((m) => ({ id: m.id, name: m.name, models: m.models ?? [] }))} dealers={dealers} ownName={me.name ?? ''} />
       </AccountShell>
     )
   }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 
 import { Field as BaseField, FormMessage, focusFirstError, fixMessage, formInputs, type Option } from './fields'
 import { PhotoPicker, usePhotos, type Photo } from './photos'
@@ -57,6 +57,7 @@ const CAR_LABELS: Record<string, string> = {
   vin: 'VIN',
   description: 'Description',
   photos: 'Photos',
+  dealer: 'Seller',
   sellerName: 'Your name',
   sellerPhone: 'Phone',
 }
@@ -84,6 +85,8 @@ export function ListingForm({
   photos: initialPhotos = [],
   makes = [],
   categories = [],
+  dealers = [],
+  ownName = '',
 }: {
   kind: 'car' | 'job'
   id?: number
@@ -91,6 +94,10 @@ export function ListingForm({
   photos?: Photo[]
   makes?: Make[]
   categories?: Option[]
+  /** Cars: the account's businesses it may sell as (value = id), for the Seller field. None → no field. */
+  dealers?: Option[]
+  /** Cars: the account's own name, what "Your name" holds for a private seller. */
+  ownName?: string
 }) {
   const router = useRouter()
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -105,6 +112,15 @@ export function ListingForm({
     if (failures) focusFirstError(formRef.current)
   }, [failures])
   const labels = kind === 'car' ? CAR_LABELS : JOB_LABELS
+
+  // "Your name" follows the Seller choice while it still holds the account's name, a business
+  // name or nothing — a name the seller typed is left alone.
+  function onSellerChange(e: ChangeEvent<HTMLSelectElement>) {
+    const input = e.target.form?.elements.namedItem('sellerName')
+    if (!(input instanceof HTMLInputElement)) return
+    const auto = new Set(['', ownName, ...dealers.map((d) => d.label)])
+    if (auto.has(input.value.trim())) input.value = dealers.find((d) => d.value === e.target.value)?.label ?? ownName
+  }
   const models = [...(makes.find((m) => String(m.id) === makeId)?.models ?? [])].sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }))
 
   const { input: inputProps, select } = formInputs('lf', values, errors)
@@ -245,6 +261,11 @@ export function ListingForm({
           <Field name="photos" label={`Photos (up to ${MAX_PHOTOS})`} required error={errors.photos ?? photos.problem ?? undefined} wide hint="The first photo is the cover. JPEG, PNG or WebP.">
             <PhotoPicker id="lf-photos" photos={photos} errorId={errors.photos ? 'lf-photos-err' : undefined} />
           </Field>
+          {dealers.length ? (
+            <Field name="dealer" label="Seller" error={errors.dealer} wide>
+              {select('dealer', [{ value: 'private', label: 'Private seller' }, ...dealers], undefined, { onChange: onSellerChange })}
+            </Field>
+          ) : null}
           <Field name="sellerName" label="Your name" required error={errors.sellerName}>
             <input {...inputProps('sellerName', { autoComplete: 'name', maxLength: 80 })} />
           </Field>

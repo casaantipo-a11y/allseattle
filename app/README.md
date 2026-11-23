@@ -589,6 +589,23 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     Checked in a browser at 375 and 1440: an empty form (focus on Make), only photos missing (focus on
     the picker, red frame), a server-side error (a year of 1900 → focus on Year), a failed upload
     (error line, Retry, then ready).
+  - **Seller / dealer (23.11.2026).** An account that is the **Owner** of a business (status pending or
+    published) gets a **Seller** field in the car form: *Private seller* or the business (default: the
+    business; on edit the saved value). Choosing a business fills "Your name" with its name while that
+    field is empty or still holds the account's name or a business name (a name typed by hand is left
+    alone). No business → no field. Server (`lib/listings.ts` `parseDealer`, `dealerChoices`): `dealer`
+    = `private` → null; an id → must be one of the account's businesses (or the dealer already on the
+    listing, so a team-set dealer survives an edit); not sent → unchanged. The package limit
+    (`withinListingLimit('dealer')`, car listings and jobs together) comes back as the Seller field's
+    error with the package's text plus a line on what to do. `withinListingLimit` now reads a `null`
+    dealer as "no dealer" (it used to fall back to the old one, so moving a car **out** of a full
+    business was checked against that business). The car page already shows "Sold by <business>" with a
+    link for a published dealer (admin cars too) — unchanged; the catalog row shows no seller for any
+    car — unchanged. Checked locally (account that owns a business, one that does not): create as the
+    business, another account's business / a junk value / an unknown id refused, edit with the field
+    absent / Private / business / a team-set dealer, a full business (5 of 5) → error on Seller, Private
+    unaffected, a car leaving a full business; in the browser at 375 and 1440 the options, defaults, name
+    follow-up and the error with focus on Seller.
 
 ## Local development
 
