@@ -27,6 +27,18 @@ export function ViewBeacon({ kind, id }: { kind: 'car' | 'job' | 'business'; id:
   return null
 }
 
+/** One click on "Website" or "Call" of a business, once per browser session for each. */
+export function trackClick(action: 'website' | 'call', bizId: number) {
+  const key = `clicked:${action}:${bizId}`
+  try {
+    if (sessionStorage.getItem(key)) return
+    sessionStorage.setItem(key, '1')
+  } catch {
+    // storage blocked: count anyway
+  }
+  send({ kind: `business-${action}`, id: bizId })
+}
+
 // Pages that are not counted as site views: the admin and the owner's account, the
 // payment-link page. (/api never renders a page.)
 const NOT_COUNTED = ['/admin', '/account', '/pay', '/api']

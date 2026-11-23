@@ -84,6 +84,27 @@ export function bizUrl(biz: Pick<BusinessFull, 'slug' | 'subdomain' | 'package' 
   return bizPath(biz.slug)
 }
 
+/**
+ * A business website with the marks that let its owner see AllSeattle in their analytics:
+ * utm_source=allseattle, utm_medium=referral, utm_campaign=<where the link stood>. What the address
+ * already carries stays as it is, byte for byte (an existing utm_* key is not overridden; the
+ * #fragment stays last).
+ */
+export function withUtm(url: string, campaign: 'business' | 'car'): string {
+  const hashAt = url.indexOf('#')
+  const hash = hashAt === -1 ? '' : url.slice(hashAt)
+  const rest = hashAt === -1 ? url : url.slice(0, hashAt)
+  const qAt = rest.indexOf('?')
+  const path = qAt === -1 ? rest : rest.slice(0, qAt)
+  const query = qAt === -1 ? '' : rest.slice(qAt + 1)
+  const has = new Set(query.split('&').map((p) => p.split('=')[0].toLowerCase()))
+  const add = Object.entries({ utm_source: 'allseattle', utm_medium: 'referral', utm_campaign: campaign })
+    .filter(([k]) => !has.has(k))
+    .map(([k, v]) => `${k}=${v}`)
+  if (!add.length) return url
+  return `${path}?${[query, ...add].filter(Boolean).join('&')}${hash}`
+}
+
 export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
 
 export const priceText = (amount: number, currency = 'USD') =>

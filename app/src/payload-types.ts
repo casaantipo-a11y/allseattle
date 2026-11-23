@@ -771,7 +771,7 @@ export interface Product {
 export interface CarListing {
   id: number;
   /**
-   * Leave empty: it is built from year, make and model.
+   * Built from year, make and model on every save (a title typed here is replaced).
    */
   title?: string | null;
   make: number | CarMake;

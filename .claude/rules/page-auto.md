@@ -265,3 +265,5 @@ Seller field (an account that owns a business sells as it or as a private seller
 field) — app/README "Car form for dealers".
 Titles are always year + make + model with the model in one look (`normalizeModel`, beforeChange hook of car-listings; the
 script `pnpm normalize-titles` fixes old ones) — app/README "Car form for dealers".
+Business page: website links carry utm_source/medium/campaign; "Website" and "Call" clicks are counted for the owner only
+(`TrackedLink`, kinds in view-stats) — app/README "Car form for dealers". The car page has no outside dealer link.

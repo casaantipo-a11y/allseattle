@@ -1,11 +1,12 @@
 import { isBot } from '@/lib/banners'
-import { recordSiteView, recordView } from '@/lib/stats'
+import { recordClick, recordSiteView, recordView } from '@/lib/stats'
 
 // POST /api/views {kind: car | job | business, id} — one view of a car, job or business
 // page (ViewBeacon, once per browser session); {kind: 'site'} — one page view of the
 // site (SiteViewBeacon). Direct atomic SQL (lib/stats.ts): going through payload.update
 // would run the collection hooks and revalidate the pages on every view. Only published
-// documents count; a bot's request is dropped.
+// documents count; a bot's request is dropped. {kind: business-website | business-call, id} is
+// one click on "Website" / "Call" of a published business (TrackedLink): the owner's stats only.
 
 export async function POST(req: Request) {
   if (isBot(req.headers.get('user-agent'))) return new Response(null, { status: 204 })
@@ -14,6 +15,10 @@ export async function POST(req: Request) {
   try {
     if (kind === 'site') {
       await recordSiteView()
+    } else if (kind === 'business-website' || kind === 'business-call') {
+      const id = Number(body?.id)
+      if (!Number.isInteger(id) || id <= 0) return Response.json({ error: 'Bad request' }, { status: 400 })
+      await recordClick(kind, id)
     } else if (kind === 'car' || kind === 'job' || kind === 'business') {
       const id = Number(body?.id)
       if (!Number.isInteger(id) || id <= 0) return Response.json({ error: 'Bad request' }, { status: 400 })

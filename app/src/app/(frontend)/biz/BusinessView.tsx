@@ -6,9 +6,10 @@ import { JsonLd } from '@/components/JsonLd'
 import { RichText } from '@/components/RichText'
 import { BizGallery } from '@/components/BizGallery'
 import { PriceRequest } from '@/components/PriceRequest'
+import { TrackedLink } from '@/components/TrackedLink'
 import { ViewBeacon } from '@/components/ViewBeacon'
 import { MapClient } from '@/components/map/MapClient'
-import { badgeFor, bizUrl, type BusinessFull, effectivePackage, telHref, viewFor } from '@/lib/business'
+import { badgeFor, bizUrl, type BusinessFull, effectivePackage, telHref, viewFor, withUtm } from '@/lib/business'
 import { mediaAlt, mediaUrl } from '@/lib/media'
 import { salaryText, EMPLOYMENT_LABEL } from '@/lib/jobs'
 import { getActivePromotions, getAllBusinesses, getProducts } from '@/lib/queries'
@@ -148,9 +149,9 @@ function FreeBusinessView({ biz }: { biz: BusinessFull }) {
             <h1 className="m-0">{biz.name}</h1>
             {biz.address ? <div>{biz.address}</div> : null}
             {biz.phone ? (
-              <a href={telHref(biz.phone)} className="btn self-start justify-self-start">
+              <TrackedLink action="call" bizId={biz.id} href={telHref(biz.phone)} className="btn self-start justify-self-start">
                 Call {biz.phone}
-              </a>
+              </TrackedLink>
             ) : null}
             <Widget title="Is this your business?">
               <div className="muted">Add your logo, photos, a description and your website with a package.</div>
@@ -295,9 +296,9 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
                 ) : null}
                 {biz.phone ? (
                   <InfoRow icon="phone" label="Phone">
-                    <a href={telHref(biz.phone)} className="text-brand-navy">
+                    <TrackedLink action="call" bizId={biz.id} href={telHref(biz.phone)} className="text-brand-navy">
                       {biz.phone}
-                    </a>
+                    </TrackedLink>
                   </InfoRow>
                 ) : null}
                 {biz.hours?.length ? (
@@ -311,9 +312,9 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
                 ) : null}
                 {biz.website ? (
                   <InfoRow icon="website" label="Website">
-                    <a href={withProto(biz.website)} rel="noopener" target="_blank" className="text-brand-navy underline">
+                    <TrackedLink action="website" bizId={biz.id} href={withUtm(withProto(biz.website), 'business')} rel="noopener" target="_blank" className="text-brand-navy underline">
                       {hostOf(biz.website)}
-                    </a>
+                    </TrackedLink>
                   </InfoRow>
                 ) : null}
                 {biz.email ? (
@@ -424,14 +425,14 @@ export async function BusinessView({ biz }: { biz: BusinessFull }) {
                   <div className="font-display text-2xl font-bold text-brand-navy">{biz.name}</div>
                 )}
                 {biz.website ? (
-                  <a href={withProto(biz.website)} rel="noopener" target="_blank" className="btn btn-block">
+                  <TrackedLink action="website" bizId={biz.id} href={withUtm(withProto(biz.website), 'business')} rel="noopener" target="_blank" className="btn btn-block">
                     Visit website
-                  </a>
+                  </TrackedLink>
                 ) : null}
                 {biz.phone ? (
-                  <a href={telHref(biz.phone)} className={`btn btn-block${biz.website ? ' btn-outline' : ''}`}>
+                  <TrackedLink action="call" bizId={biz.id} href={telHref(biz.phone)} className={`btn btn-block${biz.website ? ' btn-outline' : ''}`}>
                     Call {biz.phone}
-                  </a>
+                  </TrackedLink>
                 ) : null}
               </Widget>
 

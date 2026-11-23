@@ -17,6 +17,8 @@ export const REQUESTS_SHOW_MIN = 3
 export const STATS_DAYS = 30
 
 export type ViewKind = 'car' | 'job' | 'business'
+/** Clicks on a business page, kept in `view-stats` under their own kind (`kind` is plain text; `views` holds the clicks). */
+export type ClickKind = 'business-website' | 'business-call'
 type Db = { drizzle: { execute: (q: unknown) => Promise<{ rows: Record<string, unknown>[] }> } }
 const db = async () => (await getPayload({ config })).db as unknown as Db
 
@@ -44,6 +46,20 @@ export async function recordView(kind: ViewKind, id: number) {
       "views" = "view_stats"."views" + 1, "updated_at" = now()`)
 }
 
+/**
+ * One click on "Website" or "Call" of a published business, into today's row of its click kind.
+ * No lifetime counter and no document update. For an id that is not a published business the
+ * statement inserts nothing.
+ */
+export async function recordClick(kind: ClickKind, id: number) {
+  await (await db()).drizzle.execute(sql`
+    INSERT INTO "view_stats" ("kind", "doc_id", "date", "views", "updated_at", "created_at")
+    SELECT ${kind}::text, "id", ${seattleDate()}::text, 1, now(), now() FROM "businesses"
+    WHERE "id" = ${id} AND "status" = 'published'
+    ON CONFLICT ("kind", "doc_id", "date") DO UPDATE SET
+      "views" = "view_stats"."views" + 1, "updated_at" = now()`)
+}
+
 /** One page view of the site (docId 0). */
 export async function recordSiteView() {
   await (await db()).drizzle.execute(sql`
@@ -54,7 +70,7 @@ export async function recordSiteView() {
 }
 
 /** Views per document over the last 30 days, all documents or just `ids`. Exact; uncached. */
-export async function viewsByDoc(kind: ViewKind, ids?: number[]): Promise<Record<number, number>> {
+export async function viewsByDoc(kind: ViewKind | ClickKind, ids?: number[]): Promise<Record<number, number>> {
   if (ids && !ids.length) return {}
   const only = ids ? sql`AND "doc_id" IN (${sql.join(ids.map((i) => sql`${i}`), sql`, `)})` : sql``
   const res = await (await db()).drizzle.execute(sql`

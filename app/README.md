@@ -633,6 +633,27 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     mail, `updatedAt` stays, so the owners' daily count is not touched — and then asks the site to drop its
     caches. Checked locally: dry run (11 of 32 to change, nothing saved), `--apply` (11 saved, `updatedAt`
     unchanged), a second run 0 to change.
+  - **UTM marks and clicks (23.11.2026).** The business's website links on its page — the "Website" row and
+    the "Visit website" button of `BusinessView` (so `/biz/<slug>` and `<sub>.allseattle.org` alike) — go to
+    `<site>?…&utm_source=allseattle&utm_medium=referral&utm_campaign=business` (`withUtm`, `lib/business.ts`:
+    the address's own query and `#fragment` stay as written, byte for byte; a `utm_*` key the address
+    already has is not overridden). `tel:` and `mailto:` are untouched, so are the social links. The car page
+    has no outside link for the dealer (its "Sold by" goes to the business page on this site), so there is
+    nothing to mark there; `withUtm` already takes `'car'` as the campaign for when there is. **Clicks:**
+    `TrackedLink` (`components/TrackedLink.tsx`, a plain `<a>` plus `trackClick`) on "Website" and "Call"
+    (the phone row, the "Call" button, and the free listing's "Call"); `POST /api/views` takes
+    `{kind: 'business-website' | 'business-call', id}` and `recordClick` (`lib/stats.ts`) upserts today's row
+    of `view-stats` under that **kind** (the table's `kind` is plain text, so no migration; the clicks are in
+    `views`). Same protection as the views: bots (`isBot`) are dropped, **one count per browser session** for
+    each action and business (`sessionStorage`), only a **published** business takes a click (the INSERT
+    selects from `businesses`), a bad body is a 400; anyone can still POST it on purpose. Never shown on a
+    public page; the owner sees "N website clicks · M calls in 30 days" next to the page views in
+    `/account/business` (`viewsByDoc('business-website' | 'business-call', ids)`). `/advertise/stats` is
+    unchanged (it sums the kinds `site` and `business` only). Checked locally with a normal browser UA in a
+    headless browser: the links' `href`, two clicks on Website and one on Call in one session → 1 and 1 on the
+    owner's page (a second session → 2 and 2), nothing on the public page, curl with its own UA not counted,
+    an unknown business id inserted nothing, `withUtm` on eight addresses (no scheme path, `?` alone,
+    `%20`/`+`, `#a?b`, a `utm_*` of their own, different case).
 
 ## Local development
 
