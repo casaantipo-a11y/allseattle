@@ -292,6 +292,10 @@ export interface Media {
    */
   uploadedBy?: (number | null) | Customer;
   /**
+   * Uploaded from a car form, not yet saved with a listing. Removed after 24 hours.
+   */
+  staged?: boolean | null;
+  /**
    * Demo content. Removed in one go by `pnpm purge-demo` before launch.
    */
   isDemo?: boolean | null;
@@ -2272,6 +2276,7 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
   uploadedBy?: T;
+  staged?: T;
   isDemo?: T;
   updatedAt?: T;
   createdAt?: T;

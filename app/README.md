@@ -552,6 +552,31 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     the contest's); a Turnstile key limited to `allseattle.org` should also cover the subdomains, which
     was not checked.
 
+- **Car form for dealers (23.11.2026, branch `feature/dealers`).** Six changes after dealers hit errors
+  while presenting; the account's car form (`components/account/ListingForm.tsx`).
+  - **Photos upload one by one.** A phone's ten photos made one request over Vercel's 4.5 MB, so the
+    form now sends each photo to `POST /api/account/photos` as soon as it is picked (`usePhotos(…, { upload: true })`
+    in `photos.tsx`; after `shrink()` to 1600 px, two requests at a time). Each thumbnail shows
+    Uploading… / done / an error with **Retry** (not for "too large" or a wrong type — only Remove);
+    the save button reads "Uploading photos…" and is off until the last one is done. The form's own
+    request carries only the photo ids in `photosKeep`, in the order shown. The route needs a signed-in
+    account, takes one JPEG/PNG/WebP up to 10 MB (as `takePhotos` always did) and stores it in Media
+    (`uploadedBy` = the account, **`staged` = true**); 60 per 10 minutes and 400 per day per account (429),
+    counted in Media (`overPhotoLimit`, `lib/cabinet.ts`). `takePhotos(…, { staged: true })` (car form
+    only; the business and ad forms are unchanged) accepts an id that is not on the listing already only
+    if that Media row is the account's own **and still staged** — so another account's id, a photo of
+    another listing or a made-up id is refused ("A photo is no longer available — please add it again"),
+    and the 1–10 check stays on the server. After a good save `settlePhotos` clears `staged` (and sets
+    the alt text from the title); after a failed save the photos stay staged, so the form can send the
+    same ids again. **Cleanup:** `/api/cron/daily` runs `dropStalePhotos` (`lib/staged-photos.ts`) —
+    deletes Media that is `staged`, has an `uploadedBy` and is older than 24 hours; one that a car listing
+    does hold (the release after a save failed) is released instead of deleted. Nothing else is ever
+    deleted. Migration `20261123_205342_media_staged` (one `boolean DEFAULT false` column and an index;
+    existing rows are `false`, so none is ever touched). Checked locally: ten 8 MB photos in a browser →
+    ten requests of ~0.9 MB, saved with all ten in the chosen order; another account's ids, an unknown
+    id, none, eleven and a photo already on a listing refused; the cleanup removed an old staged photo
+    and kept a fresh one, an old plain upload and an old one held by a listing.
+
 ## Local development
 
 Requirements: Node.js 20.9+ and pnpm (`npm i -g pnpm`). No Postgres install needed.

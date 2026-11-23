@@ -1,5 +1,6 @@
 import { runDailyImport } from '@/lib/import/run'
 import { sendDailyReminders } from '@/lib/reminders'
+import { dropStalePhotos } from '@/lib/staged-photos'
 
 // GET /api/cron/daily — called once a day by Vercel Cron (vercel.json), which
 // sends "Authorization: Bearer $CRON_SECRET". Off while CRON_SECRET is empty, so
@@ -25,6 +26,13 @@ export async function GET(req: Request) {
   } catch (e) {
     console.error('[cron] reminders failed', e)
     answer.reminders = 'failed'
+    failed = true
+  }
+  try {
+    answer.photos = await dropStalePhotos()
+  } catch (e) {
+    console.error('[cron] stale photos failed', e)
+    answer.photos = 'failed'
     failed = true
   }
   try {

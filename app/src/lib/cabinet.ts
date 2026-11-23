@@ -121,7 +121,34 @@ export async function notifyTeam(payload: Payload, title: string, adminPath: str
   }
 }
 
-export type PhotoChange = { ids: number[]; added: number[]; removed: number[] }
+/** `staged`: ids uploaded on their own beforehand (POST /api/account/photos) and now claimed by this save. */
+export type PhotoChange = { ids: number[]; added: number[]; removed: number[]; staged?: number[]; alt?: string }
+
+/** One uploaded photo into Media, marked as the account's own (and `staged` for a standalone upload). */
+export async function storePhoto(payload: Payload, customer: Customer, f: File, alt: string, staged = false) {
+  return payload.create({
+    collection: 'media',
+    overrideAccess: true,
+    data: { alt, uploadedBy: customer.id, ...(staged ? { staged: true } : {}) } as never,
+    file: { data: Buffer.from(await f.arrayBuffer()), mimetype: f.type, name: f.name.replace(/[^\w.-]+/g, '-'), size: f.size },
+  })
+}
+
+/** Photos one account may upload on their own (the car form sends them one by one): per 10 minutes and per day. */
+const PHOTO_BURST = 60
+const PHOTO_DAILY = 400
+export const PHOTO_LIMIT_ERROR = 'You have uploaded a lot of photos. Please wait a few minutes and try again.'
+
+export async function overPhotoLimit(payload: Payload, customerId: number) {
+  const count = (ms: number) =>
+    payload.count({
+      collection: 'media',
+      where: { and: [{ uploadedBy: { equals: customerId } }, { createdAt: { greater_than: new Date(Date.now() - ms).toISOString() } }] },
+      overrideAccess: true,
+    })
+  const [burst, day] = await Promise.all([count(10 * 60 * 1000), count(86400000)])
+  return burst.totalDocs >= PHOTO_BURST || day.totalDocs >= PHOTO_DAILY
+}
 
 /**
  * An upload field of an account form: `<field>Keep` lists the ids kept from
@@ -129,6 +156,11 @@ export type PhotoChange = { ids: number[]; added: number[]; removed: number[] }
  * stored in Media (marked uploadedBy) right away; the caller saves the document
  * and then calls `settlePhotos` — which drops the new files if that save failed,
  * or the removed ones if it worked.
+ *
+ * With `opts.staged` (the car form) `<field>Keep` may also hold ids of photos the
+ * account uploaded earlier through POST /api/account/photos: they must be this
+ * account's and still `staged` (not yet claimed by a listing), else the save is
+ * refused. A failed save leaves them staged so the form can send them again.
  */
 export async function takePhotos(
   payload: Payload,
@@ -136,13 +168,23 @@ export async function takePhotos(
   fd: FormData,
   field: string,
   before: number[],
-  opts: { max: number; min?: number; alt: string },
+  opts: { max: number; min?: number; alt: string; staged?: boolean },
 ): Promise<{ ok: true; change: PhotoChange } | { ok: false; result: CabinetResult }> {
   const bad = (msg: string) => ({ ok: false as const, result: fail(400, CHECK, { [field]: msg }) })
-  const keep = fd
-    .getAll(`${field}Keep`)
-    .map(Number)
-    .filter((v) => before.includes(v))
+  const sent = [...new Set(fd.getAll(`${field}Keep`).map(Number).filter(Number.isInteger))]
+  const fresh = opts.staged ? sent.filter((v) => !before.includes(v)) : []
+  if (fresh.length) {
+    const found = await payload.find({
+      collection: 'media',
+      where: { and: [{ id: { in: fresh } }, { uploadedBy: { equals: customer.id } }, { staged: { equals: true } }] },
+      depth: 0,
+      limit: fresh.length,
+      pagination: false,
+      overrideAccess: true,
+    })
+    if (found.docs.length < fresh.length) return bad('A photo is no longer available — please add it again')
+  }
+  const keep = sent.filter((v) => before.includes(v) || fresh.includes(v))
   const files = fd.getAll(field).filter((f): f is File => typeof f === 'object' && f !== null && (f as File).size > 0)
   const total = keep.length + files.length
   if (opts.min && total < opts.min) return bad(opts.min === 1 ? 'Add at least one photo' : `Add at least ${opts.min} photos`)
@@ -151,26 +193,31 @@ export async function takePhotos(
   if (wrong) return bad(`${wrong.name}: JPEG, PNG or WebP up to 10 MB only`)
   const added: number[] = []
   try {
-    for (const f of files) {
-      const m = await payload.create({
-        collection: 'media',
-        overrideAccess: true,
-        data: { alt: opts.alt, uploadedBy: customer.id },
-        file: { data: Buffer.from(await f.arrayBuffer()), mimetype: f.type, name: f.name.replace(/[^\w.-]+/g, '-'), size: f.size },
-      })
-      added.push(m.id)
-    }
+    for (const f of files) added.push((await storePhoto(payload, customer, f, opts.alt)).id)
   } catch (e) {
     console.error('[cabinet] could not store photos', e)
     await dropMedia(payload, customer, added)
     return { ok: false, result: fail(500, 'Could not upload the photos. Please try again.') }
   }
-  return { ok: true, change: { ids: [...keep, ...added], added, removed: before.filter((v) => !keep.includes(v)) } }
+  return { ok: true, change: { ids: [...keep, ...added], added, removed: before.filter((v) => !keep.includes(v)), staged: fresh, alt: opts.alt } }
 }
 
 /** After the save: drop the files that are no longer used (only the account's own uploads). */
 export async function settlePhotos(payload: Payload, customer: Customer, changes: PhotoChange[], saved: boolean) {
   await dropMedia(payload, customer, changes.flatMap((c) => (saved ? c.removed : c.added)))
+  if (!saved) return
+  // The listing now holds the staged photos: they are no longer "waiting" and the daily cleanup leaves them.
+  for (const c of changes) {
+    if (!c.staged?.length) continue
+    await payload
+      .update({
+        collection: 'media',
+        where: { and: [{ id: { in: c.staged } }, { uploadedBy: { equals: customer.id } }] },
+        data: { staged: false, ...(c.alt ? { alt: c.alt } : {}) } as never,
+        overrideAccess: true,
+      })
+      .catch((e) => console.error('[cabinet] could not release staged photos', e))
+  }
 }
 
 async function dropMedia(payload: Payload, customer: Customer, ids: number[]) {

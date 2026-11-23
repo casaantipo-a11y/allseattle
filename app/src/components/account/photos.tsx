@@ -7,9 +7,15 @@ import { useEffect, useRef, useState } from 'react'
 // in the browser first — Vercel takes at most 4.5 MB per request, and the server
 // makes its own WebP sizes anyway. The form sends `<field>Keep` (ids kept, in
 // order) and `<field>` (new files); lib/cabinet.ts takePhotos reads them.
+//
+// `upload` mode (the car form): each new photo goes to POST /api/account/photos as soon
+// as it is picked, one request per photo, so ten photos never meet Vercel's 4.5 MB limit
+// together. The form then sends only ids, in `<field>Keep`, in the order shown.
 
 export type Photo = { id: number; url: string }
-type Added = { file: File; url: string }
+export type UploadStatus = 'uploading' | 'done' | 'error'
+/** `status`, `id` and `error` are used in `upload` mode only; `final`: a retry cannot help (too large, wrong type). */
+type Added = { file: File; url: string; status?: UploadStatus; id?: number; error?: string; final?: boolean }
 
 const PHOTO_EDGE = 1600
 const PHOTO_QUALITY = 0.82
@@ -35,17 +41,61 @@ export async function shrink(file: File): Promise<File> {
 }
 
 /** `raw`: send the files as picked — banner pictures must keep their exact pixel size. */
-export function usePhotos(field: string, initial: Photo[], max: number, { raw = false }: { raw?: boolean } = {}) {
+export function usePhotos(field: string, initial: Photo[], max: number, { raw = false, upload = false }: { raw?: boolean; upload?: boolean } = {}) {
   const [kept, setKept] = useState<Photo[]>(initial)
   const [added, setAdded] = useState<Added[]>([])
   const [problem, setProblem] = useState<string | null>(null)
+  const aborts = useRef(new Map<string, AbortController>())
 
   // Object URLs of the new photos' previews are freed when the form goes away.
   const addedRef = useRef(added)
   useEffect(() => {
     addedRef.current = added
   }, [added])
-  useEffect(() => () => addedRef.current.forEach((a) => URL.revokeObjectURL(a.url)), [])
+  useEffect(
+    () => () => {
+      addedRef.current.forEach((a) => URL.revokeObjectURL(a.url))
+      aborts.current.forEach((c) => c.abort())
+    },
+    [],
+  )
+
+  const patch = (key: string, change: Partial<Added>) => setAdded((list) => list.map((a) => (a.url === key ? { ...a, ...change } : a)))
+
+  /** One photo to the server; the result lands on its thumbnail. */
+  async function send(key: string, file: File) {
+    if (file.size > BODY_LIMIT) {
+      patch(key, { status: 'error', error: 'Too large — use a smaller photo', final: true })
+      return
+    }
+    patch(key, { status: 'uploading', error: undefined })
+    const abort = new AbortController()
+    aborts.current.set(key, abort)
+    try {
+      const fd = new FormData()
+      fd.set('file', file, file.name)
+      const res = await fetch('/api/account/photos', { method: 'POST', body: fd, credentials: 'include', signal: abort.signal })
+      const body = (await res.json().catch(() => ({}))) as { id?: number; error?: string }
+      if (res.ok && typeof body.id === 'number') patch(key, { status: 'done', id: body.id })
+      else if (res.status === 413) patch(key, { status: 'error', error: 'Too large — use a smaller photo', final: true })
+      else if (res.status === 401) patch(key, { status: 'error', error: 'Please log in again', final: true })
+      else if (res.status === 400) patch(key, { status: 'error', error: body.error ?? 'This photo cannot be used', final: true })
+      else patch(key, { status: 'error', error: body.error ?? 'Upload failed' })
+    } catch {
+      if (!abort.signal.aborted) patch(key, { status: 'error', error: 'No connection' })
+    } finally {
+      aborts.current.delete(key)
+    }
+  }
+
+  /** Two uploads at a time: each one makes the server build four WebP sizes. */
+  async function sendAll(items: { key: string; file: File }[]) {
+    const queue = [...items]
+    const worker = async () => {
+      for (let it = queue.shift(); it; it = queue.shift()) await send(it.key, it.file)
+    }
+    await Promise.all([worker(), worker()])
+  }
 
   async function add(list: FileList | null) {
     if (!list?.length) return
@@ -53,7 +103,9 @@ export function usePhotos(field: string, initial: Photo[], max: number, { raw = 
     const picked = [...list].filter((f) => /^image\/(jpeg|png|webp)$/.test(f.type)).slice(0, room)
     setProblem(picked.length < list.length ? (max === 1 ? 'One JPEG, PNG or WebP picture' : `JPEG, PNG or WebP only, up to ${max} in all`) : null)
     const shrunk = raw ? picked : await Promise.all(picked.map(shrink))
-    setAdded((a) => [...a, ...shrunk.map((file) => ({ file, url: URL.createObjectURL(file) }))])
+    const items = shrunk.map((file) => ({ file, url: URL.createObjectURL(file), ...(upload ? { status: 'uploading' as const } : {}) }))
+    setAdded((a) => [...a, ...items])
+    if (upload) await sendAll(items.map((it) => ({ key: it.url, file: it.file })))
   }
 
   return {
@@ -63,10 +115,19 @@ export function usePhotos(field: string, initial: Photo[], max: number, { raw = 
     added,
     problem,
     count: kept.length + added.length,
-    bytes: added.reduce((n, a) => n + a.file.size, 0),
+    // In upload mode nothing travels with the form: only the ids do.
+    bytes: upload ? 0 : added.reduce((n, a) => n + a.file.size, 0),
+    /** Photos still on their way / that failed (upload mode). */
+    uploading: added.filter((a) => a.status === 'uploading').length,
+    failed: added.filter((a) => a.status === 'error').length,
     add,
+    retry: (key: string) => {
+      const a = addedRef.current.find((x) => x.url === key)
+      if (a) void send(key, a.file)
+    },
     removeKept: (id: number) => setKept((k) => k.filter((p) => p.id !== id)),
     removeAdded: (url: string) => {
+      aborts.current.get(url)?.abort()
       URL.revokeObjectURL(url)
       setAdded((list) => list.filter((a) => a.url !== url))
     },
@@ -74,7 +135,8 @@ export function usePhotos(field: string, initial: Photo[], max: number, { raw = 
       fd.delete(field)
       fd.delete(`${field}Keep`)
       kept.forEach((p) => fd.append(`${field}Keep`, String(p.id)))
-      added.forEach((a) => fd.append(field, a.file, a.file.name))
+      if (upload) added.forEach((a) => a.status === 'done' && a.id != null && fd.append(`${field}Keep`, String(a.id)))
+      else added.forEach((a) => fd.append(field, a.file, a.file.name))
     },
   }
 }
@@ -100,7 +162,18 @@ export function PhotoPicker({
   whole?: boolean
 }) {
   const input = useRef<HTMLInputElement>(null)
-  const items = [...photos.kept.map((p) => ({ key: `k${p.id}`, url: p.url, remove: () => photos.removeKept(p.id) })), ...photos.added.map((a) => ({ key: a.url, url: a.url, remove: () => photos.removeAdded(a.url) }))]
+  type Item = { key: string; url: string; remove: () => void; status?: UploadStatus; error?: string; retry?: () => void }
+  const items: Item[] = [
+    ...photos.kept.map((p) => ({ key: `k${p.id}`, url: p.url, remove: () => photos.removeKept(p.id) })),
+    ...photos.added.map((a) => ({
+      key: a.url,
+      url: a.url,
+      remove: () => photos.removeAdded(a.url),
+      status: a.status,
+      error: a.error,
+      retry: a.final ? undefined : () => photos.retry(a.url),
+    })),
+  ]
   const many = photos.max > 1
   return (
     <>
@@ -111,7 +184,22 @@ export function PhotoPicker({
             {items.map((it) => (
               <li key={it.key}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={it.url} alt="" className={whole ? 'w-full rounded-lg' : 'aspect-[4/3] w-full rounded-lg object-cover'} />
+                <img src={it.url} alt="" className={`${whole ? 'w-full rounded-lg' : 'aspect-[4/3] w-full rounded-lg object-cover'}${it.status && it.status !== 'done' ? ' opacity-60' : ''}`} />
+                {it.status === 'uploading' ? (
+                  <div role="status" className="mt-1 text-sm">
+                    Uploading…
+                  </div>
+                ) : null}
+                {it.status === 'error' ? (
+                  <div role="alert" className="mt-1 text-sm text-[#c53030]">
+                    {it.error}
+                  </div>
+                ) : null}
+                {it.status === 'error' && it.retry ? (
+                  <button type="button" className="btn btn-sm mt-1 w-full" onClick={it.retry}>
+                    Retry
+                  </button>
+                ) : null}
                 <button type="button" className="btn btn-outline btn-sm mt-1 w-full" onClick={it.remove}>
                   Remove
                 </button>

@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation'
 import { useState, type FormEvent } from 'react'
 
 import { Field as BaseField, FormMessage, formInputs, type Option } from './fields'
-import { BODY_LIMIT, PhotoPicker, usePhotos, type Photo } from './photos'
+import { PhotoPicker, usePhotos, type Photo } from './photos'
 
 // The "new / edit listing" form of the account (stage 3, step 2), in the site's
 // form style (.field / .field-error). It posts multipart to /api/account/listings
 // (new) or /api/account/listings/:kind/:id (edit); the server validates it all
-// again (lib/listings.ts).
+// again (lib/listings.ts). Car photos are uploaded one by one as they are picked
+// (POST /api/account/photos); the form itself carries only their ids.
 
 type Make = { id: number; name: string; models: string[] }
 
@@ -62,13 +63,17 @@ export function ListingForm({
   const [message, setMessage] = useState<string | null>(null)
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [makeId, setMakeId] = useState(values.make ?? '')
-  const photos = usePhotos('photos', initialPhotos, MAX_PHOTOS)
+  const photos = usePhotos('photos', initialPhotos, MAX_PHOTOS, { upload: true })
   const models = [...(makes.find((m) => String(m.id) === makeId)?.models ?? [])].sort((a, b) => a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }))
 
   const { input: inputProps, select } = formInputs('lf', values, errors)
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (kind === 'car' && photos.uploading) {
+      setMessage('Please wait until the photos finish uploading.')
+      return
+    }
     const fd = new FormData(e.currentTarget)
     fd.set('kind', kind)
     if (kind === 'car') photos.appendTo(fd)
@@ -76,7 +81,7 @@ export function ListingForm({
     const missing: Record<string, string> = {}
     for (const n of need) if (!String(fd.get(n) ?? '').trim()) missing[n] = 'Required'
     if (kind === 'car' && photos.count === 0) missing.photos = 'Add at least one photo'
-    if (photos.bytes > BODY_LIMIT) missing.photos = 'The photos are too large together — remove one or two'
+    if (kind === 'car' && photos.failed) missing.photos = 'Retry or remove the photos that did not upload'
     setErrors(missing)
     if (Object.keys(missing).length) {
       setMessage('Please check the highlighted fields.')
@@ -89,7 +94,7 @@ export function ListingForm({
       const body = (await res.json().catch(() => ({}))) as { message?: string; error?: string; fieldErrors?: Record<string, string> }
       if (!res.ok) {
         setErrors(body.fieldErrors ?? {})
-        setMessage(res.status === 413 ? 'The photos are too large together — remove one or two.' : (body.error ?? 'Something went wrong. Please try again.'))
+        setMessage(body.error ?? 'Something went wrong. Please try again.')
         setState('idle')
         return
       }
@@ -245,8 +250,8 @@ export function ListingForm({
       )}
 
       <div className="form-note mb-4">The team checks every listing before it goes live, usually within a day. It stays up for 30 days and can be renewed.</div>
-      <button type="submit" className="btn btn-lg btn-block" disabled={state === 'sending'}>
-        {state === 'sending' ? 'Sending…' : id ? 'Save and send for review' : 'Send for review'}
+      <button type="submit" className="btn btn-lg btn-block" disabled={state === 'sending' || (kind === 'car' && photos.uploading > 0)}>
+        {state === 'sending' ? 'Sending…' : kind === 'car' && photos.uploading > 0 ? 'Uploading photos…' : id ? 'Save and send for review' : 'Send for review'}
       </button>
     </form>
   )

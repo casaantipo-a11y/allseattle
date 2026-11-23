@@ -48,6 +48,17 @@ export const Media: CollectionConfig = {
       access: { read: staffOnlyField },
       admin: { position: 'sidebar', readOnly: true, description: 'Uploaded from this site account.' },
     },
+    {
+      // A photo uploaded on its own from the car form (POST /api/account/photos) and not
+      // yet saved with a listing. The listing's save clears it; the daily cron deletes
+      // what is still staged after 24 hours. Nothing else ever sets it.
+      name: 'staged',
+      type: 'checkbox',
+      defaultValue: false,
+      index: true,
+      access: { read: staffOnlyField, create: () => false, update: () => false },
+      admin: { position: 'sidebar', readOnly: true, description: 'Uploaded from a car form, not yet saved with a listing. Removed after 24 hours.' },
+    },
     isDemoField,
   ],
 }

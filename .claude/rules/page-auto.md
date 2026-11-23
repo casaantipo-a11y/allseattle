@@ -253,3 +253,8 @@ form's model is typed with suggestions — see app/README "Cars for dealers".
 **App Cars, 22.11.2026:** a car row carries a second `.car-row-ref` line, "N views in 30 days", under
 the ref number — only from 10 views (`CarItem.views`, set by `toCarItem(c, views)` from
 `getViews30("car")`, cached an hour). No new CSS. The owner sees the exact number in My listings.
+
+**Car form of the account, 23.11.2026 (dealers):** the photos upload one by one as they are picked
+(`POST /api/account/photos`, a thumbnail state Uploading / ready / error + Retry; the save button is off
+until the last one is done) and the form sends only their ids — ten phone photos no longer meet
+Vercel's 4.5 MB. Details: app/README "Car form for dealers".

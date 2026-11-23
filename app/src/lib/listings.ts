@@ -177,6 +177,7 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
       max: MAX_CAR_PHOTOS,
       min: 1,
       alt: `${carTitle} — photo`,
+      staged: true,
     })
     if (!took.ok) return took.result
     photoChange = took.change
