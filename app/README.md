@@ -606,6 +606,13 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     absent / Private / business / a team-set dealer, a full business (5 of 5) → error on Seller, Private
     unaffected, a car leaving a full business; in the browser at 375 and 1440 the options, defaults, name
     follow-up and the error with focus on Seller.
+  - **Daily limit (23.11.2026).** `overDailyLimit` (`lib/cabinet.ts`): documents (cars, jobs, businesses)
+    an account has saved in 24 hours, **10**, or **50** when the account is the Owner of at least one
+    **published** business (`DAILY_SENDS_BUSINESS`; a pending business does not count). The error text
+    is the same. `ACTIVE_LIMIT` (15 live or waiting listings) is unchanged. Note the count is of
+    documents changed, so the business itself and every edited listing count once. Checked locally with
+    two accounts: 9 / 10 documents without a business (allowed / limited), 10, 48 + the business, 50 with a
+    published business (allowed, allowed, limited), and a pending business (limited at 50).
 
 ## Local development
 

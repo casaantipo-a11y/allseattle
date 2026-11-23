@@ -23,6 +23,8 @@ export const CHECK = 'Please check the highlighted fields.'
 
 /** Saves (create or edit) an account may make per 24 hours, cars, jobs and businesses together. */
 const DAILY_SENDS = 10
+/** The same for an account that owns a published business: a dealer lists a whole lot at a time. */
+const DAILY_SENDS_BUSINESS = 50
 
 export async function payloadClient() {
   return getPayload({ config })
@@ -46,12 +48,19 @@ export const isOwner = (doc: { owner?: unknown }, customer: Customer) => relId(d
 
 /** True when the account has used up today's saves. */
 export async function overDailyLimit(payload: Payload, customerId: number) {
+  const owns = await payload.count({
+    collection: 'businesses',
+    where: { and: [{ owner: { equals: customerId } }, { status: { equals: 'published' } }] },
+    limit: 1,
+    overrideAccess: true,
+  })
+  const limit = owns.totalDocs > 0 ? DAILY_SENDS_BUSINESS : DAILY_SENDS
   const since = new Date(Date.now() - 86400000).toISOString()
   const where: Where = { and: [{ owner: { equals: customerId } }, { updatedAt: { greater_than: since } }] }
   const counts = await Promise.all(
     (['car-listings', 'jobs', 'businesses'] as const).map((collection) => payload.count({ collection, where, overrideAccess: true })),
   )
-  return counts.reduce((n, c) => n + c.totalDocs, 0) >= DAILY_SENDS
+  return counts.reduce((n, c) => n + c.totalDocs, 0) >= limit
 }
 
 export const DAILY_LIMIT_ERROR = 'You have sent a lot today. Please try again tomorrow.'
