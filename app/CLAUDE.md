@@ -99,6 +99,11 @@ and then the browser at localhost:3000. It serves the production build, so run `
 - **`pnpm dev` sometimes misses an edit to a plain constant** (e.g. `EVENTS_COMING_SOON` in
   `lib/events.ts`) and keeps serving the old value — restart the dev server before concluding a
   change "doesn't work".
+- **`instanceof ValidationError` is false in the production build** (Payload throws its own copy of
+  the class; `error.name` is the minified constructor name there). `lib/cabinet.ts` `saveFailed`
+  therefore also recognises the error by shape (`status 400` + `data.errors`). Don't "simplify" it
+  back — `pnpm dev` hides the problem (one module copy), so the package-limit messages ("Standard
+  package allows up to 2 categories") only broke in `pnpm build` / on Vercel (QA 23.11.2026).
 - **Content that is CMS data, not code**: the header menu (Header global, incl. `subLinks`),
   site settings (contacts, socials), the About / Contact / Terms / Privacy pages, event and other
   categories. Change them in the admin or through the REST API as an admin user, locally and on
