@@ -98,11 +98,11 @@ export const jobSchema = z.object({
 
 export type ListingResult = CabinetResult
 
-/** The businesses an account may sell cars as: its own (Owner), waiting for review or live. */
+/** The businesses an account may sell cars as: its own (Owner) and published (client, 24.11.2026). */
 export async function dealerChoices(payload: Payload, customerId: number): Promise<{ id: number; name: string }[]> {
   const { docs } = await payload.find({
     collection: 'businesses',
-    where: { and: [{ owner: { equals: customerId } }, { status: { in: ['pending', 'published'] } }] },
+    where: { and: [{ owner: { equals: customerId } }, { status: { equals: 'published' } }] },
     sort: 'name',
     limit: 50,
     depth: 0,

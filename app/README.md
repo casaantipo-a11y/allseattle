@@ -589,8 +589,8 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     Checked in a browser at 375 and 1440: an empty form (focus on Make), only photos missing (focus on
     the picker, red frame), a server-side error (a year of 1900 → focus on Year), a failed upload
     (error line, Retry, then ready).
-  - **Seller / dealer (23.11.2026).** An account that is the **Owner** of a business (status pending or
-    published) gets a **Seller** field in the car form: *Private seller* or the business (default: the
+  - **Seller / dealer (23.11.2026).** An account that is the **Owner** of a **published** business (client, 24.11.2026:
+    not one waiting for review) gets a **Seller** field in the car form: *Private seller* or the business (default: the
     business; on edit the saved value). Choosing a business fills "Your name" with its name while that
     field is empty or still holds the account's name or a business name (a name typed by hand is left
     alone). No business → no field. Server (`lib/listings.ts` `parseDealer`, `dealerChoices`): `dealer`
