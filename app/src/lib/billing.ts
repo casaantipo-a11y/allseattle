@@ -1,3 +1,5 @@
+import { sql } from '@payloadcms/db-postgres'
+
 import type { Business, Customer, Package } from '@/payload-types'
 
 import { CHECK, fail, isOwner, notifyTeam, payloadClient, relId, teamReplyTo, type CabinetResult } from './cabinet'
@@ -156,8 +158,27 @@ export const statusOf = (s: Sub): Business['subscriptionStatus'] | null => {
   return null // incomplete: nothing paid yet
 }
 
+/**
+ * Runs `work` for one subscription at a time. Stripe sends checkout.session.completed, invoice.paid and
+ * subscription.updated for one payment within the same second, and they land on separate server
+ * instances: without the lock each finds "no banner yet" and creates its own (QA 24.11.2026: three
+ * banners and three "place booked" mails for one subscription). A Postgres advisory lock, held by
+ * a transaction on its own connection, is shared by all instances; the work itself uses the usual ones.
+ */
+async function withSubscriptionLock<T>(subId: string, work: () => Promise<T>): Promise<T> {
+  const payload = await payloadClient()
+  const { drizzle } = payload.db as unknown as { drizzle: { transaction: <R>(run: (tx: { execute: (q: unknown) => Promise<unknown> }) => Promise<R>) => Promise<R> } }
+  return drizzle.transaction(async (tx) => {
+    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${subId}))`)
+    return work()
+  })
+}
+
 /** Brings a business (or, for kind=banner, a banner) in line with its Stripe subscription. Safe to run any number of times. */
-export async function syncSubscription(subOrId: Sub | string, opts: { welcome?: boolean; buyerEmail?: string } = {}) {
+export const syncSubscription = (subOrId: Sub | string, opts: { welcome?: boolean; buyerEmail?: string } = {}) =>
+  withSubscriptionLock(typeof subOrId === 'string' ? subOrId : subOrId.id, () => syncSubscriptionNow(subOrId, opts))
+
+async function syncSubscriptionNow(subOrId: Sub | string, opts: { welcome?: boolean; buyerEmail?: string }) {
   const sub = await freshSubscription(typeof subOrId === 'string' ? subOrId : subOrId.id)
   if (sub.metadata?.kind === 'banner') return syncAdSubscription(sub, opts)
   const bizId = Number(sub.metadata?.businessId)
