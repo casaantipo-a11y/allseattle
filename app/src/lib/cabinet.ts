@@ -1,5 +1,7 @@
 import config from '@payload-config'
+import { randomBytes } from 'node:crypto'
 import { getPayload, ValidationError, type Payload, type Where } from 'payload'
+import sharp from 'sharp'
 import type { z } from 'zod'
 
 import type { Customer } from '@/payload-types'
@@ -145,7 +147,9 @@ export async function storePhoto(payload: Payload, customer: Customer, f: File, 
     collection: 'media',
     overrideAccess: true,
     data: { alt, uploadedBy: customer.id, ...(staged ? { staged: true } : {}) } as never,
-    file: { data: Buffer.from(await f.arrayBuffer()), mimetype: f.type, name: f.name.replace(/[^\w.-]+/g, '-'), size: f.size },
+    // A random prefix: two photos named alike uploaded at the same moment (two workers of the car form,
+    // or two phones' "image.jpg") would otherwise race for the same stored file name and one would fail.
+    file: { data: Buffer.from(await f.arrayBuffer()), mimetype: f.type, name: `${randomBytes(4).toString('hex')}-${f.name.replace(/[^\w.-]+/g, '-')}`, size: f.size },
   })
 }
 
@@ -154,15 +158,40 @@ const PHOTO_BURST = 60
 const PHOTO_DAILY = 400
 export const PHOTO_LIMIT_ERROR = 'You have uploaded a lot of photos. Please wait a few minutes and try again.'
 
-export async function overPhotoLimit(payload: Payload, customerId: number) {
+/**
+ * Is the account at its photo limit? Asked before a photo is stored (`mineId` left out: the photos
+ * so far already fill the limit) and again right after (`mineId` = the new photo: it is over only
+ * if more photos than the limit came before it or with it, by id). The second check is what stops
+ * a burst of parallel requests that all passed the first one.
+ */
+export async function overPhotoLimit(payload: Payload, customerId: number, mineId?: number) {
   const count = (ms: number) =>
     payload.count({
       collection: 'media',
-      where: { and: [{ uploadedBy: { equals: customerId } }, { createdAt: { greater_than: new Date(Date.now() - ms).toISOString() } }] },
+      where: {
+        and: [
+          { uploadedBy: { equals: customerId } },
+          { createdAt: { greater_than: new Date(Date.now() - ms).toISOString() } },
+          ...(mineId ? [{ id: { less_than_equal: mineId } }] : []),
+        ],
+      },
       overrideAccess: true,
     })
   const [burst, day] = await Promise.all([count(10 * 60 * 1000), count(86400000)])
-  return burst.totalDocs >= PHOTO_BURST || day.totalDocs >= PHOTO_DAILY
+  return mineId ? burst.totalDocs > PHOTO_BURST || day.totalDocs > PHOTO_DAILY : burst.totalDocs >= PHOTO_BURST || day.totalDocs >= PHOTO_DAILY
+}
+
+/** The most pixels a photo may have (a 10 MB file can hold far more than a phone camera makes). */
+const MAX_PIXELS = 100_000_000
+
+/** True when the picture can't be read, or has more pixels than MAX_PIXELS (only its header is read). */
+export async function photoTooLarge(f: File): Promise<boolean> {
+  try {
+    const m = await sharp(Buffer.from(await f.arrayBuffer())).metadata()
+    return !m.width || !m.height || m.width * m.height > MAX_PIXELS
+  } catch {
+    return true
+  }
 }
 
 /**
@@ -186,8 +215,9 @@ export async function takePhotos(
   opts: { max: number; min?: number; alt: string; staged?: boolean },
 ): Promise<{ ok: true; change: PhotoChange } | { ok: false; result: CabinetResult }> {
   const bad = (msg: string) => ({ ok: false as const, result: fail(400, CHECK, { [field]: msg }) })
-  const sent = [...new Set(fd.getAll(`${field}Keep`).map(Number).filter(Number.isInteger))]
+  const sent = [...new Set(fd.getAll(`${field}Keep`).map(Number).filter((n) => Number.isSafeInteger(n) && n > 0 && n <= 2147483647))]
   const fresh = opts.staged ? sent.filter((v) => !before.includes(v)) : []
+  if (fresh.length > opts.max) return bad(opts.max === 1 ? 'Only one picture here' : `Up to ${opts.max} photos`)
   if (fresh.length) {
     const found = await payload.find({
       collection: 'media',
@@ -206,6 +236,9 @@ export async function takePhotos(
   if (total > opts.max) return bad(opts.max === 1 ? 'Only one picture here' : `Up to ${opts.max} photos`)
   const wrong = files.find((f) => !PHOTO_TYPES.includes(f.type) || f.size > MAX_BYTES)
   if (wrong) return bad(`${wrong.name}: JPEG, PNG or WebP up to 10 MB only`)
+  for (const f of files) {
+    if (await photoTooLarge(f)) return bad(`${f.name}: the picture can't be read or is too large`)
+  }
   const added: number[] = []
   try {
     for (const f of files) added.push((await storePhoto(payload, customer, f, opts.alt)).id)

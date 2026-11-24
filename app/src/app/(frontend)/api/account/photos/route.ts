@@ -1,4 +1,4 @@
-import { customerFrom, overPhotoLimit, payloadClient, PHOTO_LIMIT_ERROR, storePhoto } from '@/lib/cabinet'
+import { customerFrom, overPhotoLimit, payloadClient, PHOTO_LIMIT_ERROR, photoTooLarge, storePhoto } from '@/lib/cabinet'
 import { MAX_BYTES, PHOTO_TYPES } from '@/lib/forms'
 import { mediaUrl } from '@/lib/media'
 
@@ -25,11 +25,17 @@ export async function POST(req: Request) {
   if (typeof file !== 'object' || file === null || !('size' in file) || !file.size) return json({ error: 'No photo was sent.' }, 400)
   if (!PHOTO_TYPES.includes(file.type)) return json({ error: 'JPEG, PNG or WebP only.' }, 400)
   if (file.size > MAX_BYTES) return json({ error: 'The photo is larger than 10 MB.' }, 400)
+  if (await photoTooLarge(file as File)) return json({ error: "The picture can't be read or has too many pixels." }, 400)
 
   const payload = await payloadClient()
   if (await overPhotoLimit(payload, customer.id)) return json({ error: PHOTO_LIMIT_ERROR }, 429)
   try {
     const m = await storePhoto(payload, customer, file as File, 'Car photo', true)
+    // Parallel requests can all pass the check above: look again now that this photo exists.
+    if (await overPhotoLimit(payload, customer.id, m.id)) {
+      await payload.delete({ collection: 'media', id: m.id, overrideAccess: true }).catch((e) => console.error('[photos] could not drop an over-limit photo', e))
+      return json({ error: PHOTO_LIMIT_ERROR }, 429)
+    }
     return json({ id: m.id, url: mediaUrl(m, 'thumb') ?? '' })
   } catch (e) {
     console.error('[photos] could not store a photo', e)

@@ -562,14 +562,20 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     request carries only the photo ids in `photosKeep`, in the order shown. The route needs a signed-in
     account, takes one JPEG/PNG/WebP up to 10 MB (as `takePhotos` always did) and stores it in Media
     (`uploadedBy` = the account, **`staged` = true**); 60 per 10 minutes and 400 per day per account (429),
-    counted in Media (`overPhotoLimit`, `lib/cabinet.ts`). `takePhotos(…, { staged: true })` (car form
+    counted in Media (`overPhotoLimit`, `lib/cabinet.ts`) — checked before the photo is stored and
+    again right after (by id), so a burst of parallel requests cannot all slip past the first check
+    (security review 24.11.2026: 70 parallel uploads now keep exactly 60). A picture over 100 megapixels
+    or one that can't be read is refused before it is stored (`photoTooLarge`, header only). Every stored
+    file gets a random prefix in its name: two photos named alike uploaded together used to race for the
+    same file name and one failed with a 500. `takePhotos(…, { staged: true })` (car form
     only; the business and ad forms are unchanged) accepts an id that is not on the listing already only
     if that Media row is the account's own **and still staged** — so another account's id, a photo of
     another listing or a made-up id is refused ("A photo is no longer available — please add it again"),
     and the 1–10 check stays on the server. After a good save `settlePhotos` clears `staged` (and sets
     the alt text from the title); after a failed save the photos stay staged, so the form can send the
     same ids again. **Cleanup:** `/api/cron/daily` runs `dropStalePhotos` (`lib/staged-photos.ts`) —
-    deletes Media that is `staged`, has an `uploadedBy` and is older than 24 hours; one that a car listing
+    deletes Media that is `staged`, has an `uploadedBy` and is older than 24 hours, 100 at a time until
+    none are left (or 25 seconds are used); one that a car listing
     does hold (the release after a save failed) is released instead of deleted. Nothing else is ever
     deleted. Migration `20261123_205342_media_staged` (one `boolean DEFAULT false` column and an index;
     existing rows are `false`, so none is ever touched). Checked locally: ten 8 MB photos in a browser →
@@ -597,7 +603,9 @@ ported here unchanged (`src/app/(frontend)/styles/`).
     = `private` → null; an id → must be one of the account's businesses (or the dealer already on the
     listing, so a team-set dealer survives an edit); not sent → unchanged. The package limit
     (`withinListingLimit('dealer')`, car listings and jobs together) comes back as the Seller field's
-    error with the package's text plus a line on what to do. `withinListingLimit` now reads a `null`
+    error with the package's text plus a line on what to do; the form asks first
+    (`listingLimitMessage`, `hooks/listingLimit.ts`, the same count the hook uses), before any photo is
+    stored, so a refused save costs no uploads. `withinListingLimit` now reads a `null`
     dealer as "no dealer" (it used to fall back to the old one, so moving a car **out** of a full
     business was checked against that business). The car page already shows "Sold by <business>" with a
     link for a published dealer (admin cars too) — unchanged; the catalog row shows no seller for any

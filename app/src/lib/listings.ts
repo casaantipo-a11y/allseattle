@@ -25,6 +25,7 @@ import {
   type CabinetResult,
   type PhotoChange,
 } from './cabinet'
+import { listingLimitMessage } from '../hooks/listingLimit'
 import { normalizeModel } from './car-models'
 
 // Stage 3, step 2: cars and jobs posted by site customers. Everything a customer
@@ -211,6 +212,12 @@ export async function saveListing(customer: Customer, kind: Kind, fd: FormData, 
   // Photos (cars): the ones kept from before, in the order the form sends them, then new uploads.
   let photoChange: PhotoChange | null = null
   if (kind === 'car') {
+    // The package limit of the business, asked before any photo is stored (the save hook asks again).
+    const sellingAs = dealer !== undefined ? dealer : relId((existing as CarListing | null)?.dealer)
+    if (sellingAs) {
+      const over = await listingLimitMessage(payload, sellingAs, { collection: 'car-listings', id: existing?.id })
+      if (over) return fail(400, CHECK, { dealer: over + DEALER_LIMIT_HELP })
+    }
     const took = await takePhotos(payload, customer, fd, 'photos', mediaIds((existing as CarListing | null)?.photos), {
       max: MAX_CAR_PHOTOS,
       min: 1,
