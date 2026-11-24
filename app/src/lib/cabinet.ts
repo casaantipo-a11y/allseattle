@@ -85,8 +85,15 @@ export const zodErrors = (issues: z.core.$ZodIssue[]) => {
 /** A save that failed: a collection hook's ValidationError ("Luxury package allows up to
  *  10 categories") goes back to its field; anything else is logged. */
 export function saveFailed(e: unknown, where: string): CabinetResult {
-  if (e instanceof ValidationError) {
-    const errors = (e.data?.errors ?? []) as { path?: string; message?: string }[]
+  // `instanceof` alone fails in the production build: Payload throws its own copy of the class,
+  // so the check is also made by shape (400 + a list of field errors). The error's name is no
+  // help either — it is the minified constructor name there.
+  const shaped = (x: unknown) => {
+    const d = x as { status?: unknown; data?: { errors?: unknown } } | null
+    return typeof x === 'object' && x !== null && d?.status === 400 && Array.isArray(d.data?.errors)
+  }
+  if (e instanceof ValidationError || shaped(e)) {
+    const errors = ((e as ValidationError).data?.errors ?? []) as { path?: string; message?: string }[]
     const fieldErrors: Record<string, string> = {}
     for (const er of errors) if (er.path && er.message) fieldErrors[er.path] ??= er.message
     return fail(400, errors[0]?.message ?? CHECK, fieldErrors)
