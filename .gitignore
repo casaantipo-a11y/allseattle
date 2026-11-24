@@ -12,3 +12,10 @@ desktop.ini
 # Internal notes for the team: kept on this machine only — main is public on GitHub Pages
 tasks-*.md
 для-*.txt
+
+# biz-* skills: business notes about the client stay local (main is public on Pages)
+.biz/
+GUIDE.md
+STRATEGY*.txt
+
+.vercel
