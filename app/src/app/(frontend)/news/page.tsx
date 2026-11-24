@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { pageNumber } from '@/lib/page-number'
 import { seoDescription, seoTitle } from '@/lib/seo-texts'
 
 import { NewsSection, archiveParams } from './NewsSection'
@@ -10,7 +11,7 @@ type Props = { searchParams: Promise<{ page?: string; month?: string; year?: str
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const sp = await searchParams
-  const page = Number(sp.page) || 1
+  const page = pageNumber(sp.page)
   const { month, year } = archiveParams(sp)
   return {
     title: page > 1 ? `Seattle news — page ${page}` : month || year ? 'Seattle news' : await seoTitle('news', 'Seattle news'),
@@ -23,6 +24,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function NewsIndex({ searchParams }: Props) {
   const sp = await searchParams
-  const page = Math.max(1, Number(sp.page) || 1)
+  const page = pageNumber(sp.page)
   return <NewsSection page={page} {...archiveParams(sp)} />
 }

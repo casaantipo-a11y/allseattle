@@ -102,7 +102,10 @@ export default async function CarPage({ params }: Props) {
                 <>
                   {/* Inline: the prototype's unlayered h3 margin beats Tailwind's mt-*. */}
                   <h3 style={{ marginTop: 'var(--space-8)' }}>Description</h3>
-                  <p className="muted">{car.description}</p>
+                  {/* A seller's pasted link has no spaces: without this the page grows wider than a phone. */}
+                  <p className="muted" style={{ overflowWrap: 'anywhere' }}>
+                    {car.description}
+                  </p>
                 </>
               ) : null}
               <h3 style={{ marginTop: 'var(--space-6)' }}>Specifications</h3>

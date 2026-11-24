@@ -1,6 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
-import { canWrite } from '../access/roles'
+import { canWrite, staffOnlyField } from '../access/roles'
 import { revalidateGlobal } from '../hooks/revalidate'
 
 export const SiteSettings: GlobalConfig = {
@@ -70,11 +70,14 @@ export const SiteSettings: GlobalConfig = {
             {
               name: 'telegramChatId',
               type: 'text',
+              // The team's own contacts: the global is public (the site reads it), these two are not.
+              access: { read: staffOnlyField },
               admin: { description: 'Where new submissions are announced (needs TELEGRAM_BOT_TOKEN).' },
             },
             {
               name: 'notifyEmail',
               type: 'email',
+              access: { read: staffOnlyField },
               admin: { description: 'Email copy of new submissions (needs RESEND_API_KEY).' },
             },
           ],

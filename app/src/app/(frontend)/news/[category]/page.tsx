@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { pageNumber } from '@/lib/page-number'
 import { getNewsCategories } from '@/lib/queries'
 
 import { NewsSection, archiveParams } from '../NewsSection'
@@ -15,7 +16,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { category: slug } = await params
   const sp = await searchParams
-  const page = Number(sp.page) || 1
+  const page = pageNumber(sp.page)
   const { month, year } = archiveParams(sp)
   const category = (await getNewsCategories()).find((c) => c.slug === slug)
   if (!category) return { title: 'Not found', robots: { index: false } }
@@ -31,6 +32,6 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params
   const sp = await searchParams
-  const page = Math.max(1, Number(sp.page) || 1)
+  const page = pageNumber(sp.page)
   return <NewsSection page={page} categorySlug={category} {...archiveParams(sp)} />
 }

@@ -104,6 +104,15 @@ and then the browser at localhost:3000. It serves the production build, so run `
   therefore also recognises the error by shape (`status 400` + `data.errors`). Don't "simplify" it
   back — `pnpm dev` hides the problem (one module copy), so the package-limit messages ("Standard
   package allows up to 2 categories") only broke in `pnpm build` / on Vercel (QA 23.11.2026).
+- **Stripe sends several events for one payment within a second** (checkout.session.completed,
+  invoice.paid, subscription.updated), each on its own server instance. `syncSubscription`
+  (`lib/billing.ts`) therefore runs under a Postgres advisory lock per subscription id; without it
+  every event created its own banner and "place booked" mail (QA 24.11.2026). New webhook work on a
+  subscription goes inside that function, not beside it.
+- **The Site settings global is public** (`read: () => true`: the site, and anyone calling
+  `/api/globals/site-settings`, read it). The team's own contacts in it (`notifyEmail`,
+  `telegramChatId`) carry `access: { read: staffOnlyField }`; a new private field there needs the
+  same. Server code still reads them: the local API skips field access (QA 24.11.2026).
 - **Content that is CMS data, not code**: the header menu (Header global, incl. `subLinks`),
   site settings (contacts, socials), the About / Contact / Terms / Privacy pages, event and other
   categories. Change them in the admin or through the REST API as an admin user, locally and on
