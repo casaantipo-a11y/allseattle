@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   if (typeof fd.get(HONEYPOT) === 'string' && (fd.get(HONEYPOT) as string).trim() !== '') return json(ok)
 
   const raw: Record<string, string> = {}
-  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v
+  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v.replaceAll('\u0000', '') // Postgres refuses NUL
   const parsed = schema.safeParse(raw)
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {}

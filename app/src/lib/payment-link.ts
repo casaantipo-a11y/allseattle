@@ -106,7 +106,8 @@ export async function sendPaymentLink(input: { businessId: number; packageId: nu
 
 /** A fresh Checkout Session for the link's business and package, or why there is none. */
 export async function checkoutForLink(token: string): Promise<{ kind: 'invalid' } | { kind: 'paid' } | { kind: 'error' } | { kind: 'ok'; url: string }> {
-  if (!token || token.length > 100) return { kind: 'invalid' }
+  // Tokens are base64url (newToken); anything else, a NUL included, can't be one and must not reach the database.
+  if (!token || token.length > 100 || !/^[\w-]+$/.test(token)) return { kind: 'invalid' }
   if (!stripeEnabled()) return { kind: 'error' }
   const payload = await payloadClient()
   const { docs } = await payload.find({ collection: 'businesses', where: { paymentLinkToken: { equals: token } }, limit: 1, depth: 1, overrideAccess: true })

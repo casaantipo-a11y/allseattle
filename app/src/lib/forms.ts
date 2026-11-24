@@ -160,7 +160,8 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
   }
 
   const raw: Record<string, string> = {}
-  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v
+  // A NUL character is refused by Postgres (a 500 for the visitor): drop it.
+  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v.replaceAll('\u0000', '')
   const parsed = form.schema.safeParse(raw)
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {}
