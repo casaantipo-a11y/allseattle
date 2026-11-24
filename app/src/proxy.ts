@@ -57,6 +57,13 @@ function legacyHostRedirect(req: NextRequest): NextResponse | null {
 }
 
 export function proxy(req: NextRequest) {
+  // A path that is not valid UTF-8 (/cars/%E0) or holds a NUL (/biz/%00) makes Next or the database
+  // answer 500 and log an error; scanners send both. Refuse it here with the 400 it deserves.
+  try {
+    if (decodeURI(req.nextUrl.pathname).includes('\u0000')) throw new URIError('NUL in the path')
+  } catch {
+    return new NextResponse('Bad request', { status: 400 })
+  }
   const legacy = legacyHostRedirect(req)
   if (legacy) return legacy
   const found = businessSubdomain(req)

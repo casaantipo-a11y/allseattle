@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import type { Section } from '@/collections/BusinessCategories'
+import { pageNumber } from '@/lib/page-number'
 import { getBusinessCategories } from '@/lib/queries'
 import { seoDescription, seoTitle } from '@/lib/seo-texts'
 
@@ -27,7 +28,7 @@ const DESCRIPTIONS: Record<Section, string> = {
 export async function sectionMetadata(section: Section, searchParams: SP, params?: CP): Promise<Metadata> {
   const meta = SECTION_META[section]
   const sp = await searchParams
-  const page = Number(sp.page) || 1
+  const page = pageNumber(sp.page)
   const slug = params ? (await params).category : undefined
   const all = await getBusinessCategories()
   const category = slug ? all.find((c) => c.slug === slug && c.section === section) : undefined
@@ -63,7 +64,7 @@ export async function sectionPage(section: Section, searchParams: SP, params?: C
       section={section}
       categorySlug={slug}
       q={typeof sp.q === 'string' ? sp.q : ''}
-      page={Math.max(1, Number(sp.page) || 1)}
+      page={pageNumber(sp.page)}
     />
   )
 }
