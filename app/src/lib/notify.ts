@@ -48,7 +48,7 @@ export async function notifyEmail(to: string | null | undefined, n: Notice) {
         // Resend's shared test sender until the site's own domain is verified in Resend.
         from: process.env.RESEND_FROM || 'AllSeattle <onboarding@resend.dev>',
         to: [to],
-        subject: n.title,
+        subject: n.title.replace(/\s+/g, ' ').trim().slice(0, 300), // one line, whatever a visitor typed into it
         text: text(n),
       }),
       signal: AbortSignal.timeout(8000),

@@ -19,14 +19,16 @@ const addr = (a: SendEmailOptions['to']): string[] => {
 export async function sendMail(msg: { to: string | string[]; subject: string; html: string; text?: string; replyTo?: string }) {
   const key = process.env.RESEND_API_KEY
   const to = Array.isArray(msg.to) ? msg.to : [msg.to]
+  // A subject is one line: titles and names typed by visitors (a job, a business) end up in it.
+  const subject = msg.subject.replace(/\s+/g, ' ').trim().slice(0, 300)
   if (!key) {
-    console.info(`[email] (no RESEND_API_KEY — not sent)\n  to: ${to.join(', ')}\n  subject: ${msg.subject}\n  ${msg.text ?? msg.html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`)
+    console.info(`[email] (no RESEND_API_KEY — not sent)\n  to: ${to.join(', ')}\n  subject: ${subject}\n  ${msg.text ?? msg.html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`)
     return { id: 'console' }
   }
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM(), to, subject: msg.subject, html: msg.html, text: msg.text, ...(msg.replyTo ? { reply_to: msg.replyTo } : {}) }),
+    body: JSON.stringify({ from: FROM(), to, subject, html: msg.html, text: msg.text, ...(msg.replyTo ? { reply_to: msg.replyTo } : {}) }),
     signal: AbortSignal.timeout(15000),
   })
   if (!res.ok) throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0, 300)}`)
