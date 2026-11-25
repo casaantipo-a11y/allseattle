@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import type { CarListing, Customer, Job } from '@/payload-types'
 
-import { slugify } from '../fields'
+import { slugBase } from '../fields'
 import {
   CHECK,
   DAILY_LIMIT_ERROR,
@@ -153,7 +153,7 @@ export async function activeCount(payload: Payload, customerId: number, excludeI
 
 /** A free slug for a retitled listing (the old one goes to its slug history and redirects). */
 async function freeSlug(payload: Payload, kind: Kind, title: string, id: number) {
-  const base = slugify(title)
+  const base = slugBase(title, COLLECTION[kind])
   for (let i = 1; i < 500; i++) {
     const candidate = i === 1 ? base : `${base}-${i}`
     const { totalDocs } = await payload.count({

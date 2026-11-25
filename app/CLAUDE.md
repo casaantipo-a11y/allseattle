@@ -109,6 +109,12 @@ and then the browser at localhost:3000. It serves the production build, so run `
   (`lib/billing.ts`) therefore runs under a Postgres advisory lock per subscription id; without it
   every event created its own banner and "place booked" mail (QA 24.11.2026). New webhook work on a
   subscription goes inside that function, not beside it.
+- **`slugify` gives `''` for a title with no Latin letters** (QA 25.11.2026: a business named in
+  Chinese got slug `''`, so `/biz/` showed the directory instead of its page, and the next one got
+  `-2`). Cyrillic is transliterated (`Кафе Москва` → `kafe-moskva`); any other script has nothing to
+  keep. The slug of a new document goes through `slugBase(title, collection)` (`fields/index.ts`: falls
+  back to `business`, `job`, `car`…), never through `slugify` alone. Re-saving a document with an empty
+  slug in the admin repairs it.
 - **The Site settings global is public** (`read: () => true`: the site, and anyone calling
   `/api/globals/site-settings`, read it). The team's own contacts in it (`notifyEmail`,
   `telegramChatId`) carry `access: { read: staffOnlyField }`; a new private field there needs the

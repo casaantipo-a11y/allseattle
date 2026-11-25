@@ -2,22 +2,38 @@ import type { Field, FieldHook, PayloadRequest } from 'payload'
 
 import { staffOnlyField } from '../access/roles'
 
+// Seattle has large Russian- and Ukrainian-speaking communities, and a business or a job is often
+// titled in its own language. Cyrillic is written out in Latin letters; any other script (Chinese,
+// Korean, emoji…) has nothing to keep, so `slugify` gives '' and the caller picks a word of its own.
+const CYRILLIC: Record<string, string> = {
+  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm',
+  н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch',
+  ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya', є: 'ye', і: 'i', ї: 'yi', ґ: 'g', ў: 'u',
+}
+
 export const slugify = (value: string): string =>
   value
+    .toLowerCase()
+    .replace(/[а-яёєіїґў]/g, (c) => CYRILLIC[c] ?? '')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
     .replace(/['’]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 96)
 
+/** What a document is called in its address when its title has no letters `slugify` can keep. */
+const SLUG_WORD: Record<string, string> = { businesses: 'business', 'car-listings': 'car', jobs: 'job', events: 'event' }
+export const slugBase = (source: string, collection: string) => slugify(source) || SLUG_WORD[collection] || 'item'
+
 const formatSlug =
   (fallbackField: string): FieldHook =>
   ({ value, data, originalDoc }) => {
-    if (typeof value === 'string' && value.trim() !== '') return slugify(value)
+    const given = typeof value === 'string' ? slugify(value) : ''
+    if (given) return given
     const source = data?.[fallbackField] ?? originalDoc?.[fallbackField]
-    return typeof source === 'string' ? slugify(source) : value
+    // A title with no letters to keep (all Chinese, say) still needs an address, and '' would be taken once.
+    return typeof source === 'string' ? slugify(source) || `item-${Date.now().toString(36)}` : value
   }
 
 /**
@@ -124,7 +140,7 @@ export const isDemoField: Field = {
 
 /** `base`, or `base-2`, `base-3`… — the first one no other document uses. */
 export async function uniqueSlug(req: PayloadRequest, collection: string, source: string, excludeId?: number | string) {
-  const base = slugify(source)
+  const base = slugBase(source, collection)
   let candidate = base
   for (let i = 2; i < 500; i++) {
     const { totalDocs } = await req.payload.count({
