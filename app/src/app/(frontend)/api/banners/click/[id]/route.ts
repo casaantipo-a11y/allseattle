@@ -2,14 +2,15 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { isBot, recordBannerStats } from '@/lib/banners'
+import { rowId } from '@/lib/row-id'
 
 // GET /api/banners/click/{id} — every banner links here: the click is counted
 // for today (unless it's a bot) and the visitor is sent on with a 302 to the
 // advertiser's linkUrl. An unknown or unpublished banner goes to the home page.
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const id = Number((await params).id)
+  const id = rowId((await params).id)
   const home = new URL('/', req.url)
-  if (!Number.isInteger(id) || id <= 0) return Response.redirect(home, 302)
+  if (id < 0) return Response.redirect(home, 302)
 
   const payload = await getPayload({ config })
   const banner = await payload.findByID({

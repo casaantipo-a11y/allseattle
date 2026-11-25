@@ -1,5 +1,6 @@
 import { saveItem } from '@/lib/business-cabinet'
 import { customerFrom } from '@/lib/cabinet'
+import { rowId } from '@/lib/row-id'
 
 // POST /api/account/business/:id/items — the owner adds a promotion or a product
 // (multipart, `kind` = promotion | product). Live at once; the package decides
@@ -20,6 +21,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
   const kind = fd.get('kind')
   if (kind !== 'promotion' && kind !== 'product') return json({ error: 'Unknown item type.' }, 400)
-  const r = await saveItem(customer, Number(id), kind, fd)
+  const r = await saveItem(customer, rowId(id), kind, fd)
   return r.ok ? json(r) : json({ error: r.error, fieldErrors: r.fieldErrors }, r.status)
 }

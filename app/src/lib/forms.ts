@@ -1,11 +1,13 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import sharp from 'sharp'
 import { z } from 'zod'
 
 import { effectivePackage } from './business'
 import { type NoticePhoto, notifyEmail, notifyTelegram } from './notify'
 import { sendPriceRequestMail } from './price-request'
 import type { Business } from '../payload-types'
+import { rowId } from './row-id'
 import { absoluteUrl } from './site'
 
 // Server side of the public forms (spec §8). Each form is a zod schema plus a
@@ -17,7 +19,7 @@ const RATE_LIMIT = 5 // per IP per hour
 
 const contact = {
   name: z.string().trim().min(2, 'Please enter your name').max(80),
-  email: z.union([z.literal(''), z.email('That doesn’t look like an email address')]).optional(),
+  email: z.union([z.literal(''), z.email('That doesn’t look like an email address').max(254, 'That doesn’t look like an email address')]).optional(),
   phone: z
     .string()
     .trim()
@@ -33,7 +35,7 @@ const needContact = (d: { email?: string; phone?: string }) => Boolean(d.email |
 const idOpt = z
   .string()
   .optional()
-  .transform((v) => (v && /^\d+$/.test(v) ? Number(v) : undefined))
+  .transform((v) => (v && /^\d+$/.test(v) ? rowId(v) : undefined))
 
 export const FORMS = {
   'business-registration': {
@@ -81,7 +83,7 @@ export const FORMS = {
     type: 'price_request' as const,
     schema: z
       .object({
-        businessId: z.string().regex(/^\d+$/, 'Missing business').transform(Number),
+        businessId: z.string().regex(/^\d+$/, 'Missing business').transform((v) => rowId(v)),
         ...contact,
         message: z.string().trim().min(5, 'Tell the business what you need').max(1000, 'Please keep it under 1000 characters'),
       })
@@ -96,7 +98,7 @@ export const FORMS = {
   newsletter: {
     type: 'newsletter' as const,
     schema: z.object({
-      email: z.email('That doesn’t look like an email address'),
+      email: z.email('That doesn’t look like an email address').max(254, 'That doesn’t look like an email address'),
       action: z.enum(['subscribe', 'unsubscribe']).default('subscribe'),
     }),
     thanks: 'You’re on the list — the Seattle briefing will land in your inbox.',
@@ -111,6 +113,23 @@ const QUIET_FORMS: readonly FormKey[] = ['newsletter']
 const MAX_PHOTOS = 5
 export const MAX_BYTES = 10 * 1024 * 1024
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+/** The most pixels a photo may have (a 10 MB file can hold far more than a phone camera makes). */
+const MAX_PIXELS = 100_000_000
+
+/**
+ * True when the file is not a usable JPEG, PNG or WebP: the declared type is only what the browser
+ * said (sharp also reads SVG, which would fail later as a 500), or it has more than MAX_PIXELS.
+ * Only the file's header is decoded.
+ */
+export async function badPhoto(f: File): Promise<boolean> {
+  try {
+    const m = await sharp(Buffer.from(await f.arrayBuffer())).metadata()
+    return !['jpeg', 'png', 'webp'].includes(m.format ?? '') || !m.width || !m.height || m.width * m.height > MAX_PIXELS
+  } catch {
+    return true
+  }
+}
 
 export type FormKey = keyof typeof FORMS
 
@@ -203,6 +222,16 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
       { error: 'Too many requests from your connection. Please try again in an hour.' },
       429,
     )
+  }
+
+  // A file that only says it is a picture is a 400 here, not a failed upload (a 500) further down.
+  for (const f of files) {
+    if (await badPhoto(f)) {
+      return json(
+        { error: 'Please check the highlighted fields.', fieldErrors: { photos: `${f.name}: the picture can't be read, or it is not a JPEG, PNG or WebP` } },
+        400,
+      )
+    }
   }
 
   const d = parsed.data as Record<string, unknown>

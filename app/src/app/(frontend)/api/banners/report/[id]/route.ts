@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import type { Role } from '@/access/roles'
 import { seattleDate } from '@/lib/banners'
+import { rowId } from '@/lib/row-id'
 
 // GET /api/banners/report/{id}?from=YYYY-MM-DD&to=YYYY-MM-DD[&format=csv]
 // The advertiser report behind the "Report" tab of a banner in the admin:
@@ -18,8 +19,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   if (!roles.some((r) => r === 'admin' || r === 'sales'))
     return Response.json({ error: 'Forbidden' }, { status: 403 })
 
-  const id = Number((await params).id)
-  const banner = Number.isInteger(id)
+  const id = rowId((await params).id)
+  const banner = id > 0
     ? await payload.findByID({ collection: 'banners', id, depth: 0, disableErrors: true })
     : null
   if (!banner) return Response.json({ error: 'Not found' }, { status: 404 })

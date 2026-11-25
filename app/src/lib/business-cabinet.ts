@@ -27,6 +27,7 @@ import {
   type PhotoChange,
 } from './cabinet'
 import { lexicalText } from './jobs'
+import { rowId } from './row-id'
 
 // Stage 3, step 3: a business managed from a site account. Registering one
 // creates the card as Pending review (the team publishes it, hooks/moderation.ts
@@ -134,7 +135,7 @@ export async function saveBusiness(customer: Customer, fd: FormData, id?: number
   if (!parsed.success) return fail(400, CHECK, zodErrors(parsed.error.issues))
   const d = parsed.data
 
-  const categories = [...new Set(fd.getAll('categories').map(Number).filter(Number.isInteger))]
+  const categories = [...new Set(fd.getAll('categories').map((v) => rowId(v)).filter((n) => n > 0))]
   if (!categories.length) return fail(400, CHECK, { categories: 'Choose at least one category' })
   const { totalDocs: known } = await payload.count({ collection: 'business-categories', where: { id: { in: categories } } })
   if (known !== categories.length) return fail(400, CHECK, { categories: 'Choose categories from the list' })

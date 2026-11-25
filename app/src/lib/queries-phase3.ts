@@ -198,7 +198,7 @@ const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
  *  that only starts with it ("car" → "Care"), then text inside a word. The type of record
  *  only breaks ties. */
 export async function searchSite(q: string, limit = 60): Promise<SearchHit[]> {
-  const term = q.trim()
+  const term = q.replaceAll('\u0000', '').trim() // Postgres refuses a NUL character in text
   if (term.length < 2) return []
   const lower = term.toLowerCase()
   const kind = KIND_WORDS[lower]

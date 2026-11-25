@@ -13,6 +13,7 @@ import { lexicalText } from '@/lib/jobs'
 import { mediaUrl } from '@/lib/media'
 import { getBusinessCategories } from '@/lib/queries'
 import type { Media, Package } from '@/payload-types'
+import { rowId } from '@/lib/row-id'
 
 export const metadata: Metadata = { title: 'Edit business' }
 
@@ -27,7 +28,7 @@ export default async function EditBusinessPage({ params }: Props) {
   if (!/^\d+$/.test(id)) notFound()
   const me = await getCustomer()
   if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/business/${id}`)}`)
-  const [mine, categories] = await Promise.all([myBusiness(me, Number(id)), getBusinessCategories()])
+  const [mine, categories] = await Promise.all([myBusiness(me, rowId(id)), getBusinessCategories()])
   if (!mine) notFound()
   const { biz, pkg } = mine
   // Promotions and products show only on a paid business's page, so a free one has no link to them.

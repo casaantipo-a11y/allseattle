@@ -13,7 +13,7 @@ const RATE_LIMIT = 5
 
 const schema = z.object({
   name: z.string().trim().min(2, 'Please enter your name').max(80),
-  email: z.email('That doesn’t look like an email address').trim().toLowerCase(),
+  email: z.email('That doesn’t look like an email address').max(254, 'That doesn’t look like an email address').trim().toLowerCase(),
   password: z.string().min(8, 'Use at least 8 characters').max(128),
   phone: z
     .string()

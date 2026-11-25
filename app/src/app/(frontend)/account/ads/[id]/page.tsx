@@ -8,6 +8,7 @@ import { getCustomer } from '@/lib/account'
 import { myAd } from '@/lib/ad-billing'
 import { mediaUrl } from '@/lib/media'
 import type { AdSlot, Media } from '@/payload-types'
+import { rowId } from '@/lib/row-id'
 
 export const metadata: Metadata = { title: 'Banner' }
 
@@ -22,7 +23,7 @@ export default async function AdPage({ params }: Props) {
   if (!/^\d+$/.test(id)) notFound()
   const me = await getCustomer()
   if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/ads/${id}`)}`)
-  const b = await myAd(me, Number(id))
+  const b = await myAd(me, rowId(id))
   if (!b) notFound()
   const slot = (b.slots ?? []).find((x) => typeof x === 'object') as AdSlot | undefined
   if (!slot) notFound()

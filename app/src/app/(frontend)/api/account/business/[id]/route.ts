@@ -1,5 +1,6 @@
 import { saveBusiness } from '@/lib/business-cabinet'
 import { customerFrom } from '@/lib/cabinet'
+import { rowId } from '@/lib/row-id'
 
 // POST /api/account/business/:id — the owner edits their business.
 
@@ -16,6 +17,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   } catch {
     return json({ error: 'Could not read the form. Photos may be too large.' }, 400)
   }
-  const r = await saveBusiness(customer, fd, Number(id))
+  const r = await saveBusiness(customer, fd, rowId(id))
   return r.ok ? json(r) : json({ error: r.error, fieldErrors: r.fieldErrors }, r.status)
 }

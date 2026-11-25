@@ -6,14 +6,20 @@ import { searchSite } from '@/lib/queries-phase3'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
+// ?q=a&q=b arrives as an array: only a single text value is a query.
+const queryOf = async (searchParams: Props['searchParams']) => {
+  const { q } = await searchParams
+  return (typeof q === 'string' ? q : '').trim()
+}
+
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const q = ((await searchParams).q ?? '').trim()
+  const q = await queryOf(searchParams)
   return { title: q ? `Search: ${q}` : 'Search', robots: { index: false, follow: true } }
 }
 
 // Global search results, grouped by type (spec §6).
 export default async function SearchPage({ searchParams }: Props) {
-  const q = ((await searchParams).q ?? '').trim()
+  const q = await queryOf(searchParams)
   const hits = await searchSite(q, 100)
   const groups = Object.entries(SEARCH_KINDS)
     .map(([kind, label]) => ({ kind, label, items: hits.filter((h) => h.kind === kind) }))

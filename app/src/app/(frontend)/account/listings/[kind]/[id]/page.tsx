@@ -11,6 +11,7 @@ import { payloadClient } from '@/lib/cabinet'
 import { COLLECTION, dealerChoices } from '@/lib/listings'
 import { getCarMakes, getJobCategories } from '@/lib/queries-phase3'
 import type { CarListing, Job } from '@/payload-types'
+import { rowId } from '@/lib/row-id'
 
 export const metadata: Metadata = { title: 'Edit listing' }
 
@@ -26,7 +27,7 @@ export default async function EditListingPage({ params }: Props) {
   const me = await getCustomer()
   if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/listings/${kind}/${id}`)}`)
   const payload = await payloadClient()
-  const doc = (await payload.findByID({ collection: COLLECTION[kind], id: Number(id), depth: 1, overrideAccess: true, disableErrors: true })) as
+  const doc = (await payload.findByID({ collection: COLLECTION[kind], id: rowId(id), depth: 1, overrideAccess: true, disableErrors: true })) as
     | CarListing
     | Job
     | null

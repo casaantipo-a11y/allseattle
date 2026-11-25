@@ -27,6 +27,7 @@ import {
 } from './cabinet'
 import { listingLimitMessage } from '../hooks/listingLimit'
 import { normalizeModel } from './car-models'
+import { rowId } from './row-id'
 
 // Stage 3, step 2: cars and jobs posted by site customers. Everything a customer
 // may do goes through here (api/account/listings/*), with the local API and the
@@ -61,7 +62,7 @@ const optInt = (label: string, min: number, max: number) =>
     .pipe(intField(label, min, max).optional())
 
 export const carSchema = z.object({
-  make: z.string().regex(/^\d+$/, 'Choose a make').transform(Number),
+  make: z.string().regex(/^\d+$/, 'Choose a make').transform((v) => rowId(v)),
   model: z.string().trim().min(1, 'Choose a model').max(60),
   year: intField('Year', 1950, new Date().getFullYear() + 1),
   price: intField('Price', 1, 5_000_000),
@@ -85,7 +86,7 @@ export const carSchema = z.object({
 export const jobSchema = z.object({
   title: z.string().trim().min(3, 'Please enter the job title').max(120),
   companyName: z.string().trim().min(2, 'Please enter the company name').max(120),
-  category: z.string().regex(/^\d+$/, 'Choose a category').transform(Number),
+  category: z.string().regex(/^\d+$/, 'Choose a category').transform((v) => rowId(v)),
   employmentType: z.enum(['full-time', 'part-time', 'contract', 'temporary'], 'Choose the type'),
   workMode: z.enum(['on-site', 'hybrid', 'remote']).default('on-site'),
   salaryMin: optInt('Minimum pay', 0, 10_000_000),

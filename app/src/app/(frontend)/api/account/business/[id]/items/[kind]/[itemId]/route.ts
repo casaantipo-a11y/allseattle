@@ -1,5 +1,6 @@
 import { deleteItem, saveItem } from '@/lib/business-cabinet'
 import { customerFrom } from '@/lib/cabinet'
+import { rowId } from '@/lib/row-id'
 
 // POST (edit) and DELETE /api/account/business/:id/items/:kind/:itemId — a
 // promotion or product of the owner's business.
@@ -11,7 +12,7 @@ async function target(req: Request, ctx: Ctx) {
   const { id, kind, itemId } = await ctx.params
   if ((kind !== 'promotion' && kind !== 'product') || !/^\d+$/.test(id) || !/^\d+$/.test(itemId)) return null
   const customer = await customerFrom(req)
-  return { customer, bizId: Number(id), kind: kind as 'promotion' | 'product', itemId: Number(itemId) }
+  return { customer, bizId: rowId(id), kind: kind as 'promotion' | 'product', itemId: rowId(itemId) }
 }
 
 export async function POST(req: Request, ctx: Ctx) {

@@ -10,6 +10,7 @@ import { myBusiness } from '@/lib/business-cabinet'
 import { mediaUrl } from '@/lib/media'
 import { SITE_TZ, seattleToday } from '@/lib/site'
 import type { Media, Package } from '@/payload-types'
+import { rowId } from '@/lib/row-id'
 
 export const metadata: Metadata = { title: 'Promotions & products' }
 
@@ -26,7 +27,7 @@ export default async function OffersPage({ params }: Props) {
   if (!/^\d+$/.test(id)) notFound()
   const me = await getCustomer()
   if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/business/${id}/offers`)}`)
-  const mine = await myBusiness(me, Number(id))
+  const mine = await myBusiness(me, rowId(id))
   if (!mine) notFound()
   const { biz, promotions, products, pkg } = mine
   // A free listing's page shows neither, so there is nothing to manage here: offer a package instead.

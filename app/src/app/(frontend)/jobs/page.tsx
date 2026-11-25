@@ -21,7 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
 type Props = { searchParams: Promise<{ q?: string }> }
 
 export default async function JobsPage({ searchParams }: Props) {
-  const q = ((await searchParams).q ?? '').slice(0, 100)
+  const { q: raw } = await searchParams
+  const q = (typeof raw === 'string' ? raw : '').slice(0, 100) // ?q=a&q=b is an array: no query
   const [allJobs, views] = await Promise.all([getJobs(), getViews30('job')])
   const jobs = allJobs.map((j) => toJobItem(j, publicViews(views, j.id)))
   return (
