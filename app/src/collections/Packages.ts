@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { canWrite } from '../access/roles'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { revalidateCollection } from '../hooks/revalidate'
 
 // Placement packages. Nothing about them is hard-coded on the site: prices,
@@ -24,6 +25,7 @@ export const Packages: CollectionConfig = {
     delete: canWrite(),
   },
   hooks: {
+    beforeDelete: [refuseWhileUsed([{ collection: 'businesses', field: 'package', label: 'businesses' }])],
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },

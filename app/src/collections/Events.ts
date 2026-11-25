@@ -3,6 +3,7 @@ import { ValidationError } from 'payload'
 
 import { canWrite, publishedOrLoggedIn, staffOnlyField } from '../access/roles'
 import { isDemoField, slugField, slugHistoryField, statusField, uniqueSlugField } from '../fields'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
 import { rememberDismissed } from '../lib/import/dismissed'
@@ -16,7 +17,11 @@ export const EventCategories: CollectionConfig = {
   admin: { useAsTitle: 'name', group: 'Events' },
   defaultSort: 'order',
   access: { read: () => true, create: canWrite('editor'), update: canWrite('editor'), delete: canWrite('editor') },
-  hooks: { afterChange: [revalidate.afterChange], afterDelete: [revalidate.afterDelete] },
+  hooks: {
+    beforeDelete: [refuseWhileUsed([{ collection: 'events', field: 'category', label: 'events' }])],
+    afterChange: [revalidate.afterChange],
+    afterDelete: [revalidate.afterDelete],
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     slugField('name'),

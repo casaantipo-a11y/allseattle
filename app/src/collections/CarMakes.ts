@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { canWrite } from '../access/roles'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { revalidateCollection } from '../hooks/revalidate'
 
 // Makes and their models — the source of the Make/Model choices in car
@@ -13,7 +14,11 @@ export const CarMakes: CollectionConfig = {
   admin: { useAsTitle: 'name', group: 'Cars' },
   defaultSort: 'name',
   access: { read: () => true, create: canWrite('sales'), update: canWrite('sales'), delete: canWrite('sales') },
-  hooks: { afterChange: [revalidate.afterChange], afterDelete: [revalidate.afterDelete] },
+  hooks: {
+    beforeDelete: [refuseWhileUsed([{ collection: 'car-listings', field: 'make', label: 'listings' }])],
+    afterChange: [revalidate.afterChange],
+    afterDelete: [revalidate.afterDelete],
+  },
   fields: [
     { name: 'name', type: 'text', required: true, unique: true },
     { name: 'models', type: 'text', hasMany: true, admin: { description: 'Type a model and press Enter.' } },

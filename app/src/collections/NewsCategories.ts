@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { canWrite } from '../access/roles'
 import { isDemoField, slugField } from '../fields'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { revalidateCollection } from '../hooks/revalidate'
 
 const revalidate = revalidateCollection(['news', 'news-categories'], (doc) =>
@@ -20,6 +21,7 @@ export const NewsCategories: CollectionConfig = {
     delete: canWrite('editor'),
   },
   hooks: {
+    beforeDelete: [refuseWhileUsed([{ collection: 'news', field: 'category', label: 'articles' }])],
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },
