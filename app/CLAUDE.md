@@ -121,6 +121,14 @@ and then the browser at localhost:3000. It serves the production build, so run `
   a search/filter param is used only when `typeof … === 'string'`. A photo is checked with
   `badPhoto()` (`lib/forms.ts`: only JPEG, PNG, WebP that decode, under 100 megapixels — sharp also
   reads SVG) before anything is stored.
+- **A check before an insert is not a lock — a double click shows it** (QA 25.11.2026): two
+  requests both see "nothing yet", both insert, and the one that loses meets a unique index
+  (sign-up email, one vote per email per contest) or a limit counted too early (5 forms an hour,
+  3 businesses). The pattern used here: count again *after* the insert, up to your own id, and
+  take your row back if you are over (`overPhotoLimit`, `handleForm`, `saveBusiness`); for a
+  unique index, the loser reads the row again in its `catch` and answers as for a repeat (400/429),
+  never 500 (`api/account/register`, `castVote`). No advisory locks on these paths: waiters would
+  hold pool connections (only the Stripe webhook takes one, `lib/billing.ts`).
 - **Content that is CMS data, not code**: the header menu (Header global, incl. `subLinks`),
   site settings (contacts, socials), the About / Contact / Terms / Privacy pages, event and other
   categories. Change them in the admin or through the REST API as an admin user, locally and on

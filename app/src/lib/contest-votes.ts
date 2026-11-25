@@ -110,6 +110,21 @@ export async function castVote(input: z.infer<typeof voteSchema>, ip: string): P
       rowId = (await p.create({ collection: 'contest-votes', data: { ...data, contest: contest.id, email: input.email }, overrideAccess: true })).id
     }
   } catch (e) {
+    // A double click sends the request twice: the other one saved the row (one vote per email
+    // per contest is a unique index) and its link is on the way. Answer as for a repeat, not 500.
+    const again = (
+      await p
+        .find({
+          collection: 'contest-votes',
+          where: { and: [{ contest: { equals: contest.id } }, { email: { equals: input.email } }] },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+    )?.docs[0] as ContestVote | undefined
+    if (again?.confirmedAt) return { ok: false, status: 400, field: 'email', error: 'This email has already voted in this contest.' }
+    if (again && !existing) return { ok: false, status: 429, error: 'We just sent you a link. Please check your inbox (and the spam folder).' }
     console.error('[vote] could not save', e)
     return { ok: false, status: 500, error: 'Something went wrong on our side. Please try again in a minute.' }
   }
