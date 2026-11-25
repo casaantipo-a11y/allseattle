@@ -307,6 +307,22 @@ export async function handleForm(key: FormKey, req: Request): Promise<Response> 
     return json({ error: 'Something went wrong on our side. Please try again in a minute.' }, 500)
   }
 
+  // Parallel requests all pass the count above before any of them is saved (QA 25.11.2026: 20 at once
+  // from one address, 20 saved). Count again now that this one exists, up to its own id: at most
+  // RATE_LIMIT stay, the rest are taken back before anybody is notified.
+  if (ip !== 'unknown') {
+    const { totalDocs: upToMe } = await payload.count({
+      collection: 'submissions',
+      where: { and: [{ ip: { equals: ip } }, { createdAt: { greater_than: hourAgo } }, { id: { less_than_equal: doc.id } }] },
+      overrideAccess: true,
+    })
+    if (upToMe > RATE_LIMIT) {
+      await payload.delete({ collection: 'submissions', id: doc.id, overrideAccess: true }).catch((e) => console.error('[forms] could not take back a submission over the limit', e))
+      if (photoIds.length) await payload.delete({ collection: 'media', where: { id: { in: photoIds } }, overrideAccess: true }).catch((e) => console.error('[forms] could not drop the photos of a refused submission', e))
+      return json({ error: 'Too many requests from your connection. Please try again in an hour.' }, 429)
+    }
+  }
+
   const unsubscribed = key === 'newsletter' && d.action === 'unsubscribe'
   if (quiet) {
     return json({
