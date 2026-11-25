@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
   const description = await seoDescription('home', settings.description || '')
   const title = await seoTitle('home', undefined)
-  return { ...(description ? { description } : {}), ...(title ? { title } : {}) }
+  return { ...(description ? { description } : {}), ...(title ? { title } : {}), alternates: { canonical: '/' } }
 }
 
 export default async function HomePage() {

@@ -14,6 +14,10 @@ import { SITEMAP_TYPES, type SitemapType, type UrlEntry, urlset, xml } from '@/l
 
 export const revalidate = 3600
 
+// Pages with a route of their own. Some also have a CMS page of the same slug (/advertise: the
+// route renders it), which the "pages" sitemap must not list a second time.
+const STATIC_PATHS = ['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business', '/cars', '/cars/services', '/jobs', '/events', '/weather', '/share-news']
+
 export function generateStaticParams() {
   return SITEMAP_TYPES.map((t) => ({ type: `${t}.xml` }))
 }
@@ -27,7 +31,7 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
       ...categories
         .filter((c) => c.slug)
         .map((c) => ({ loc: absoluteUrl(`/news/${c.slug}`), changefreq: 'daily', priority: 0.7 })),
-      ...['/directory', '/shopping', '/leisure', '/map', '/advertise', '/add-business', '/cars', '/cars/services', '/jobs', '/events', '/weather', '/share-news'].map((path) => ({
+      ...STATIC_PATHS.map((path) => ({
         loc: absoluteUrl(path),
         changefreq: 'daily',
         priority: 0.8,
@@ -66,7 +70,7 @@ async function entries(type: SitemapType): Promise<UrlEntry[]> {
     ]
   }
   return (await getPagesForSitemap())
-    .filter((p) => p.slug)
+    .filter((p) => p.slug && !STATIC_PATHS.includes(`/${p.slug}`))
     .map((p) => ({ loc: absoluteUrl(`/${p.slug}`), lastmod: new Date(p.updatedAt).toISOString(), priority: 0.4 }))
 }
 
