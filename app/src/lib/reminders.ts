@@ -14,6 +14,30 @@ import { absoluteUrl } from './site'
 
 const DAY = 24 * 3600 * 1000
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'America/Los_Angeles' })
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+/**
+ * One reminder. A failed mail is logged and the loop goes on: a reminder is due in a one-day window,
+ * so one bad address (or Resend's rate limit on a burst of mails) must not cost every reminder after it.
+ * A rate-limited mail is tried once more after a pause; the sends are spaced a little.
+ */
+async function deliver(msg: Parameters<typeof sendMail>[0]): Promise<boolean> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      await sendMail(msg)
+      await sleep(250)
+      return true
+    } catch (e) {
+      if (attempt === 0 && /Resend 429/.test(String(e))) {
+        await sleep(1500)
+        continue
+      }
+      console.error('[reminders] could not send', msg.subject, e)
+      return false
+    }
+  }
+  return false
+}
 
 export async function sendDailyReminders(now = Date.now()) {
   const payload = await getPayload({ config })
@@ -28,6 +52,7 @@ export async function sendDailyReminders(now = Date.now()) {
     return owners.get(n) ?? null
   }
   let sent = 0
+  let failed = 0
 
   for (const [collection, kind] of [
     ['car-listings', 'car listing'],
@@ -48,8 +73,8 @@ export async function sendDailyReminders(now = Date.now()) {
         paragraphs: [`“${doc.title}” comes off AllSeattle on ${fmt(doc.expiresAt)}.`, 'Still relevant? Renew it for another 30 days in your account — it takes one click.'],
         button: { label: 'Renew it', href: absoluteUrl('/account/listings') },
       })
-      await sendMail({ to: owner.email, subject: `Ends ${fmt(doc.expiresAt)}: ${doc.title}`, ...mail })
-      sent++
+      if (await deliver({ to: owner.email, subject: `Ends ${fmt(doc.expiresAt)}: ${doc.title}`, ...mail })) sent++
+      else failed++
     }
   }
 
@@ -80,8 +105,8 @@ export async function sendDailyReminders(now = Date.now()) {
       ],
       button: { label: 'Open my business', href: absoluteUrl(`/account/business/${biz.id}/package`) },
     })
-    await sendMail({ to: owner.email, subject: `${pkg.name} package ends ${fmt(biz.packageExpiresAt)}: ${biz.name}`, ...mail })
-    sent++
+    if (await deliver({ to: owner.email, subject: `${pkg.name} package ends ${fmt(biz.packageExpiresAt)}: ${biz.name}`, ...mail })) sent++
+    else failed++
   }
-  return { sent }
+  return { sent, failed }
 }
