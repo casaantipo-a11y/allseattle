@@ -1,5 +1,5 @@
-import { customerFrom, overPhotoLimit, payloadClient, PHOTO_LIMIT_ERROR, photoTooLarge, storePhoto } from '@/lib/cabinet'
-import { MAX_BYTES, PHOTO_TYPES } from '@/lib/forms'
+import { customerFrom, overPhotoLimit, payloadClient, PHOTO_LIMIT_ERROR, storePhoto } from '@/lib/cabinet'
+import { MAX_BYTES, PHOTO_TYPES, badPhoto } from '@/lib/forms'
 import { mediaUrl } from '@/lib/media'
 
 // POST /api/account/photos — one car photo from the listing form, uploaded as soon
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   if (typeof file !== 'object' || file === null || !('size' in file) || !file.size) return json({ error: 'No photo was sent.' }, 400)
   if (!PHOTO_TYPES.includes(file.type)) return json({ error: 'JPEG, PNG or WebP only.' }, 400)
   if (file.size > MAX_BYTES) return json({ error: 'The photo is larger than 10 MB.' }, 400)
-  if (await photoTooLarge(file as File)) return json({ error: "The picture can't be read or has too many pixels." }, 400)
+  if (await badPhoto(file as File)) return json({ error: "The picture can't be read, or it is not a JPEG, PNG or WebP." }, 400)
 
   const payload = await payloadClient()
   if (await overPhotoLimit(payload, customer.id)) return json({ error: PHOTO_LIMIT_ERROR }, 429)

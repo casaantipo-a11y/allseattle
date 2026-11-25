@@ -1,13 +1,12 @@
 import config from '@payload-config'
 import { randomBytes } from 'node:crypto'
 import { getPayload, ValidationError, type Payload, type Where } from 'payload'
-import sharp from 'sharp'
 import type { z } from 'zod'
 
 import type { Customer } from '@/payload-types'
 
 import { doc as lexDoc, p as lexP } from '../scripts/lexical'
-import { MAX_BYTES, PHOTO_TYPES } from './forms'
+import { MAX_BYTES, PHOTO_TYPES, badPhoto } from './forms'
 import { notifyEmail, notifyTelegram } from './notify'
 import { absoluteUrl } from './site'
 
@@ -72,9 +71,10 @@ export const tooSoon = (doc: { updatedAt?: string | null } | null | undefined) =
   Boolean(doc?.updatedAt && Date.now() - new Date(doc.updatedAt).getTime() < SAVE_GAP_MS)
 export const TOO_SOON_ERROR = 'Saved a moment ago — please wait half a minute before saving again.'
 
+/** The form's text fields. A NUL character is dropped: Postgres refuses it in text (a 500 otherwise). */
 export const toFields = (fd: FormData) => {
   const raw: Record<string, string> = {}
-  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v
+  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v.replaceAll('\u0000', '')
   return raw
 }
 
@@ -181,19 +181,6 @@ export async function overPhotoLimit(payload: Payload, customerId: number, mineI
   return mineId ? burst.totalDocs > PHOTO_BURST || day.totalDocs > PHOTO_DAILY : burst.totalDocs >= PHOTO_BURST || day.totalDocs >= PHOTO_DAILY
 }
 
-/** The most pixels a photo may have (a 10 MB file can hold far more than a phone camera makes). */
-const MAX_PIXELS = 100_000_000
-
-/** True when the picture can't be read, or has more pixels than MAX_PIXELS (only its header is read). */
-export async function photoTooLarge(f: File): Promise<boolean> {
-  try {
-    const m = await sharp(Buffer.from(await f.arrayBuffer())).metadata()
-    return !m.width || !m.height || m.width * m.height > MAX_PIXELS
-  } catch {
-    return true
-  }
-}
-
 /**
  * An upload field of an account form: `<field>Keep` lists the ids kept from
  * `before` (in their new order), `<field>` carries new files. New files are
@@ -237,7 +224,7 @@ export async function takePhotos(
   const wrong = files.find((f) => !PHOTO_TYPES.includes(f.type) || f.size > MAX_BYTES)
   if (wrong) return bad(`${wrong.name}: JPEG, PNG or WebP up to 10 MB only`)
   for (const f of files) {
-    if (await photoTooLarge(f)) return bad(`${f.name}: the picture can't be read or is too large`)
+    if (await badPhoto(f)) return bad(`${f.name}: the picture can't be read, or it is not a JPEG, PNG or WebP`)
   }
   const added: number[] = []
   try {

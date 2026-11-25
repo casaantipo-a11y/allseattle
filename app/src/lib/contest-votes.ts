@@ -9,6 +9,7 @@ import { z } from 'zod'
 import type { Contest, ContestVote } from '@/payload-types'
 
 import { emailLayout, sendMail } from './email'
+import { rowId } from './row-id'
 import { absoluteUrl } from './site'
 
 // Contest voting (stage 3, step 6): one vote per email per contest, counted once
@@ -58,9 +59,9 @@ export const getVoteCounts = unstable_cache(
 const hash = (token: string) => createHash('sha256').update(token).digest('hex')
 
 export const voteSchema = z.object({
-  contest: z.string().regex(/^\d+$/).transform(Number),
+  contest: z.string().regex(/^\d+$/).transform((v) => rowId(v)),
   entry: z.string().trim().min(1).max(64),
-  email: z.email('That doesn’t look like an email address').trim().toLowerCase(),
+  email: z.email('That doesn’t look like an email address').max(254, 'That doesn’t look like an email address').trim().toLowerCase(),
 })
 
 export type VoteResult = { ok: true; message: string } | { ok: false; status: number; error: string; field?: string }
@@ -100,10 +101,30 @@ export async function castVote(input: z.infer<typeof voteSchema>, ip: string): P
 
   const token = randomBytes(24).toString('hex')
   const data = { entryId: entry.id!, entryTitle: entry.title, tokenHash: hash(token), ip, sentAt: new Date().toISOString() }
+  let rowId: number
   try {
-    if (existing) await p.update({ collection: 'contest-votes', id: existing.id, data, overrideAccess: true })
-    else await p.create({ collection: 'contest-votes', data: { ...data, contest: contest.id, email: input.email }, overrideAccess: true })
+    if (existing) {
+      await p.update({ collection: 'contest-votes', id: existing.id, data, overrideAccess: true })
+      rowId = existing.id
+    } else {
+      rowId = (await p.create({ collection: 'contest-votes', data: { ...data, contest: contest.id, email: input.email }, overrideAccess: true })).id
+    }
   } catch (e) {
+    // A double click sends the request twice: the other one saved the row (one vote per email
+    // per contest is a unique index) and its link is on the way. Answer as for a repeat, not 500.
+    const again = (
+      await p
+        .find({
+          collection: 'contest-votes',
+          where: { and: [{ contest: { equals: contest.id } }, { email: { equals: input.email } }] },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+    )?.docs[0] as ContestVote | undefined
+    if (again?.confirmedAt) return { ok: false, status: 400, field: 'email', error: 'This email has already voted in this contest.' }
+    if (again && !existing) return { ok: false, status: 429, error: 'We just sent you a link. Please check your inbox (and the spam folder).' }
     console.error('[vote] could not save', e)
     return { ok: false, status: 500, error: 'Something went wrong on our side. Please try again in a minute.' }
   }
@@ -116,7 +137,15 @@ export async function castVote(input: z.infer<typeof voteSchema>, ip: string): P
     ],
     button: { label: 'Confirm my vote', href: absoluteUrl(`/contests/vote?token=${token}`) },
   })
-  await sendMail({ to: input.email, subject: `Confirm your vote: ${contest.title}`, ...mail })
+  try {
+    await sendMail({ to: input.email, subject: `Confirm your vote: ${contest.title}`, ...mail })
+  } catch (e) {
+    // Nothing went out: forget the send time, so the voter can try again at once instead of
+    // being told "we just sent you a link" for two minutes about a link that never existed.
+    console.error('[vote] could not send the link', e)
+    await p.update({ collection: 'contest-votes', id: rowId, data: { sentAt: null }, overrideAccess: true }).catch(() => undefined)
+    return { ok: false, status: 502, error: 'We could not send the email. Please try again in a minute.' }
+  }
   return { ok: true, message: 'Almost done — we sent you an email. Open the link in it to confirm your vote.' }
 }
 

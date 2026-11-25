@@ -13,6 +13,7 @@ import { getPackages } from '@/lib/queries'
 import { SITE_TZ } from '@/lib/site'
 import { stripeEnabled } from '@/lib/stripe'
 import type { Package } from '@/payload-types'
+import { rowId } from '@/lib/row-id'
 
 export const metadata: Metadata = { title: 'Package' }
 
@@ -38,7 +39,7 @@ export default async function BusinessPackagePage({ params, searchParams }: Prop
   // login cookie): keep ?paid=1, so the login page says the payment went through (client,
   // 22.10.2026: "it threw me out, looks like a scam").
   if (!me) redirect(`/account/login?next=${encodeURIComponent(`/account/business/${id}/package${paid ? '?paid=1' : ''}`)}`)
-  const [mine, packages] = await Promise.all([myBusiness(me, Number(id)), getPackages()])
+  const [mine, packages] = await Promise.all([myBusiness(me, rowId(id)), getPackages()])
   if (!mine) notFound()
   const { biz } = mine
   const now = effectivePackage({ package: biz.package as Package | null, packageExpiresAt: biz.packageExpiresAt })

@@ -27,6 +27,7 @@ import {
   type PhotoChange,
 } from './cabinet'
 import { lexicalText } from './jobs'
+import { rowId } from './row-id'
 
 // Stage 3, step 3: a business managed from a site account. Registering one
 // creates the card as Pending review (the team publishes it, hooks/moderation.ts
@@ -134,7 +135,7 @@ export async function saveBusiness(customer: Customer, fd: FormData, id?: number
   if (!parsed.success) return fail(400, CHECK, zodErrors(parsed.error.issues))
   const d = parsed.data
 
-  const categories = [...new Set(fd.getAll('categories').map(Number).filter(Number.isInteger))]
+  const categories = [...new Set(fd.getAll('categories').map((v) => rowId(v)).filter((n) => n > 0))]
   if (!categories.length) return fail(400, CHECK, { categories: 'Choose at least one category' })
   const { totalDocs: known } = await payload.count({ collection: 'business-categories', where: { id: { in: categories } } })
   if (known !== categories.length) return fail(400, CHECK, { categories: 'Choose categories from the list' })
@@ -193,6 +194,20 @@ export async function saveBusiness(customer: Customer, fd: FormData, id?: number
   } catch (e) {
     await settlePhotos(payload, customer, changes, false)
     return saveFailed(e, 'business')
+  }
+  if (!existing) {
+    // Parallel requests all pass the count at the top; count again now that this one exists, up to its
+    // own id, so that at most MAX_BUSINESSES stay (QA 25.11.2026: eight at once, eight created).
+    const { totalDocs: upToMe } = await payload.count({
+      collection: 'businesses',
+      where: { and: [{ owner: { equals: customer.id } }, { status: { not_equals: 'rejected' } }, { id: { less_than_equal: saved.id } }] },
+      overrideAccess: true,
+    })
+    if (upToMe > MAX_BUSINESSES) {
+      await payload.delete({ collection: 'businesses', id: saved.id, overrideAccess: true }).catch((e) => console.error('[business] could not take back a business over the limit', e))
+      await settlePhotos(payload, customer, changes, false)
+      return fail(400, `An account can register up to ${MAX_BUSINESSES} businesses. Contact us to add more.`)
+    }
   }
   await settlePhotos(payload, customer, changes, true)
   await notifyTeam(

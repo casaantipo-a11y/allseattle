@@ -59,6 +59,11 @@ export async function deleteAccount(customer: Customer, password: string): Promi
     // Banners stay (paid places run to their end); the team sees them without an owner.
     for (const b of banners.docs) await payload.update({ collection: 'banners', id: b.id, data: { owner: null }, overrideAccess: true })
 
+    // Car-form photos picked and never saved with a listing. The daily cleanup (lib/staged-photos.ts)
+    // removes staged files only while they still name an uploader, so once the account is gone
+    // they would stay for good.
+    await payload.delete({ collection: 'media', where: { and: [{ uploadedBy: { equals: customer.id } }, { staged: { equals: true } }] }, overrideAccess: true })
+
     await payload.delete({ collection: 'customers', id: customer.id, overrideAccess: true })
   } catch (e) {
     console.error('[account] delete failed', e)

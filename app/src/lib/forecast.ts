@@ -40,7 +40,7 @@ export type Forecast = {
 
 const get = async <T>(url: string): Promise<T | null> => {
   try {
-    const res = await fetch(url, { next: { revalidate: 1800, tags: ['weather'] } })
+    const res = await fetch(url, { next: { revalidate: 1800, tags: ['weather'] }, signal: AbortSignal.timeout(6000) })
     return res.ok ? ((await res.json()) as T) : null
   } catch {
     return null

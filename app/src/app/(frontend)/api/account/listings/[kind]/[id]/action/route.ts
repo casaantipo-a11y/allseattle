@@ -1,5 +1,6 @@
 import { customerFrom } from '@/lib/cabinet'
 import { listingAction, type ListingAction } from '@/lib/listings'
+import { rowId } from '@/lib/row-id'
 
 // POST /api/account/listings/:kind/:id/action {action: hide | show | renew | delete}
 // — the buttons on /account/listings.
@@ -15,6 +16,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ kind: s
   const body = (await req.json().catch(() => ({}))) as { action?: string }
   const action = ACTIONS.find((a) => a === body.action)
   if (!action) return json({ error: 'Unknown action.' }, 400)
-  const r = await listingAction(customer, kind, Number(id), action)
+  const r = await listingAction(customer, kind, rowId(id), action)
   return r.ok ? json(r) : json({ error: r.error }, r.status)
 }

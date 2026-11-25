@@ -13,7 +13,7 @@ const RATE_LIMIT = 5
 
 const schema = z.object({
   name: z.string().trim().min(2, 'Please enter your name').max(80),
-  email: z.email('That doesn’t look like an email address').trim().toLowerCase(),
+  email: z.email('That doesn’t look like an email address').max(254, 'That doesn’t look like an email address').trim().toLowerCase(),
   password: z.string().min(8, 'Use at least 8 characters').max(128),
   phone: z
     .string()
@@ -61,10 +61,11 @@ export async function POST(req: Request) {
   }
 
   const d = parsed.data
-  const exists = await payload.count({ collection: 'customers', where: { email: { equals: d.email } }, overrideAccess: true })
-  if (exists.totalDocs) {
-    return json({ error: 'Please check the highlighted fields.', fieldErrors: { email: 'An account with this email already exists. Log in or reset the password.' } }, 400)
-  }
+  const taken = async () =>
+    (await payload.count({ collection: 'customers', where: { email: { equals: d.email } }, overrideAccess: true })).totalDocs > 0
+  const takenAnswer = () =>
+    json({ error: 'Please check the highlighted fields.', fieldErrors: { email: 'An account with this email already exists. Log in or reset the password.' } }, 400)
+  if (await taken()) return takenAnswer()
   try {
     await payload.create({
       collection: 'customers',
@@ -72,6 +73,9 @@ export async function POST(req: Request) {
       data: { name: d.name, email: d.email, password: d.password, phone: d.phone || undefined, signupIp: ip },
     })
   } catch (e) {
+    // A double click sends the form twice: the other request created the account (the email is
+    // unique) and its confirmation link is on the way. That is "already exists", not a 500.
+    if (await taken().catch(() => false)) return takenAnswer()
     console.error('[account] sign-up failed', e)
     return json({ error: 'Something went wrong on our side. Please try again in a minute.' }, 500)
   }

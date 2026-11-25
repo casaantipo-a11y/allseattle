@@ -31,6 +31,13 @@ const keepEmail: CollectionBeforeChangeHook = ({ data, originalDoc, operation, r
   return data
 }
 
+// Postgres refuses a NUL character in text, and the account's own REST update (PATCH /api/customers/:id)
+// would answer 500: drop it from the two free-text fields.
+const noNul: CollectionBeforeChangeHook = ({ data }) => {
+  for (const f of ['name', 'phone'] as const) if (typeof data[f] === 'string') data[f] = data[f].replaceAll('\u0000', '')
+  return data
+}
+
 /** A reset link is valid for an hour (Payload's default); a new one goes out at most every 5 minutes. */
 const RESET_LINK_MS = 60 * 60 * 1000
 const RESET_GAP_MS = 5 * 60 * 1000
@@ -97,7 +104,7 @@ export const Customers: CollectionConfig = {
   },
   hooks: {
     beforeOperation: [throttleForgotPassword],
-    beforeChange: [keepEmail],
+    beforeChange: [keepEmail, noNul],
   },
   access: {
     // Sign-up goes through /api/account/register; nobody creates accounts through REST.

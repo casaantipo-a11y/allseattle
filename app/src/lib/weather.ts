@@ -33,7 +33,8 @@ export async function getCurrentWeather(): Promise<CurrentWeather | null> {
     `https://api.open-meteo.com/v1/forecast?latitude=${SEATTLE.lat}&longitude=${SEATTLE.lon}` +
     '&current=temperature_2m,weather_code,is_day&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles'
   try {
-    const res = await fetch(url, { next: { revalidate: 1800, tags: ['weather'] } })
+    // A weather service that stops answering must not hold up every page (the banner shows it).
+    const res = await fetch(url, { next: { revalidate: 1800, tags: ['weather'] }, signal: AbortSignal.timeout(6000) })
     if (!res.ok) return null
     const data = (await res.json()) as {
       current?: { temperature_2m: number; weather_code: number; is_day: number }

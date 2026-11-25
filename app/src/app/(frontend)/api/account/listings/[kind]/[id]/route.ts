@@ -1,5 +1,6 @@
 import { customerFrom } from '@/lib/cabinet'
 import { saveListing } from '@/lib/listings'
+import { rowId } from '@/lib/row-id'
 
 // POST /api/account/listings/:kind/:id — the author edits their car or job. Any
 // edit sends it back to Pending review.
@@ -17,6 +18,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ kind: s
   } catch {
     return json({ error: 'Could not read the form. Photos may be too large.' }, 400)
   }
-  const r = await saveListing(customer, kind, fd, Number(id))
+  const r = await saveListing(customer, kind, fd, rowId(id))
   return r.ok ? json(r) : json({ error: r.error, fieldErrors: r.fieldErrors }, r.status)
 }
