@@ -8,10 +8,14 @@ import { getCustomer } from '@/lib/account'
 
 export const metadata: Metadata = { title: 'Log in' }
 
-type Props = { searchParams: Promise<{ next?: string }> }
+type Props = { searchParams: Promise<{ next?: string | string[] }> }
 
-// Only paths on this site, so the link can't send someone elsewhere after login.
-const safeNext = (n?: string) => (n && /^\/(?![/\\])/.test(n) ? n : '/account')
+// Only paths on this site, so the link can't send someone elsewhere after login. A tab, a
+// line break or any other control character is refused too: the browser drops it from a
+// URL, so "/<TAB>/evil.test" would turn into "//evil.test" and leave the site. A repeated
+// ?next= (an array) is no path either.
+const safeNext = (n?: string | string[]) =>
+  typeof n === 'string' && /^\/(?![/\\])[^\\\u0000- \u007f]*$/.test(n) ? n : '/account'
 
 export default async function LoginPage({ searchParams }: Props) {
   const next = safeNext((await searchParams).next)
