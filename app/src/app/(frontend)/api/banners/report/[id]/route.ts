@@ -59,8 +59,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const total = { impressions, clicks, ctr: ctr(clicks, impressions) }
 
   if (url.searchParams.get('format') === 'csv') {
-    const esc = (v: string | number) =>
-      /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v)
+    // The advertiser's name is typed by the client, and a text cell that starts with = + - @ is a
+    // formula to Excel (=HYPERLINK(…) would run on the sales team's machine): a leading ' shows it as text.
+    const esc = (v: string | number) => {
+      const s = typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? `'${v}` : String(v)
+      return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+    }
     const lines = [
       ['Advertiser', banner.advertiser],
       ['Period', `${from} to ${to}`],
