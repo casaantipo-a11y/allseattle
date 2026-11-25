@@ -123,6 +123,10 @@ and then the browser at localhost:3000. It serves the production build, so run `
   can't be deleted by an admin (`refuseWhileSubscribed`). The guards apply to a person in the
   admin or REST (`req.user`); scripts and server code delete through the local API unchecked. A new
   collection that others reference needs the same line.
+- **A dialog (`.modal`) calls `useModalFocus(open, box)`** (`components/useModalFocus.ts`; `box` is the
+  `role="dialog"` element, `tabIndex={-1}`): focus goes in, Tab stays inside, and it returns to the
+  button that opened it. The price-request window took no focus at all and Tab walked out behind it
+  (QA 25.11.2026). The cookie banner is not a modal and doesn't use it.
 - **The Site settings global is public** (`read: () => true`: the site, and anyone calling
   `/api/globals/site-settings`, read it). The team's own contacts in it (`notifyEmail`,
   `telegramChatId`) carry `access: { read: staffOnlyField }`; a new private field there needs the

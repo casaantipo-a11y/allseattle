@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 
+import { useModalFocus } from '../useModalFocus'
+
 // "Delete my account" at the bottom of /account (stage 3). The button opens a confirmation
 // window (client, 15.10.2026) — the site's .modal, as in the contest's Vote — with a short
 // explanation and a password field (lib/account-delete.ts does the work).
@@ -13,6 +15,8 @@ export function DeleteAccount() {
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const password = useRef<HTMLInputElement>(null)
+  const box = useRef<HTMLDivElement>(null)
+  useModalFocus(open, box)
 
   function close() {
     if (busy || done) return
@@ -72,7 +76,7 @@ export function DeleteAccount() {
 
       {open ? (
         <div className="modal-overlay" onClick={(ev) => ev.target === ev.currentTarget && close()}>
-          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="del-title">
+          <div ref={box} className="modal" role="dialog" aria-modal="true" aria-labelledby="del-title" tabIndex={-1}>
             {done ? (
               <div className="success-panel" role="status">
                 <div>Your account is deleted. We sent a confirmation to your email.</div>
