@@ -105,7 +105,13 @@ export const getAllUpcomingEvents = unstable_cache(
         where: {
           and: [
             published,
-            { or: [{ endAt: { greater_than_equal: new Date().toISOString() } }, { startAt: { greater_than_equal: dayAgo } }] },
+            // Over = its end has passed; only an event without an end counts as running for a day after it starts.
+            {
+              or: [
+                { endAt: { greater_than_equal: new Date().toISOString() } },
+                { and: [{ endAt: { exists: false } }, { startAt: { greater_than_equal: dayAgo } }] },
+              ],
+            },
           ],
         },
         limit: 1000,
