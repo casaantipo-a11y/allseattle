@@ -220,6 +220,29 @@ export async function searchSite(q: string, limit = 60): Promise<SearchHit[]> {
     limit: 500,
     depth: 0,
   })
+  // A car or a job past its date is off the lists and the sitemap, and the reminder mail says it
+  // "comes off AllSeattle": it must not turn up in search either. The index has no date, so ask the two collections.
+  const p = await payload()
+  const expired = new Set<string>()
+  for (const kindSlug of ['car-listings', 'jobs'] as const) {
+    const ids = res.docs.flatMap((d) => {
+      const ref = d.doc as { relationTo?: string; value?: unknown } | undefined
+      return ref?.relationTo === kindSlug && typeof ref.value === 'number' ? [ref.value] : []
+    })
+    if (!ids.length) continue
+    const gone = await p.find({
+      collection: kindSlug,
+      where: { and: [{ id: { in: ids } }, { expiresAt: { less_than: new Date().toISOString() } }] },
+      pagination: false,
+      depth: 0,
+      select: { expiresAt: true },
+    })
+    for (const g of gone.docs) expired.add(`${kindSlug}:${g.id}`)
+  }
+  res.docs = res.docs.filter((d) => {
+    const ref = d.doc as { relationTo?: string; value?: unknown } | undefined
+    return !(ref && expired.has(`${ref.relationTo}:${ref.value}`))
+  })
   const t = escapeRe(lower)
   const word = new RegExp(`(^|[^a-z0-9])${t}(s|es)?($|[^a-z0-9])`, 'i')
   const prefix = new RegExp(`(^|[^a-z0-9])${t}`, 'i')
