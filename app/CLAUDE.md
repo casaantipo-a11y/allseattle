@@ -109,6 +109,24 @@ and then the browser at localhost:3000. It serves the production build, so run `
   (`lib/billing.ts`) therefore runs under a Postgres advisory lock per subscription id; without it
   every event created its own banner and "place booked" mail (QA 24.11.2026). New webhook work on a
   subscription goes inside that function, not beside it.
+- **`slugify` gives `''` for a title with no Latin letters** (QA 25.11.2026: a business named in
+  Chinese got slug `''`, so `/biz/` showed the directory instead of its page, and the next one got
+  `-2`). Cyrillic is transliterated (`Кафе Москва` → `kafe-moskva`); any other script has nothing to
+  keep. The slug of a new document goes through `slugBase(title, collection)` (`fields/index.ts`: falls
+  back to `business`, `job`, `car`…), never through `slugify` alone. Re-saving a document with an empty
+  slug in the admin repairs it.
+- **Deleting a row that documents point to** (QA 25.11.2026): a used category or make answered
+  "Something went wrong" (Postgres foreign key), and deleting the Premium package, which only has
+  a nullable column behind it, *worked* and left six businesses with no package. Packages, the
+  news / business / job / event categories, car makes and ad slots now carry
+  `refuseWhileUsed([...])` (`hooks/protectDelete.ts`); an account with a renewing subscription
+  can't be deleted by an admin (`refuseWhileSubscribed`). The guards apply to a person in the
+  admin or REST (`req.user`); scripts and server code delete through the local API unchecked. A new
+  collection that others reference needs the same line.
+- **A dialog (`.modal`) calls `useModalFocus(open, box)`** (`components/useModalFocus.ts`; `box` is the
+  `role="dialog"` element, `tabIndex={-1}`): focus goes in, Tab stays inside, and it returns to the
+  button that opened it. The price-request window took no focus at all and Tab walked out behind it
+  (QA 25.11.2026). The cookie banner is not a modal and doesn't use it.
 - **The Site settings global is public** (`read: () => true`: the site, and anyone calling
   `/api/globals/site-settings`, read it). The team's own contacts in it (`notifyEmail`,
   `telegramChatId`) carry `access: { read: staffOnlyField }`; a new private field there needs the

@@ -179,7 +179,14 @@ export const syncSubscription = (subOrId: Sub | string, opts: { welcome?: boolea
   withSubscriptionLock(typeof subOrId === 'string' ? subOrId : subOrId.id, () => syncSubscriptionNow(subOrId, opts))
 
 async function syncSubscriptionNow(subOrId: Sub | string, opts: { welcome?: boolean; buyerEmail?: string }) {
-  const sub = await freshSubscription(typeof subOrId === 'string' ? subOrId : subOrId.id)
+  const subId = typeof subOrId === 'string' ? subOrId : subOrId.id
+  // A subscription Stripe doesn't know (deleted test data, another account's event) will never be found:
+  // answering 500 would make Stripe resend the event for three days and mail about a failing endpoint.
+  const sub = await freshSubscription(subId).catch((e) => {
+    if (e instanceof StripeError && e.status === 404) return null
+    throw e
+  })
+  if (!sub) return console.error('[billing] subscription not found in Stripe, event ignored', subId)
   if (sub.metadata?.kind === 'banner') return syncAdSubscription(sub, opts)
   const bizId = Number(sub.metadata?.businessId)
   const packageId = Number(sub.metadata?.packageId)

@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { canWrite } from '../access/roles'
 import { isDemoField, slugField } from '../fields'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { revalidateCollection } from '../hooks/revalidate'
 
 // One tree of categories for three storefronts. `section` decides where a
@@ -34,6 +35,12 @@ export const BusinessCategories: CollectionConfig = {
     delete: canWrite('sales'),
   },
   hooks: {
+    beforeDelete: [
+      refuseWhileUsed([
+        { collection: 'businesses', field: 'categories', label: 'businesses' },
+        { collection: 'business-categories', field: 'parent', label: 'subcategories' },
+      ]),
+    ],
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },

@@ -3,6 +3,8 @@
 import Script from 'next/script'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 
+import { useModalFocus } from './useModalFocus'
+
 // The entry grid of a contest page with voting (stage 3, step 6), on the
 // prototype's card (.contest-card, .contest-vote-count) and modal (.modal-overlay).
 // "Vote" opens the modal: email + Turnstile → /api/contests/vote, which emails a
@@ -35,6 +37,8 @@ export function ContestVoting({
   const [emailError, setEmailError] = useState<string | null>(null)
   const widget = useRef<HTMLDivElement>(null)
   const emailInput = useRef<HTMLInputElement>(null)
+  const box = useRef<HTMLDivElement>(null)
+  useModalFocus(Boolean(chosen), box)
 
   // Turnstile is rendered when the modal opens (the box doesn't exist before) and removed on close.
   useEffect(() => {
@@ -133,7 +137,7 @@ export function ContestVoting({
 
       {chosen ? (
         <div className="modal-overlay" onClick={(ev) => ev.target === ev.currentTarget && close()}>
-          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="vote-title">
+          <div ref={box} className="modal" role="dialog" aria-modal="true" aria-labelledby="vote-title" tabIndex={-1}>
             <button type="button" className="modal-close" aria-label="Close" onClick={close}>
               &times;
             </button>

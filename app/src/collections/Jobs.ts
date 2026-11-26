@@ -5,6 +5,7 @@ import { canWrite, publishedOrLoggedIn } from '../access/roles'
 import { isDemoField, moderatedStatusField, slugField, slugHistoryField, submissionFields, uniqueSlugField } from '../fields'
 import { withinListingLimit } from '../hooks/listingLimit'
 import { notifyAuthorOfReview } from '../hooks/moderation'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 
 const revalidate = revalidateCollection(['jobs'])
@@ -17,7 +18,11 @@ export const JobCategories: CollectionConfig = {
   admin: { useAsTitle: 'name', group: 'Jobs' },
   defaultSort: 'name',
   access: { read: () => true, create: canWrite('sales'), update: canWrite('sales'), delete: canWrite('sales') },
-  hooks: { afterChange: [revalidate.afterChange], afterDelete: [revalidate.afterDelete] },
+  hooks: {
+    beforeDelete: [refuseWhileUsed([{ collection: 'jobs', field: 'category', label: 'jobs' }])],
+    afterChange: [revalidate.afterChange],
+    afterDelete: [revalidate.afterDelete],
+  },
   fields: [{ name: 'name', type: 'text', required: true }, slugField('name'), isDemoField],
 }
 

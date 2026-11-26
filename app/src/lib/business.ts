@@ -105,7 +105,11 @@ export function withUtm(url: string, campaign: 'business' | 'car'): string {
   return `${path}?${[query, ...add].filter(Boolean).join('&')}${hash}`
 }
 
-export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
+/**
+ * A tel: link for a phone typed by a person. Only the first number counts: "206-555-0100 after 5" or
+ * "(206) 555-0100 ext. 12" used to dial 20655501005 / 206555010012 (QA 25.11.2026).
+ */
+export const telHref = (phone: string) => `tel:${(/\+?[\d\s().-]{7,}/.exec(phone)?.[0] ?? phone).replace(/[^\d+]/g, '')}`
 
 export const priceText = (amount: number, currency = 'USD') =>
   amount > 0

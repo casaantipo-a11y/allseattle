@@ -31,7 +31,11 @@ export function inWindow(ev: Pick<Event, 'startAt' | 'endAt'>, when: When, now =
   const start = new Date(ev.startAt)
   const end = ev.endAt ? new Date(ev.endAt) : start
   const days: string[] = []
-  const add = (offset: number) => days.push(dayKey(new Date(now.getTime() + offset * 86400000)))
+  // Calendar days from Seattle's today, not 24-hour steps: the day the clocks change is 23 or 25
+  // hours long, and a step of 24 h from late evening then lands one day off.
+  const [y, m, d] = dayKey(now).split('-').map(Number)
+  const dayAt = (offset: number) => new Date(Date.UTC(y, m - 1, d + offset)).toISOString().slice(0, 10)
+  const add = (offset: number) => days.push(dayAt(offset))
   if (when === 'today') add(0)
   if (when === 'weekend') {
     const wd = fmt(now, { weekday: 'short' }) // Mon…Sun in Seattle
@@ -41,11 +45,8 @@ export function inWindow(ev: Pick<Event, 'startAt' | 'endAt'>, when: When, now =
     for (let o = toFri; o <= toFri + 2; o++) add(o)
   }
   if (when === 'month') {
-    const month = fmt(now, { year: 'numeric', month: '2-digit' })
-    for (let o = 0; o < 32; o++) {
-      const d = new Date(now.getTime() + o * 86400000)
-      if (fmt(d, { year: 'numeric', month: '2-digit' }) === month) days.push(dayKey(d))
-    }
+    const month = dayAt(0).slice(0, 7)
+    for (let o = 0; o < 32; o++) if (dayAt(o).slice(0, 7) === month) add(o)
   }
   const s = dayKey(start)
   const e = dayKey(end)

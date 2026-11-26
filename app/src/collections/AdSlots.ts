@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { canWrite } from '../access/roles'
+import { refuseWhileUsed } from '../hooks/protectDelete'
 import { revalidateCollection } from '../hooks/revalidate'
 
 const revalidate = revalidateCollection(['ad-slots', 'banners'], () => ['/advertise'])
@@ -41,6 +42,7 @@ export const AdSlots: CollectionConfig = {
     delete: canWrite('sales'),
   },
   hooks: {
+    beforeDelete: [refuseWhileUsed([{ collection: 'banners', field: 'slots', label: 'banners' }])],
     beforeChange: [({ data }) => (data && !data.name && data.code ? { ...data, name: data.code } : data)],
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],

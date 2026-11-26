@@ -6,6 +6,7 @@ import { notifyAuthorOfReview } from '../hooks/moderation'
 import { assertBusinessWithinPackage } from '../hooks/packageLimits'
 import { rememberOldSlug, revalidateCollection } from '../hooks/revalidate'
 import { geocode } from '../lib/geocode'
+import { RESERVED_SUBDOMAINS } from '../lib/subdomain'
 
 // Payment-link fields: staff read them, only the server (overrideAccess) writes them.
 const serverWrites = { read: staffOnlyField, create: () => false, update: () => false }
@@ -240,7 +241,8 @@ export const Businesses: CollectionConfig = {
               unique: true,
               index: true,
               validate: (v: string | null | undefined) =>
-                !v || /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(v) || 'Lowercase letters, digits and hyphens only',
+                !v ||
+                (RESERVED_SUBDOMAINS.has(v) ? 'This name is reserved for the site itself' : /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(v) || 'Lowercase letters, digits and hyphens only'),
               admin: { description: 'yourname → yourname.<site domain>. Luxury and Premium only.' },
             },
             {

@@ -2,6 +2,7 @@ import type { Access, CollectionBeforeChangeHook, CollectionBeforeOperationHook,
 import { APIError, ValidationError } from 'payload'
 
 import { hasRole, isStaff } from '../access/roles'
+import { refuseWhileSubscribed } from '../hooks/protectDelete'
 import { emailLayout } from '../lib/email'
 import { absoluteUrl } from '../lib/site'
 
@@ -105,6 +106,7 @@ export const Customers: CollectionConfig = {
   hooks: {
     beforeOperation: [throttleForgotPassword],
     beforeChange: [keepEmail, noNul],
+    beforeDelete: [refuseWhileSubscribed],
   },
   access: {
     // Sign-up goes through /api/account/register; nobody creates accounts through REST.

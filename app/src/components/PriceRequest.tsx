@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { SubmissionForm } from './SubmissionForm'
+import { useModalFocus } from './useModalFocus'
 
 // "Request a price" on a paid business page (counters block, 22.11.2026): the button opens the
 // site's modal with a short form — name, email or phone, message — posted to
@@ -10,6 +11,8 @@ import { SubmissionForm } from './SubmissionForm'
 // mounted only while the modal is open, so Turnstile loads on demand.
 export function PriceRequest({ businessId, businessName, turnstileSiteKey }: { businessId: number; businessName: string; turnstileSiteKey?: string | null }) {
   const [open, setOpen] = useState(false)
+  const box = useRef<HTMLDivElement>(null)
+  useModalFocus(open, box)
 
   useEffect(() => {
     if (!open) return
@@ -29,7 +32,7 @@ export function PriceRequest({ businessId, businessName, turnstileSiteKey }: { b
       </button>
       {open ? (
         <div className="modal-overlay" onClick={(ev) => ev.target === ev.currentTarget && setOpen(false)}>
-          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="price-request-title">
+          <div ref={box} className="modal" role="dialog" aria-modal="true" aria-labelledby="price-request-title" tabIndex={-1}>
             <button type="button" className="modal-close" aria-label="Close" onClick={() => setOpen(false)}>
               &times;
             </button>
