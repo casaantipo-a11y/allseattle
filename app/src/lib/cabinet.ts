@@ -71,10 +71,14 @@ export const tooSoon = (doc: { updatedAt?: string | null } | null | undefined) =
   Boolean(doc?.updatedAt && Date.now() - new Date(doc.updatedAt).getTime() < SAVE_GAP_MS)
 export const TOO_SOON_ERROR = 'Saved a moment ago — please wait half a minute before saving again.'
 
-/** The form's text fields. A NUL character is dropped: Postgres refuses it in text (a 500 otherwise). */
+/**
+ * The form's text fields. A NUL character is dropped: Postgres refuses it in text (a 500 otherwise).
+ * A line break is one `\n`: a browser (and Node) sends a textarea's lines as CRLF in a multipart body, and
+ * an unchanged description is recognised by comparing it with the stored text (`saveBusiness`).
+ */
 export const toFields = (fd: FormData) => {
   const raw: Record<string, string> = {}
-  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v.replaceAll('\u0000', '')
+  for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v.replaceAll('\u0000', '').replace(/\r\n?/g, '\n')
   return raw
 }
 

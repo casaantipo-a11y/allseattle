@@ -67,6 +67,8 @@ export function lexicalText(state: unknown): string {
     if (!n || typeof n !== 'object') return
     const node = n as { text?: string; children?: unknown[]; type?: string }
     if (typeof node.text === 'string') out.push(node.text)
+    // Shift+Enter in the editor: without this the two lines run together ("daily.Call us")
+    if (node.type === 'linebreak') out.push('\n')
     node.children?.forEach(walk)
     if (node.type === 'paragraph' || node.type === 'heading' || node.type === 'listitem') out.push('\n')
   }
