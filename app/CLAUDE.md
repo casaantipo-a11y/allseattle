@@ -147,6 +147,25 @@ and then the browser at localhost:3000. It serves the production build, so run `
   unique index, the loser reads the row again in its `catch` and answers as for a repeat (400/429),
   never 500 (`api/account/register`, `castVote`). No advisory locks on these paths: waiters would
   hold pool connections (only the Stripe webhook takes one, `lib/billing.ts`).
+- **A textarea's new lines reach the server as CRLF** (QA 27.11.2026): a browser — and Node's
+  `FormData` — encode every line break in a multipart body as `\r\n`. `saveBusiness` keeps the team's
+  formatting (headings, links) when the description is "unchanged", which it decides by comparing the
+  text with `lexicalText()` of the stored document; with CRLF every owner's save of a multi-line
+  description turned it into plain paragraphs. `toFields` now makes line breaks `\n`; read form text
+  through it before comparing it with stored text. A `linebreak` node (Shift+Enter) counts as `\n` in
+  `lexicalText`, or the two lines ran together in the textarea.
+- **A date from a form or a query goes through `isDay()`** (`lib/day.ts`), not a regex: `2026-02-30`
+  made `Invalid Date` and `0000-01-01` has no year in Postgres — both a 500 (promotion dates, the banner
+  report's `from`/`to`).
+- **The rich-text editor has no "Internal link"** (`LinkFeature({ enabledCollections: [] })` in
+  `payload.config.ts`): `components/RichText.tsx` passes no `internalDocToHref`, so a link to another
+  document came out as `href="#"`. Editors paste the address. Turning the choice back on needs
+  `internalDocToHref` first. Existing internal links (none on production, 27.11.2026) would fail
+  validation on the next save in the admin.
+- **`ogCard` (`lib/og.tsx`) draws the image to the end before it answers**: Satori reads the font while
+  the response streams, and Arabic text made it cut the connection half way (log: `lookupType: 5 -
+  substFormat: 3 is not yet supported`). A title that fails is retried without Arabic letters, then as
+  "AllSeattle".
 - **Content that is CMS data, not code**: the header menu (Header global, incl. `subLinks`),
   site settings (contacts, socials), the About / Contact / Terms / Privacy pages, event and other
   categories. Change them in the admin or through the REST API as an admin user, locally and on
