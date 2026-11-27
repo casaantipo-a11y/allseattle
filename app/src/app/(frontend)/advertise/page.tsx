@@ -263,7 +263,7 @@ export default async function AdvertisePage({ searchParams }: Props) {
           </div>
           <div className="muted mt-4 text-sm">
             <div>
-              The article is displayed on the website&rsquo;s main page for 2 days among other non-commercial news items. After that, the
+              The article is displayed on the website&rsquo;s main page for 7 days among other non-commercial news items. After that, the
               news automatically moves to the news section for an indefinite period.
             </div>
             <div className="mt-2">{TAX_NOTE}</div>
