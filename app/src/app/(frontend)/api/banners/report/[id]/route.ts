@@ -3,14 +3,13 @@ import { getPayload } from 'payload'
 
 import type { Role } from '@/access/roles'
 import { seattleDate } from '@/lib/banners'
+import { isDay } from '@/lib/day'
 import { rowId } from '@/lib/row-id'
 
 // GET /api/banners/report/{id}?from=YYYY-MM-DD&to=YYYY-MM-DD[&format=csv]
 // The advertiser report behind the "Report" tab of a banner in the admin:
 // impressions, clicks and CTR per day and in total. Admin and sales only —
 // checked against the admin session cookie. Defaults to the last 30 days.
-
-const DAY = /^\d{4}-\d{2}-\d{2}$/
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getPayload({ config })
@@ -26,10 +25,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   if (!banner) return Response.json({ error: 'Not found' }, { status: 404 })
 
   const url = new URL(req.url)
-  const to = DAY.test(url.searchParams.get('to') ?? '')
+  const to = isDay(url.searchParams.get('to') ?? '')
     ? url.searchParams.get('to')!
     : seattleDate()
-  const from = DAY.test(url.searchParams.get('from') ?? '')
+  const from = isDay(url.searchParams.get('from') ?? '')
     ? url.searchParams.get('from')!
     : seattleDate(new Date(new Date(`${to}T12:00:00Z`).getTime() - 29 * 86_400_000))
 
