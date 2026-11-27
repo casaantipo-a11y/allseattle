@@ -170,11 +170,14 @@ export default buildConfig({
   // Links: a "Sponsored link" box in the link drawer, drawn as rel="sponsored" by
   // components/RichText.tsx (paid articles, 27.11.2026). The fixed toolbar keeps the link
   // button in sight — the inline one appears only over selected text, and the client took
-  // that for "links cannot be added".
+  // that for "links cannot be added". No "Internal link" choice (`enabledCollections: []`): the
+  // text is drawn without `internalDocToHref`, so a link to another document came out as
+  // href="#" — a dead link (QA 27.11.2026). An editor pastes the page's address instead.
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures.filter((f) => f.key !== 'link'),
       LinkFeature({
+        enabledCollections: [],
         fields: ({ defaultFields }) => [
           ...defaultFields,
           {

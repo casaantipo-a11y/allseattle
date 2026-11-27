@@ -16,7 +16,28 @@ async function logoDataUrl() {
   return logoCache
 }
 
+/**
+ * The card for a title. Satori reads the font while the response streams, so a title it cannot lay
+ * out (Arabic: "lookupType: 5 - substFormat: 3 is not yet supported", QA 27.11.2026) did not fail
+ * here but cut the connection half way, with a stack trace in the log. The image is therefore
+ * drawn to the end first; a title that fails is retried without the Arabic letters, then as the
+ * site name, so the page still has a preview picture.
+ */
 export async function ogCard({ title, kicker }: { title: string; kicker?: string }) {
+  const stripped = title.replace(/\p{Script=Arabic}/gu, '').replace(/\s+/g, ' ').trim()
+  for (const t of [title, stripped, 'AllSeattle']) {
+    if (!t) continue
+    try {
+      const res = await drawCard({ title: t, kicker })
+      return new Response(await res.arrayBuffer(), { headers: res.headers })
+    } catch (e) {
+      console.error('[og] card could not be drawn for this title, trying a plainer one:', e instanceof Error ? e.message : e)
+    }
+  }
+  return new Response(null, { status: 404 })
+}
+
+async function drawCard({ title, kicker }: { title: string; kicker?: string }) {
   const logo = await logoDataUrl()
   const size = title.length > 90 ? 52 : title.length > 60 ? 60 : 68
   return new ImageResponse(

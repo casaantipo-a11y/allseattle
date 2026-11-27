@@ -26,6 +26,7 @@ import {
   type CabinetResult,
   type PhotoChange,
 } from './cabinet'
+import { isDay } from './day'
 import { lexicalText } from './jobs'
 import { rowId } from './row-id'
 
@@ -81,7 +82,7 @@ const businessSchema = z.object({
 
 const day = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Pick a date')
+  .refine(isDay, 'Pick a date')
   // the admin's day-only picker stores noon UTC; the same here
   .transform((v) => `${v}T12:00:00.000Z`)
 
