@@ -1,6 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { seoPlugin } from '@payloadcms/plugin-seo'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { FixedToolbarFeature, LinkFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { en } from '@payloadcms/translations/languages/en'
 import { ru } from '@payloadcms/translations/languages/ru'
@@ -167,7 +167,27 @@ export default buildConfig({
     Customers,
   ],
   globals: [SiteSettings, Header, Footer, SeoTexts],
-  editor: lexicalEditor(),
+  // Links: a "Sponsored link" box in the link drawer, drawn as rel="sponsored" by
+  // components/RichText.tsx (paid articles, 27.11.2026). The fixed toolbar keeps the link
+  // button in sight — the inline one appears only over selected text, and the client took
+  // that for "links cannot be added".
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures.filter((f) => f.key !== 'link'),
+      LinkFeature({
+        fields: ({ defaultFields }) => [
+          ...defaultFields,
+          {
+            name: 'sponsored',
+            type: 'checkbox',
+            label: 'Sponsored link (rel="sponsored")',
+            admin: { description: 'Tick for a paid or advertising link.' },
+          },
+        ],
+      }),
+      FixedToolbarFeature(),
+    ],
+  }),
   secret: env.PAYLOAD_SECRET,
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   // Schema push (dev mode) only against the local database. Anything remote —

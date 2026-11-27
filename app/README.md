@@ -768,6 +768,13 @@ When the domain is chosen: add it in Vercel, change `NEXT_PUBLIC_SITE_URL`, rede
 - `src/lib/queries.ts` — every public read, wrapped in `unstable_cache` with a tag. Payload
   `afterChange` / `afterDelete` hooks (`src/hooks/revalidate.ts`) expire those tags, so a saved
   article appears on the site at once; pages are ISR otherwise.
+- Rich text (one Lexical config for every `richText` field, `payload.config.ts`): a fixed toolbar
+  over the text (the inline one alone made editors think links couldn't be added) and a
+  **"Sponsored link"** checkbox in the link drawer, stored in the link node's `fields.sponsored`
+  (JSON, no migration). `components/RichText.tsx` adds `rel="sponsored"` to such links next to
+  Payload's own `noopener noreferrer`; `href` with its UTM parameters is untouched (paid articles,
+  27.11.2026). A new toolbar or link feature needs its client entry in `admin/importMap.js` —
+  added by hand here, since a local `generate:importmap` drops the R2 upload handler.
 - `src/app/(frontend)` — the site. Prototype markup and CSS for everything that existed in stage 1;
   Tailwind (theme + utilities only, no reset, in cascade layers) for the new parts.
 - `src/scripts` — `seed.ts` / `seed-businesses.ts` read the prototype's `js/mock-data/*.js` and
